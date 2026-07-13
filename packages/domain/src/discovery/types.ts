@@ -103,34 +103,10 @@ export interface EvaluationContext {
   readonly targetMargin?: number;
   readonly competitorPrices?: Array<{ provider: string; price: Money }>;
 }
-export interface EvaluationResult {
-  readonly requestId: EvaluationRequestId;
-  readonly aiScore: number;
-  readonly confidence: number;
-  readonly factors: AIScoreFactors;
-  readonly recommendation: "publish" | "review" | "reject";
-  readonly reasons: string[];
-  readonly suggestedPrice?: Money;
-  readonly evaluatedAt: Date;
-  readonly modelUsed: string;
-}
-
-export interface ApprovalDecision {
-  readonly action: "publish" | "review" | "reject";
-  readonly reason: string;
-  readonly conditions?: string[];
-}
-export interface ApprovalPolicy {
-  evaluate(result: EvaluationResult): ApprovalDecision;
-}
-export const DefaultApprovalPolicy: ApprovalPolicy = {
-  evaluate(r) {
-    if (r.aiScore >= 70 && r.confidence >= 80)
-      return { action: "publish", reason: `Score ${r.aiScore} confidence ${r.confidence}` };
-    if (r.aiScore >= 50) return { action: "review", reason: `Score ${r.aiScore} requires review` };
-    return { action: "reject", reason: `Score ${r.aiScore} below threshold` };
-  }
-};
+// EvaluationResult, ApprovalDecision, ApprovalPolicy, and DefaultApprovalPolicy
+// moved to evaluation/types.ts (A2.8). The richer design separates
+// InferenceProvider (model) from DecisionProvider (transform) from
+// PolicyEngine (decision), with InferenceArtifact as a separate artifact.
 
 export interface DiscoveryScheduler {
   schedule(params: ScheduleParams): DiscoveryJob;
@@ -312,7 +288,7 @@ export interface ProductEvaluationProvider {
   readonly providerCode: string;
   readonly providerName: string;
   readonly modelVersion: string;
-  evaluate(request: EvaluationRequest): Promise<EvaluationResult>;
+  evaluate(request: EvaluationRequest): Promise<import("./evaluation/types").EvaluationResult>;
 }
 
 // ComplianceEngine

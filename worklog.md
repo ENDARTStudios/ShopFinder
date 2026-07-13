@@ -1015,3 +1015,73 @@ Stage Summary:
 - Separação Resolution (identidade) vs Builder (materialização) preserva baixo acoplamento.
 - 232 testes totais passando no discovery module.
 - Próximo: A2.8 — AI Evaluation (avalia apenas CanonicalProduct, produz ProductScore + AIScoreFactors).
+
+---
+
+Task ID: A2.8 — AI Evaluation
+Agent: main (Super Z)
+Task: Implementar AI Evaluation com separação Inferência/Avaliação. InferenceProvider conhece o modelo, DecisionProvider transforma saída em contrato determinístico, PolicyEngine decide. 4 artefatos: InferenceArtifact (raw AI), EvaluationResult (clean domain), DecisionTrace (audit), ApprovalDecision. Compliance PreCheck antes de inferência. Cache por versões. 9-component ProductScore. 26 testes cobrindo 10 critérios.
+
+Work Log:
+
+### 11 módulos em packages/domain/src/discovery/evaluation/
+
+- **types.ts** (220 linhas): 4 artefatos. InferenceArtifact (id, canonicalProductId, modelId, modelVersion, promptVersion, schemaVersion, startedAt, completedAt, latencyMs, inputTokens, outputTokens, estimatedCost, rawResponse). EvaluationResult (id, canonicalProductId, inferenceId, productScore, aiScoreFactors, recommendation, confidence, explanation, evaluatedAt, schemaVersion — sem rawResponse, sem modelId). DecisionTrace (inferenceId, evaluationId, policyVersion, ruleResults, finalDecision, decidedAt). ApprovalDecision (action, reason, conditions, decidedBy, decidedAt). ProductScore (9 independentes: commercial, quality, confidence, risk, trend, competition, supplier, margin, compliance + overall derivado). AIScoreFactor (name, value, weight, explanation). CompliancePreCheckResult (status: eligible|blocked|requires_review, reason, violations, warnings). InferenceCacheKey (4 version fields). InferenceProvider, DecisionProvider, PolicyEngine interfaces. EvaluationRepository interface. EvaluationMetrics (10 counters). CanonicalProduct importado de resolution/types.
+
+- **scores.ts** (80 linhas): SCORE_COMPONENTS (9 nomes). DEFAULT_SCORE_WEIGHTS (9 pesos, risk invertido). computeOverallScore(components, weights) — inverte risk (100-risk) antes de ponderar. buildProductScore(components) — adiciona overall. factorsToScore(factors) — converte AIScoreFactor[] para 9 components (default 50 se fator não presente).
+
+- **inference-provider.ts** (75 linhas): InferenceProvider interface (modelId, modelVersion, promptVersion, infer(product) → InferenceArtifact). StubInferenceProvider — retorna response determinístico com 9 scores + 5 factors + recommendation + confidence + explanation. Simula latencyMs=50, inputTokens=500, outputTokens=200, cost=$0.02. Production: OpenAI/Ollama/Gemini/vLLM providers implementam mesma interface.
+
+- **decision-provider.ts** (65 linhas): DefaultDecisionProvider (name="default-decision-provider", version="1.0.0"). decide(artifact, product) → EvaluationResult. Parseia rawResponse (model-specific JSON), converte para ProductScore (via buildProductScore), AIScoreFactor[], recommendation, confidence, explanation. DETERMINÍSTICO — mesmo artifact + product → mesmo result. Único lugar que conhece shape do modelo.
+
+- **cache.ts** (70 linhas): InMemoryInferenceCache. buildKey(4 versions) → InferenceCacheKey. keyToString para Map storage. get(key) → InferenceCacheEntry | null. set(key, inferenceId, evaluationId, productId). getByProduct(productId). Cache key = canonicalProductVersion|modelVersion|promptVersion|schemaVersion. Se 4 versões iguais → cache hit, reaproveita EvaluationResult sem nova chamada ao modelo.
+
+- **policy.ts** (95 linhas): DefaultPolicyEngine (version="1.0.0"). 4 PolicyRules: compliance_minimum (>=70), confidence_minimum (>=0.60), risk_threshold (<=50), overall_publish_threshold (>=65). evaluate(result) → { decision, trace }. Critical rules (compliance + confidence) falham → reject. Non-critical falham → review. All pass → publish. DecisionTrace com ruleResults para auditoria.
+
+- **compliance-check.ts** (75 linhas): DefaultCompliancePreCheck. 5 checks: title não vazio, brand não UNKNOWN (warning), price > 0, pelo menos 1 image, prohibited keywords (counterfeit/fake/replica/forbidden/banned). Retorna eligible | blocked | requires_review. Runs BEFORE inference — evita gastar model calls em produtos inviáveis.
+
+- **events.ts** (155 linhas): EVALUATION_EVENT_TYPES = 5 tipos. EvaluationVersionedPayload (schemaVersion + modelVersion + promptVersion + decisionProviderVersion + policyVersion). 5 payload interfaces. 5 event types + 5 factories. Inference e Evaluation são event streams distintos.
+
+- **repository.ts** (75 linhas): InMemoryEvaluationRepository. inferencesById, evaluationsById, evaluationsByProduct, tracesByEvaluation Maps. append idempotente. findInference, findEvaluation, findEvaluationByProduct, findTraceByEvaluation. inferenceCount/evaluationCount/traceCount.
+
+- **coordinator.ts** (170 linhas): EvaluationCoordinator.evaluate(input). Fluxo por produto: (1) CompliancePreCheck — blocked/review → emit EvaluationRejected, skip inference. (2) Cache check — hit → emit EvaluationCached, reaproveita EvaluationResult + re-run policy. (3) Inference — emit InferenceStarted, infer(), appendInference, emit InferenceCompleted. (4) DecisionProvider.decide → EvaluationResult, appendEvaluation, cache.set. (5) PolicyEngine.evaluate → ApprovalDecision + DecisionTrace, appendDecisionTrace. (6) emit EvaluationCompleted. EvaluationMetrics com 10 counters (inferencesRun, inferencesCached, productsBlocked, publish/review/reject counts, totalInferenceCost, averageConfidence).
+
+- **evaluation.test.ts** (420 linhas): 26 testes em 10 describe blocks cobrindo todos os 10 critérios de aceite.
+
+### Decisões de design
+
+- **Separação Inferência/Avaliação**: InferenceProvider conhece o modelo (OpenAI/Ollama/Gemini/vLLM). DecisionProvider transforma raw output em EvaluationResult determinístico. PolicyEngine decide aprovação. Trocar LLM não altera lógica de negócio — apenas InferenceProvider muda.
+- **InferenceArtifact separado**: rawResponse NUNCA consumido pelo domínio. Apenas DecisionProvider o parseia. EvaluationResult é limpo (sem modelId, sem rawResponse, sem inputTokens).
+- **9-component ProductScore**: commercial, quality, confidence, risk, trend, competition, supplier, margin, compliance. Overall é DERIVADO (nunca persistido como verdade única). Risk é invertido (higher risk = lower contribution). Re-weighting sem re-run inference.
+- **Compliance PreCheck antes de inferência**: evita gastar model calls em produtos inviáveis (empty title, prohibited keywords, zero price, no images). blocked → EvaluationRejected, sem inference.
+- **Cache por 4 versões**: canonicalProductVersion + modelVersion + promptVersion + schemaVersion. Se 4 iguais → cache hit, reaproveita EvaluationResult. Bumpar qualquer versão invalida cache.
+- **PolicyEngine é o ÚNICO que decide**: DecisionProvider recomenda (publish/review/reject), PolicyEngine decide. 4 rules (2 critical, 2 non-critical). Critical fail → reject. Non-critical fail → review. All pass → publish. DecisionTrace para auditoria.
+- **Eventos separados**: InferenceStarted/Completed (inferência) vs EvaluationCompleted/Cached/Rejected (avaliação). Streams distintos.
+- **Nenhum acesso ao catálogo**: deps tem repository + inferenceProvider + decisionProvider + policyEngine + cache + events. Sem catalogRepository, sem productRepository, sem db. Evaluation não modifica CanonicalProduct.
+
+### Verificações (10 critérios de aceite)
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 186 files, 0 violations (salto 174 → 186 com evaluation module)
+- ✓ bun test packages/domain/src/discovery/ → 258 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store + 31 normalizer + 24 similarity + 25 resolution + 26 evaluation)
+- ✓ HTTP 200
+- ✓ IA executa apenas para CanonicalProduct
+- ✓ InferenceArtifact persistido separadamente (com rawResponse, modelId, cost)
+- ✓ EvaluationResult independente do modelo (sem rawResponse, sem modelId)
+- ✓ Cache por versão de produto/modelo/prompt/schema (hit na 2a run, miss quando version bumpa)
+- ✓ ProductScore composto por 9 componentes + overall derivado (risk invertido)
+- ✓ DecisionProvider determinístico (mesmo artifact + product → mesmo result)
+- ✓ PolicyEngine decide (publish/review/reject com 4 rules, DecisionTrace persistido)
+- ✓ Nenhuma chamada ao catálogo (deps sem catalogRepository/productRepository/db)
+- ✓ Nenhuma alteração em CanonicalProduct (testado)
+- ✓ Eventos separados para inferência (Started/Completed) e avaliação (Completed/Cached/Rejected)
+
+Stage Summary:
+
+- A2.8 (AI Evaluation) entregue e validado contra todos os 10 critérios de aceite.
+- 11 arquivos em packages/domain/src/discovery/evaluation/ (types, scores, inference-provider, decision-provider, cache, policy, compliance-check, events, repository, coordinator, index) + evaluation.test.ts.
+- Pipeline A2.1→A2.2→A2.3→A2.4→A2.5→A2.6→A2.7→A2.8 completo: ... → CanonicalProduct → CompliancePreCheck → (blocked | cache hit | inference) → DecisionProvider → EvaluationResult → PolicyEngine → ApprovalDecision → A2.9 Compliance (post-evaluation) / Catalog Publisher.
+- Separação Inferência/Avaliação preserva baixo acoplamento — trocar LLM não altera domínio.
+- 258 testes totais passando no discovery module.
+- Próximo: A2.9 — Compliance (post-evaluation, decide publicação final) / A2.10 — Catalog Publisher.
