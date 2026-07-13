@@ -40,6 +40,8 @@ export interface StageMetrics {
   readonly customMetrics: Readonly<Record<string, number>>;
   readonly capturedAt: Date;
   readonly schemaVersion: "1.0.0";
+  /** Cross-cutting traceability — correlates metrics across all pipeline stages. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 export interface BusinessMetric {

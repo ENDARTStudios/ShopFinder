@@ -11,6 +11,7 @@
  *   normalizer/               — A2.5 Product Normalizer (Raw → NormalizedProductRecord, 7 stages)
  *   similarity/               — A2.6 Similarity & Duplicate Detection (evidence + clusters, discover only)
  *   resolution/               — A2.7 Duplicate Resolution (identity + builder, no catalog details)
+ *   enrichment/               — A2.7b Manufacturer Enrichment (Tier A/B/C/D, authority scores, 50+ manufacturers)
  *   evaluation/               — A2.8 AI Evaluation (inference + decision + policy, separated)
  *   compliance/               — A2.9 Compliance PostCheck (score/documentation/certification/regional rules)
  *   catalog/                  — A2.10 Catalog Materializer + Publisher (SKU/slug/variants/SEO + multi-destination)
@@ -23,6 +24,7 @@
 
 // Re-export everything from submodules
 export * from "./types";
+export * from "./traceability";
 export * from "./planner";
 export * from "./orchestrator";
 export * from "./workers";
@@ -30,6 +32,7 @@ export * from "./raw-store";
 export * from "./normalizer";
 export * from "./similarity";
 export * from "./resolution";
+export * from "./enrichment";
 export * from "./evaluation";
 export * from "./compliance";
 export * from "./catalog";

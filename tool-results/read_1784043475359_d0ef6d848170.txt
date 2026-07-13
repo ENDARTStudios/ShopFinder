@@ -1,0 +1,932 @@
+     1→"use client";
+     2→
+     3→import * as React from "react";
+     4→import {
+     5→  Boxes,
+     6→  CheckCircle2,
+     7→  CircleDashed,
+     8→  CircleDot,
+     9→  Database,
+    10→  Github,
+    11→  GitBranch,
+    12→  Layers,
+    13→  Package,
+    14→  Palette,
+    15→  Rocket,
+    16→  ScrollText,
+    17→  Settings2,
+    18→  Shield,
+    19→  Sparkles,
+    20→  Wrench
+    21→} from "lucide-react";
+    22→
+    23→import { Badge } from "@/components/ui/badge";
+    24→import { Button } from "@/components/ui/button";
+    25→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+    26→import { Progress } from "@/components/ui/progress";
+    27→import { ScrollArea } from "@/components/ui/scroll-area";
+    28→import { Separator } from "@/components/ui/separator";
+    29→import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+    30→import {
+    31→  Accordion,
+    32→  AccordionContent,
+    33→  AccordionItem,
+    34→  AccordionTrigger
+    35→} from "@/components/ui/accordion";
+    36→
+    37→import { ModeToggle } from "@/components/site/mode-toggle";
+    38→import {
+    39→  ADRS,
+    40→  BACKLOG,
+    41→  DESIGN_SYSTEM,
+    42→  DOMAIN_CONTEXTS,
+    43→  DOMAIN_ENHANCEMENTS,
+    44→  DOMAIN_EVENTS,
+    45→  MODULES,
+    46→  PACKAGES,
+    47→  PERSISTENCE_CONVENTIONS,
+    48→  PERSISTENCE_LAYERS,
+    49→  PERSISTENCE_TABLES,
+    50→  PRINCIPLES,
+    51→  PROJECT_META,
+    52→  STACK,
+    53→  SUPPLIERS,
+    54→  type ItemStatus,
+    55→  type PackageItem
+    56→} from "@/components/site/data";
+    57→
+    58→const STATUS_META: Record<ItemStatus, { label: string; icon: React.ReactNode; className: string }> =
+    59→  {
+    60→    done: {
+    61→      label: "Concluído",
+    62→      icon: <CheckCircle2 className="h-3.5 w-3.5" />,
+    63→      className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+    64→    },
+    65→    in_progress: {
+    66→      label: "Em progresso",
+    67→      icon: <CircleDot className="h-3.5 w-3.5" />,
+    68→      className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+    69→    },
+    70→    pending: {
+    71→      label: "Pendente",
+    72→      icon: <CircleDashed className="h-3.5 w-3.5" />,
+    73→      className: "bg-muted text-muted-foreground border-border"
+    74→    }
+    75→  };
+    76→
+    77→function StatusBadge({ status }: { status: ItemStatus }) {
+    78→  const meta = STATUS_META[status];
+    79→  return (
+    80→    <Badge variant="outline" className={`gap-1 font-medium ${meta.className}`}>
+    81→      {meta.icon}
+    82→      {meta.label}
+    83→    </Badge>
+    84→  );
+    85→}
+    86→
+    87→function SiteHeader() {
+    88→  return (
+    89→    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    90→      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    91→        <div className="flex items-center gap-2">
+    92→          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-background">
+    93→            <Layers className="h-4 w-4" />
+    94→          </div>
+    95→          <div className="flex flex-col leading-none">
+    96→            <span className="text-sm font-semibold tracking-tight">{PROJECT_META.name}</span>
+    97→            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+    98→              v{PROJECT_META.version} · Modular Monolith
+    99→            </span>
+   100→          </div>
+   101→        </div>
+   102→        <div className="flex items-center gap-2">
+   103→          <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+   104→            <a href="https://github.com" target="_blank" rel="noreferrer noopener">
+   105→              <Github className="mr-1.5 h-4 w-4" />
+   106→              GitHub
+   107→            </a>
+   108→          </Button>
+   109→          <ModeToggle />
+   110→        </div>
+   111→      </div>
+   112→    </header>
+   113→  );
+   114→}
+   115→
+   116→function Hero() {
+   117→  const done = BACKLOG.filter((b) => b.status === "done").length;
+   118→  const inProgress = BACKLOG.filter((b) => b.status === "in_progress").length;
+   119→  const progress = Math.round(((done + inProgress * 0.5) / BACKLOG.length) * 100);
+   120→
+   121→  return (
+   122→    <section className="relative isolate overflow-hidden border-b border-border/60">
+   123→      <div
+   124→        aria-hidden
+   125→        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
+   126→        style={{
+   127→          backgroundImage:
+   128→            "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.18), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(245,158,11,0.12), transparent 60%)"
+   129→        }}
+   130→      />
+   131→      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+   132→        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+   133→          <div className="max-w-3xl">
+   134→            <Badge
+   135→              variant="outline"
+   136→              className="mb-4 gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+   137→            >
+   138→              <Sparkles className="h-3.5 w-3.5" />
+   139→              Iteração: {PROJECT_META.iteration}
+   140→            </Badge>
+   141→            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+   142→              {PROJECT_META.name}
+   143→            </h1>
+   144→            <p className="mt-3 text-lg text-muted-foreground sm:text-xl">{PROJECT_META.tagline}</p>
+   145→            <p className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/80">
+   146→              {PROJECT_META.summary}
+   147→            </p>
+   148→            <div className="mt-8 flex flex-wrap gap-3">
+   149→              <Button asChild>
+   150→                <a href="#backlog">
+   151→                  <Rocket className="mr-1.5 h-4 w-4" />
+   152→                  Ver backlog
+   153→                </a>
+   154→              </Button>
+   155→              <Button variant="outline" asChild>
+   156→                <a href="#packages">
+   157→                  <Package className="mr-1.5 h-4 w-4" />
+   158→                  Explorar packages
+   159→                </a>
+   160→              </Button>
+   161→            </div>
+   162→          </div>
+   163→
+   164→          <Card className="w-full max-w-sm border-border/60 bg-background/60 backdrop-blur">
+   165→            <CardHeader className="pb-3">
+   166→              <CardDescription>Progresso do backlog</CardDescription>
+   167→              <CardTitle className="text-3xl tabular-nums">{progress}%</CardTitle>
+   168→            </CardHeader>
+   169→            <CardContent className="space-y-3">
+   170→              <Progress value={progress} className="h-2" />
+   171→              <div className="grid grid-cols-3 gap-2 text-center">
+   172→                <Stat label="Concluído" value={done} />
+   173→                <Stat label="Em curso" value={inProgress} />
+   174→                <Stat label="Total" value={BACKLOG.length} />
+   175→              </div>
+   176→            </CardContent>
+   177→          </Card>
+   178→        </div>
+   179→      </div>
+   180→    </section>
+   181→  );
+   182→}
+   183→
+   184→function Stat({ label, value }: { label: string; value: number }) {
+   185→  return (
+   186→    <div className="rounded-md border border-border/60 bg-muted/30 px-2 py-2">
+   187→      <div className="text-lg font-semibold tabular-nums">{value}</div>
+   188→      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+   189→    </div>
+   190→  );
+   191→}
+   192→
+   193→function SectionHeading({
+   194→  icon,
+   195→  eyebrow,
+   196→  title,
+   197→  description
+   198→}: {
+   199→  icon: React.ReactNode;
+   200→  eyebrow: string;
+   201→  title: string;
+   202→  description: string;
+   203→}) {
+   204→  return (
+   205→    <div className="mb-8 flex items-start gap-4">
+   206→      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
+   207→        {icon}
+   208→      </div>
+   209→      <div>
+   210→        <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+   211→          {eyebrow}
+   212→        </div>
+   213→        <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{title}</h2>
+   214→        <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">{description}</p>
+   215→      </div>
+   216→    </div>
+   217→  );
+   218→}
+   219→
+   220→function BacklogSection() {
+   221→  return (
+   222→    <section id="backlog" className="scroll-mt-20">
+   223→      <SectionHeading
+   224→        icon={<Rocket className="h-5 w-5" />}
+   225→        eyebrow="Roadmap"
+   226→        title="Backlog macro"
+   227→        description="25 itens ordenados por dependência técnica. Cada item vira uma iteração incremental com entrega observável."
+   228→      />
+   229→      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+   230→        {BACKLOG.map((item) => (
+   231→          <Card key={item.id} className="border-border/60 transition-colors hover:border-border">
+   232→            <CardContent className="flex items-start justify-between gap-3 p-4">
+   233→              <div className="flex items-start gap-3">
+   234→                <span className="mt-0.5 font-mono text-xs text-muted-foreground">{item.id}</span>
+   235→                <div>
+   236→                  <div className="text-sm font-medium leading-tight">{item.title}</div>
+   237→                </div>
+   238→              </div>
+   239→              <StatusBadge status={item.status} />
+   240→            </CardContent>
+   241→          </Card>
+   242→        ))}
+   243→      </div>
+   244→    </section>
+   245→  );
+   246→}
+   247→
+   248→function ModulesSection() {
+   249→  return (
+   250→    <section id="modules" className="scroll-mt-20">
+   251→      <SectionHeading
+   252→        icon={<Boxes className="h-5 w-5" />}
+   253→        eyebrow="Modular Monolith"
+   254→        title="Módulos planejados"
+   255→        description="Cada módulo possui domínio, serviços, repositórios e HTTP próprios. Comunicação cross-módulo apenas via interfaces explícitas ou eventos de domínio."
+   256→      />
+   257→      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+   258→        {MODULES.map((m) => (
+   259→          <Card key={m.name} className="border-border/60">
+   260→            <CardHeader className="pb-3">
+   261→              <div className="flex items-center justify-between gap-2">
+   262→                <CardTitle className="text-base">{m.name}</CardTitle>
+   263→                <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground">
+   264→                  #{m.backlogId}
+   265→                </Badge>
+   266→              </div>
+   267→              <CardDescription className="text-sm leading-relaxed">{m.description}</CardDescription>
+   268→            </CardHeader>
+   269→            <CardContent className="pt-0">
+   270→              <StatusBadge status={m.status} />
+   271→            </CardContent>
+   272→          </Card>
+   273→        ))}
+   274→      </div>
+   275→    </section>
+   276→  );
+   277→}
+   278→
+   279→function PackagesSection() {
+   280→  const categories: Array<{ key: PackageItem["category"]; label: string; color: string }> = [
+   281→    { key: "domain", label: "Domain", color: "text-emerald-600 dark:text-emerald-400" },
+   282→    { key: "infrastructure", label: "Infrastructure", color: "text-sky-600 dark:text-sky-400" },
+   283→    { key: "integration", label: "Integration", color: "text-amber-600 dark:text-amber-400" },
+   284→    { key: "tooling", label: "Tooling", color: "text-violet-600 dark:text-violet-400" }
+   285→  ];
+   286→  return (
+   287→    <section id="packages" className="scroll-mt-20">
+   288→      <SectionHeading
+   289→        icon={<Package className="h-5 w-5" />}
+   290→        eyebrow="Workspaces"
+   291→        title="Packages @workspace/*"
+   292→        description="16 packages compartilhados via Bun workspaces, agrupados por categoria. Cada package tem barrel export, tsconfig próprio e path alias TypeScript."
+   293→      />
+   294→      <div className="space-y-8">
+   295→        {categories.map((cat) => {
+   296→          const items = PACKAGES.filter((p) => p.category === cat.key);
+   297→          if (items.length === 0) return null;
+   298→          return (
+   299→            <div key={cat.key}>
+   300→              <div className="mb-3 flex items-center gap-2">
+   301→                <h3 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>
+   302→                  {cat.label}
+   303→                </h3>
+   304→                <Badge variant="outline" className="font-mono text-[10px]">
+   305→                  {items.length}
+   306→                </Badge>
+   307→              </div>
+   308→              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+   309→                {items.map((p) => (
+   310→                  <Card key={p.name} className="border-border/60">
+   311→                    <CardHeader className="pb-2">
+   312→                      <div className="flex items-center gap-2">
+   313→                        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted text-xs font-mono">
+   314→                          {p.name.slice(0, 2)}
+   315→                        </div>
+   316→                        <CardTitle className="font-mono text-sm">{p.scope}</CardTitle>
+   317→                      </div>
+   318→                    </CardHeader>
+   319→                    <CardContent>
+   320→                      <p className="text-sm leading-relaxed text-muted-foreground">
+   321→                        {p.description}
+   322→                      </p>
+   323→                    </CardContent>
+   324→                  </Card>
+   325→                ))}
+   326→              </div>
+   327→            </div>
+   328→          );
+   329→        })}
+   330→      </div>
+   331→    </section>
+   332→  );
+   333→}
+   334→
+   335→function DomainSection() {
+   336→  return (
+   337→    <section id="domain" className="scroll-mt-20 space-y-12">
+   338→      <div>
+   339→        <SectionHeading
+   340→          icon={<GitBranch className="h-5 w-5" />}
+   341→          eyebrow="DDD"
+   342→          title="Bounded Contexts"
+   343→          description="8 contextos delimitados com aggregate roots, entities, value objects e domain events. Comunicação cross-contexto apenas via interfaces explícitas ou eventos."
+   344→        />
+   345→        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+   346→          {DOMAIN_CONTEXTS.map((ctx) => (
+   347→            <Card key={ctx.name} className="border-border/60">
+   348→              <CardHeader className="pb-2">
+   349→                <div className="flex items-center justify-between gap-2">
+   350→                  <CardTitle className="text-base">{ctx.name}</CardTitle>
+   351→                  <StatusBadge status={ctx.status} />
+   352→                </div>
+   353→                <CardDescription className="font-mono text-[10px]">{ctx.package}</CardDescription>
+   354→              </CardHeader>
+   355→              <CardContent className="space-y-2">
+   356→                <p className="text-xs leading-relaxed text-muted-foreground">
+   357→                  {ctx.responsibility}
+   358→                </p>
+   359→                {ctx.aggregates.length > 0 && (
+   360→                  <div className="flex flex-wrap gap-1">
+   361→                    {ctx.aggregates.map((a) => (
+   362→                      <Badge
+   363→                        key={a}
+   364→                        variant="outline"
+   365→                        className="bg-emerald-500/10 text-[10px] font-mono text-emerald-700 dark:text-emerald-400"
+   366→                      >
+   367→                        {a}
+   368→                      </Badge>
+   369→                    ))}
+   370→                  </div>
+   371→                )}
+   372→              </CardContent>
+   373→            </Card>
+   374→          ))}
+   375→        </div>
+   376→      </div>
+   377→
+   378→      <div>
+   379→        <SectionHeading
+   380→          icon={<GitBranch className="h-5 w-5" />}
+   381→          eyebrow="Eventos"
+   382→          title="Domain Events Catalog"
+   383→          description="Eventos que cruzam fronteiras de contexto. Cada evento tem schema Zod em @workspace/contracts/events para validação em trust boundaries."
+   384→        />
+   385→        <Card className="border-border/60">
+   386→          <CardContent className="p-0">
+   387→            <ScrollArea className="h-80">
+   388→              <div className="divide-y divide-border/60">
+   389→                {DOMAIN_EVENTS.map((evt) => (
+   390→                  <div
+   391→                    key={evt.type}
+   392→                    className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+   393→                  >
+   394→                    <div className="flex items-center gap-3">
+   395→                      <code className="rounded bg-muted px-2 py-0.5 font-mono text-xs">
+   396→                        {evt.type}
+   397→                      </code>
+   398→                    </div>
+   399→                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+   400→                      <span className="font-medium text-foreground">{evt.emitter}</span>
+   401→                      <span aria-hidden>→</span>
+   402→                      <span>{evt.consumers.join(", ")}</span>
+   403→                    </div>
+   404→                  </div>
+   405→                ))}
+   406→              </div>
+   407→            </ScrollArea>
+   408→          </CardContent>
+   409→        </Card>
+   410→      </div>
+   411→    </section>
+   412→  );
+   413→}
+   414→
+   415→function DesignSystemSection() {
+   416→  return (
+   417→    <section id="design-system" className="scroll-mt-20 space-y-12">
+   418→      <div>
+   419→        <SectionHeading
+   420→          icon={<Palette className="h-5 w-5" />}
+   421→          eyebrow="DDD UI"
+   422→          title="Domain-Driven Design System"
+   423→          description="Componentes que refletem a linguagem ubíqua do domínio. Cada camada mapeia conceitos de negócio — ProductCard reflete ProductListItemDTO, OrderStatusBadge reflete OrderStatus."
+   424→        />
+   425→        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+   426→          {DESIGN_SYSTEM.map((layer) => (
+   427→            <Card key={layer.name} className="border-border/60">
+   428→              <CardHeader className="pb-3">
+   429→                <div className="flex items-center justify-between gap-2">
+   430→                  <CardTitle className={`font-mono text-sm ${layer.color}`}>
+   431→                    @workspace/ui/{layer.name}
+   432→                  </CardTitle>
+   433→                  <Badge variant="outline" className="font-mono text-[10px]">
+   434→                    {layer.components.length}
+   435→                  </Badge>
+   436→                </div>
+   437→                <CardDescription className="text-sm leading-relaxed">
+   438→                  {layer.description}
+   439→                </CardDescription>
+   440→              </CardHeader>
+   441→              <CardContent>
+   442→                <div className="flex flex-wrap gap-1.5">
+   443→                  {layer.components.map((c) => (
+   444→                    <code
+   445→                      key={c}
+   446→                      className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
+   447→                    >
+   448→                      {c}
+   449→                    </code>
+   450→                  ))}
+   451→                </div>
+   452→              </CardContent>
+   453→            </Card>
+   454→          ))}
+   455→        </div>
+   456→      </div>
+   457→
+   458→      <div>
+   459→        <SectionHeading
+   460→          icon={<Shield className="h-5 w-5" />}
+   461→          eyebrow="Reforços"
+   462→          title="Domain Architecture Enhancements"
+   463→          description="6 reforços de arquitetura aplicados nesta iteração para evitar erosão estrutural e bugs de identity."
+   464→        />
+   465→        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+   466→          {DOMAIN_ENHANCEMENTS.map((e) => (
+   467→            <Card key={e.name} className="border-border/60">
+   468→              <CardHeader className="pb-2">
+   469→                <div className="flex items-center justify-between gap-2">
+   470→                  <CardTitle className="text-base">{e.name}</CardTitle>
+   471→                  <StatusBadge status={e.status} />
+   472→                </div>
+   473→              </CardHeader>
+   474→              <CardContent>
+   475→                <p className="text-sm leading-relaxed text-muted-foreground">{e.description}</p>
+   476→              </CardContent>
+   477→            </Card>
+   478→          ))}
+   479→        </div>
+   480→      </div>
+   481→    </section>
+   482→  );
+   483→}
+   484→
+   485→function PersistenceSection() {
+   486→  const contexts = Array.from(new Set(PERSISTENCE_TABLES.map((t) => t.context)));
+   487→  const contextColors: Record<string, string> = {
+   488→    Catalog: "text-emerald-600 dark:text-emerald-400",
+   489→    Customer: "text-sky-600 dark:text-sky-400",
+   490→    Cart: "text-amber-600 dark:text-amber-400",
+   491→    Checkout: "text-violet-600 dark:text-violet-400",
+   492→    Order: "text-rose-600 dark:text-rose-400",
+   493→    Payment: "text-cyan-600 dark:text-cyan-400",
+   494→    Supplier: "text-orange-600 dark:text-orange-400",
+   495→    Store: "text-pink-600 dark:text-pink-400",
+   496→    Identity: "text-indigo-600 dark:text-indigo-400",
+   497→    Integration: "text-teal-600 dark:text-teal-400",
+   498→    "Cross-cutting": "text-fuchsia-600 dark:text-fuchsia-400",
+   499→    Lookup: "text-lime-600 dark:text-lime-400"
+   500→  };
+   501→  return (
+   502→    <section id="persistence" className="scroll-mt-20 space-y-12">
+   503→      {/* Tables */}
+   504→      <div>
+   505→        <SectionHeading
+   506→          icon={<Database className="h-5 w-5" />}
+   507→          eyebrow="04B.1 · Prisma + Seed"
+   508→          title="Tabelas (42)"
+   509→          description="Prisma schema completo — 42 tabelas em 11 contextos. Migration 0001_init gerada (933 linhas, 71 índices, 21 unique constraints). Seed executado: 12 currencies, 20 countries, 1 store, 1 admin. SQLite dev → PostgreSQL prod."
+   510→        />
+   511→        <div className="space-y-6">
+   512→          {contexts.map((ctx) => {
+   513→            const tables = PERSISTENCE_TABLES.filter((t) => t.context === ctx);
+   514→            return (
+   515→              <div key={ctx}>
+   516→                <div className="mb-3 flex items-center gap-2">
+   517→                  <h3
+   518→                    className={`text-sm font-semibold uppercase tracking-wider ${contextColors[ctx] ?? ""}`}
+   519→                  >
+   520→                    {ctx}
+   521→                  </h3>
+   522→                  <Badge variant="outline" className="font-mono text-[10px]">
+   523→                    {tables.length} {tables.length === 1 ? "tabela" : "tabelas"}
+   524→                  </Badge>
+   525→                </div>
+   526→                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+   527→                  {tables.map((t) => (
+   528→                    <Card key={t.name} className="border-border/60">
+   529→                      <CardHeader className="pb-2">
+   530→                        <CardTitle className="font-mono text-sm">{t.name}</CardTitle>
+   531→                        <CardDescription className="text-xs leading-relaxed">
+   532→                          {t.description}
+   533→                        </CardDescription>
+   534→                      </CardHeader>
+   535→                      <CardContent className="pt-0">
+   536→                        <div className="flex flex-wrap gap-1">
+   537→                          {t.keyColumns.map((c) => (
+   538→                            <code
+   539→                              key={c}
+   540→                              className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
+   541→                            >
+   542→                              {c}
+   543→                            </code>
+   544→                          ))}
+   545→                        </div>
+   546→                      </CardContent>
+   547→                    </Card>
+   548→                  ))}
+   549→                </div>
+   550→              </div>
+   551→            );
+   552→          })}
+   553→        </div>
+   554→      </div>
+   555→
+   556→      {/* Conventions */}
+   557→      <div>
+   558→        <SectionHeading
+   559→          icon={<Shield className="h-5 w-5" />}
+   560→          eyebrow="Convenções"
+   561→          title="Persistência — Convenções (17)"
+   562→          description="17 convenções aplicadas: 10 originais + 7 dos ajustes (Multi-Store, User/Customer, Price History, Inventory Reservation, Secret References, Idempotency)."
+   563→        />
+   564→        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+   565→          {PERSISTENCE_CONVENTIONS.map((c) => (
+   566→            <Card key={c.name} className="border-border/60">
+   567→              <CardHeader className="pb-2">
+   568→                <CardTitle className="text-base">{c.name}</CardTitle>
+   569→              </CardHeader>
+   570→              <CardContent className="space-y-2">
+   571→                <p className="text-sm leading-relaxed text-muted-foreground">{c.description}</p>
+   572→                <pre className="overflow-x-auto rounded bg-muted px-3 py-2 text-[11px] font-mono text-muted-foreground">
+   573→                  {c.example}
+   574→                </pre>
+   575→              </CardContent>
+   576→            </Card>
+   577→          ))}
+   578→        </div>
+   579→      </div>
+   580→
+   581→      {/* Layers (Repository / QueryService / UnitOfWork) */}
+   582→      <div>
+   583→        <SectionHeading
+   584→          icon={<Layers className="h-5 w-5" />}
+   585→          eyebrow="Interfaces"
+   586→          title="Camadas de Acesso a Dados"
+   587→          description="Separação Query/Command (Rec 2). Repository escreve aggregates; QueryService lê DTOs; UnitOfWork abstrai transações (Rec 1)."
+   588→        />
+   589→        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+   590→          {PERSISTENCE_LAYERS.map((layer) => (
+   591→            <Card key={layer.name} className="border-border/60">
+   592→              <CardHeader className="pb-3">
+   593→                <div className="flex items-center justify-between gap-2">
+   594→                  <CardTitle className="text-base">{layer.name}</CardTitle>
+   595→                  <Badge
+   596→                    variant="outline"
+   597→                    className={
+   598→                      layer.returnsAggregate
+   599→                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+   600→                        : "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-400"
+   601→                    }
+   602→                  >
+   603→                    {layer.returnsAggregate ? "Aggregate" : "DTO"}
+   604→                  </Badge>
+   605→                </div>
+   606→                <CardDescription className="text-sm leading-relaxed">
+   607→                  {layer.description}
+   608→                </CardDescription>
+   609→              </CardHeader>
+   610→              <CardContent>
+   611→                <div className="flex flex-wrap gap-1.5">
+   612→                  {layer.interfaces.map((iface) => (
+   613→                    <code
+   614→                      key={iface}
+   615→                      className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
+   616→                    >
+   617→                      {iface}
+   618→                    </code>
+   619→                  ))}
+   620→                </div>
+   621→              </CardContent>
+   622→            </Card>
+   623→          ))}
+   624→        </div>
+   625→      </div>
+   626→    </section>
+   627→  );
+   628→}
+   629→
+   630→function AdrsSection() {
+   631→  return (
+   632→    <section id="adrs" className="scroll-mt-20">
+   633→      <SectionHeading
+   634→        icon={<ScrollText className="h-5 w-5" />}
+   635→        eyebrow="Decisões"
+   636→        title="Architecture Decision Records"
+   637→        description="Cada decisão arquitetural importante é registrada como um ADR imutável. Para reverter, cria-se um novo ADR que referencia o anterior."
+   638→      />
+   639→      <Card className="border-border/60">
+   640→        <CardContent className="p-0">
+   641→          <Accordion type="single" collapsible className="w-full">
+   642→            {ADRS.map((adr) => (
+   643→              <AccordionItem
+   644→                key={adr.id}
+   645→                value={adr.id}
+   646→                className="border-border/60 px-4 last:border-b-0 sm:px-6"
+   647→              >
+   648→                <AccordionTrigger className="hover:no-underline">
+   649→                  <div className="flex flex-1 items-center gap-3 pr-3 text-left">
+   650→                    <Badge variant="outline" className="font-mono text-[10px] tabular-nums">
+   651→                      ADR-{adr.id}
+   652→                    </Badge>
+   653→                    <span className="text-sm font-medium">{adr.title}</span>
+   654→                  </div>
+   655→                </AccordionTrigger>
+   656→                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+   657→                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+   658→                    <Badge
+   659→                      variant="outline"
+   660→                      className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+   661→                    >
+   662→                      {adr.status}
+   663→                    </Badge>
+   664→                    <span className="font-mono text-muted-foreground">{adr.date}</span>
+   665→                  </div>
+   666→                  <p>{adr.summary}</p>
+   667→                </AccordionContent>
+   668→              </AccordionItem>
+   669→            ))}
+   670→          </Accordion>
+   671→        </CardContent>
+   672→      </Card>
+   673→    </section>
+   674→  );
+   675→}
+   676→
+   677→function StackSection() {
+   678→  return (
+   679→    <section id="stack" className="scroll-mt-20">
+   680→      <SectionHeading
+   681→        icon={<Settings2 className="h-5 w-5" />}
+   682→        eyebrow="Tech Stack"
+   683→        title="Stack tecnológico"
+   684→        description="Stack opinativa com prioridade Qualidade > Escalabilidade > Custo Zero > Simplicidade."
+   685→      />
+   686→      <Card className="border-border/60">
+   687→        <CardContent className="p-0">
+   688→          <div className="grid grid-cols-1 divide-y divide-border/60 sm:grid-cols-2 sm:divide-y-0 sm:divide-x">
+   689→            <div className="divide-y divide-border/60">
+   690→              {STACK.slice(0, Math.ceil(STACK.length / 2)).map((s) => (
+   691→                <StackRow key={s.concern} {...s} />
+   692→              ))}
+   693→            </div>
+   694→            <div className="divide-y divide-border/60">
+   695→              {STACK.slice(Math.ceil(STACK.length / 2)).map((s) => (
+   696→                <StackRow key={s.concern} {...s} />
+   697→              ))}
+   698→            </div>
+   699→          </div>
+   700→        </CardContent>
+   701→      </Card>
+   702→    </section>
+   703→  );
+   704→}
+   705→
+   706→function StackRow({ concern, choice }: { concern: string; choice: string }) {
+   707→  return (
+   708→    <div className="flex items-baseline justify-between gap-4 px-4 py-3 sm:px-6">
+   709→      <span className="text-xs uppercase tracking-wider text-muted-foreground">{concern}</span>
+   710→      <span className="text-right text-sm font-medium">{choice}</span>
+   711→    </div>
+   712→  );
+   713→}
+   714→
+   715→function PrinciplesSection() {
+   716→  return (
+   717→    <section id="principles" className="scroll-mt-20">
+   718→      <SectionHeading
+   719→        icon={<Shield className="h-5 w-5" />}
+   720→        eyebrow="Princípios"
+   721→        title="Princípios de engenharia"
+   722→        description="Princípios que governam decisões de implementação no dia-a-dia."
+   723→      />
+   724→      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+   725→        {PRINCIPLES.map((p) => (
+   726→          <div key={p.name} className="rounded-lg border border-border/60 bg-card/40 p-4">
+   727→            <div className="text-sm font-semibold">{p.name}</div>
+   728→            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{p.description}</p>
+   729→          </div>
+   730→        ))}
+   731→      </div>
+   732→    </section>
+   733→  );
+   734→}
+   735→
+   736→function SuppliersSection() {
+   737→  const categories = Array.from(new Set(SUPPLIERS.map((s) => s.category)));
+   738→  return (
+   739→    <section id="suppliers" className="scroll-mt-20">
+   740→      <SectionHeading
+   741→        icon={<Wrench className="h-5 w-5" />}
+   742→        eyebrow="Integrações"
+   743→        title="Fornecedores (Dropshipping)"
+   744→        description="Cada fornecedor é integrado via Adapter Pattern em @workspace/integrations. Novos fornecedores são adicionados sem tocar nos módulos de negócio."
+   745→      />
+   746→      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+   747→        {categories.map((cat) => (
+   748→          <Card key={cat} className="border-border/60">
+   749→            <CardHeader className="pb-2">
+   750→              <CardDescription>{cat}</CardDescription>
+   751→            </CardHeader>
+   752→            <CardContent>
+   753→              <ScrollArea className="h-44 pr-3">
+   754→                <ul className="space-y-1.5">
+   755→                  {SUPPLIERS.filter((s) => s.category === cat).map((s) => (
+   756→                    <li key={s.name} className="flex items-center gap-2 text-sm">
+   757→                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+   758→                      {s.name}
+   759→                    </li>
+   760→                  ))}
+   761→                </ul>
+   762→              </ScrollArea>
+   763→            </CardContent>
+   764→          </Card>
+   765→        ))}
+   766→      </div>
+   767→    </section>
+   768→  );
+   769→}
+   770→
+   771→function WorkspaceSection() {
+   772→  return (
+   773→    <section id="workspace" className="scroll-mt-20">
+   774→      <SectionHeading
+   775→        icon={<Layers className="h-5 w-5" />}
+   776→        eyebrow="Layout"
+   777→        title="Estrutura do workspace"
+   778→        description="Layout do monorepo conforme ADR-0002 e ADR-0003. A raiz atua como apps/web (adaptação ao sandbox)."
+   779→      />
+   780→      <Card className="border-border/60 overflow-hidden">
+   781→        <CardContent className="p-0">
+   782→          <ScrollArea className="h-96">
+   783→            <pre className="m-0 overflow-x-auto p-6 text-xs leading-relaxed text-foreground/90 sm:text-sm">
+   784→              {`.
+   785→├── src/                      ← apps/web (Next.js)
+   786→│   ├── app/                  ← App Router (página única visível: /)
+   787→│   ├── components/
+   788→│   │   ├── ui/               ← shadcn/ui primitives
+   789→│   │   └── site/             ← landing page composition
+   790→│   ├── lib/                  ← runtime singletons (db, auth, ...)
+   791→│   └── hooks/
+   792→│
+   793→├── packages/                 ← @workspace/*
+   794→│   ├── ui/                   ← design-system primitives
+   795→│   ├── shared/               ← cross-cutting utils
+   796→│   ├── types/                ← shared TS types
+   797→│   ├── config/               ← tsconfig / eslint / prettier presets
+   798→│   ├── database/             ← Prisma client & repositories
+   799→│   ├── auth/                 ← Auth.js config & adapters
+   800→│   ├── validation/           ← Zod schemas per domain
+   801→│   ├── analytics/            ← GA4 / GSC / Clarity / Sentry / UptimeRobot
+   802→│   ├── seo/                  ← JSON-LD, sitemap, robots, metadata
+   803→│   ├── ai/                   ← decoupled AI provider layer
+   804→│   └── integrations/         ← dropshipping supplier adapters
+   805→│
+   806→├── docs/                     ← architecture + ADRs
+   807→│   ├── README.md
+   808→│   ├── architecture.md
+   809→│   ├── decisions.md
+   810→│   └── adr/
+   811→│       ├── 0001-modular-monolith.md
+   812→│       ├── 0002-monorepo-workspaces.md
+   813→│       ├── 0003-sandbox-constraints-adaptation.md
+   814→│       └── 0004-ai-layer-decoupled.md
+   815→│
+   816→├── scripts/                  ← operational scripts
+   817→├── .github/workflows/        ← CI
+   818→│   └── ci.yml
+   819→│
+   820→├── prisma/                   ← schema & migrations
+   821→│
+   822→├── .husky/                   ← git hooks (pre-commit, commit-msg)
+   823→├── .env.example              ← env strategy (committed, no secrets)
+   824→├── .editorconfig
+   825→├── .prettierrc.mjs
+   826→├── .prettierignore
+   827→├── .lintstagedrc.mjs
+   828→├── commitlint.config.mjs
+   829→├── turbo.json                ← Turborepo pipelines
+   830→├── tsconfig.json             ← extends @workspace/config
+   831→└── package.json              ← workspaces + scripts`}
+   832→            </pre>
+   833→          </ScrollArea>
+   834→        </CardContent>
+   835→      </Card>
+   836→    </section>
+   837→  );
+   838→}
+   839→
+   840→function SiteFooter() {
+   841→  return (
+   842→    <footer className="mt-auto border-t border-border/60 bg-muted/20">
+   843→      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+   844→        <div>
+   845→          <div className="text-sm font-semibold">
+   846→            {PROJECT_META.name}
+   847→            <span className="ml-2 font-mono text-xs text-muted-foreground">
+   848→              v{PROJECT_META.version}
+   849→            </span>
+   850→          </div>
+   851→          <p className="mt-1 text-xs text-muted-foreground">{PROJECT_META.tagline}</p>
+   852→        </div>
+   853→        <Separator orientation="vertical" className="hidden h-10 sm:block" />
+   854→        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+   855→          <span>Next.js 16</span>
+   856→          <span aria-hidden>·</span>
+   857→          <span>TypeScript 5</span>
+   858→          <span aria-hidden>·</span>
+   859→          <span>Tailwind v4</span>
+   860→          <span aria-hidden>·</span>
+   861→          <span>shadcn/ui</span>
+   862→          <span aria-hidden>·</span>
+   863→          <span>Turborepo</span>
+   864→          <span aria-hidden>·</span>
+   865→          <span>Bun</span>
+   866→        </div>
+   867→      </div>
+   868→    </footer>
+   869→  );
+   870→}
+   871→
+   872→export function Landing() {
+   873→  return (
+   874→    <div className="flex min-h-screen flex-col">
+   875→      <SiteHeader />
+   876→      <main className="flex-1">
+   877→        <Hero />
+   878→
+   879→        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+   880→          <Tabs defaultValue="persistence" className="w-full">
+   881→            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 lg:grid-cols-10">
+   882→              <TabsTrigger value="persistence">Persistence</TabsTrigger>
+   883→              <TabsTrigger value="design-system">Design System</TabsTrigger>
+   884→              <TabsTrigger value="domain">Domain</TabsTrigger>
+   885→              <TabsTrigger value="backlog">Backlog</TabsTrigger>
+   886→              <TabsTrigger value="modules">Módulos</TabsTrigger>
+   887→              <TabsTrigger value="packages">Packages</TabsTrigger>
+   888→              <TabsTrigger value="adrs">ADRs</TabsTrigger>
+   889→              <TabsTrigger value="stack">Stack</TabsTrigger>
+   890→              <TabsTrigger value="principles">Princípios</TabsTrigger>
+   891→              <TabsTrigger value="more">+ Extras</TabsTrigger>
+   892→            </TabsList>
+   893→
+   894→            <TabsContent value="persistence" className="mt-10">
+   895→              <PersistenceSection />
+   896→            </TabsContent>
+   897→            <TabsContent value="design-system" className="mt-10">
+   898→              <DesignSystemSection />
+   899→            </TabsContent>
+   900→            <TabsContent value="domain" className="mt-10">
+   901→              <DomainSection />
+   902→            </TabsContent>
+   903→            <TabsContent value="backlog" className="mt-10">
+   904→              <BacklogSection />
+   905→            </TabsContent>
+   906→            <TabsContent value="modules" className="mt-10">
+   907→              <ModulesSection />
+   908→            </TabsContent>
+   909→            <TabsContent value="packages" className="mt-10">
+   910→              <PackagesSection />
+   911→            </TabsContent>
+   912→            <TabsContent value="adrs" className="mt-10">
+   913→              <AdrsSection />
+   914→            </TabsContent>
+   915→            <TabsContent value="stack" className="mt-10">
+   916→              <StackSection />
+   917→            </TabsContent>
+   918→            <TabsContent value="principles" className="mt-10">
+   919→              <PrinciplesSection />
+   920→            </TabsContent>
+   921→            <TabsContent value="more" className="mt-10 space-y-16">
+   922→              <SuppliersSection />
+   923→              <WorkspaceSection />
+   924→            </TabsContent>
+   925→          </Tabs>
+   926→        </div>
+   927→      </main>
+   928→      <SiteFooter />
+   929→    </div>
+   930→  );
+   931→}
+   932→

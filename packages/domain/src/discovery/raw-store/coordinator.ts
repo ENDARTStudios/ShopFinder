@@ -81,7 +81,8 @@ export class RawStoreCoordinator {
       metrics: input.metrics,
       versions: input.versions,
       partitionKey,
-      error: input.error
+      error: input.error,
+      traceId: input.traceId
     };
 
     // 2. Append execution (idempotent)

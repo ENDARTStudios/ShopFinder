@@ -126,6 +126,8 @@ export interface ExecutionContext {
   readonly featureFlags: ReadonlySet<string>;
   readonly now?: () => Date;
   readonly planTtlMs?: number;
+  /** Cross-cutting traceability — propagated from PlannerContext.traceId. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 // ── Orchestrator results ───────────────────────────────────
@@ -253,6 +255,8 @@ export interface JobFactoryInput {
     perCategory: Readonly<Record<string, number>>;
   };
   readonly priority: { overall: number };
+  /** Cross-cutting traceability — propagated to every DiscoveryJob. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 export interface JobFactoryResult {

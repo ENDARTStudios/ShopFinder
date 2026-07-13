@@ -68,6 +68,8 @@ export interface DiscoveryExecution {
     readonly message: string;
     readonly retriable: boolean;
   };
+  /** Cross-cutting traceability — flows from Plan → Execution → all records. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 // ── RawProductRecord (payload record) ──────────────────────
@@ -175,6 +177,8 @@ export interface RawStoreCoordinatorInput {
     readonly message: string;
     readonly retriable: boolean;
   };
+  /** Cross-cutting traceability — propagated from WorkerResult.traceId. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 export interface RawStoreCoordinatorResult {

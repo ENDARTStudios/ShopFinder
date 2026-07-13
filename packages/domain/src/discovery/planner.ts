@@ -47,6 +47,8 @@ export interface PlannerContext {
   readonly storeId: string;
   readonly featureFlags: ReadonlySet<string>;
   readonly version: PlannerVersion;
+  /** Cross-cutting traceability — flows through the entire pipeline. */
+  readonly traceId?: import("../shared").DiscoveryTraceId;
 }
 export interface ExplainablePriority {
   readonly overall: number;
@@ -87,6 +89,8 @@ export interface ImmutableDiscoveryPlan {
   readonly planHash: string;
   readonly version: PlannerVersion;
   readonly createdAt: Date;
+  /** Cross-cutting traceability — flows through the entire pipeline. */
+  readonly traceId?: import("../shared").DiscoveryTraceId;
 }
 export interface PlannerSkipped {
   readonly signal: DiscoverySignal;
@@ -278,7 +282,8 @@ export function generatePlans(
   }>,
   budget: DiscoveryBudget,
   config: PlannerConfig,
-  version: PlannerVersion
+  version: PlannerVersion,
+  traceId?: import("../shared").DiscoveryTraceId
 ): ImmutableDiscoveryPlan[] {
   const plans: ImmutableDiscoveryPlan[] = [];
   for (const { signal, rawPriority, allocatedCalls } of allocated) {
@@ -319,7 +324,8 @@ export function generatePlans(
       justification,
       planHash,
       version,
-      createdAt: new Date()
+      createdAt: new Date(),
+      traceId
     });
   }
   return plans;
@@ -337,7 +343,7 @@ export function planDiscovery(
   const prioritized = prioritizeSignals(dedup, config);
   const filtered = dedup.length - prioritized.length;
   const { allocated, skipped } = allocateBudget(prioritized, ctx.budget, config);
-  const plans = generatePlans(allocated, ctx.budget, config, version);
+  const plans = generatePlans(allocated, ctx.budget, config, version, ctx.traceId);
   const totalAllocated = plans.reduce((s, p) => s + p.budget.totalApiCalls, 0);
   const budgetUsed: DiscoveryBudgetAllocation = {
     totalApiCalls: totalAllocated,

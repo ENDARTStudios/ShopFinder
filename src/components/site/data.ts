@@ -536,13 +536,12 @@ export const DOMAIN_EVENTS: DomainEventItem[] = [
 ];
 
 export const PROJECT_META = {
-  name: "Dropshipping Platform",
-  tagline:
-    "Plataforma global de Dropshipping — Modular Monolith + DDD + Multi-Store + Prisma + Repository Layer",
+  name: "ShopFinder",
+  tagline: "compra inteligente",
   version: "0.6.0",
-  iteration: "04B.2 — Repository Layer (Mappers + BaseRepository + UoW + 12 Repositories)",
+  iteration: "Catalog Intelligence Platform — 15 estágios, 7 conectores, 628 testes",
   summary:
-    "Repository Layer entregue: 8 mappers (Prisma↔Domain), BaseRepository com soft delete + optimistic lock + outbox collector, PrismaUnitOfWork com event collector, 12 repositories concretos, CacheRepository interface (Redis-ready). 10 padrões aplicados. 15 ADRs. Pronto para 04B.3 — Query Layer."
+    "ShopFinder é uma plataforma de Catalog Intelligence baseada em IA que transforma dados heterogêneos de produtos em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais."
 };
 
 export interface DesignSystemLayer {

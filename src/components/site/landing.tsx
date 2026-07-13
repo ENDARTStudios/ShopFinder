@@ -2,109 +2,213 @@
 
 import * as React from "react";
 import {
-  Boxes,
-  CheckCircle2,
-  CircleDashed,
-  CircleDot,
-  Database,
-  Github,
-  GitBranch,
-  Layers,
-  Package,
-  Palette,
-  Rocket,
-  ScrollText,
-  Settings2,
-  Shield,
+  Search,
+  Cpu,
+  Monitor,
+  HardDrive,
+  MemoryStick,
+  Zap,
+  Box,
+  ShoppingCart,
+  Star,
+  TrendingUp,
+  ShieldCheck,
   Sparkles,
-  Wrench
+  ArrowRight,
+  CircuitBoard,
+  Smartphone,
+  Headphones,
+  Watch,
+  Home,
+  Loader2
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
-
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/site/mode-toggle";
-import {
-  ADRS,
-  BACKLOG,
-  DESIGN_SYSTEM,
-  DOMAIN_CONTEXTS,
-  DOMAIN_ENHANCEMENTS,
-  DOMAIN_EVENTS,
-  MODULES,
-  PACKAGES,
-  PERSISTENCE_CONVENTIONS,
-  PERSISTENCE_LAYERS,
-  PERSISTENCE_TABLES,
-  PRINCIPLES,
-  PROJECT_META,
-  STACK,
-  SUPPLIERS,
-  type ItemStatus,
-  type PackageItem
-} from "@/components/site/data";
+import { PROJECT_META } from "@/components/site/data";
 
-const STATUS_META: Record<ItemStatus, { label: string; icon: React.ReactNode; className: string }> =
-  {
-    done: {
-      label: "Concluído",
-      icon: <CheckCircle2 className="h-3.5 w-3.5" />,
-      className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-    },
-    in_progress: {
-      label: "Em progresso",
-      icon: <CircleDot className="h-3.5 w-3.5" />,
-      className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
-    },
-    pending: {
-      label: "Pendente",
-      icon: <CircleDashed className="h-3.5 w-3.5" />,
-      className: "bg-muted text-muted-foreground border-border"
-    }
-  };
+// ── Types matching the API response ────────────────────────
 
-function StatusBadge({ status }: { status: ItemStatus }) {
-  const meta = STATUS_META[status];
-  return (
-    <Badge variant="outline" className={`gap-1 font-medium ${meta.className}`}>
-      {meta.icon}
-      {meta.label}
-    </Badge>
-  );
+interface ApiNiche {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  productCount: number;
+  supplierCount: number;
+  topBrands: string[];
+  popularSearches: string[];
 }
+
+interface ApiCategory {
+  id: string;
+  slug: string;
+  name: string;
+  nicheId: string;
+  productCount: number;
+}
+
+interface ApiProduct {
+  id: string;
+  sku: string;
+  slug: string;
+  title: string;
+  description: string;
+  brand: string;
+  category: string;
+  categorySlug: string;
+  nicheId: string;
+  price: number;
+  currency: string;
+  priceRange: { min: number; max: number };
+  inStock: boolean;
+  stockCount: number;
+  suppliers: number;
+  rating: number;
+  reviewCount: number;
+  imageGradient: string;
+  imageLabel: string;
+  specs: Array<{ name: string; value: string }>;
+  mpn: string;
+  offers: Array<{
+    id: string;
+    supplier: { id: string; code: string; name: string };
+    price: number;
+    currency: string;
+    inventory: number;
+    inStock: boolean;
+    shipsFrom: string;
+    fulfillmentDays: number[];
+  }>;
+}
+
+const SEARCH_SUGGESTIONS = [
+  "Intel i9",
+  "STM32",
+  "RTX 4090",
+  "iPhone 15",
+  "SSD NVMe",
+  "AirPods Pro"
+];
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  cpu: <Cpu className="h-6 w-6" />,
+  gpu: <Monitor className="h-6 w-6" />,
+  motherboard: <Cpu className="h-6 w-6" />,
+  ssd: <HardDrive className="h-6 w-6" />,
+  ram: <MemoryStick className="h-6 w-6" />,
+  psu: <Zap className="h-6 w-6" />,
+  case: <Box className="h-6 w-6" />,
+  monitor: <Monitor className="h-6 w-6" />,
+  chip: <CircuitBoard className="h-6 w-6" />,
+  smartphone: <Smartphone className="h-6 w-6" />,
+  audio: <Headphones className="h-6 w-6" />,
+  watch: <Watch className="h-6 w-6" />,
+  home: <Home className="h-6 w-6" />
+};
+
+const NICHE_ICONS: Record<string, React.ReactNode> = {
+  cpu: <Cpu className="h-7 w-7" />,
+  chip: <CircuitBoard className="h-7 w-7" />,
+  smartphone: <Smartphone className="h-7 w-7" />
+};
+
+// ── API hooks ──────────────────────────────────────────────
+
+function useFetch<T>(url: string): { data: T | null; loading: boolean; error: string | null } {
+  const [data, setData] = React.useState<T | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((d) => {
+        if (!cancelled) {
+          setData(d);
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(String(e));
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// ── Header ─────────────────────────────────────────────────
 
 function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-background">
-            <Layers className="h-4 w-4" />
-          </div>
+          <img
+            src="/icon.svg"
+            alt="ShopFinder"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-lg"
+          />
           <div className="flex flex-col leading-none">
-            <span className="text-sm font-semibold tracking-tight">{PROJECT_META.name}</span>
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              v{PROJECT_META.version} · Modular Monolith
+            <span className="text-sm font-bold tracking-tight">{PROJECT_META.name}</span>
+            <span className="text-[10px] tracking-widest text-muted-foreground">
+              {PROJECT_META.tagline}
             </span>
           </div>
         </div>
+        <nav className="hidden items-center gap-6 md:flex">
+          <a
+            href="#nichos"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Nichos
+          </a>
+          <a
+            href="#categorias"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Categorias
+          </a>
+          <a
+            href="#fabricantes"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Fabricantes
+          </a>
+          <a
+            href="#produtos"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Produtos
+          </a>
+          <a
+            href="#confianca"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Como funciona
+          </a>
+        </nav>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-            <a href="https://github.com" target="_blank" rel="noreferrer noopener">
-              <Github className="mr-1.5 h-4 w-4" />
-              GitHub
-            </a>
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <ShoppingCart className="mr-1.5 h-4 w-4" />
+            Entrar
           </Button>
           <ModeToggle />
         </div>
@@ -113,10 +217,17 @@ function SiteHeader() {
   );
 }
 
-function Hero() {
-  const done = BACKLOG.filter((b) => b.status === "done").length;
-  const inProgress = BACKLOG.filter((b) => b.status === "in_progress").length;
-  const progress = Math.round(((done + inProgress * 0.5) / BACKLOG.length) * 100);
+// ── Hero with real search ──────────────────────────────────
+
+function Hero({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = React.useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(query);
+    // Scroll to products section
+    document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section className="relative isolate overflow-hidden border-b border-border/60">
@@ -125,807 +236,656 @@ function Hero() {
         className="pointer-events-none absolute inset-0 -z-10 opacity-60"
         style={{
           backgroundImage:
-            "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.18), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(245,158,11,0.12), transparent 60%)"
+            "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.15), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(16,185,129,0.08), transparent 60%)"
         }}
       />
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <Badge
-              variant="outline"
-              className="mb-4 gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              Iteração: {PROJECT_META.iteration}
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+      <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+        <div className="flex flex-col items-center text-center gap-8">
+          <div className="flex flex-col items-center gap-3">
+            <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
               {PROJECT_META.name}
             </h1>
-            <p className="mt-3 text-lg text-muted-foreground sm:text-xl">{PROJECT_META.tagline}</p>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/80">
-              {PROJECT_META.summary}
+            <p className="text-lg font-medium text-emerald-500 tracking-wide">
+              {PROJECT_META.tagline}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild>
-                <a href="#backlog">
-                  <Rocket className="mr-1.5 h-4 w-4" />
-                  Ver backlog
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="#packages">
-                  <Package className="mr-1.5 h-4 w-4" />
-                  Explorar packages
-                </a>
-              </Button>
-            </div>
           </div>
 
-          <Card className="w-full max-w-sm border-border/60 bg-background/60 backdrop-blur">
-            <CardHeader className="pb-3">
-              <CardDescription>Progresso do backlog</CardDescription>
-              <CardTitle className="text-3xl tabular-nums">{progress}%</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Progress value={progress} className="h-2" />
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <Stat label="Concluído" value={done} />
-                <Stat label="Em curso" value={inProgress} />
-                <Stat label="Total" value={BACKLOG.length} />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </section>
-  );
-}
+          <p className="max-w-2xl text-xl text-muted-foreground sm:text-2xl">
+            Encontre qualquer produto entre milhares de fornecedores. Do componente eletrônico ao
+            smartphone — compare preços, specs e estoque em tempo real.
+          </p>
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-md border border-border/60 bg-muted/30 px-2 py-2">
-      <div className="text-lg font-semibold tabular-nums">{value}</div>
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-    </div>
-  );
-}
-
-function SectionHeading({
-  icon,
-  eyebrow,
-  title,
-  description
-}: {
-  icon: React.ReactNode;
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="mb-8 flex items-start gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
-        {icon}
-      </div>
-      <div>
-        <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          {eyebrow}
-        </div>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{title}</h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-function BacklogSection() {
-  return (
-    <section id="backlog" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Rocket className="h-5 w-5" />}
-        eyebrow="Roadmap"
-        title="Backlog macro"
-        description="25 itens ordenados por dependência técnica. Cada item vira uma iteração incremental com entrega observável."
-      />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {BACKLOG.map((item) => (
-          <Card key={item.id} className="border-border/60 transition-colors hover:border-border">
-            <CardContent className="flex items-start justify-between gap-3 p-4">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 font-mono text-xs text-muted-foreground">{item.id}</span>
-                <div>
-                  <div className="text-sm font-medium leading-tight">{item.title}</div>
-                </div>
-              </div>
-              <StatusBadge status={item.status} />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ModulesSection() {
-  return (
-    <section id="modules" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Boxes className="h-5 w-5" />}
-        eyebrow="Modular Monolith"
-        title="Módulos planejados"
-        description="Cada módulo possui domínio, serviços, repositórios e HTTP próprios. Comunicação cross-módulo apenas via interfaces explícitas ou eventos de domínio."
-      />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {MODULES.map((m) => (
-          <Card key={m.name} className="border-border/60">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle className="text-base">{m.name}</CardTitle>
-                <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground">
-                  #{m.backlogId}
-                </Badge>
-              </div>
-              <CardDescription className="text-sm leading-relaxed">{m.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <StatusBadge status={m.status} />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function PackagesSection() {
-  const categories: Array<{ key: PackageItem["category"]; label: string; color: string }> = [
-    { key: "domain", label: "Domain", color: "text-emerald-600 dark:text-emerald-400" },
-    { key: "infrastructure", label: "Infrastructure", color: "text-sky-600 dark:text-sky-400" },
-    { key: "integration", label: "Integration", color: "text-amber-600 dark:text-amber-400" },
-    { key: "tooling", label: "Tooling", color: "text-violet-600 dark:text-violet-400" }
-  ];
-  return (
-    <section id="packages" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Package className="h-5 w-5" />}
-        eyebrow="Workspaces"
-        title="Packages @workspace/*"
-        description="16 packages compartilhados via Bun workspaces, agrupados por categoria. Cada package tem barrel export, tsconfig próprio e path alias TypeScript."
-      />
-      <div className="space-y-8">
-        {categories.map((cat) => {
-          const items = PACKAGES.filter((p) => p.category === cat.key);
-          if (items.length === 0) return null;
-          return (
-            <div key={cat.key}>
-              <div className="mb-3 flex items-center gap-2">
-                <h3 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>
-                  {cat.label}
-                </h3>
-                <Badge variant="outline" className="font-mono text-[10px]">
-                  {items.length}
-                </Badge>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((p) => (
-                  <Card key={p.name} className="border-border/60">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted text-xs font-mono">
-                          {p.name.slice(0, 2)}
-                        </div>
-                        <CardTitle className="font-mono text-sm">{p.scope}</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {p.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+          {/* Search bar — queries the real API */}
+          <form onSubmit={handleSearch} className="w-full max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Pesquisar produtos, MPN, marcas..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="h-14 rounded-2xl border-2 pl-12 pr-32 text-base shadow-lg focus-visible:ring-emerald-500"
+              />
+              <Button
+                type="submit"
+                size="lg"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-500 hover:bg-emerald-600"
+              >
+                <Search className="mr-1.5 h-4 w-4" />
+                Buscar
+              </Button>
             </div>
-          );
-        })}
+
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-xs text-muted-foreground">Populares:</span>
+              {SEARCH_SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    setQuery(s);
+                    onSearch(s);
+                    document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </form>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+              36.000+ produtos
+            </span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />3 nichos · 7 fornecedores
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-emerald-500" />
+              Powered by AI
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function DomainSection() {
+// ── Niches section (from API) ──────────────────────────────
+
+function NichesSection() {
+  const { data, loading } = useFetch<{ niches: ApiNiche[] }>("/api/catalog?path=niches");
+
   return (
-    <section id="domain" className="scroll-mt-20 space-y-12">
-      <div>
-        <SectionHeading
-          icon={<GitBranch className="h-5 w-5" />}
-          eyebrow="DDD"
-          title="Bounded Contexts"
-          description="8 contextos delimitados com aggregate roots, entities, value objects e domain events. Comunicação cross-contexto apenas via interfaces explícitas ou eventos."
-        />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {DOMAIN_CONTEXTS.map((ctx) => (
-            <Card key={ctx.name} className="border-border/60">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{ctx.name}</CardTitle>
-                  <StatusBadge status={ctx.status} />
+    <section id="nichos" className="border-b border-border/60">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Escolha seu nicho</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            O ShopFinder cobre 3 grandes áreas de produtos com fontes especializadas
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {(data?.niches ?? []).map((niche) => (
+              <a
+                key={niche.id}
+                href="#produtos"
+                className="group relative overflow-hidden rounded-2xl border border-border/60 p-6 transition-all hover:border-emerald-500/40 hover:shadow-xl"
+              >
+                <div
+                  className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl text-white"
+                  style={{ background: niche.gradient }}
+                >
+                  {NICHE_ICONS[niche.icon]}
                 </div>
-                <CardDescription className="font-mono text-[10px]">{ctx.package}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {ctx.responsibility}
+
+                <h3 className="mb-1 text-lg font-bold">{niche.name}</h3>
+                <p className="mb-4 text-sm text-muted-foreground">{niche.description}</p>
+
+                <div className="mb-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                    {niche.productCount.toLocaleString()} produtos
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                    {niche.supplierCount} fornecedores
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {niche.topBrands.slice(0, 4).map((brand) => (
+                    <Badge key={brand} variant="secondary" className="text-[10px]">
+                      {brand}
+                    </Badge>
+                  ))}
+                  {niche.topBrands.length > 4 && (
+                    <Badge variant="outline" className="text-[10px]">
+                      +{niche.topBrands.length - 4}
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/40 pt-4">
+                  {niche.popularSearches.map((search) => (
+                    <span
+                      key={search}
+                      className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                    >
+                      {search}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex items-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                  Explorar nicho
+                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Categories (from API, filtered by niche) ───────────────
+
+function CategoriesSection() {
+  const { data, loading } = useFetch<{ categories: ApiCategory[] }>("/api/catalog?path=categories");
+  const [activeNiche, setActiveNiche] = React.useState<string>("all");
+
+  const categories = data?.categories ?? [];
+  const filtered =
+    activeNiche === "all" ? categories : categories.filter((c) => c.nicheId === activeNiche);
+
+  const nicheTabs = [
+    { id: "all", name: "Todos" },
+    { id: "pc-hardware", name: "PC Hardware" },
+    { id: "electronic-components", name: "Componentes" },
+    { id: "consumer-electronics", name: "Consumo" }
+  ];
+
+  return (
+    <section id="categorias" className="border-b border-border/60">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Categorias</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Navegue por tipo de produto</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {nicheTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveNiche(tab.id)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  activeNiche === tab.id
+                    ? "bg-emerald-500 text-white"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                {tab.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {filtered.map((cat) => (
+              <a
+                key={cat.id}
+                href="#produtos"
+                className="group rounded-2xl border border-border/60 bg-card p-5 transition-all hover:border-emerald-500/40 hover:shadow-lg"
+              >
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
+                  {CATEGORY_ICONS[cat.slug] ?? <CircuitBoard className="h-6 w-6" />}
+                </div>
+                <h3 className="font-semibold">{cat.name}</h3>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {cat.productCount.toLocaleString()} produtos
                 </p>
-                {ctx.aggregates.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {ctx.aggregates.map((a) => (
-                      <Badge
-                        key={a}
-                        variant="outline"
-                        className="bg-emerald-500/10 text-[10px] font-mono text-emerald-700 dark:text-emerald-400"
-                      >
-                        {a}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Manufacturers (rich model from API) ────────────────────
+
+interface ApiManufacturer {
+  code: string;
+  name: string;
+  officialName: string;
+  country: string;
+  countryName: string;
+  status: string;
+  authorityScore: number;
+  coverageScore: number;
+  tier: string;
+  segments: string[];
+  segmentLabels: string[];
+  aliases: string[];
+  brands: string[];
+  officialWebsite: string | null;
+  certifications: string[];
+}
+
+interface ApiCoverage {
+  segment: string;
+  label: string;
+  count: number;
+}
+
+interface ApiCountryCoverage {
+  country: string;
+  name: string;
+  count: number;
+}
+
+function ManufacturersSection() {
+  const { data, loading } = useFetch<{
+    manufacturers: ApiManufacturer[];
+    tiers: Array<{
+      tier: string;
+      label: string;
+      authorityRange: string;
+      manufacturers: ApiManufacturer[];
+    }>;
+    totalManufacturers: number;
+    segmentCoverage: ApiCoverage[];
+    countryCoverage: ApiCountryCoverage[];
+  }>("/api/catalog?path=manufacturers");
+
+  const manufacturers = data?.manufacturers ?? [];
+  const tiers = data?.tiers ?? [];
+
+  const tierColorClasses: Record<string, string> = {
+    A: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+    B: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
+    C: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/30",
+    D: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+  };
+
+  const countryFlag: Record<string, string> = {
+    "United States": "🇺🇸",
+    China: "🇨🇳",
+    Taiwan: "🇹🇼",
+    Japan: "🇯🇵",
+    "South Korea": "🇰🇷",
+    Germany: "🇩🇪",
+    Netherlands: "🇳🇱",
+    Other: "🌍"
+  };
+
+  return (
+    <section id="fabricantes" className="border-b border-border/60 bg-muted/20">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {data ? `${data.totalManufacturers} fabricantes` : "Fabricantes"}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Dois eixos: <strong>Authority</strong> (confiança) e <strong>Coverage</strong>{" "}
+            (completude de dados). Separados por país e segmento — do fabricante primário ao
+            emergente.
+          </p>
+        </div>
+
+        {/* Country coverage bar */}
+        {data && (
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
+            {data.countryCoverage
+              .sort((a, b) => b.count - a.count)
+              .map((c) => (
+                <div
+                  key={c.country}
+                  className="flex items-center gap-1.5 rounded-full border border-border/60 bg-card px-3 py-1.5"
+                >
+                  <span>{countryFlag[c.name] ?? "🌍"}</span>
+                  <span className="text-xs font-medium">{c.name}</span>
+                  <span className="text-xs text-muted-foreground">{c.count}</span>
+                </div>
+              ))}
+          </div>
+        )}
+
+        {/* Segment coverage */}
+        {data && (
+          <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {data.segmentCoverage
+              .sort((a, b) => b.count - a.count)
+              .map((s) => (
+                <div
+                  key={s.segment}
+                  className="rounded-lg border border-border/40 bg-card p-3 text-center"
+                >
+                  <div className="text-lg font-bold text-emerald-500">{s.count}</div>
+                  <div className="text-[10px] text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {tiers.map((tier) => (
+              <div key={tier.tier} className="rounded-2xl border border-border/60 bg-card p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <span
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl border text-lg font-black ${tierColorClasses[tier.tier] ?? tierColorClasses.D}`}
+                  >
+                    {tier.tier}
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Authority {tier.authorityRange}
+                  </span>
+                </div>
+
+                <h3 className="mb-1 font-bold text-sm">{tier.label}</h3>
+                <div className="mb-3 text-xs text-muted-foreground">
+                  {tier.manufacturers.length} fabricantes
+                </div>
+
+                <div className="space-y-2">
+                  {tier.manufacturers.slice(0, 8).map((m) => (
+                    <div key={m.code} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <span>{countryFlag[m.countryName] ?? "🌍"}</span>
+                        <span className="font-medium">{m.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <span className="text-emerald-500 font-medium">{m.authorityScore}</span>
+                        <span>/</span>
+                        <span className="text-blue-500 font-medium">{m.coverageScore}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {tier.manufacturers.length > 8 && (
+                    <div className="text-center text-xs text-muted-foreground pt-1">
+                      +{tier.manufacturers.length - 8} mais
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Products (from API, with search + niche filter) ────────
+
+function ProductsSection({
+  searchQuery,
+  nicheFilter,
+  onNicheChange
+}: {
+  searchQuery: string | null;
+  nicheFilter: string | null;
+  onNicheChange: (niche: string | null) => void;
+}) {
+  const params = new URLSearchParams({ path: "products" });
+  if (nicheFilter) params.set("niche", nicheFilter);
+  if (searchQuery) params.set("q", searchQuery);
+
+  const { data, loading } = useFetch<{ products: ApiProduct[]; total: number }>(
+    `/api/catalog?${params.toString()}`
+  );
+
+  const products = data?.products ?? [];
+  const nicheTabs = [
+    { id: null, name: "Todos" },
+    { id: "pc-hardware", name: "PC Hardware" },
+    { id: "electronic-components", name: "Componentes" },
+    { id: "consumer-electronics", name: "Consumo" }
+  ];
+
+  return (
+    <section id="produtos" className="border-b border-border/60">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              {searchQuery ? `Resultados para "${searchQuery}"` : "Produtos em destaque"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {loading ? "Buscando..." : `${data?.total ?? 0} produtos encontrados`}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {nicheTabs.map((tab) => (
+              <button
+                key={tab.id ?? "all"}
+                onClick={() => onNicheChange(tab.id)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  nicheFilter === tab.id
+                    ? "bg-emerald-500 text-white"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                {tab.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <p className="text-lg font-medium text-muted-foreground">Nenhum produto encontrado</p>
+            <p className="text-sm text-muted-foreground">Tente outra busca ou nicho</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product) => (
+              <Card
+                key={product.id}
+                className="group overflow-hidden transition-all hover:shadow-xl"
+              >
+                <div
+                  className="relative flex h-40 items-center justify-center"
+                  style={{ background: product.imageGradient }}
+                >
+                  <span className="text-base font-bold text-white/90">{product.imageLabel}</span>
+                  {product.inStock ? (
+                    <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
+                      Em estoque
+                    </Badge>
+                  ) : (
+                    <Badge className="absolute right-3 top-3 bg-amber-500/90 text-white">
+                      Esgotado
+                    </Badge>
+                  )}
+                  <div
+                    className={`absolute left-3 top-3 h-2 w-2 rounded-full ${
+                      product.nicheId === "pc-hardware"
+                        ? "bg-emerald-400"
+                        : product.nicheId === "electronic-components"
+                          ? "bg-blue-400"
+                          : "bg-violet-400"
+                    }`}
+                  />
+                </div>
+
+                <CardContent className="p-4">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {product.brand}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{product.category}</span>
+                  </div>
+                  <h3 className="mb-2 line-clamp-2 font-semibold leading-tight">{product.title}</h3>
+
+                  <div className="mb-3 flex flex-wrap gap-1">
+                    {product.specs.slice(0, 3).map((spec) => (
+                      <Badge key={spec.name} variant="outline" className="text-[10px] font-normal">
+                        {spec.value}
                       </Badge>
                     ))}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
 
-      <div>
-        <SectionHeading
-          icon={<GitBranch className="h-5 w-5" />}
-          eyebrow="Eventos"
-          title="Domain Events Catalog"
-          description="Eventos que cruzam fronteiras de contexto. Cada evento tem schema Zod em @workspace/contracts/events para validação em trust boundaries."
-        />
-        <Card className="border-border/60">
-          <CardContent className="p-0">
-            <ScrollArea className="h-80">
-              <div className="divide-y divide-border/60">
-                {DOMAIN_EVENTS.map((evt) => (
-                  <div
-                    key={evt.type}
-                    className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <code className="rounded bg-muted px-2 py-0.5 font-mono text-xs">
-                        {evt.type}
-                      </code>
+                  <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    <span className="font-medium text-foreground">{product.rating}</span>
+                    <span>({product.reviewCount.toLocaleString()})</span>
+                    <span className="mx-1">·</span>
+                    <span>{product.suppliers} forn.</span>
+                  </div>
+
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <div className="text-xl font-bold">${product.price.toFixed(2)}</div>
+                      <div className="text-[10px] text-muted-foreground">
+                        ${product.priceRange.min.toFixed(2)} – ${product.priceRange.max.toFixed(2)}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">{evt.emitter}</span>
-                      <span aria-hidden>→</span>
-                      <span>{evt.consumers.join(", ")}</span>
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="bg-emerald-500 hover:bg-emerald-600"
+                    >
+                      Comparar
+                    </Button>
+                  </div>
+
+                  {/* Offers detail */}
+                  {product.offers.length > 0 && (
+                    <div className="mt-3 border-t border-border/40 pt-3">
+                      <p className="mb-1.5 text-[10px] font-medium text-muted-foreground">
+                        Ofertas de {product.offers.length} fornecedores:
+                      </p>
+                      <div className="space-y-1">
+                        {product.offers.slice(0, 3).map((offer) => (
+                          <div
+                            key={offer.id}
+                            className="flex items-center justify-between text-[10px]"
+                          >
+                            <span className="text-muted-foreground capitalize">
+                              {offer.supplier.code}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">${offer.price.toFixed(2)}</span>
+                              <span
+                                className={
+                                  offer.inStock ? "text-emerald-500" : "text-muted-foreground"
+                                }
+                              >
+                                {offer.inStock ? `${offer.inventory} un.` : "sem estoque"}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-    </section>
-  );
-}
-
-function DesignSystemSection() {
-  return (
-    <section id="design-system" className="scroll-mt-20 space-y-12">
-      <div>
-        <SectionHeading
-          icon={<Palette className="h-5 w-5" />}
-          eyebrow="DDD UI"
-          title="Domain-Driven Design System"
-          description="Componentes que refletem a linguagem ubíqua do domínio. Cada camada mapeia conceitos de negócio — ProductCard reflete ProductListItemDTO, OrderStatusBadge reflete OrderStatus."
-        />
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {DESIGN_SYSTEM.map((layer) => (
-            <Card key={layer.name} className="border-border/60">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className={`font-mono text-sm ${layer.color}`}>
-                    @workspace/ui/{layer.name}
-                  </CardTitle>
-                  <Badge variant="outline" className="font-mono text-[10px]">
-                    {layer.components.length}
-                  </Badge>
-                </div>
-                <CardDescription className="text-sm leading-relaxed">
-                  {layer.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-1.5">
-                  {layer.components.map((c) => (
-                    <code
-                      key={c}
-                      className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
-                    >
-                      {c}
-                    </code>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <SectionHeading
-          icon={<Shield className="h-5 w-5" />}
-          eyebrow="Reforços"
-          title="Domain Architecture Enhancements"
-          description="6 reforços de arquitetura aplicados nesta iteração para evitar erosão estrutural e bugs de identity."
-        />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {DOMAIN_ENHANCEMENTS.map((e) => (
-            <Card key={e.name} className="border-border/60">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{e.name}</CardTitle>
-                  <StatusBadge status={e.status} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed text-muted-foreground">{e.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PersistenceSection() {
-  const contexts = Array.from(new Set(PERSISTENCE_TABLES.map((t) => t.context)));
-  const contextColors: Record<string, string> = {
-    Catalog: "text-emerald-600 dark:text-emerald-400",
-    Customer: "text-sky-600 dark:text-sky-400",
-    Cart: "text-amber-600 dark:text-amber-400",
-    Checkout: "text-violet-600 dark:text-violet-400",
-    Order: "text-rose-600 dark:text-rose-400",
-    Payment: "text-cyan-600 dark:text-cyan-400",
-    Supplier: "text-orange-600 dark:text-orange-400",
-    Store: "text-pink-600 dark:text-pink-400",
-    Identity: "text-indigo-600 dark:text-indigo-400",
-    Integration: "text-teal-600 dark:text-teal-400",
-    "Cross-cutting": "text-fuchsia-600 dark:text-fuchsia-400",
-    Lookup: "text-lime-600 dark:text-lime-400"
-  };
-  return (
-    <section id="persistence" className="scroll-mt-20 space-y-12">
-      {/* Tables */}
-      <div>
-        <SectionHeading
-          icon={<Database className="h-5 w-5" />}
-          eyebrow="04B.1 · Prisma + Seed"
-          title="Tabelas (42)"
-          description="Prisma schema completo — 42 tabelas em 11 contextos. Migration 0001_init gerada (933 linhas, 71 índices, 21 unique constraints). Seed executado: 12 currencies, 20 countries, 1 store, 1 admin. SQLite dev → PostgreSQL prod."
-        />
-        <div className="space-y-6">
-          {contexts.map((ctx) => {
-            const tables = PERSISTENCE_TABLES.filter((t) => t.context === ctx);
-            return (
-              <div key={ctx}>
-                <div className="mb-3 flex items-center gap-2">
-                  <h3
-                    className={`text-sm font-semibold uppercase tracking-wider ${contextColors[ctx] ?? ""}`}
-                  >
-                    {ctx}
-                  </h3>
-                  <Badge variant="outline" className="font-mono text-[10px]">
-                    {tables.length} {tables.length === 1 ? "tabela" : "tabelas"}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {tables.map((t) => (
-                    <Card key={t.name} className="border-border/60">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="font-mono text-sm">{t.name}</CardTitle>
-                        <CardDescription className="text-xs leading-relaxed">
-                          {t.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex flex-wrap gap-1">
-                          {t.keyColumns.map((c) => (
-                            <code
-                              key={c}
-                              className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
-                            >
-                              {c}
-                            </code>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Conventions */}
-      <div>
-        <SectionHeading
-          icon={<Shield className="h-5 w-5" />}
-          eyebrow="Convenções"
-          title="Persistência — Convenções (17)"
-          description="17 convenções aplicadas: 10 originais + 7 dos ajustes (Multi-Store, User/Customer, Price History, Inventory Reservation, Secret References, Idempotency)."
-        />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {PERSISTENCE_CONVENTIONS.map((c) => (
-            <Card key={c.name} className="border-border/60">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{c.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm leading-relaxed text-muted-foreground">{c.description}</p>
-                <pre className="overflow-x-auto rounded bg-muted px-3 py-2 text-[11px] font-mono text-muted-foreground">
-                  {c.example}
-                </pre>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Layers (Repository / QueryService / UnitOfWork) */}
-      <div>
-        <SectionHeading
-          icon={<Layers className="h-5 w-5" />}
-          eyebrow="Interfaces"
-          title="Camadas de Acesso a Dados"
-          description="Separação Query/Command (Rec 2). Repository escreve aggregates; QueryService lê DTOs; UnitOfWork abstrai transações (Rec 1)."
-        />
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {PERSISTENCE_LAYERS.map((layer) => (
-            <Card key={layer.name} className="border-border/60">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{layer.name}</CardTitle>
-                  <Badge
-                    variant="outline"
-                    className={
-                      layer.returnsAggregate
-                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                        : "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-400"
-                    }
-                  >
-                    {layer.returnsAggregate ? "Aggregate" : "DTO"}
-                  </Badge>
-                </div>
-                <CardDescription className="text-sm leading-relaxed">
-                  {layer.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-1.5">
-                  {layer.interfaces.map((iface) => (
-                    <code
-                      key={iface}
-                      className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground"
-                    >
-                      {iface}
-                    </code>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AdrsSection() {
-  return (
-    <section id="adrs" className="scroll-mt-20">
-      <SectionHeading
-        icon={<ScrollText className="h-5 w-5" />}
-        eyebrow="Decisões"
-        title="Architecture Decision Records"
-        description="Cada decisão arquitetural importante é registrada como um ADR imutável. Para reverter, cria-se um novo ADR que referencia o anterior."
-      />
-      <Card className="border-border/60">
-        <CardContent className="p-0">
-          <Accordion type="single" collapsible className="w-full">
-            {ADRS.map((adr) => (
-              <AccordionItem
-                key={adr.id}
-                value={adr.id}
-                className="border-border/60 px-4 last:border-b-0 sm:px-6"
-              >
-                <AccordionTrigger className="hover:no-underline">
-                  <div className="flex flex-1 items-center gap-3 pr-3 text-left">
-                    <Badge variant="outline" className="font-mono text-[10px] tabular-nums">
-                      ADR-{adr.id}
-                    </Badge>
-                    <span className="text-sm font-medium">{adr.title}</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-                    <Badge
-                      variant="outline"
-                      className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                    >
-                      {adr.status}
-                    </Badge>
-                    <span className="font-mono text-muted-foreground">{adr.date}</span>
-                  </div>
-                  <p>{adr.summary}</p>
-                </AccordionContent>
-              </AccordionItem>
+                  )}
+                </CardContent>
+              </Card>
             ))}
-          </Accordion>
-        </CardContent>
-      </Card>
-    </section>
-  );
-}
-
-function StackSection() {
-  return (
-    <section id="stack" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Settings2 className="h-5 w-5" />}
-        eyebrow="Tech Stack"
-        title="Stack tecnológico"
-        description="Stack opinativa com prioridade Qualidade > Escalabilidade > Custo Zero > Simplicidade."
-      />
-      <Card className="border-border/60">
-        <CardContent className="p-0">
-          <div className="grid grid-cols-1 divide-y divide-border/60 sm:grid-cols-2 sm:divide-y-0 sm:divide-x">
-            <div className="divide-y divide-border/60">
-              {STACK.slice(0, Math.ceil(STACK.length / 2)).map((s) => (
-                <StackRow key={s.concern} {...s} />
-              ))}
-            </div>
-            <div className="divide-y divide-border/60">
-              {STACK.slice(Math.ceil(STACK.length / 2)).map((s) => (
-                <StackRow key={s.concern} {...s} />
-              ))}
-            </div>
           </div>
-        </CardContent>
-      </Card>
-    </section>
-  );
-}
-
-function StackRow({ concern, choice }: { concern: string; choice: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4 px-4 py-3 sm:px-6">
-      <span className="text-xs uppercase tracking-wider text-muted-foreground">{concern}</span>
-      <span className="text-right text-sm font-medium">{choice}</span>
-    </div>
-  );
-}
-
-function PrinciplesSection() {
-  return (
-    <section id="principles" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Shield className="h-5 w-5" />}
-        eyebrow="Princípios"
-        title="Princípios de engenharia"
-        description="Princípios que governam decisões de implementação no dia-a-dia."
-      />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {PRINCIPLES.map((p) => (
-          <div key={p.name} className="rounded-lg border border-border/60 bg-card/40 p-4">
-            <div className="text-sm font-semibold">{p.name}</div>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{p.description}</p>
-          </div>
-        ))}
+        )}
       </div>
     </section>
   );
 }
 
-function SuppliersSection() {
-  const categories = Array.from(new Set(SUPPLIERS.map((s) => s.category)));
-  return (
-    <section id="suppliers" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Wrench className="h-5 w-5" />}
-        eyebrow="Integrações"
-        title="Fornecedores (Dropshipping)"
-        description="Cada fornecedor é integrado via Adapter Pattern em @workspace/integrations. Novos fornecedores são adicionados sem tocar nos módulos de negócio."
-      />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {categories.map((cat) => (
-          <Card key={cat} className="border-border/60">
-            <CardHeader className="pb-2">
-              <CardDescription>{cat}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-44 pr-3">
-                <ul className="space-y-1.5">
-                  {SUPPLIERS.filter((s) => s.category === cat).map((s) => (
-                    <li key={s.name} className="flex items-center gap-2 text-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      {s.name}
-                    </li>
-                  ))}
-                </ul>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
-  );
-}
+// ── Trust section ──────────────────────────────────────────
 
-function WorkspaceSection() {
-  return (
-    <section id="workspace" className="scroll-mt-20">
-      <SectionHeading
-        icon={<Layers className="h-5 w-5" />}
-        eyebrow="Layout"
-        title="Estrutura do workspace"
-        description="Layout do monorepo conforme ADR-0002 e ADR-0003. A raiz atua como apps/web (adaptação ao sandbox)."
-      />
-      <Card className="border-border/60 overflow-hidden">
-        <CardContent className="p-0">
-          <ScrollArea className="h-96">
-            <pre className="m-0 overflow-x-auto p-6 text-xs leading-relaxed text-foreground/90 sm:text-sm">
-              {`.
-├── src/                      ← apps/web (Next.js)
-│   ├── app/                  ← App Router (página única visível: /)
-│   ├── components/
-│   │   ├── ui/               ← shadcn/ui primitives
-│   │   └── site/             ← landing page composition
-│   ├── lib/                  ← runtime singletons (db, auth, ...)
-│   └── hooks/
-│
-├── packages/                 ← @workspace/*
-│   ├── ui/                   ← design-system primitives
-│   ├── shared/               ← cross-cutting utils
-│   ├── types/                ← shared TS types
-│   ├── config/               ← tsconfig / eslint / prettier presets
-│   ├── database/             ← Prisma client & repositories
-│   ├── auth/                 ← Auth.js config & adapters
-│   ├── validation/           ← Zod schemas per domain
-│   ├── analytics/            ← GA4 / GSC / Clarity / Sentry / UptimeRobot
-│   ├── seo/                  ← JSON-LD, sitemap, robots, metadata
-│   ├── ai/                   ← decoupled AI provider layer
-│   └── integrations/         ← dropshipping supplier adapters
-│
-├── docs/                     ← architecture + ADRs
-│   ├── README.md
-│   ├── architecture.md
-│   ├── decisions.md
-│   └── adr/
-│       ├── 0001-modular-monolith.md
-│       ├── 0002-monorepo-workspaces.md
-│       ├── 0003-sandbox-constraints-adaptation.md
-│       └── 0004-ai-layer-decoupled.md
-│
-├── scripts/                  ← operational scripts
-├── .github/workflows/        ← CI
-│   └── ci.yml
-│
-├── prisma/                   ← schema & migrations
-│
-├── .husky/                   ← git hooks (pre-commit, commit-msg)
-├── .env.example              ← env strategy (committed, no secrets)
-├── .editorconfig
-├── .prettierrc.mjs
-├── .prettierignore
-├── .lintstagedrc.mjs
-├── commitlint.config.mjs
-├── turbo.json                ← Turborepo pipelines
-├── tsconfig.json             ← extends @workspace/config
-└── package.json              ← workspaces + scripts`}
-            </pre>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </section>
-  );
-}
+function TrustSection() {
+  const stats = [
+    { label: "estágios de pipeline", value: "15" },
+    { label: "conectores ativos", value: "7" },
+    { label: "testes automatizados", value: "628" },
+    { label: "violações arquiteturais", value: "0" }
+  ];
 
-function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-border/60 bg-muted/20">
-      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-        <div>
-          <div className="text-sm font-semibold">
-            {PROJECT_META.name}
-            <span className="ml-2 font-mono text-xs text-muted-foreground">
-              v{PROJECT_META.version}
-            </span>
+    <section id="confianca" className="bg-muted/20">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center text-center gap-8">
+          <div className="flex flex-col items-center gap-3">
+            <Badge
+              variant="outline"
+              className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+            >
+              <Sparkles className="mr-1 h-3 w-3" />
+              Powered by Catalog Intelligence
+            </Badge>
+            <h2 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
+              Cada produto passa por 15 estágios de validação
+            </h2>
+            <p className="max-w-2xl text-muted-foreground">
+              Ofertas de marketplaces, distribuidores e fabricantes são consolidadas, enriquecidas
+              com dados oficiais e validadas por IA antes de chegarem ao catálogo.
+            </p>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">{PROJECT_META.tagline}</p>
-        </div>
-        <Separator orientation="vertical" className="hidden h-10 sm:block" />
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span>Next.js 16</span>
-          <span aria-hidden>·</span>
-          <span>TypeScript 5</span>
-          <span aria-hidden>·</span>
-          <span>Tailwind v4</span>
-          <span aria-hidden>·</span>
-          <span>shadcn/ui</span>
-          <span aria-hidden>·</span>
-          <span>Turborepo</span>
-          <span aria-hidden>·</span>
-          <span>Bun</span>
+
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center gap-1">
+                <span className="text-3xl font-black text-emerald-500">{stat.value}</span>
+                <span className="text-xs text-muted-foreground">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+            <span>Fontes: Marketplace · Distributor · Retailer · Manufacturer</span>
+          </div>
         </div>
       </div>
-    </footer>
+    </section>
   );
 }
+
+// ── Landing ────────────────────────────────────────────────
 
 export function Landing() {
+  const [searchQuery, setSearchQuery] = React.useState<string | null>(null);
+  const [nicheFilter, setNicheFilter] = React.useState<string | null>(null);
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <>
       <SiteHeader />
       <main className="flex-1">
-        <Hero />
-
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <Tabs defaultValue="persistence" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 lg:grid-cols-10">
-              <TabsTrigger value="persistence">Persistence</TabsTrigger>
-              <TabsTrigger value="design-system">Design System</TabsTrigger>
-              <TabsTrigger value="domain">Domain</TabsTrigger>
-              <TabsTrigger value="backlog">Backlog</TabsTrigger>
-              <TabsTrigger value="modules">Módulos</TabsTrigger>
-              <TabsTrigger value="packages">Packages</TabsTrigger>
-              <TabsTrigger value="adrs">ADRs</TabsTrigger>
-              <TabsTrigger value="stack">Stack</TabsTrigger>
-              <TabsTrigger value="principles">Princípios</TabsTrigger>
-              <TabsTrigger value="more">+ Extras</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="persistence" className="mt-10">
-              <PersistenceSection />
-            </TabsContent>
-            <TabsContent value="design-system" className="mt-10">
-              <DesignSystemSection />
-            </TabsContent>
-            <TabsContent value="domain" className="mt-10">
-              <DomainSection />
-            </TabsContent>
-            <TabsContent value="backlog" className="mt-10">
-              <BacklogSection />
-            </TabsContent>
-            <TabsContent value="modules" className="mt-10">
-              <ModulesSection />
-            </TabsContent>
-            <TabsContent value="packages" className="mt-10">
-              <PackagesSection />
-            </TabsContent>
-            <TabsContent value="adrs" className="mt-10">
-              <AdrsSection />
-            </TabsContent>
-            <TabsContent value="stack" className="mt-10">
-              <StackSection />
-            </TabsContent>
-            <TabsContent value="principles" className="mt-10">
-              <PrinciplesSection />
-            </TabsContent>
-            <TabsContent value="more" className="mt-10 space-y-16">
-              <SuppliersSection />
-              <WorkspaceSection />
-            </TabsContent>
-          </Tabs>
-        </div>
+        <Hero onSearch={setSearchQuery} />
+        <NichesSection />
+        <CategoriesSection />
+        <ManufacturersSection />
+        <ProductsSection
+          searchQuery={searchQuery}
+          nicheFilter={nicheFilter}
+          onNicheChange={setNicheFilter}
+        />
+        <TrustSection />
       </main>
-      <SiteFooter />
-    </div>
+    </>
   );
 }

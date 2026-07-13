@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ShopFinder — Full logo (mark + wordmark).
+
+  Layout:
+    [Mark 64×64]  ShopFinder
+                  Compra inteligente
+
+  Used by:
+    - SiteHeader (compact, mark + "ShopFinder" wordmark)
+    - Open Graph image (full version with tagline)
+
+  The mark is the same as public/icon.svg (rounded square + Z + spark).
+  The wordmark uses the system sans-serif stack so it renders crisply at
+  any size without bundling a custom font.
+
+  Color tokens match PROJECT_META palette:
+    Mark fill:    #0F172A
+    Z fill:       #FFFFFF
+    Accent:       #10B981
+    Wordmark:     #0F172A (light theme) — for dark theme, invert via CSS
+-->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64">
+  <!-- Mark: 64×64 rounded square with Z + spark -->
+  <g>
+    <rect x="0" y="0" width="64" height="64" rx="14" fill="#0F172A"/>
+    <path d="
+      M 16 16
+      L 48 16
+      L 48 25
+      L 27.5 49
+      L 48 49
+      L 48 54
+      L 16 54
+      L 16 45
+      L 36.5 21
+      L 16 21
+      Z
+    " fill="#FFFFFF"/>
+    <circle cx="51" cy="15" r="2.5" fill="#10B981"/>
+  </g>
+
+  <!-- Wordmark: "ShopFinder" -->
+  <text x="76" y="34"
+        font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="22"
+        font-weight="700"
+        letter-spacing="-0.02em"
+        fill="#0F172A">ShopFinder</text>
+
+  <!-- Tagline: "Compra inteligente" -->
+  <text x="76" y="50"
+        font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="10"
+        font-weight="500"
+        letter-spacing="0.08em"
+        fill="#64748B">COMPRA INTELIGENTE</text>
+</svg>

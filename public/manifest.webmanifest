@@ -1,0 +1,62 @@
+{
+  "name": "ShopFinder — compra inteligente",
+  "short_name": "ShopFinder",
+  "description": "Catalog Intelligence Platform baseada em IA. Transforma dados heterogêneos de produtos em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "theme_color": "#0F172A",
+  "background_color": "#0F172A",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Catálogo",
+      "short_name": "Catálogo",
+      "description": "Ver o catálogo de produtos",
+      "url": "/#backlog"
+    },
+    {
+      "name": "Pipeline",
+      "short_name": "Pipeline",
+      "description": "Ver o pipeline de 15 estágios",
+      "url": "/#modules"
+    }
+  ]
+}
