@@ -1158,3 +1158,80 @@ Stage Summary:
 - Search independente (consome eventos).
 - Multi-destination publishing (internal + Shopify + WooCommerce + ML + Amazon).
 - Próximos slices funcionais: A2.12 Marketplace Publication, A2.13 Pricing Execution, A2.14 Ranking, A2.15 Monitoring.
+
+---
+
+Task ID: A2.12-A2.15 — Marketplace Publication + Pricing + Ranking + Monitoring
+Agent: main (Super Z)
+Task: Implementar os 4 slices finais do pipeline de Discovery. Cada slice introduz artefatos intermediários imutáveis que preservam o catálogo estático: PublicationPlan (A2.12), PriceDecision (A2.13), RankingRecord (A2.14), StageMetrics→BusinessMetrics (A2.15).
+
+Work Log:
+
+### A2.12 — Marketplace Publication (6 módulos)
+
+- **types.ts**: PublicationPlan (id, catalogEntryId, destination, listingPolicyId, payloadVersion, publishAfter?, retryPolicyId). MarketplaceListing (id, planId, catalogEntryId, destination, externalListingId, status: active|inactive|failed|pending, publishedAt, listingUrl?, error?). ListingPolicy (id, destination, shouldPublish, transformPayload). PublicationRetryPolicy. MarketplacePublisher interface. 5 MarketplaceDestinations: shopify, amazon, mercadolivre, woocommerce, internal.
+- **planner.ts**: PublicationPlanner. planAll(entry, destinations) → PublicationPlan[]. Skips destinations where shouldPublish=false.
+- **publisher.ts**: StubMarketplacePublisher (per-destination). publish(plan, payload) → MarketplaceListing.
+- **events.ts**: 3 events (PlanCreated, ListingPublished, ListingFailed).
+- **repository.ts**: In-memory, indexed by id/destination.
+- **coordinator.ts**: For each entry: planner.planAll → appendPlan → emit PlanCreated → for each plan: policy.transformPayload → publisher.publish → appendListing → emit Published (or Failed). Multi-destination support.
+- **marketplace-publication.test.ts**: 4 tests (plan creation, skip disabled, publish via coordinator, multi-destination).
+
+### A2.13 — Pricing Execution (6 módulos)
+
+- **types.ts**: PricingSnapshot (id, catalogEntryId, basePrice, costPrice, competitorPrices, marketConditions: demandLevel/competitionLevel/seasonalityFactor). PriceDecision (id, snapshotId, catalogEntryId, finalPrice, originalPrice, discountPercent, decisionType: standard|promo|repricing|clearance|regional_adjustment|marketplace_adjustment, reason, margin, marginPercent, region?, marketplace?, validFrom, validUntil?, policyId). PricingPolicy interface. CatalogEntry stays IMMUTABLE — PriceDecision is separate artifact.
+- **snapshot.ts**: captureSnapshot(entry, options?) → PricingSnapshot. Captures basePrice from entry.pricing.minPrice, costPrice default 60% of base, market conditions.
+- **policies.ts**: 3 policies. StandardPricingPolicy (base price + computed margin). PromoPricingPolicy (discountPercent off). CompetitiveRepricingPolicy (undercuts lowest competitor by 2%, ensures min 15% margin). createPricingPolicy(strategy) factory.
+- **events.ts**: 2 events (SnapshotCaptured, DecisionMade).
+- **repository.ts**: In-memory, indexed by id/product.
+- **coordinator.ts**: For each entry: captureSnapshot → appendSnapshot → emit SnapshotCaptured → policy.decide → appendDecision → emit DecisionMade. Tracks averageMarginPercent, promoCount, repricingCount.
+- **pricing.test.ts**: 6 tests (snapshot capture, standard/promo/competitive decisions, immutability, metrics).
+
+### A2.14 — Ranking (5 módulos)
+
+- **types.ts**: RankingRecord (id, productId, score: ProductScore, rankingPosition, rankingVersion, factors[], generatedAt, batchId). RankingFactor (name, weight, value, contribution). RankingPolicy interface (id, version, score(entry) → {score, factors}). Catalog stays STATIC — RankingRecord is separate.
+- **policies.ts**: DefaultRankingPolicy (evaluation_score 40% + confidence 25% + supplier_diversity 20% + offer_count 15%). MarginFocusedRankingPolicy (margin_potential 35% + evaluation 25% + confidence 15% + supplier 15% + offer 10%). createRankingPolicy(strategy) factory.
+- **events.ts**: 2 events (BatchCompleted, RecordCreated).
+- **repository.ts**: In-memory, sorted by rankingPosition. getTopRanked(limit).
+- **coordinator.ts**: Score all entries → sort by overall descending → assign ranking positions (1..N) → persist → emit RecordCreated per product + BatchCompleted. Tracks averageScore, topScore.
+- **ranking.test.ts**: 5 tests (sort descending, factors, immutability, swappable policies, metrics).
+
+### A2.15 — Monitoring (4 módulos)
+
+- **types.ts**: StageMetrics (id, stage: 14 PipelineStages, batchId, itemsProcessed, itemsSucceeded, itemsFailed, durationMs, throughput, errorRate, customMetrics). BusinessMetric (name, value, unit, trend, period). BusinessMetricsSnapshot (id, metrics[], pipelineHealth: healthy|degraded|critical). StageMetricsCollector + BusinessMetricsAggregator interfaces.
+- **collector.ts**: InMemoryStageMetricsCollector. record(stage, metrics) → StageMetrics. getAll, getByStage, clear.
+- **aggregator.ts**: DefaultBusinessMetricsAggregator. aggregate(stageMetrics) → BusinessMetricsSnapshot. Per-stage throughput + error_rate metrics. Aggregate: total_items, total_errors, overall_error_rate, overall_throughput. pipelineHealth: <10% error=healthy, 10-25%=degraded, >25%=critical.
+- **events.ts**: 2 events (StageMetricsRecorded, BusinessMetricsSnapshot).
+- **monitoring.test.ts**: 7 tests (record/retrieve, clear, aggregate, degraded detection, critical detection, per-stage throughput, aggregate pipeline metrics).
+
+### Pipeline completo A2.1 → A2.15
+
+```
+DiscoverySignal → DiscoveryPlan → DiscoveryJob → WorkerResult
+→ RawProductRecord → NormalizedProductRecord → DuplicateCandidate
+→ CanonicalIdentity → CanonicalProduct → EvaluationResult
+→ ApprovalDecision → ComplianceDecision → CatalogEntry
+→ SearchIndexEntry → PublicationPlan → MarketplaceListing
+→ PricingSnapshot → PriceDecision → RankingRecord
+→ StageMetrics → BusinessMetricsSnapshot
+```
+
+### Verificações
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 237 files, 0 violations (salto 208 → 237)
+- ✓ bun test packages/domain/src/discovery/ → 302 pass, 0 fail (16 arquivos de teste)
+- ✓ HTTP 200
+
+Stage Summary:
+
+- Pipeline de Discovery COMPLETO: A2.1 Planner → A2.15 Monitoring.
+- 16 submódulos em packages/domain/src/discovery/.
+- 237 arquivos, 0 violations, 302 testes passando.
+- Cada slice produz artefatos imutáveis:
+  • PublicationPlan → MarketplaceListing (multi-destino)
+  • PricingSnapshot → PriceDecision (catalog imutável)
+  • RankingRecord (catalog estático)
+  • StageMetrics → BusinessMetricsSnapshot (observabilidade desacoplada)
+- Arquitetura consolidada. Próximos passos são funcionais (conectores reais, carga observável).
