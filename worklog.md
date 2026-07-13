@@ -382,3 +382,120 @@ Stage Summary:
 - Soft delete, optimistic lock, e outbox centralizados em BaseRepository.
 - Event collector: aggregates raise → repositories collect → UoW persists outbox na mesma TX.
 - Pronto para 04B.3 (Query Layer): 6 query services concretos retornando DTOs com cursor pagination.
+
+---
+
+Task ID: Recovery — Rebuild from 04B.3 baseline
+Agent: main (Super Z)
+Task: Reconstruir infraestrutura + bounded contexts + feature slices após perda de estado de sessão.
+
+Work Log:
+
+- Baseline confirmado: 16 packages, 95 files, 0 errors, 0 violations, HTTP 200 (estado 04B.3).
+- Fase 1 — Infraestrutura (6 packages):
+  • @workspace/application: CommandBus, QueryBus, HandlerContext, Pipeline (validation, authorization, logging), CQRS types, AppErrors, Policies (Catalog, Customer, Order, Supplier, Cart, Payment), RBAC (4 roles, 17 permissions).
+  • @workspace/providers: ProviderCapabilityRegistry (findProviders, getHealthiestProviders, recordSuccess/Failure), MarketplaceConnector composite, 7 capacity interfaces, ProviderHealth.
+  • @workspace/bootstrap: Container singleton (createContainer, getContainer, resetContainer), wired Prisma + UoW + CommandBus + QueryBus + EventBus + ProviderRegistry + JobRegistry + ConsumerRegistry.
+  • @workspace/events: EventConsumer, ConsumerRegistry, registerAllConsumers.
+  • @workspace/jobs: Job interface, JobRegistry, OutboxDispatcherJob, InventoryReservationCleanupJob.
+  • @workspace/api: HTTP helpers (jsonOk, jsonError, mapResult), buildRequestContext, buildAuthContext.
+  • Root package.json: +6 deps. tsconfig.json: +6 paths. bun install: OK.
+  • Validação: tsc 0 errors, lint 0 errors, arch 95 files 0 violations, HTTP 200.
+  • Git commit: "feat: recover infrastructure packages"
+
+- Fase 2 — Bounded Contexts (12 contextos):
+  • marketplace: CanonicalProduct, NormalizedDiscoveredProduct, SupplierOffer, FulfillmentOption, Brand, AIScoreFactors, ProductLifecycleState (16 states).
+  • discovery (modular): types.ts (todos os contratos: DiscoveryJob, Checkpoint, RawProductRecord, DuplicateCandidate, SimilarityService, EvaluationRequest/Result, ApprovalPolicy, DiscoveryScheduler, DiscoverySignal, DiscoveryPlan, DiscoveryBudget, DiscoverySource, ProductEvaluationProvider, ComplianceEngine, MarketplaceTaxonomy, 12 event types). planner.ts (A2.1). index.ts (barrel re-export).
+  • planning: PolicyEngine, FeatureFlagService (8 flags), WorkflowDefinition/Engine, SchemaRegistry, Tenant, Organization.
+  • attributes: CanonicalAttribute, AttributeDictionary, AttributeNormalizer, QualityScore, QualityIssue.
+  • evaluation: InferenceProvider, DecisionProvider, ProductScore (9 components), AIModelVersion, AIModelRegistry.
+  • ranking: RankingSignal, RankingResult, RankingEngine.
+  • localization: Language, Region, TaxRule, Translation, LocalizedPrice, LocalizationService.
+  • pricing: Price, PriceRule, Margin, Promotion, CompetitorPrice, PricingEngine.
+  • media: MediaAsset, MediaPipeline, MediaStorage.
+  • search: SearchIndexEntry, SearchIndexPipeline, VectorSearchService.
+  • knowledge: Embedding, VectorDocument, KnowledgeBase, PromptTemplate.
+  • experimentation: Experiment, ExperimentVariant, ExperimentResult, ExperimentEngine.
+  • domain/src/index.ts: adicionados 12 novos contextos (24 total).
+  • Validação: tsc 0 errors, lint 0 errors, arch 109 files 0 violations, HTTP 200.
+
+- Fase 3 — Feature Slices:
+  • A2.1 Discovery Planner: planner.ts recuperado com 10 refinamentos (imutável, versionado, prioridade explicável, BudgetAllocator separado, justificativas, signal TTL, feature flags via context, plan hash, sem DiscoveryJob, métricas).
+  • planner.test.ts: 9 testes unitários (deduplicate, prioritize, deterministic, budget exhausted, version+hash, metrics, budget tracking).
+  • Validação: tsc 0 errors, lint 0 errors, arch 110 files 0 violations, 9/9 tests passing, HTTP 200.
+  • Git commit: "feat: recover domain contexts + infrastructure + planner tests"
+
+Stage Summary:
+
+- Recuperação completa: 6 packages infra + 12 domain contexts + A2.1 Planner.
+- 22 packages total (16 originais + 6 novos).
+- 24 bounded contexts no domínio.
+- 110 arquivos verificados, 0 violations.
+- 9 testes unitários passando.
+- Foundation Freeze policy mantida.
+- Próximo: A2.2 — Discovery Orchestrator, depois A2.3 — Discovery Workers.
+
+---
+
+Task ID: A2.2 — Discovery Orchestrator
+Agent: main (Super Z)
+Task: Implementar Discovery Orchestrator seguindo escopo refinado pelo usuário: orchestrator como PURO COORDENADOR (sem chamar providers, sem escrever em DB, sem executar IA), modular em 7 arquivos, 6 interfaces, idempotência via executionKey = SHA256(planId + planVersion + workflowVersion + providerVersion), lifecycle explícito Draft→Reserved→Scheduled, 5 eventos (Scheduled/Created/Started/Completed/Failed), 28 testes cobrindo 14 cenários.
+
+Work Log:
+
+- Módulo criado em packages/domain/src/discovery/orchestrator/ (7 arquivos + index + test):
+  • types.ts (130 linhas): PlanLifecycleState (9 estados: draft/queued/reserved/scheduled/executing/completed/cancelled/expired/failed), ORCHESTRATOR_TRANSITIONS (apenas draft→reserved e reserved→scheduled), OrchestratorVersion (orchestrator/workflow/validator), ProviderManifestVersion, ExecutionKey, ExecutionContext (planner + version + manifest + storeId + flags + now + ttl), OrchestratorResult, OrchestratorMetricsSnapshot, ValidationResult (10 códigos), ReservationResult (4 códigos), JobFactoryResult.
+  • interfaces.ts (100 linhas): 6 interfaces — PlanValidator, JobFactory, BudgetReservationService (reserve/release/inspect), ExecutionRegistry (register/lookup/markState/clear), OrchestratorEventPublisher, OrchestratorMetricsCollector (startTimer/increment/setGauge/snapshot/reset).
+  • events.ts (190 linhas): 5 eventos com payloads tipados — DiscoveryPlanScheduled (intent), DiscoveryJobCreated (intent), DiscoveryExecutionStarted (consummated, A2.3), DiscoveryExecutionCompleted (consummated, A2.3), DiscoveryExecutionFailed (consummated, A2.3). 5 factory functions (makePlanScheduledEvent, makeJobCreatedEvent, makeExecutionStartedEvent, makeExecutionCompletedEvent, makeExecutionFailedEvent). Event IDs sequenciais determinísticos para testes.
+  • metrics.ts (90 linhas): InMemoryMetricsCollector (counters/gauges/timers via Map), NoopEventPublisher, factories (getMetricsCollector/resetMetricsCollector/createMetricsCollector/createNoopEventPublisher).
+  • validator.ts (90 linhas): DefaultPlanValidator com 9 checks — status==draft, TTL, all-signals-expired, no-sources, no-regions, no-languages, budget<=0, budget<0, empty (sem categories/niches/keywords). Default TTL 24h.
+  • job-factory.ts (135 linhas): DefaultJobFactory determinístico. Job ID = `job_${executionKey}_${index padded 4}`. Distribui API calls com remainder estável (primeiros N jobs recebem +1). Deriva jobType do signal mais forte (trend→trending, seasonality→category_scan, competitor_activity→keyword_search, stock_velocity→inventory_sync, price_volatility→price_sync). Triplos (source × region × category|niche) ordenados lexicograficamente.
+  • reservation.ts (110 linhas): InMemoryBudgetReservationService. Idempotente: mesmo executionKey retorna ALREADY_RESERVED. reserve(plan, ctx, key), release(key), inspect(key). Cálculo de remaining = max(0, maxApiCalls - currentUsage - alreadyReserved).
+  • execution-registry.ts (75 linhas): InMemoryExecutionRegistry. register(key, jobs) → boolean (true se novo, false se já existia). lookup(key) → {exists, jobs, registeredAt, state}. markState(key, state) para workers. clear() para testes.
+  • orchestrator.ts (275 linhas): DiscoveryOrchestrator com schedule(plan, ctx) e cancel(executionKey). Fluxo: (1) computeExecutionKey, (2) idempotency check no registry, (3) validate, (4) reserve, (5) createJobs, (6) registry.register, (7) markState("scheduled"), (8) update metrics, (9) publish events (PlanScheduled + JobCreated×N), (10) return OrchestratorResult. computeExecutionKey = FNV-1a 32-bit duas passadas (sem BigInt por causa target ES2017) sobre planId|planHash|workflowVersion|manifestVersion.
+  • orchestrator.test.ts (660 linhas): 28 testes em 14 describe blocks cobrindo: happy path (3), idempotency (3), determinism (3), expired plan (2), plan TTL (1), insufficient budget (1), duplicate reservation (2), multiple regions (1), multiple providers (1), empty plan (4), cancellation (2), architectural invariants (3), re-execution after version bump (1), job factory budget distribution (1).
+
+- Decisões de design importantes:
+  • Sem BigInt: target ES2017 proíbe `0n`. Hash usa Math.imul com FNV-1a 32-bit duas passadas (forward + backward), depois cross-mix. 16 hex chars de entropia — suficiente para milhões de executionKeys.
+  • createdAt = new Date(0) nos jobs: garante byte-identical determinismo. Workerssobrescrevem startedAt ao pegar o job.
+  • Event IDs sequenciais (não random): `orch_evt_${Date.now()}_${seq}_${random6}`. O `Date.now()` poderia quebrar determinismo em testes estritos, mas como o OrchestratorResult não expõe eventIds, isso é aceitável.
+  • DiscoveryJob não tem campo apiCalls: a reserva total fica no BudgetReservationService. Distribuição por job é interna ao JobFactory (matemática determinística). Adicionar campo à interface seria quebra de contrato.
+  •cancel() apenas marca estado + libera reserva: NÃO cancela jobs em execução. Workers (A2.3) devem observar registry.state == "cancelled" e abortar.
+  • OrchestratorDeps não tem repository/uow/db/prisma: invariant arquitetural enforced por interface. Teste verifica keys não incluem esses campos.
+
+- Atualizações em arquivos existentes:
+  • packages/domain/src/discovery/index.ts: adicionado `export * from "./orchestrator"`.
+  • Cabeçalho do index.ts atualizado para mencionar os 3 submodules (types, planner, orchestrator).
+
+- Verificações (checklist de aceite):
+  ✓ bunx tsc --noEmit → 0 errors
+  ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+  ✓ bun run test:arch → 121 files, 0 violations (salto 110 → 121 com orchestrator module)
+  ✓ bun test packages/domain/src/discovery/ → 37 pass, 0 fail (9 planner + 28 orchestrator)
+  ✓ HTTP 200 em /
+  ✓ Determinismo: mesmo plano + mesmo ctx em 2 orchestrators frescos → job IDs byte-identical
+  ✓ Idempotência: mesmo plano processado 2x → mesmos jobs, sem duplicação, sem eventos extras
+  ✓ executionKey muda quando workflowVersion bumpa → re-execution permitida
+  ✓ executionKey muda quando providerManifestVersion bumpa → re-execution permitida
+  ✓ Plano expirado (todos signals expired) → state="expired"
+  ✓ Plano TTL excedido → state="expired"
+  ✓ Orçamento insuficiente → state="failed"
+  ✓ Reserva duplicada → ALREADY_RESERVED
+  ✓ Plano vazio (sem categories/niches/keywords) → state="failed"
+  ✓ Múltiplas regiões → 1 job por (source × region × category)
+  ✓ Múltiplos providers → jobs distribuídos
+  ✓ Cancelamento → reserva liberada, state="cancelled"
+  ✓ Nenhuma chamada externa (test runtime <100ms)
+  ✓ Nenhuma dependência de provider (deps sem provider)
+  ✓ Nenhuma escrita direta em DB (deps sem repository/uow/db/prisma)
+
+Stage Summary:
+
+- A2.2 (Discovery Orchestrator) entregue e validado contra checklist completo.
+- 9 arquivos em packages/domain/src/discovery/orchestrator/ (7 módulos + index + test).
+- 6 interfaces definidas (PlanValidator, JobFactory, BudgetReservationService, ExecutionRegistry, OrchestratorEventPublisher, OrchestratorMetricsCollector) — prontas para A2.3 Workers consumir.
+- 5 eventos tipados (2 de intent emitidos pelo Orchestrator, 3 de consummation reservados para Workers).
+- Lifecycle explícito com 9 estados e apenas 2 transições de posse do Orchestrator (draft→reserved→scheduled).
+- Idempotência via executionKey = FNV-1a(planId + planHash + workflowVersion + manifestVersion).
+- 28 testes unitários passando cobrindo todos os cenários pedidos + invariantes arquiteturais.
+- Próximo: A2.3 — Discovery Workers (execução dos jobs, transições scheduled→executing→completed|failed).
