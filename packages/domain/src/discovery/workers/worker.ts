@@ -72,6 +72,8 @@ export class DiscoveryWorker {
     let totalApiCalls = 0;
     let attempts = 0;
     let connectorSelected: { providerCode: string } | null = null;
+    // Accumulate products for A2.4 RawStoreCoordinator consumption
+    const allProducts: import("./types").NormalizedDiscoveredProduct[] = [];
 
     try {
       // 3. Select provider
@@ -117,6 +119,8 @@ export class DiscoveryWorker {
         ctx.metrics.setGauge("apiCallsUsed", totalApiCalls);
         ctx.metrics.increment("itemsProcessed", fetchResult.result.products.length);
         itemsProcessed += fetchResult.result.products.length;
+        // Accumulate products for A2.4 RawStoreCoordinator
+        allProducts.push(...fetchResult.result.products);
         lastResult = fetchResult.result;
 
         // Safety cap: stop if we've reached or exceeded maxItemsPerJob
@@ -185,6 +189,7 @@ export class DiscoveryWorker {
         jobId: job.id,
         providerCode: connector.providerCode,
         productsDiscovered: itemsProcessed,
+        products: allProducts,
         nextCursor: lastResult?.nextCursor,
         hasMore: lastResult?.hasMore ?? false,
         attempts,

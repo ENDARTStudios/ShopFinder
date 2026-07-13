@@ -62,16 +62,9 @@ export interface DiscoveryCheckpoint {
   readonly lastUpdatedAt: Date;
 }
 
-export type RawProductRecordId = import("../shared").BrandedId<"RawProductRecordId">;
-export interface RawProductRecord {
-  readonly id: RawProductRecordId;
-  readonly providerCode: string;
-  readonly externalId: string;
-  readonly rawPayload: unknown;
-  readonly rawPayloadHash: string;
-  readonly fetchedAt: Date;
-  readonly jobId?: DiscoveryJobId;
-}
+// RawProductRecord and RawProductRecordId moved to raw-store/types.ts (A2.4).
+// The richer design includes: executionId, compressed payload, payloadHash,
+// semanticHash, partitionKey, full versioning. Re-exported from raw-store.
 
 export type DuplicateCandidateId = import("../shared").BrandedId<"DuplicateCandidateId">;
 export type DuplicateStatus = "pending" | "confirmed" | "rejected" | "merged";
