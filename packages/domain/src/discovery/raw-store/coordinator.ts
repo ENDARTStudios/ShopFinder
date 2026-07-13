@@ -27,7 +27,7 @@ import type {
   RawStoreVersions
 } from "./types";
 import { buildPartitionKey, RAW_STORE_SCHEMA_VERSION } from "./types";
-import { computePayloadHash, computeSemanticHash, canonicalJsonStringify } from "./hashing";
+import { computePayloadHash, canonicalJsonStringify } from "./hashing";
 import type { Compressor } from "./compression";
 import { getDefaultCompressor } from "./compression";
 import type { RawProductRepository } from "./types";
@@ -101,7 +101,6 @@ export class RawStoreCoordinator {
         externalId: product.externalId,
         payload: compressed,
         payloadHash,
-        semanticHash: computeSemanticHash(product), // null in A2.4
         discoveredAt: product.discoveredAt,
         partitionKey,
         versions: input.versions

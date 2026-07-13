@@ -81,11 +81,6 @@ export interface RawProductRecord {
   readonly payload: Uint8Array;
   /** Hash of the exact JSON payload (FNV-1a over canonical JSON). */
   readonly payloadHash: string;
-  /**
-   * Semantic hash — filled by A2.5 Normalizer after attribute
-   * canonicalization. Null in A2.4. Used for deduplication by A2.7.
-   */
-  readonly semanticHash: string | null;
   readonly discoveredAt: Date;
   readonly partitionKey: string;
   readonly versions: RawStoreVersions;

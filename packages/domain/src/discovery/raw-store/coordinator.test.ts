@@ -288,19 +288,21 @@ describe("RawStoreCoordinator", () => {
     });
   });
 
-  // ── 4. SemanticHash separado (null in A2.4) ────────────
-  describe("semanticHash", () => {
-    it("should be null in A2.4 (filled by A2.5 Normalizer)", async () => {
+  // ── 4. Raw Store immutability (no semanticHash) ───────
+  describe("raw store immutability", () => {
+    it("should NOT carry semanticHash (moved to NormalizedProductRecord in A2.5)", async () => {
       const input = makeInput();
       const result = await coordinator.persist(input);
       const stored = await deps.repository.findProducts(result.execution.id);
 
+      // RawProductRecord must NOT have semanticHash — it's a derived
+      // value that belongs on NormalizedProductRecord (A2.5).
       for (const record of stored) {
-        expect(record.semanticHash).toBeNull();
+        expect((record as unknown as Record<string, unknown>).semanticHash).toBeUndefined();
       }
     });
 
-    it("should be separate from payloadHash", async () => {
+    it("should carry payloadHash (exact byte identity, not semantic)", async () => {
       const input = makeInput();
       const result = await coordinator.persist(input);
       const stored = await deps.repository.findProducts(result.execution.id);
@@ -308,8 +310,6 @@ describe("RawStoreCoordinator", () => {
       for (const record of stored) {
         expect(record.payloadHash).not.toBeNull();
         expect(record.payloadHash).toMatch(/^ph_/);
-        // semanticHash is null — they are never the same value
-        expect(record.semanticHash).not.toBe(record.payloadHash);
       }
     });
   });

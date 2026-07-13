@@ -787,3 +787,83 @@ Stage Summary:
 - Pipeline A2.1→A2.2→A2.3→A2.4 completo: Signals → Planner → Plans → Orchestrator → Jobs → Workers → NormalizedDiscoveredProduct → RawStoreCoordinator → RawProductRepository (append-only, compressed, dual-hash, partitioned).
 - 152 testes totais passando no discovery module.
 - Próximo: A2.5 — Normalizer (consome RawProductsReadyForNormalization, preenche semanticHash, produz produtos normalizados para A2.6 Similarity).
+
+---
+
+Task ID: A2.5 — Product Normalizer
+Agent: main (Super Z)
+Task: Implementar Product Normalizer seguindo 10 refinamentos: produz novo artefato (NormalizedProductRecord), semanticHash movido do Raw para o Normalized, versionamento completo do normalizer (4 versões), 7 estágios swappable, atributos canônicos marketplace-agnostic, price bands, perceptual hash, 9 métricas de qualidade, 4 eventos, interface aceita record completo. Também limpar RawProductRecord removendo semanticHash (mantém Raw Store estritamente imutável).
+
+Work Log:
+
+### Pre-A2.5: Raw Store cleanup (R1+R2)
+
+- Removido `semanticHash` de `RawProductRecord` em raw-store/types.ts. Raw Store agora estritamente imutável — apenas dados adquiridos, nada derivado.
+- Removido `computeSemanticHash` stub de raw-store/hashing.ts.
+- Atualizado raw-store/coordinator.ts para não setar semanticHash.
+- Atualizados testes A2.4: agora verificam que semanticHash é undefined em RawProductRecord (em vez de null).
+
+### A2.5: 11 módulos em packages/domain/src/discovery/normalizer/
+
+- **types.ts** (200 linhas): NormalizedProductRecordId + NormalizationBatchId (branded). NormalizerVersions (4 fields: normalizerVersion, taxonomyVersion, attributeDictionaryVersion, translationModelVersion). DefaultNormalizerVersions. NORMALIZER_SCHEMA_VERSION = "1.0.0". CanonicalAttributeName const (17 nomes: COLOR, SIZE, MATERIAL, BRAND, WEIGHT, DIMENSIONS, GENDER, STYLE, PATTERN, SLEEVE_LENGTH, NECKLINE, OCCASION, SEASON, CAPACITY, VOLTAGE, POWER, CONNECTOR_TYPE). CanonicalAttribute (name, value, confidence, sourceAttribute). PriceBand union (10 bands: "0-10" até "5000+"). NormalizedPrice (band, currency, originalAmount). NormalizedImage (url, phash, sha256?). NormalizedProductRecord (id, rawProductId, executionId, payloadHash, semanticHash, normalizedTitle/Brand/Category/Attributes/Images/Price, providerCode, externalId, region, language, discoveredAt, normalizedAt, partitionKey, normalizerVersions, rawVersions, schemaVersion, confidenceScore, warnings). 7 NormalizationStageName. NormalizationStageResult<T>. NormalizationMetrics (9 counters + durationMs). ProductNormalizer interface. NormalizedProductRepository interface (append, appendBatch, findById, findByRawProductId, findBySemanticHash, stream, count). NormalizationCoordinatorInput + Result.
+
+- **canonical-attributes.ts** (135 linhas): ATTRIBUTE_ALIASES map com 80+ aliases em 8 idiomas (EN, PT, ES, FR, DE, IT, ZH, RU). canonicalizeAttributeName(rawName) → CanonicalAttributeName | null. canonicalizeAttribute(rawName, rawValue) → CanonicalAttribute | null. canonicalizeAttributes(rawAttributes) → CanonicalAttribute[]. getKnownAttributeNames(). Marketplace-agnostic: "颜色", "Color", "Colour", "Cor" → todos mapeiam para COLOR. NUNCA "AliExpressColor".
+
+- **price-bands.ts** (60 linhas): BAND_BOUNDARIES (9 bandas com min/max + "5000+"). classifyPriceBand(amount) → PriceBand. normalizePrice(amount, currency) → NormalizedPrice (band + currency + originalAmount preservado). getAllPriceBands() → 10 bands. Preço normalizado para bandas porque preço muda diariamente — bandas são estáveis e comparáveis.
+
+- **image-hash.ts** (75 linhas): ImageHasher interface (computePhash, computeSha256?, hammingDistance, algorithm). StubImageHasher (deterministic hash from URL, hamming distance char-level). getDefaultImageHasher/setDefaultImageHasher/createStubImageHasher. Production deve swap por implementação real (sharp/jimp/AI vision). phash ≠ SHA: phash produce hashes similares para imagens visualmente similares (dedup), SHA é exact match.
+
+- **stages.ts** (210 linhas): 7 stage interfaces (TitleNormalizer, BrandNormalizer, CategoryNormalizer, AttributeNormalizer, ImageNormalizer, PriceNormalizer, SemanticHasher). StageContext (providerCode, region, language). 7 default implementations: DefaultTitleNormalizer (trim, collapse whitespace, remove [Free Shipping] prefixes). DefaultBrandNormalizer (trim, title-case, aliases para Nike/Adidas/Samsung/etc). DefaultCategoryNormalizer (trim, uppercase, replace spaces com _). DefaultAttributeNormalizer (usa canonical-attributes dictionary). DefaultImageNormalizer (computa phash para cada URL). DefaultPriceNormalizer (classifica em bandas). DefaultSemanticHasher (FNV-1a over title|brand|category|priceBand|attributes ordenados). Cada stage retorna NormalizationStageResult<T> com value, warnings, confidence.
+
+- **events.ts** (165 linhas): NORMALIZER_EVENT_TYPES = 4 tipos: "discovery.normalization.started", "discovery.normalization.completed", "discovery.normalization.products_created", "discovery.normalization.semantic_hashes_generated". NormalizerVersionedPayload (schemaVersion + 4 version fields). 4 payload interfaces. 4 event types. 4 factories (makeNormalizationStartedEvent, makeNormalizationCompletedEvent, makeNormalizedProductsCreatedEvent, makeSemanticHashesGeneratedEvent) com version injection. A2.6 Similarity consome NormalizedProductsCreated.
+
+- **metrics.ts** (65 linhas): InMemoryNormalizationMetricsCollector. 9 counters: titlesNormalized, brandsResolved, attributesMapped, categoriesMapped, imagesProcessed, semanticHashesCreated, unknownBrands, unknownCategories. attributeCoverage (productsWithAttributes / productsTotal). durationMs. start/increment*/snapshot/reset.
+
+- **repository.ts** (95 linhas): InMemoryNormalizedProductRepository. byId Map, byRawProductId Map (reverse lookup), bySemanticHash Map (para A2.7 Dedup). append idempotente (mesmo id → no-op). appendBatch. findById. findByRawProductId. findBySemanticHash. stream (AsyncIterable com filtros: executionId, providerCode, partitionKey, since, until). count. recordCount getter. clear().
+
+- **normalizer.ts** (135 linhas): DefaultProductNormalizer implementa ProductNormalizer. Aceita NormalizerVersions + NormalizerDeps opcional (7 stages injetáveis). normalize(record: RawProductRecord, product: NormalizedDiscoveredProduct) → NormalizedProductRecord. Fluxo: extrai StageContext do record (providerCode, region do partitionKey, language). Executa 7 stages em sequência, coleta warnings + confidence. makeId determinístico: `norm_${rawProductId}_${normalizerVersion}_${semanticHash}` (idempotente: mesmo raw + mesma version → mesmo ID). Retorna NormalizedProductRecord completo com rawVersions preservado, schemaVersion, confidenceScore (média das 7 stages), warnings.
+
+- **coordinator.ts** (110 linhas): NormalizationCoordinator.normalizeBatch(input). Fluxo: (1) makeBatchId determinístico, (2) emit NormalizationStarted, (3) para cada (record, product): normalizer.normalize + repository.append + update metrics, (4) emit NormalizedProductsCreated + SemanticHashesGenerated se normalized > 0, (5) emit NormalizationCompleted com metrics. 4 eventos publicados. A2.6 consome NormalizedProductsCreated.
+
+- **index.ts**: barrel exports dos 11 módulos.
+- **normalizer.test.ts** (490 linhas): 31 testes em 11 describe blocks cobrindo todos os 10 refinamentos R1-R10 + repository + confidence/warnings.
+
+### Decisões de design
+
+- **NormalizedProductRecord é um novo artefato**: nunca modifica RawProductRecord. Raw Store permanece estritamente imutável. Reprocessamento com nova versão do normalizer produz novos NormalizedProductRecords sem sobrescrever antigos.
+- **semanticHash mora no Normalized, não no Raw**: é um valor derivado pós-normalização. Mover para NormalizedProductRecord preserva a separação dados adquiridos vs dados processados.
+- **4 version fields no NormalizerVersions**: normalizerVersion (lógica), taxonomyVersion (categorias), attributeDictionaryVersion (dicionário de atributos), translationModelVersion (IA de tradução). Bumpar qualquer um permite reprocessar tudo com nova versão.
+- **7 stages swappable**: cada stage é uma interface com default implementation. Trocar TitleNormalizer de regex-based para AI-based muda apenas uma classe. O normalizer orquestra, não implementa.
+- **CanonicalAttribute marketplace-agnostic**: COLOR nunca AliExpressColor. Dicionário com 80+ aliases em 8 idiomas. Unknown attributes são skipados (não armazenados).
+- **Price bands**: 10 bandas (0-10 até 5000+). Preço absoluto preservado em originalAmount mas band é a forma canônica. Preço muda diariamente; bandas são estáveis.
+- **Perceptual hash (phash)**: interface ImageHasher com StubImageHasher (deterministic from URL). Production swap por sharp/jimp/AI. phash ≠ SHA: phash dedup visual, SHA exact match.
+- **9 métricas de qualidade**: titlesNormalized, brandsResolved, attributesMapped, categoriesMapped, imagesProcessed, semanticHashesCreated, unknownBrands, unknownCategories, attributeCoverage. Permitem monitorar qualidade dos dados e detectar drift.
+- **4 eventos desacoplados**: NormalizationStarted (batch started), NormalizedProductsCreated (A2.6 consome), SemanticHashesGenerated (A2.7 consome), NormalizationCompleted (com metrics). Split permite re-executar sem re-normalizar.
+- **Idempotência determinística**: normalizedId = `norm_${rawProductId}_${normalizerVersion}_${semanticHash}`. batchId = `batch_${executionId}_${normalizerVersion}`. Mesmo input + mesma version → mesmo ID → re-normalize é no-op.
+
+### Verificações
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 155 files, 0 violations (salto 143 → 155 com normalizer module)
+- ✓ bun test packages/domain/src/discovery/ → 183 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store + 31 normalizer)
+- ✓ HTTP 200
+- ✓ R1: NormalizedProductRecord é novo artefato, Raw não modificado
+- ✓ R2: semanticHash no Normalized, não no Raw
+- ✓ R3: 4 version fields no NormalizerVersions
+- ✓ R4: 7 stages swappable (testado com custom Title/Brand)
+- ✓ R5: marketplace-agnostic (color/colour/cor/颜色 → COLOR)
+- ✓ R6: 10 price bands (0-10 até 5000+)
+- ✓ R7: phash computed para cada image
+- ✓ R8: 9 métricas tracked via coordinator
+- ✓ R9: 4 eventos emitted em ordem (Started → ProductsCreated → SemanticHashesGenerated → Completed)
+- ✓ R10: normalize(record) aceita record completo, usa providerCode/partitionKey/versions
+
+Stage Summary:
+
+- A2.5 (Product Normalizer) entregue e validado contra todos os 10 refinamentos.
+- 11 arquivos em packages/domain/src/discovery/normalizer/ (types, canonical-attributes, price-bands, image-hash, stages, events, metrics, repository, normalizer, coordinator, index) + normalizer.test.ts.
+- Pipeline A2.1→A2.2→A2.3→A2.4→A2.5 completo: Signals → Planner → Plans → Orchestrator → Jobs → Workers → RawProductRecord (imutável) → Normalizer → NormalizedProductRecord (novo artefato).
+- Raw Store permanece estritamente imutável (semanticHash removido).
+- 183 testes totais passando no discovery module.
+- Próximo: A2.6 — Similarity/Deduplication (consome NormalizedProductsCreated, usa semanticHash + phash para detectar duplicatas).

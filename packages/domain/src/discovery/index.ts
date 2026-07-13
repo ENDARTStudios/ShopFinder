@@ -7,7 +7,8 @@
  *   planner.ts     — A2.1 Discovery Planner (signals → plans)
  *   orchestrator/  — A2.2 Discovery Orchestrator (plans → jobs)
  *   workers/       — A2.3 Discovery Workers (jobs → NormalizedDiscoveredProduct[])
- *   raw-store/     — A2.4 Raw Product Store (append-only, dual-hash, compressed)
+ *   raw-store/     — A2.4 Raw Product Store (append-only, payloadHash, compressed)
+ *   normalizer/    — A2.5 Product Normalizer (Raw → NormalizedProductRecord, 7 stages)
  */
 
 // Re-export everything from submodules
@@ -16,3 +17,4 @@ export * from "./planner";
 export * from "./orchestrator";
 export * from "./workers";
 export * from "./raw-store";
+export * from "./normalizer";
