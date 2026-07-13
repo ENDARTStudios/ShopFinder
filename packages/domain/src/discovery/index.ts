@@ -10,6 +10,7 @@
  *   raw-store/     — A2.4 Raw Product Store (append-only, payloadHash, compressed)
  *   normalizer/    — A2.5 Product Normalizer (Raw → NormalizedProductRecord, 7 stages)
  *   similarity/    — A2.6 Similarity & Duplicate Detection (evidence + clusters, discover only)
+ *   resolution/    — A2.7 Duplicate Resolution (identity + builder, no catalog details)
  */
 
 // Re-export everything from submodules
@@ -20,3 +21,4 @@ export * from "./workers";
 export * from "./raw-store";
 export * from "./normalizer";
 export * from "./similarity";
+export * from "./resolution";

@@ -951,3 +951,67 @@ Stage Summary:
 - Roadmap ajustado: A2.7=Duplicate Resolution, A2.8=AI Evaluation (IA avalia apenas produto canônico).
 - 207 testes totais passando no discovery module.
 - Próximo: A2.7 — Duplicate Resolution (consome DuplicateCandidatesDetected, consolida ofertas em CanonicalProduct, decide qual oferta é a principal).
+
+---
+
+Task ID: A2.7 — Duplicate Resolution
+Agent: main (Super Z)
+Task: Implementar Duplicate Resolution com separação entre Resolution (identidade) e Builder (materialização). Resolution responde apenas "quais registros representam a mesma entidade?" — nunca "como deve ficar o produto canônico". 5 contratos: CanonicalIdentity, ResolutionEvidence, ResolutionPolicy (5 implementações), ConflictRecord, CanonicalBuilder. 25 testes cobrindo 10 critérios de aceite.
+
+Work Log:
+
+### 7 módulos em packages/domain/src/discovery/resolution/
+
+- **types.ts** (235 linhas): 5 contratos principais. CanonicalIdentity (id, canonicalProductId, clusterId, normalizedProductIds, primaryProductId, resolutionStrategy, confidence, evidence, createdAt, batchId, schemaVersion). ResolutionEvidence (titleSource, imageSource, brandSource, categorySource, attributeSources, primaryOfferReason, confidence). ResolutionPolicy interface (name, resolve(cluster, products) → { primaryProductId, reason, confidence }). ConflictRecord (id, clusterId, reason: 7 ConflictReason types, candidates, details, createdAt, batchId, resolved, resolvedAt?, resolvedBy?). ConflictReason = DIFFERENT_SIZES | DIFFERENT_MODELS | CONFLICTING_BRANDS | INCOMPATIBLE_CATEGORIES | PRICE_OUTLIER | LOW_SIMILARITY | MANUAL_REVIEW_REQUIRED. CanonicalProduct (id, identityId, clusterId, title, brand, canonicalBrandId, category, canonicalCategoryId, attributes, images, priceRange, offerCount, supplierCodes, primaryProductId, builtAt, schemaVersion). CanonicalBuilder interface (name, build(identity, products) → CanonicalProduct). ResolutionRepository interface (appendIdentity, appendConflict, appendCanonicalProduct, findIdentity, findIdentityByCluster, findConflictsByCluster, findCanonicalProduct, findCanonicalProductByIdentity, streamIdentities, streamConflicts). ResolutionMetrics (clustersProcessed, identitiesCreated, conflictsDetected, canonicalProductsBuilt, averageConfidence, durationMs).
+
+- **policies.ts** (185 linhas): 5 ResolutionPolicy implementations. HighestConfidencePolicy (pick highest confidenceScore). BestMarketplacePolicy (prefer ranked marketplaces). HighestCompletenessPolicy (most non-empty fields — 10-point score). LowestPricePolicy (lowest originalAmount). WeightedHybridPolicy (40% confidence + 30% completeness + 20% marketplace rank + 10% price). createResolutionPolicy(strategy, options) factory.
+
+- **conflicts.ts** (115 linhas): detectConflict(cluster, products) → { hasConflict, reason?, details? }. 5 conflict checks em ordem: CONFLICTING_BRANDS (different canonicalBrandIds), INCOMPATIBLE_CATEGORIES (different canonicalCategoryIds), DIFFERENT_SIZES (conflicting SIZE attribute values), PRICE_OUTLIER (price >3x the min), LOW_SIMILARITY (evidence.overallSimilarity < 0.80). buildConflictRecord(cluster, detection, batchId) → ConflictRecord. Usa min price (não median) para outlier detection — median pode ser o próprio outlier em clusters pequenos.
+
+- **builder.ts** (130 linhas): DefaultCanonicalBuilder. build(identity, products) → CanonicalProduct. Title: do primary. Brand: do brandSource (evidence-based). Category: do categorySource. Images: union de todos members, deduplicados por fingerprint value. Attributes: best confidence per attribute name. PriceRange: min/max across all members. SupplierCodes: unique list. Não decide identidade — apenas materializa o produto canônico a partir da identidade resolvida.
+
+- **events.ts** (145 linhas): RESOLUTION_EVENT_TYPES = 4 tipos: "discovery.resolution.identity_resolved", "discovery.resolution.conflict_detected", "discovery.resolution.product_built", "discovery.resolution.ready_for_evaluation". ResolutionVersionedPayload (schemaVersion + resolutionStrategy + policyVersion). 4 payload interfaces + 4 event types + 4 factories. A2.8 AI Evaluation consome CanonicalProductReadyForEvaluation.
+
+- **repository.ts** (105 linhas): InMemoryResolutionRepository. identitiesById Map, identitiesByCluster Map (reverse), conflictsById Map, conflictsByCluster Map (reverse), productsById Map, productsByIdentity Map (reverse). append idempotente. findIdentity, findIdentityByCluster, findConflictsByCluster, findCanonicalProduct, findCanonicalProductByIdentity. streamIdentities/streamConflicts (AsyncIterable com filtros). identityCount/conflictCount/canonicalProductCount getters.
+
+- **coordinator.ts** (165 linhas): ResolutionCoordinator.resolve(input). Fluxo por cluster: (1) detectConflict — se conflito: appendConflict + emit ConflictDetected, skip. (2) policy.resolve → primaryProductId + reason + confidence. (3) buildEvidence (titleSource=primary, brandSource=highest confidence brand, imageSource=most images, categorySource=first canonicalCategoryId, attributeSources=best confidence per attr). (4) makeIdentity (determinístico ID: `ident_${cluster.id}`). (5) builder.build(identity, products) → CanonicalProduct. (6) emit IdentityResolved + ProductBuilt + ReadyForEvaluation. ResolutionMetrics coletadas.
+
+- **resolution.test.ts** (605 linhas): 25 testes em 10 describe blocks cobrindo todos os 10 critérios de aceite.
+
+### Decisões de design
+
+- **Separação Resolution vs Builder**: Resolution responde apenas "quais registros representam a mesma entidade?" Builder responde "como deve ficar o produto canônico?" Resolution não conhece detalhes do catálogo (título, preço, imagens) — apenas identidade. Builder não decide identidade — apenas materializa.
+- **CanonicalIdentity é imutável e versionado**: schemaVersion="1.0.0". ID determinístico: `ident_${cluster.id}`. Re-resolução do mesmo cluster produz mesma identidade (idempotente).
+- **ResolutionEvidence persistido**: cada field source rastreado (titleSource, imageSource, brandSource, categorySource, attributeSources). primaryOfferReason human-readable. Auditoria completa — sabe exatamente qual produto forneceu cada campo.
+- **ConflictRecord para ambiguidades**: 7 ConflictReason types. Conflitos vão para revisão manual ou política específica — Resolution não força resolução de clusters ambíguos.
+- **5 ResolutionPolicy substituíveis**: HighestConfidence, BestMarketplace, HighestCompleteness, LowestPrice, WeightedHybrid. Troca sem alterar coordinator. createResolutionPolicy(strategy) factory.
+- **PRICE_OUTLIER usa min (não median)**: em clusters pequenos (2-3 members), median pode ser o próprio outlier. Min é sempre o preço mais baixo — >3x isso é suspeito.
+- **Eventos só após resolução**: IdentityResolved vem ANTES de ProductBuilt. ConflictDetected emite sem IdentityResolved. A2.8 consome apenas ReadyForEvaluation.
+- **Nenhum acesso a IA/marketplaces**: deps tem apenas repository + builder + events. Sem aiProvider, sem marketplaceConnector, sem providerRegistry. Resolution é pura transformação de dados.
+
+### Verificações (10 critérios de aceite)
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 174 files, 0 violations (salto 165 → 174 com resolution module)
+- ✓ bun test packages/domain/src/discovery/ → 232 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store + 31 normalizer + 24 similarity + 25 resolution)
+- ✓ HTTP 200
+- ✓ Resolução determinística (mesmo cluster + products → mesma CanonicalIdentity)
+- ✓ CanonicalIdentity imutável e versionado (schemaVersion="1.0.0")
+- ✓ ResolutionEvidence persistido (6 field sources + primaryOfferReason + confidence)
+- ✓ ConflictRecord criado para 5 ambiguidades (CONFLICTING_BRANDS, INCOMPATIBLE_CATEGORIES, DIFFERENT_SIZES, PRICE_OUTLIER, LOW_SIMILARITY)
+- ✓ ResolutionPolicy substituível (5 implementações testadas)
+- ✓ Nenhuma chamada a IA (deps sem aiProvider/llm/evaluationProvider)
+- ✓ Nenhum acesso a marketplaces (deps sem marketplaceConnector/providerRegistry/connector)
+- ✓ Nenhuma modificação de NormalizedProductRecord (testado)
+- ✓ Nenhuma criação direta de listagens/catálogo (Builder produz CanonicalProduct, não listing)
+- ✓ Eventos publicados apenas após resolução (IdentityResolved antes de ProductBuilt)
+
+Stage Summary:
+
+- A2.7 (Duplicate Resolution) entregue e validado contra todos os 10 critérios de aceite.
+- 7 arquivos em packages/domain/src/discovery/resolution/ (types, policies, conflicts, builder, events, repository, coordinator) + resolution.test.ts.
+- Pipeline A2.1→A2.2→A2.3→A2.4→A2.5→A2.6→A2.7 completo: ... → SimilarityCluster → ResolutionCoordinator → CanonicalIdentity + ConflictRecord → CanonicalBuilder → CanonicalProduct → A2.8 AI Evaluation (consome apenas produto canônico).
+- Separação Resolution (identidade) vs Builder (materialização) preserva baixo acoplamento.
+- 232 testes totais passando no discovery module.
+- Próximo: A2.8 — AI Evaluation (avalia apenas CanonicalProduct, produz ProductScore + AIScoreFactors).
