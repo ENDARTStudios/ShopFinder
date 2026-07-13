@@ -13,7 +13,7 @@
 import type { CanonicalProduct } from "../resolution/types";
 import type { CompliancePreCheckResult, ComplianceStatus } from "./types";
 
-export interface ComplianceRule {
+export interface PreCheckRule {
   readonly name: string;
   readonly check: (product: CanonicalProduct) => {
     passed: boolean;

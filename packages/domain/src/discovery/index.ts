@@ -12,6 +12,9 @@
  *   similarity/    — A2.6 Similarity & Duplicate Detection (evidence + clusters, discover only)
  *   resolution/    — A2.7 Duplicate Resolution (identity + builder, no catalog details)
  *   evaluation/    — A2.8 AI Evaluation (inference + decision + policy, separated)
+ *   compliance/    — A2.9 Compliance PostCheck (score/documentation/certification/regional rules)
+ *   catalog/       — A2.10 Catalog Materializer + Publisher (SKU/slug/variants/SEO + multi-destination)
+ *   search/        — A2.11 Search Index (consumes events, independent from Publisher)
  */
 
 // Re-export everything from submodules
@@ -24,3 +27,6 @@ export * from "./normalizer";
 export * from "./similarity";
 export * from "./resolution";
 export * from "./evaluation";
+export * from "./compliance";
+export * from "./catalog";
+export * from "./search";

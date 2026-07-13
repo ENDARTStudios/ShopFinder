@@ -1085,3 +1085,76 @@ Stage Summary:
 - Separação Inferência/Avaliação preserva baixo acoplamento — trocar LLM não altera domínio.
 - 258 testes totais passando no discovery module.
 - Próximo: A2.9 — Compliance (post-evaluation, decide publicação final) / A2.10 — Catalog Publisher.
+
+---
+
+Task ID: A2.9 + A2.10 + A2.11 — Compliance + Catalog + Search
+Agent: main (Super Z)
+Task: Implementar 3 slices finais do pipeline: A2.9 Compliance PostCheck (valida resultados da IA), A2.10 Catalog Materializer + Publisher (separados — materializa SKU/slug/variants/SEO, publica multi-destino), A2.11 Search Index (consome eventos, independente do Publisher).
+
+Work Log:
+
+### A2.9 — Compliance PostCheck (5 módulos)
+
+- **types.ts**: CompliancePostCheckResult (id, canonicalProductId, evaluationId, status: approved|rejected|requires_review, rules[], finalDecision, checkedAt, batchId, schemaVersion). ComplianceRuleResult (ruleName, category, passed, details, severity: error|warning). ComplianceRuleCategory (6: score_minimum, documentation, certification, regional_restriction, commercial_policy, safety). ComplianceRule interface. ComplianceRepository interface. ComplianceMetrics (6 counters).
+- **rules.ts**: 8 DEFAULT_COMPLIANCE_RULES — overall_score_minimum (>=60, error), compliance_score_minimum (>=70, error), title_present (error), brand_resolved (warning), has_images (error), has_attributes (warning), price_positive (error), margin_healthy (warning).
+- **events.ts**: 4 events — PostCheckCompleted, Approved, Rejected, RequiresReview.
+- **repository.ts**: In-memory, indexed by id/product/evaluation.
+- **coordinator.ts**: Runs all rules per (product, evaluation). error fail → rejected, warning fail → requires_review, all pass → approved. Emits appropriate event.
+- **compliance.test.ts**: 6 tests (approve, reject low compliance, require review for warnings, events, persistence, 8 rules evaluated).
+
+### A2.10 — Catalog Materializer + Publisher (6 módulos)
+
+- **types.ts**: CatalogEntry (id, canonicalProductId, sku, slug, title, description, brand, category, attributes, variants, images, seo, pricing, supplierCount, offerCount, evaluationSummary, materializedAt, materializerVersion, schemaVersion). CatalogVariant (sku, name, attributes, price, inventory). CatalogImage (url, alt, fingerprint, isPrimary). CatalogSEO (metaTitle, metaDescription, keywords, canonicalUrl). CatalogPricing (minPrice, maxPrice, currency, priceRangeLabel). EvaluationSummary (overallScore, recommendation, confidence, complianceStatus). CatalogMaterializer interface. CatalogPublisher interface. PublicationDestination (5: internal, shopify, woocommerce, mercadolivre, amazon). CatalogPublication (id, catalogEntryId, destination, status, publishedAt, externalId, error?). CatalogRepository interface. CatalogMetrics (5 counters).
+- **materializer.ts**: DefaultCatalogMaterializer. Generates SKU (deterministic from canonicalProductId), slug (URL-safe from title), variants (COLOR × SIZE cross-product), images (first=primary), SEO (metaTitle 60 chars, metaDescription 160 chars, keywords, canonicalUrl), pricing (min/max + label), description (title + brand + features + suppliers). EvaluationSummary from evaluation + compliance.
+- **publisher.ts**: DefaultCatalogPublisher (destination param). publish(entry) → CatalogPublication. Production: each destination calls its API (Shopify Admin, WooCommerce REST, ML API, Amazon SP-API).
+- **events.ts**: 3 events — EntryCreated, Published (consumed by A2.11 SearchIndexer), PublicationFailed.
+- **repository.ts**: In-memory, indexed by id/canonicalProductId/sku/slug. Publications list.
+- **coordinator.ts**: For each approved product: materialize → appendEntry → emit EntryCreated → for each destination: publisher.publish → appendPublication → emit Published. Multi-destination support.
+- **catalog.test.ts**: 7 tests (SKU/slug/variants/SEO/pricing generation, COLOR×SIZE variants, primary image, evaluationSummary, publisher, coordinator materialize+publish+events, multi-destination, persistence).
+
+### A2.11 — Search Index (5 módulos)
+
+- **types.ts**: SearchIndexEntry (id, catalogEntryId, sku, slug, title, brand, category, description, keywords, attributes, priceRange, overallScore, recommendation, supplierCount, indexedAt, schemaVersion). SearchIndexer interface (index, remove, search). SearchQuery (text, brand, category, minPrice, maxPrice, minScore, limit). SearchResult (entries, total, durationMs). SearchIndexRepository interface.
+- **indexer.ts**: DefaultSearchIndexer. index(entry) → SearchIndexEntry (transforms CatalogEntry fields to search-optimized shape). remove(catalogEntryId). search(query) delegates to repository.
+- **events.ts**: 2 events — IndexUpdated, IndexRemoved.
+- **repository.ts**: In-memory with text search (substring on title/description/brand/keywords). Filters: brand, category, minPrice, maxPrice, minScore. Sort by overallScore descending. Pagination via limit.
+- **coordinator.ts**: SearchIndexCoordinator. onCatalogPublished(entry) → index + emit IndexUpdated. onCatalogRemoved(catalogEntryId) → remove + emit IndexRemoved. CRITICAL: consumes EVENTS, not direct calls from Publisher. Search is totally independent.
+- **search.test.ts**: 8 tests (index, remove, text search, brand filter, minScore filter, sort by score, event-driven index, event-driven removal).
+
+### Pipeline completo A2.1 → A2.11
+
+```
+Signals → Planner → Plans → Orchestrator → Jobs → Workers
+  → RawProductRecord → NormalizedProductRecord → SimilarityClusters
+  → DuplicateResolution → CanonicalProduct
+  → CompliancePreCheck → AI Evaluation → CompliancePostCheck
+  → CatalogMaterializer → CatalogEntry → CatalogPublisher → CatalogPublished
+  → SearchIndexer (via event) → SearchIndexEntry
+```
+
+### Decisões de design
+
+- **Compliance Pre vs Post**: PreCheck (A2.8) filtra antes de inferência (saves AI cost). PostCheck (A2.9) valida após avaliação (score/documentation/certification/regional/commercial). Diferentes objetivos, diferentes regras.
+- **Materializer vs Publisher**: Materializer gera SKU/slug/variants/SEO/URLs/mídia. Publisher persiste + indexa + publica eventos. Permite publicar para múltiplos destinos (internal, Shopify, WooCommerce, ML, Amazon) sem alterar materialização.
+- **Search via eventos**: SearchIndexer consome CatalogPublished EVENTS, nunca diretamente do Publisher. Search é totalmente independente. Pode ser reconstruído sem afetar o catálogo.
+- **Multi-destination publishing**: PublicationDestination enum (5 destinos). Publisher por destino. Coordinator itera destinos. Falha em um destino não bloqueia outros.
+
+### Verificações
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 208 files, 0 violations (salto 186 → 208 com compliance + catalog + search)
+- ✓ bun test packages/domain/src/discovery/ → 280 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store + 31 normalizer + 24 similarity + 25 resolution + 26 evaluation + 6 compliance + 7 catalog + 8 search)
+- ✓ HTTP 200
+
+Stage Summary:
+
+- Pipeline de Discovery completo: A2.1 Planner → A2.11 Search Index.
+- 12 submódulos em packages/domain/src/discovery/ (types, planner, orchestrator, workers, raw-store, normalizer, similarity, resolution, evaluation, compliance, catalog, search).
+- 208 arquivos, 0 violations, 280 testes passando.
+- Cada etapa produz um artefato imutável consumido pela próxima.
+- IA completamente desacoplada (InferenceProvider/DecisionProvider/PolicyEngine).
+- Search independente (consome eventos).
+- Multi-destination publishing (internal + Shopify + WooCommerce + ML + Amazon).
+- Próximos slices funcionais: A2.12 Marketplace Publication, A2.13 Pricing Execution, A2.14 Ranking, A2.15 Monitoring.
