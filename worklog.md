@@ -499,3 +499,119 @@ Stage Summary:
 - Idempotência via executionKey = FNV-1a(planId + planHash + workflowVersion + manifestVersion).
 - 28 testes unitários passando cobrindo todos os cenários pedidos + invariantes arquiteturais.
 - Próximo: A2.3 — Discovery Workers (execução dos jobs, transições scheduled→executing→completed|failed).
+
+---
+
+Task ID: A2.2-refinements + A2.3 — Discovery Workers
+Agent: main (Super Z)
+Task: (1) Aplicar 6 refinements em A2.2 (branded ExecutionKey, JobFactoryInput, structured validation errors, ReservationToken, versioned events, job parentPlanId+sequenceNumber). (2) Implementar A2.3 Discovery Workers em 10 módulos seguindo estrutura recomendada pelo usuário, com 11 critérios de aceite.
+
+Work Log:
+
+### Parte 1 — Refinements A2.2 (R1-R6)
+
+- **R1. Branded ExecutionKeyValue**: adicionado `type ExecutionKeyValue = BrandedId<"ExecutionKeyValue">` e `type ReservationTokenValue = BrandedId<"ReservationTokenValue">`. Funções `asExecutionKeyValue()` e `asReservationTokenValue()` para trust boundaries. ExecutionKey.value agora é branded — não pode ser confundido com PlanId/JobId/hash.
+
+- **R2. JobFactoryInput**: nova interface desacoplada de DiscoveryPlan. Contém apenas o que a factory precisa: executionKey, parentPlanId, sources, regions, languages, categories, niches, signals, budget, priority. Orchestrator constrói JobFactoryInput a partir do plan e chama `factory.createJobs(input, ctx)`. A2.3 Workers podem reusar a factory sem depender do Planner.
+
+- **R3. Structured validation errors**: ValidationResult agora tem `severity: "error" | "warning"` e `retryable: boolean`. CODE_META map define severity+retryable por código (PLAN_EMPTY=error/false, PLAN_BUDGET_ZERO=error/true, etc.). failureReason do Orchestrator inclui `(severity, retryable=X)`.
+
+- **R4. ReservationToken**: nova interface com `value: ReservationTokenValue` (branded), `executionKey`, `planId`, `reservedCalls`, `consumed`, `consumedCalls`, `createdAt`, `expiresAt`. BudgetReservationService tem novo método `consume(token, actualCallsUsed)` que debita calls reais e marca token como consumed. Double-consume retorna TOKEN_CONSUMED. Overage (actual > reserved) é reportado mas ainda debitado. OrchestratorResult.reservationToken agora retorna o token para Workers consumirem.
+
+- **R5. Versioned events**: nova interface VersionedPayload com `schemaVersion: "1.0.0"`, `workflowVersion`, `plannerVersion`. Todos os 5 eventos (PlanScheduled, JobCreated, ExecutionStarted/Completed/Failed) carregam essas 3 versões. Factory functions `make*Event(versions, payload)` injetam as versões. ORCHESTRATOR_SCHEMA_VERSION = "1.0.0" constante. Facilita replay com upcasting.
+
+- **R6. Job parentage**: DiscoveryJob (em discovery/types.ts) ganhou 2 campos: `parentPlanId: string` e `sequenceNumber: number`. JobFactory popula ambos. Job ID format mudou para `job_${planId}_${seq padded 4}_${execKeyShort}` — legível e determinístico. Event DiscoveryJobCreated inclui sequenceNumber no payload.
+
+- **Testes**: 15 novos testes adicionados a orchestrator.test.ts cobrindo cada refinement (R1-R6). Total: 43 testes passando (28 originais + 15 novos).
+
+### Parte 2 — A2.3 Discovery Workers (10 módulos)
+
+Criado em packages/domain/src/discovery/workers/:
+
+- **types.ts** (300 linhas): WorkerId, CheckpointId, ProviderCallId (branded). WorkerState (9 estados: idle/acquiring/executing/checkpointing/completed/failed/cancelled/rate_limited/retrying). DiscoveryConnector interface (providerCode + discover()). ConnectorDiscoverInput/Result. CancellationSignal (cooperative). Checkpoint + CheckpointStore. RetryPolicy + WorkerError. RateLimiter. ProviderSelector. WorkerConfig (timeoutMs, maxRetries, baseRetryDelayMs, maxRetryDelayMs, rateLimitPerMinute, checkpointInterval, maxItemsPerJob) + DefaultWorkerConfig. WorkerContext (com executionRegistry, reservationService, executor do Orchestrator). WorkerResult. WorkerMetricsSnapshot. WorkerMetricsCollector + WorkerEventPublisher. ProviderHealth re-declarado localmente (não importa de @workspace/providers — mantém domínio desacoplado).
+
+- **events.ts** (45 linhas): factories emitExecutionStarted/Completed/Failed que delegam para makeExecution*Event do orchestrator/events, injetando versions.
+
+- **metrics.ts** (60 linhas): InMemoryWorkerMetricsCollector (counters/gauges/timers via Map, snapshot() retorna WorkerMetricsSnapshot com discoveryDurationMs, checkpointDurationMs, rateLimitWaitMs, retryDelayMs, totalDurationMs, itemsProcessed, apiCallsUsed, retries, checkpointsSaved). NoopWorkerEventPublisher.
+
+- **retry.ts** (45 linhas): ExponentialBackoffRetryPolicy (delay = min(maxRetryDelayMs, baseRetryDelayMs * 2^(attempt-1)) + jitter ±20%). NoRetryPolicy para testes/cancelled jobs.
+
+- **rate-limit.ts** (115 linhas): TokenBucketRateLimiter per-provider. Bucket com capacity, tokens, lastRefill, waiters queue. Refill contínuo (sliding window approx). acquire() fast-path se token disponível, slow-path enfileira e espera. Cancellation signal cancela acquire. estimateWait() para observabilidade.
+
+- **checkpoint.ts** (65 linhas): InMemoryCheckpointStore (load/save/clear). buildCheckpoint() factory. Idempotente para mesmo (jobId, page). Count() helper para testes.
+
+- **provider-selection.ts** (52 linhas): DefaultProviderSelector. Select por job.providerCode. Se não encontrado, throws WorkerError com code="NO_PROVIDER", retriable=false (estruturado, não Error genérico).
+
+- **result.ts** (115 linhas): Builders completed/failed/cancelled para WorkerResult. WorkerErrors factory: timeout (retriable), providerError (retriable), rateLimited (retriable), cancelled (non-retriable), unknown (non-retriable), noProvider (non-retriable), overQuota (retriable).
+
+- **executor.ts** (190 linhas): JobExecutor.fetch() — single-fetch com retry/timeout/rate-limit. Fluxo: acquire rate-limit slot → withTimeout(connector.discover(), timeoutMs) → on success return FetchResult. On failure: toWorkerError, se non-retriable throw, se cancelled throw, se retryPolicy.nextDelay()=null throw, senão sleep com cancellation awareness e retry. withTimeout() race entre promise e setTimeout. sleep() com onCancel. Executor anexa `attempts` count ao erro para o Worker reportar.
+
+- **worker.ts** (325 linhas): DiscoveryWorker.execute(job, ctx) — paging coordinator. Fluxo: (1) markState executing + emit ExecutionStarted, (2) load checkpoint, (3) select provider, (4) loop: executor.fetch + accumulate + checkpoint + safety cap check, (5) cancellation check, (6) consume reservation token, (7) markState completed + emit ExecutionCompleted. catch: se cancellation (signal.cancelled OR error.code==="CANCELLED") → handleCancellation; senão → handleFailure. handleFailure tenta consume token para calls já feitas, marca failed, emite ExecutionFailed. handleCancellation marca cancelled, emite ExecutionFailed (retriable=false). Stateless — todo estado em WorkerContext.
+
+- **index.ts**: barrel export dos 10 módulos.
+
+- **worker.test.ts** (960 linhas): 24 testes em 13 describe blocks cobrindo todos os 11 critérios de aceite + 2 extras:
+  • Deterministic execution (mesmo job + ctx → mesmo productsDiscovered)
+  • Incremental checkpoint (save após cada página, resume)
+  • Exponential retry (retry em transient, não-retry em fatal, give up após maxRetries)
+  • Rate limiting per-provider (isolado entre providers)
+  • Configurable timeout (fire quando lento, completa quando suficiente)
+  • Cooperative cancellation (aborta quando signal fire, marca registry cancelled)
+  • Idempotency by JobId (re-run completa sem crash)
+  • Per-provider metrics (apiCallsUsed, itemsProcessed, checkpointsSaved)
+  • Events Started/Completed/Failed emitidos com versions
+  • No catalog access (deps sem catalogRepository/productRepository/db/prisma)
+  • No Planner calls (deps sem planner/plannerContext)
+  • Reservation token consume (success + partial failure)
+  • Provider selection (NO_PROVIDER quando vazio)
+  • Safety cap (stop após maxItemsPerJob)
+
+### Decisões de design
+
+- **ProviderHealth re-declarado em workers/types.ts**: mantém domínio desacoplado de @workspace/providers. Structurally identical — consumers em @workspace/providers satisfazem o contrato sem o domínio depender do package.
+- **WorkerContext inclui executionRegistry + reservationService + executor**: em vez de WorkerDeps separado, tudo no ctx. Worker é stateless — só tem execute(job, ctx).
+- **Cancellation routing no catch**: worker detecta CANCELLED errors (por signal.cancelled OR error.code) e rota para handleCancellation em vez de handleFailure.
+- **Executor anexa attempts ao erro**: quando o executor throws, ele anexa `{ attempts: N }` ao erro para o Worker reportar tentativas mesmo em failure.
+- **Safety cap**: para após itemsProcessed >= maxItemsPerJob, mas NÃO trunca mid-page (página é atômica). Teste ajustado para refletir isso.
+- **ReservationToken consume em failure**: se apiCallsUsed > 0 em failure, worker tenta consume (partial debit). Se apiCallsUsed = 0, não consume.
+
+### Atualizações em arquivos existentes
+
+- packages/domain/src/discovery/index.ts: adicionado `export * from "./workers"`.
+- packages/domain/src/discovery/types.ts: adicionado parentPlanId + sequenceNumber em DiscoveryJob.
+- packages/domain/src/discovery/orchestrator/types.ts: refinements R1-R6 (branded types, JobFactoryInput, structured validation, ReservationToken, versioned events).
+- packages/domain/src/discovery/orchestrator/interfaces.ts: JobFactory.createJobs aceita JobFactoryInput; BudgetReservationService tem consume().
+- packages/domain/src/discovery/orchestrator/events.ts: VersionedPayload em todos os 5 eventos; factories aceitam versions param.
+- packages/domain/src/discovery/orchestrator/validator.ts: ValidationResult com severity + retryable; CODE_META map.
+- packages/domain/src/discovery/orchestrator/reservation.ts: ReservationToken pattern; consume() com overage detection; double-consume rejeitado.
+- packages/domain/src/discovery/orchestrator/job-factory.ts: aceita JobFactoryInput; jobs carregam parentPlanId + sequenceNumber.
+- packages/domain/src/discovery/orchestrator/orchestrator.ts: constrói JobFactoryInput; retorna reservationToken; injeta versions em eventos.
+- packages/domain/src/discovery/orchestrator/orchestrator.test.ts: 15 novos testes R1-R6.
+
+### Verificações (checklist de aceite A2.3)
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 133 files, 0 violations (salto 121 → 133 com workers module)
+- ✓ bun test packages/domain/src/discovery/ → 76 pass, 0 fail (9 planner + 43 orchestrator + 24 worker)
+- ✓ HTTP 200 em /
+- ✓ execução determinística (mesmo job + ctx → mesmo productsDiscovered)
+- ✓ checkpoint incremental (save após cada página, resume)
+- ✓ retry exponencial (jitter ±20%, maxRetryDelayMs cap)
+- ✓ rate limiting per provider (token bucket isolado)
+- ✓ timeout configurável (withTimeout race)
+- ✓ cancelamento cooperativo (signal + error.code=CANCELLED routing)
+- ✓ idempotência por JobId (re-run completa)
+- ✓ métricas por provider (apiCallsUsed, itemsProcessed, retries, checkpointsSaved)
+- ✓ eventos Started/Completed/Failed (com schemaVersion + workflowVersion + plannerVersion)
+- ✓ nenhum acesso ao catálogo (deps sem catalogRepository/productRepository/db/prisma)
+- ✓ nenhuma chamada ao Planner (deps sem planner/plannerContext)
+- ✓ consome ReservationToken do Orchestrator (A2.2 → A2.3 handoff)
+
+Stage Summary:
+
+- A2.2 refinements (R1-R6) entregues: branded types, JobFactoryInput decoupled, structured validation, ReservationToken pattern, versioned events, job parentage. 15 novos testes, 43 total passando.
+- A2.3 Discovery Workers entregue em 10 módulos modulares (types, events, metrics, retry, rate-limit, checkpoint, provider-selection, result, executor, worker) + index + test. 24 testes passando cobrindo todos os 11 critérios de aceite.
+- Pipeline A2.1→A2.2→A2.3 completo: Planner → Orchestrator → Workers. Handoff via ReservationToken. Lifecycle: draft → reserved → scheduled → executing → completed | failed | cancelled.
+- 133 arquivos verificados, 0 violations. 76 testes passando no discovery module.
+- Próximo: A2.4 — Raw Product Store (persistir NormalizedDiscoveredProduct[] bruto).

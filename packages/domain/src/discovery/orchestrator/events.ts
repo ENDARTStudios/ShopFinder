@@ -1,15 +1,17 @@
 /**
  * @workspace/domain/discovery/orchestrator/events
  *
- * Five orchestrator events. The first two (Scheduled, JobCreated) are
- * emitted by the Orchestrator. The last three (Started, Completed, Failed)
- * are reserved for Workers (A2.3) — defined here so contracts are stable.
+ * Five orchestrator events (A2.2 — refined).
+ *
+ * R5: Every event payload carries schemaVersion + workflowVersion +
+ *     plannerVersion to enable deterministic replay and upcasting.
  *
  * "Intent" vs "consummated":
  *   Scheduled/JobCreated = intent (orchestrator decided)
- *   Started/Completed/Failed = consummated (workers acted)
+ *   Started/Completed/Failed = consummated (workers acted in A2.3)
  */
 import type { DomainEvent } from "../../shared";
+import { ORCHESTRATOR_SCHEMA_VERSION } from "./types";
 
 // ── Event types ────────────────────────────────────────────
 
@@ -23,20 +25,35 @@ export const ORCHESTRATOR_EVENT_TYPES = [
 
 export type OrchestratorEventType = (typeof ORCHESTRATOR_EVENT_TYPES)[number];
 
+// ── Versioned payload base (R5) ────────────────────────────
+
+/**
+ * Every orchestrator event payload carries these three version fields.
+ * They enable:
+ *   - schemaVersion: upcasting old events during replay
+ *   - workflowVersion: invalidating executions when job-factory logic changes
+ *   - plannerVersion: invalidating executions when planner logic changes
+ */
+export interface VersionedPayload {
+  readonly schemaVersion: typeof ORCHESTRATOR_SCHEMA_VERSION;
+  readonly workflowVersion: string;
+  readonly plannerVersion: string;
+}
+
 // ── Event payloads ─────────────────────────────────────────
 
-export interface DiscoveryPlanScheduledPayload {
+export interface DiscoveryPlanScheduledPayload extends VersionedPayload {
   readonly planId: string;
   readonly planHash: string;
   readonly executionKey: string;
   readonly storeId: string;
-  readonly workflowVersion: string;
   readonly providerManifestVersion: string;
   readonly jobCount: number;
   readonly apiCallsReserved: number;
+  readonly reservationToken: string;
 }
 
-export interface DiscoveryJobCreatedPayload {
+export interface DiscoveryJobCreatedPayload extends VersionedPayload {
   readonly planId: string;
   readonly executionKey: string;
   readonly jobId: string;
@@ -44,9 +61,11 @@ export interface DiscoveryJobCreatedPayload {
   readonly providerCode: string;
   readonly region: string;
   readonly priority: number;
+  /** R6: sequence number within the parent plan (0-indexed). */
+  readonly sequenceNumber: number;
 }
 
-export interface DiscoveryExecutionStartedPayload {
+export interface DiscoveryExecutionStartedPayload extends VersionedPayload {
   readonly planId: string;
   readonly executionKey: string;
   readonly jobId: string;
@@ -54,7 +73,7 @@ export interface DiscoveryExecutionStartedPayload {
   readonly startedAt: string; // ISO
 }
 
-export interface DiscoveryExecutionCompletedPayload {
+export interface DiscoveryExecutionCompletedPayload extends VersionedPayload {
   readonly planId: string;
   readonly executionKey: string;
   readonly jobId: string;
@@ -62,15 +81,20 @@ export interface DiscoveryExecutionCompletedPayload {
   readonly productsDiscovered: number;
   readonly productsNormalized: number;
   readonly durationMs: number;
+  readonly apiCallsUsed: number;
+  readonly nextCursor?: string;
+  readonly hasMore: boolean;
 }
 
-export interface DiscoveryExecutionFailedPayload {
+export interface DiscoveryExecutionFailedPayload extends VersionedPayload {
   readonly planId: string;
   readonly executionKey: string;
   readonly jobId: string;
   readonly workerId?: string;
   readonly error: string;
+  readonly errorCode: string;
   readonly retriable: boolean;
+  readonly attempt: number;
 }
 
 // ── Event union ────────────────────────────────────────────
@@ -120,8 +144,24 @@ function nextEventId(): string {
   return `orch_evt_${Date.now()}_${eventSeq}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/** Common version block injected into every payload. */
+interface VersionSource {
+  readonly workflowVersion: string;
+  readonly plannerVersion: string;
+}
+
+function withVersions<T>(versions: VersionSource, payload: T): T & VersionedPayload {
+  return {
+    ...payload,
+    schemaVersion: ORCHESTRATOR_SCHEMA_VERSION,
+    workflowVersion: versions.workflowVersion,
+    plannerVersion: versions.plannerVersion
+  };
+}
+
 export function makePlanScheduledEvent(
-  payload: DiscoveryPlanScheduledPayload
+  versions: VersionSource,
+  payload: Omit<DiscoveryPlanScheduledPayload, keyof VersionedPayload>
 ): DiscoveryPlanScheduledEvent {
   return {
     eventId: nextEventId(),
@@ -130,11 +170,14 @@ export function makePlanScheduledEvent(
     aggregateId: payload.planId,
     occurredAt: new Date(),
     version: 1,
-    payload
+    payload: withVersions(versions, payload)
   };
 }
 
-export function makeJobCreatedEvent(payload: DiscoveryJobCreatedPayload): DiscoveryJobCreatedEvent {
+export function makeJobCreatedEvent(
+  versions: VersionSource,
+  payload: Omit<DiscoveryJobCreatedPayload, keyof VersionedPayload>
+): DiscoveryJobCreatedEvent {
   return {
     eventId: nextEventId(),
     eventType: "discovery.job.created",
@@ -142,12 +185,13 @@ export function makeJobCreatedEvent(payload: DiscoveryJobCreatedPayload): Discov
     aggregateId: payload.planId,
     occurredAt: new Date(),
     version: 1,
-    payload
+    payload: withVersions(versions, payload)
   };
 }
 
 export function makeExecutionStartedEvent(
-  payload: DiscoveryExecutionStartedPayload
+  versions: VersionSource,
+  payload: Omit<DiscoveryExecutionStartedPayload, keyof VersionedPayload>
 ): DiscoveryExecutionStartedEvent {
   return {
     eventId: nextEventId(),
@@ -156,12 +200,13 @@ export function makeExecutionStartedEvent(
     aggregateId: payload.jobId,
     occurredAt: new Date(),
     version: 1,
-    payload
+    payload: withVersions(versions, payload)
   };
 }
 
 export function makeExecutionCompletedEvent(
-  payload: DiscoveryExecutionCompletedPayload
+  versions: VersionSource,
+  payload: Omit<DiscoveryExecutionCompletedPayload, keyof VersionedPayload>
 ): DiscoveryExecutionCompletedEvent {
   return {
     eventId: nextEventId(),
@@ -170,12 +215,13 @@ export function makeExecutionCompletedEvent(
     aggregateId: payload.jobId,
     occurredAt: new Date(),
     version: 1,
-    payload
+    payload: withVersions(versions, payload)
   };
 }
 
 export function makeExecutionFailedEvent(
-  payload: DiscoveryExecutionFailedPayload
+  versions: VersionSource,
+  payload: Omit<DiscoveryExecutionFailedPayload, keyof VersionedPayload>
 ): DiscoveryExecutionFailedEvent {
   return {
     eventId: nextEventId(),
@@ -184,6 +230,6 @@ export function makeExecutionFailedEvent(
     aggregateId: payload.jobId,
     occurredAt: new Date(),
     version: 1,
-    payload
+    payload: withVersions(versions, payload)
   };
 }

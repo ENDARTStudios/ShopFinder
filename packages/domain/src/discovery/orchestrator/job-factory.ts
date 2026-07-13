@@ -1,23 +1,30 @@
 /**
  * @workspace/domain/discovery/orchestrator/job-factory
  *
- * JobFactory implementation. Derives DiscoveryJob[] from a plan.
+ * JobFactory implementation (A2.2 — refined).
+ *
+ * R2: Accepts JobFactoryInput (NOT DiscoveryPlan). A2.3 Workers can
+ *     re-use this factory for re-scheduling scenarios without a
+ *     Planner dependency.
+ *
+ * R6: Each job carries parentPlanId + sequenceNumber for debugging
+ *     and traceability.
  *
  * Determinism rules:
- *   1. Job ID = `job_${executionKey}_${index}` (no random, no Date.now)
- *   2. Jobs are sorted by (source, region, category, niche, jobType)
- *   3. Same plan + same executionKey ⇒ byte-identical job array
+ *   1. Job ID = `job_${planId}_${seq padded 4}_${executionKeyShort}`
+ *      — readable AND deterministic.
+ *   2. Jobs are sorted by (source, region, category, niche, jobType).
+ *   3. Same input + same executionKey ⇒ byte-identical job array.
  *
  * Distribution:
  *   - For each (source × region × category|niche) triple, create one job.
- *   - Job type is derived from the strongest signal in the plan.
- *   - API calls are distributed evenly across resulting jobs, with
- *     remainder distributed to the first N jobs (stable).
+ *   - Job type is derived from the strongest signal.
+ *   - API calls are distributed evenly, with remainder distributed
+ *     to the first N jobs (stable).
  */
 import type { JobFactory } from "./interfaces";
-import type { ExecutionContext, ExecutionKey, JobFactoryResult } from "./types";
+import type { ExecutionContext, JobFactoryInput, JobFactoryResult } from "./types";
 import type { DiscoveryJob, DiscoveryJobId, DiscoveryJobType } from "../types";
-import type { ImmutableDiscoveryPlan } from "../planner";
 
 const STRENGTH_RANK: Record<string, number> = {
   critical: 4,
@@ -38,39 +45,35 @@ const SIGNAL_TO_JOB_TYPE: Record<string, DiscoveryJobType> = {
 };
 
 export class DefaultJobFactory implements JobFactory {
-  createJobs(
-    plan: ImmutableDiscoveryPlan,
-    _ctx: ExecutionContext,
-    key: ExecutionKey
-  ): JobFactoryResult {
+  createJobs(input: JobFactoryInput, _ctx: ExecutionContext): JobFactoryResult {
     // 1. Determine primary job type from strongest signal
-    const jobType = deriveJobType(plan);
+    const jobType = deriveJobType(input.signals);
 
     // 2. Build sort key
     const sortKey = [
-      plan.sources
+      input.sources
         .map((s) => s.providerCode)
         .sort()
         .join(","),
-      plan.regions.slice().sort().join(","),
-      plan.categories.slice().sort().join(","),
-      plan.niches.slice().sort().join(",")
+      input.regions.slice().sort().join(","),
+      input.categories.slice().sort().join(","),
+      input.niches.slice().sort().join(",")
     ].join("|");
 
     // 3. Generate (source × region × target) triples
     const targets: Array<{ category?: string; niche?: string }> = [];
-    for (const cat of plan.categories) targets.push({ category: cat });
-    for (const niche of plan.niches) targets.push({ niche });
+    for (const cat of input.categories) targets.push({ category: cat });
+    for (const niche of input.niches) targets.push({ niche });
     if (targets.length === 0) targets.push({}); // fallback: scan all
 
     const triples: Array<{
-      source: ImmutableDiscoveryPlan["sources"][number];
+      source: JobFactoryInput["sources"][number];
       region: string;
       category?: string;
       niche?: string;
     }> = [];
-    for (const source of plan.sources) {
-      for (const region of plan.regions) {
+    for (const source of input.sources) {
+      for (const region of input.regions) {
         for (const target of targets) {
           triples.push({ source, region, ...target });
         }
@@ -85,17 +88,19 @@ export class DefaultJobFactory implements JobFactory {
     });
 
     // 5. Distribute API calls evenly with stable remainder
-    const totalCalls = plan.budget.totalApiCalls;
+    const totalCalls = input.budget.totalApiCalls;
     const baseCalls = Math.floor(totalCalls / triples.length);
     const remainder = totalCalls - baseCalls * triples.length;
 
-    // 6. Pick language (first language in plan)
-    const language = plan.languages[0] ?? "en";
+    // 6. Pick language (first language in input)
+    const language = input.languages[0] ?? "en";
 
-    // 7. Materialize jobs
+    // 7. Materialize jobs (R6: parentPlanId + sequenceNumber)
+    const execKeyShort = input.executionKey.value.slice(0, 12);
     const jobs: DiscoveryJob[] = triples.map((t, i) => {
       const calls = baseCalls + (i < remainder ? 1 : 0);
-      const jobId = `job_${key.value}_${i.toString().padStart(4, "0")}` as DiscoveryJobId;
+      const seqStr = i.toString().padStart(4, "0");
+      const jobId = `job_${input.parentPlanId}_${seqStr}_${execKeyShort}` as DiscoveryJobId;
       return {
         id: jobId,
         type: jobType,
@@ -105,7 +110,7 @@ export class DefaultJobFactory implements JobFactory {
         region: t.region,
         language,
         cursor: undefined,
-        priority: plan.priority.overall,
+        priority: input.priority.overall,
         status: "pending",
         attempts: 0,
         maxAttempts: 3,
@@ -113,7 +118,10 @@ export class DefaultJobFactory implements JobFactory {
         startedAt: undefined,
         completedAt: undefined,
         lastError: undefined,
-        result: undefined
+        result: undefined,
+        // R6: parentage for debugging
+        parentPlanId: input.parentPlanId,
+        sequenceNumber: i
       };
     });
 
@@ -121,9 +129,9 @@ export class DefaultJobFactory implements JobFactory {
   }
 }
 
-function deriveJobType(plan: ImmutableDiscoveryPlan): DiscoveryJobType {
-  if (plan.signals.length === 0) return "trending";
-  const sorted = [...plan.signals].sort((a, b) => {
+function deriveJobType(signals: JobFactoryInput["signals"]): DiscoveryJobType {
+  if (signals.length === 0) return "trending";
+  const sorted = [...signals].sort((a, b) => {
     const rankA = STRENGTH_RANK[a.strength] ?? 0;
     const rankB = STRENGTH_RANK[b.strength] ?? 0;
     if (rankB !== rankA) return rankB - rankA;

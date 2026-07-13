@@ -7,14 +7,15 @@
  *   Draft ──▶ Reserved ──▶ Scheduled
  *
  * Inputs  : ImmutableDiscoveryPlan, PlannerContext, ExecutionContext
- * Outputs : DiscoveryJob[], DiscoveryPlanScheduled, DiscoveryJobCreated
+ * Outputs : DiscoveryJob[], DiscoveryPlanScheduled, DiscoveryJobCreated,
+ *           ReservationToken (consumed by A2.3 Workers)
+ *
+ * R2: Builds JobFactoryInput from the plan — JobFactory stays decoupled.
+ * R4: Returns ReservationToken; Workers consume it via consume().
+ * R5: Events carry schemaVersion + workflowVersion + plannerVersion.
+ * R6: Jobs carry parentPlanId + sequenceNumber.
  *
  * It does NOT call providers, does NOT write to DB, does NOT run AI.
- * All side effects (DB writes, provider calls) are delegated to
- * repositories / workers / providers downstream.
- *
- * Idempotency: executionKey = SHA256(planId + planVersion + workflowVersion + providerVersion)
- *   Same key ⇒ same jobs ⇒ no duplication.
  */
 import type {
   PlanValidator,
@@ -27,24 +28,17 @@ import type {
 import type {
   ExecutionContext,
   ExecutionKey,
+  JobFactoryInput,
   OrchestratorResult,
-  PlanLifecycleState
+  PlanLifecycleState,
+  ReservationToken
 } from "./types";
+import { asExecutionKeyValue } from "./types";
 import type { ImmutableDiscoveryPlan } from "../planner";
 import { makePlanScheduledEvent, makeJobCreatedEvent, type OrchestratorEvent } from "./events";
 
 // ── ExecutionKey computation ───────────────────────────────
 
-/**
- * Synchronous SHA-256 substitute suitable for deterministic IDs.
- *
- * We avoid the async WebCrypto API here because:
- *   1. The orchestrator must be deterministic and synchronous-friendly.
- *   2. We don't need cryptographic strength — we need stable hashing.
- *   3. Test ergonomics (no async/await in deterministic tests).
- *
- * Production may swap in crypto.subtle by injecting a custom computeExecutionKey.
- */
 export function computeExecutionKey(
   plan: ImmutableDiscoveryPlan,
   ctx: ExecutionContext
@@ -55,35 +49,27 @@ export function computeExecutionKey(
   const providerManifestVersion = ctx.providerManifest.manifestVersion;
 
   const input = [planId, planVersion, workflowVersion, providerManifestVersion].join("|");
-  const value = `ek_${sha256Sync(input)}`;
+  const value = asExecutionKeyValue(`ek_${fnvHash(input)}`);
 
   return { value, planId, planVersion, workflowVersion, providerManifestVersion };
 }
 
 /**
  * FNV-1a 32-bit hash, two-pass for 64-bit-ish width. Stable across
- * runs and Node versions. Not crypto-secure — see comment above.
- *
- * Why not BigInt? The project's tsconfig targets ES2017, so BigInt
- * literals (0n) are unavailable. We compose two 32-bit hashes
- * instead, which gives us 8 hex chars × 2 = 16 chars — enough for
- * collision resistance across millions of execution keys.
+ * runs and Node versions. Not crypto-secure — we need stable hashing
+ * without BigInt (target is ES2017).
  */
-function sha256Sync(input: string): string {
-  // Pass 1: forward FNV-1a
+function fnvHash(input: string): string {
   let h1 = 0x811c9dc5;
   for (let i = 0; i < input.length; i++) {
     h1 ^= input.charCodeAt(i);
-    // h1 *= 16777619 (FNV prime), kept in 32-bit unsigned space
     h1 = Math.imul(h1, 0x01000193) >>> 0;
   }
-  // Pass 2: backward FNV-1a with different seed
   let h2 = 0x84222325;
   for (let i = input.length - 1; i >= 0; i--) {
     h2 ^= input.charCodeAt(i);
     h2 = Math.imul(h2, 0x01000193) >>> 0;
   }
-  // Mix: cross-pollinate
   h1 = Math.imul(h1 ^ h2, 0x01000193) >>> 0;
   h2 = Math.imul(h2 ^ h1, 0x01000193) >>> 0;
   return h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0");
@@ -131,6 +117,7 @@ export class DiscoveryOrchestrator {
         plan,
         jobs: prior.jobs,
         executionKey,
+        reservationToken: reservation.token ?? null,
         idempotentNoOp: true,
         metrics: this.deps.metrics.snapshot()
       };
@@ -143,50 +130,66 @@ export class DiscoveryOrchestrator {
     if (!v.ok) {
       const state: PlanLifecycleState =
         v.code === "PLAN_TTL_EXCEEDED" || v.code === "PLAN_EXPIRED" ? "expired" : "failed";
+      totalTimer();
       return {
         state,
         plan,
         jobs: [],
         executionKey,
+        reservationToken: null,
         idempotentNoOp: false,
-        failureReason: `${v.code}: ${v.message ?? ""}`,
+        failureReason: `${v.code} (${v.severity}, retryable=${v.retryable}): ${v.message ?? ""}`,
         metrics: this.deps.metrics.snapshot()
       };
     }
 
-    // 4. Reserve budget
+    // 4. Reserve budget (returns ReservationToken — R4)
     const rTimer = this.deps.metrics.startTimer("reservation");
     const r = this.deps.reservation.reserve(plan, ctx, executionKey);
     rTimer();
-    if (!r.ok) {
-      // Release nothing — nothing was reserved
+    if (!r.ok || !r.token) {
+      totalTimer();
       return {
         state: "failed",
         plan,
         jobs: [],
         executionKey,
+        reservationToken: null,
         idempotentNoOp: false,
         failureReason: `${r.code}: ${r.message ?? ""}`,
         metrics: this.deps.metrics.snapshot()
       };
     }
+    const token: ReservationToken = r.token;
 
-    // 5. Create jobs
+    // 5. Create jobs (R2: build JobFactoryInput from plan — decoupled factory)
+    const factoryInput: JobFactoryInput = {
+      executionKey,
+      parentPlanId: plan.id,
+      sources: plan.sources,
+      regions: plan.regions,
+      languages: plan.languages,
+      categories: plan.categories,
+      niches: plan.niches,
+      signals: plan.signals,
+      budget: plan.budget,
+      priority: plan.priority
+    };
     const jTimer = this.deps.metrics.startTimer("jobFactory");
-    const jf = this.deps.jobFactory.createJobs(plan, ctx, executionKey);
+    const jf = this.deps.jobFactory.createJobs(factoryInput, ctx);
     jTimer();
 
     // 6. Register in execution registry (idempotent)
     const newlyRegistered = this.deps.registry.register(executionKey, jf.jobs);
     if (!newlyRegistered) {
-      // Race condition: another worker registered between our lookup and register.
-      // Re-fetch and return their result for idempotency.
       const raceResult = this.deps.registry.lookup(executionKey);
+      totalTimer();
       return {
         state: "scheduled",
         plan,
         jobs: raceResult.jobs,
         executionKey,
+        reservationToken: token,
         idempotentNoOp: true,
         failureReason: "Race: another orchestrator scheduled this plan concurrently",
         metrics: this.deps.metrics.snapshot()
@@ -205,27 +208,32 @@ export class DiscoveryOrchestrator {
     );
     this.deps.metrics.increment("regionsScheduled", new Set(jf.jobs.map((j) => j.region)).size);
 
-    // 9. Emit events (intent events)
+    // 9. Emit events (R5: carry schemaVersion + workflowVersion + plannerVersion)
+    const versions = {
+      workflowVersion: ctx.orchestratorVersion.workflowVersion,
+      plannerVersion: ctx.planner.version.plannerVersion
+    };
     const events: OrchestratorEvent[] = [
-      makePlanScheduledEvent({
+      makePlanScheduledEvent(versions, {
         planId: plan.id,
         planHash: plan.planHash,
         executionKey: executionKey.value,
         storeId: ctx.storeId,
-        workflowVersion: ctx.orchestratorVersion.workflowVersion,
         providerManifestVersion: ctx.providerManifest.manifestVersion,
         jobCount: jf.jobs.length,
-        apiCallsReserved: r.reservedCalls
+        apiCallsReserved: r.reservedCalls,
+        reservationToken: token.value
       }),
       ...jf.jobs.map((j) =>
-        makeJobCreatedEvent({
+        makeJobCreatedEvent(versions, {
           planId: plan.id,
           executionKey: executionKey.value,
           jobId: j.id,
           jobType: j.type,
           providerCode: j.providerCode,
           region: j.region,
-          priority: j.priority
+          priority: j.priority,
+          sequenceNumber: j.sequenceNumber
         })
       )
     ];
@@ -238,6 +246,7 @@ export class DiscoveryOrchestrator {
       plan,
       jobs: jf.jobs,
       executionKey,
+      reservationToken: token,
       idempotentNoOp: false,
       metrics: this.deps.metrics.snapshot()
     };
@@ -246,7 +255,7 @@ export class DiscoveryOrchestrator {
   /**
    * Cancel a scheduled execution. Returns the released reservation (if any).
    * Does NOT cancel already-running jobs — workers must observe the
-   * registry state and abort.
+   * registry state and abort (cooperative cancellation in A2.3).
    */
   async cancel(executionKey: ExecutionKey): Promise<{
     cancelled: boolean;

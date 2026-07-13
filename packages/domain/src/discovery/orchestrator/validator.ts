@@ -1,41 +1,60 @@
 /**
  * @workspace/domain/discovery/orchestrator/validator
  *
- * PlanValidator implementation. Pure function — no DB, no providers.
- * Validates:
- *   - plan status is "draft" (must not be re-scheduled)
- *   - plan is not expired (TTL check)
- *   - plan has at least one source
- *   - plan has at least one region
- *   - plan has at least one language
- *   - plan budget.totalApiCalls > 0
- *   - plan is not empty (sources + categories OR niches)
+ * PlanValidator implementation (A2.2 — refined).
+ *
+ * R3: Returns structured ValidationResult with severity + retryable:
+ *   - severity="error" + retryable=false → permanent failure (e.g. plan empty)
+ *   - severity="error" + retryable=true  → transient (e.g. budget insufficient)
+ *   - severity="warning" + retryable=true → soft issue (e.g. some signals expired)
+ *
+ * Pure function — no DB, no providers.
  */
 import type { PlanValidator } from "./interfaces";
-import type { ExecutionContext, ValidationResult, ValidationCode } from "./types";
+import type {
+  ExecutionContext,
+  ValidationResult,
+  ValidationCode,
+  ValidationSeverity
+} from "./types";
 import type { ImmutableDiscoveryPlan } from "../planner";
 
 const DEFAULT_PLAN_TTL_MS = 1000 * 60 * 60 * 24; // 24h
+
+/**
+ * Severity + retryability matrix per validation code.
+ * Used for observability and to drive Worker retry decisions in A2.3.
+ */
+const CODE_META: Record<ValidationCode, { severity: ValidationSeverity; retryable: boolean }> = {
+  OK: { severity: "warning", retryable: true }, // unused for failures
+  PLAN_EXPIRED: { severity: "error", retryable: false },
+  PLAN_EMPTY: { severity: "error", retryable: false },
+  PLAN_NO_SOURCES: { severity: "error", retryable: false },
+  PLAN_NO_REGIONS: { severity: "error", retryable: false },
+  PLAN_NO_LANGUAGES: { severity: "error", retryable: false },
+  PLAN_BUDGET_ZERO: { severity: "error", retryable: true }, // refill possible
+  PLAN_BUDGET_NEGATIVE: { severity: "error", retryable: true },
+  PLAN_STATUS_INVALID: { severity: "error", retryable: false },
+  PLAN_TTL_EXCEEDED: { severity: "error", retryable: false }
+};
 
 export class DefaultPlanValidator implements PlanValidator {
   validate(plan: ImmutableDiscoveryPlan, ctx: ExecutionContext): ValidationResult {
     const now = (ctx.now ?? (() => new Date()))();
 
-    // 1. Status check — only draft plans can be scheduled
+    // 1. Status check
     if (plan.status !== "draft") {
       return fail("PLAN_STATUS_INVALID", `Plan status is '${plan.status}', expected 'draft'`);
     }
 
-    // 2. TTL check — plan must not be too old
+    // 2. TTL check
     const ttl = ctx.planTtlMs ?? DEFAULT_PLAN_TTL_MS;
     const age = now.getTime() - plan.createdAt.getTime();
     if (age > ttl) {
       return fail("PLAN_TTL_EXCEEDED", `Plan age ${age}ms exceeds TTL ${ttl}ms`);
     }
 
-    // 3. Expiry check — if plan has explicit expiresAt (rare; usually signals)
-    //    We treat plan.signals[].expiresAt as a soft hint: if ALL signals
-    //    have expired, the plan is considered expired.
+    // 3. Expiry check — all signals expired
     const allSignalsExpired = plan.signals.every(
       (s) => s.expiresAt && s.expiresAt.getTime() < now.getTime()
     );
@@ -55,16 +74,14 @@ export class DefaultPlanValidator implements PlanValidator {
     }
 
     // 5. Budget checks
-    if (plan.budget.totalApiCalls <= 0) {
-      return fail("PLAN_BUDGET_ZERO", "Plan budget.totalApiCalls is zero or negative");
-    }
     if (plan.budget.totalApiCalls < 0) {
       return fail("PLAN_BUDGET_NEGATIVE", "Plan budget.totalApiCalls is negative");
     }
+    if (plan.budget.totalApiCalls === 0) {
+      return fail("PLAN_BUDGET_ZERO", "Plan budget.totalApiCalls is zero");
+    }
 
-    // 6. Empty plan check — needs at least categories OR niches to scan
-    //    (a plan with sources + regions + languages but no categories/niches
-    //     would generate jobs that have nothing to query)
+    // 6. Empty plan check
     const hasCategories = plan.categories.length > 0;
     const hasNiches = plan.niches.length > 0;
     const hasKeywords = plan.signals.some((s) => s.scope.niche);
@@ -75,12 +92,13 @@ export class DefaultPlanValidator implements PlanValidator {
       );
     }
 
-    return { ok: true, code: "OK" };
+    return { ok: true, code: "OK", severity: "warning", retryable: true };
   }
 }
 
 function fail(code: ValidationCode, message: string): ValidationResult {
-  return { ok: false, code, message };
+  const meta = CODE_META[code];
+  return { ok: false, code, severity: meta.severity, retryable: meta.retryable, message };
 }
 
 export function createPlanValidator(): PlanValidator {

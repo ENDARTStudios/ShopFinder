@@ -36,6 +36,10 @@ export interface DiscoveryJob {
   readonly completedAt?: Date;
   readonly lastError?: string;
   readonly result?: DiscoveryJobResult;
+  /** R6: ID of the parent DiscoveryPlan — for debugging and lineage queries. */
+  readonly parentPlanId: string;
+  /** R6: 0-indexed position within the parent plan's job set. */
+  readonly sequenceNumber: number;
 }
 export interface DiscoveryJobResult {
   readonly productsDiscovered: number;
