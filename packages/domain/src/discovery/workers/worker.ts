@@ -196,7 +196,8 @@ export class DiscoveryWorker {
         durationMs: totalTimer(),
         apiCallsUsed: totalApiCalls,
         reservationConsumed,
-        metrics: ctx.metrics.snapshot()
+        metrics: ctx.metrics.snapshot(),
+        traceId: job.traceId ?? ctx.traceId
       });
     } catch (e) {
       // Detect cancellation errors and route to handleCancellation

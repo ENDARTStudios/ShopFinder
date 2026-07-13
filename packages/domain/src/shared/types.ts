@@ -76,6 +76,31 @@ export type IntegrationId = BrandedId<"IntegrationId">;
 export type SyncJobId = BrandedId<"SyncJobId">;
 export type SyncExecutionId = BrandedId<"SyncExecutionId">;
 
+// ── Discovery Trace (cross-cutting traceability) ────────────
+//
+// DiscoveryTraceId is the single correlation key that flows through
+// the ENTIRE discovery pipeline — from DiscoverySignal to
+// BusinessMetricsSnapshot. It enables:
+//   - end-to-end traceability
+//   - log/trace correlation
+//   - AI decision audit
+//   - failure reproduction
+//   - distributed observability without backend coupling
+//
+// Born in the Planner (when a signal becomes a plan), propagated
+// through every artifact and event, and consumed by Monitoring.
+export type DiscoveryTraceId = BrandedId<"DiscoveryTraceId">;
+
+/** Coerce a raw string into a branded DiscoveryTraceId. */
+export const asDiscoveryTraceId = (v: string): DiscoveryTraceId => asId<"DiscoveryTraceId">(v);
+
+/** Generate a new unique DiscoveryTraceId. */
+export function generateDiscoveryTraceId(): DiscoveryTraceId {
+  const ts = Date.now().toString(36);
+  const rand = Math.random().toString(36).slice(2, 10);
+  return `trace_${ts}_${rand}` as DiscoveryTraceId;
+}
+
 // ── Generic fallback (for cross-cutting concerns) ───────────
 //
 // Use BrandedId<"Foo"> for new IDs that don't fit any context above.

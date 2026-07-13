@@ -23,6 +23,7 @@
 
 // Re-export everything from submodules
 export * from "./types";
+export * from "./traceability";
 export * from "./planner";
 export * from "./orchestrator";
 export * from "./workers";

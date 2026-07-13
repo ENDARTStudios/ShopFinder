@@ -30,6 +30,7 @@ export function completed(params: {
   apiCallsUsed: number;
   reservationConsumed: boolean;
   metrics: WorkerMetricsSnapshot;
+  traceId?: import("../../shared").DiscoveryTraceId;
 }): WorkerResult {
   return {
     state: "completed",
@@ -43,7 +44,8 @@ export function completed(params: {
     durationMs: params.durationMs,
     apiCallsUsed: params.apiCallsUsed,
     reservationConsumed: params.reservationConsumed,
-    metrics: params.metrics
+    metrics: params.metrics,
+    traceId: params.traceId
   };
 }
 

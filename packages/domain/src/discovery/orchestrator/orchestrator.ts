@@ -173,7 +173,8 @@ export class DiscoveryOrchestrator {
       niches: plan.niches,
       signals: plan.signals,
       budget: plan.budget,
-      priority: plan.priority
+      priority: plan.priority,
+      traceId: plan.traceId ?? ctx.traceId
     };
     const jTimer = this.deps.metrics.startTimer("jobFactory");
     const jf = this.deps.jobFactory.createJobs(factoryInput, ctx);

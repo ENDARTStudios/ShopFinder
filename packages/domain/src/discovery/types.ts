@@ -40,6 +40,8 @@ export interface DiscoveryJob {
   readonly parentPlanId: string;
   /** R6: 0-indexed position within the parent plan's job set. */
   readonly sequenceNumber: number;
+  /** Cross-cutting traceability — flows from Plan → Job → Worker → all artifacts. */
+  readonly traceId?: import("../shared").DiscoveryTraceId;
 }
 export interface DiscoveryJobResult {
   readonly productsDiscovered: number;

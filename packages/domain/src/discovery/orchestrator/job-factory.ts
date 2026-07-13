@@ -121,7 +121,9 @@ export class DefaultJobFactory implements JobFactory {
         result: undefined,
         // R6: parentage for debugging
         parentPlanId: input.parentPlanId,
-        sequenceNumber: i
+        sequenceNumber: i,
+        // Cross-cutting traceability
+        traceId: input.traceId
       };
     });
 

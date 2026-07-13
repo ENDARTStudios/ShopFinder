@@ -255,6 +255,8 @@ export interface WorkerContext {
    * Injected per-worker for testability.
    */
   readonly executor: import("./executor").JobExecutor;
+  /** Cross-cutting traceability — propagated from DiscoveryJob.traceId. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 // ── Worker result ──────────────────────────────────────────
@@ -278,6 +280,8 @@ export interface WorkerResult {
   readonly reservationConsumed: boolean;
   readonly error?: WorkerError;
   readonly metrics: WorkerMetricsSnapshot;
+  /** Cross-cutting traceability — propagated from WorkerContext.traceId. */
+  readonly traceId?: import("../../shared").DiscoveryTraceId;
 }
 
 export interface WorkerMetricsSnapshot {
