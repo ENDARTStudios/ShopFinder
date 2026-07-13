@@ -615,3 +615,93 @@ Stage Summary:
 - Pipeline A2.1→A2.2→A2.3 completo: Planner → Orchestrator → Workers. Handoff via ReservationToken. Lifecycle: draft → reserved → scheduled → executing → completed | failed | cancelled.
 - 133 arquivos verificados, 0 violations. 76 testes passando no discovery module.
 - Próximo: A2.4 — Raw Product Store (persistir NormalizedDiscoveredProduct[] bruto).
+
+---
+
+Task ID: A2.3-contracts — Cross-cutting contracts (C1-C5)
+Agent: main (Super Z)
+Task: Incorporar 5 contratos transversais aos módulos A2.3 existentes, sem criar novos bounded contexts: RetryPolicyConfig (declarativo), ProviderSelectionPolicy (4 estratégias swappable), ErrorTaxonomy (11 códigos padronizados), ProviderSnapshot (audit trail), DiscoveryExecutionResult (contract de observabilidade).
+
+Work Log:
+
+### C1. RetryPolicyConfig (declarative)
+
+- Criado `contracts.ts` com `RetryPolicyConfig` (data) separado de `RetryPolicy` (behavior, já existente em types.ts).
+- 3 backoff strategies suportadas: `"fixed" | "linear" | "exponential"`.
+- `computeRetryDelay(config, attempt)` — pure function. Fixed = baseDelayMs. Linear = baseDelayMs * attempt. Exponential = baseDelayMs * 2^(attempt-1). Todas com cap maxDelayMs e jitter ±20% opcional.
+- `isRetriableError(config, errorCode, errorRetriableFlag)` — se retryableErrors vazio, defer para flag do erro; se não-vazio, só retry códigos na lista.
+- `ConfigurableRetryPolicy` — nova classe que interpreta RetryPolicyConfig. Substitui ExponentialBackoffRetryPolicy como implementação padrão.
+- `ExponentialBackoffRetryPolicy` mantida para backwards-compat (delega para ConfigurableRetryPolicy com backoffStrategy="exponential").
+- `workerConfigToRetryPolicy(config)` — bridge de WorkerConfig legado para RetryPolicyConfig declarativo.
+- DefaultRetryPolicyConfig exportado (maxAttempts=4, exponential, base=500ms, max=30s, jitter=true).
+
+### C2. ProviderSelectionPolicy (4 estratégias + exact)
+
+- `ProviderSelectionInput`: capability, region, candidates[].
+- `ProviderCandidate`: providerCode, providerVersion, health, costScore (0-100), latencyMs, priority (0-100).
+- `ProviderSelectionOutput`: providerCode, reason, rejected[].
+- 5 estratégias implementadas:
+  • `CheapestProviderPolicy` — lowest costScore, ties por priority.
+  • `FastestProviderPolicy` — lowest latencyMs, ties por priority.
+  • `HealthiestProviderPolicy` — status rank (healthy>degraded>offline), ties por errorRate depois priority.
+  • `WeightedProviderPolicy` — score = priority*0.5 + (100-cost)*0.25 + (100-errorRate)*0.25. Weights customizáveis.
+  • `ExactProviderPolicy` — match por requestedCode. Usado quando job especifica provider.
+- `createSelectionPolicy(strategy, options?)` — factory que instancia a estratégia correta.
+- `DefaultProviderSelector` (provider-selection.ts) atualizado para delegar a ProviderSelectionPolicy. Se nenhuma policy injetada, usa ExactProviderPolicy com job.providerCode.
+- `createProviderSelectorWithStrategy(strategy, options?)` — convenience factory.
+
+### C3. ErrorTaxonomy (11 códigos padronizados)
+
+- `ErrorTaxonomy` const com 11 códigos: RATE_LIMIT, NETWORK, AUTH, TIMEOUT, INVALID_RESPONSE, BAD_DATA, NOT_FOUND, CANCELLED, NO_PROVIDER, OVER_QUOTA, UNKNOWN.
+- `canonicalizeErrorCode(code)` — migra códigos legados (PROVIDER_ERROR→NETWORK, RATE_LIMITED→RATE_LIMIT) e mapeia desconhecidos para UNKNOWN.
+- `DEFAULT_RETRIABILITY` — map de code→boolean. Transient (RATE_LIMIT, NETWORK, TIMEOUT, INVALID_RESPONSE, OVER_QUOTA) = true. Permanent (AUTH, BAD_DATA, NOT_FOUND, CANCELLED, NO_PROVIDER, UNKNOWN) = false.
+- `WorkerErrors` factory (result.ts) atualizado: todos os 11 factories agora usam ErrorTaxonomy codes e DEFAULT_RETRIABILITY. Novos factories: `network()`, `auth()`, `invalidResponse()`, `badData()`, `notFound()`. `fromCode(code, msg)` canonicaliza códigos legados.
+
+### C4. ProviderSnapshot (audit trail)
+
+- `ProviderSnapshotId` branded type.
+- `ProviderSnapshot` interface: id, providerCode, providerVersion, manifestVersion, capturedAt, health{status, errorRate, averageLatencyMs, consecutiveFailures, totalRequests}, rateLimit{requestsRemaining, resetAt, limitPerMinute}.
+- `buildProviderSnapshot(params)` — factory que captura estado imutável do provider no momento do início da execução. ID único com random suffix. Anexado ao DiscoveryExecutionResult para auditoria — sabe exatamente qual estado do provider gerou aquele resultado.
+
+### C5. DiscoveryExecutionResult (observability contract)
+
+- `DiscoveryExecutionResult` interface: jobId, planId, executionKey, providerId, providerSnapshot, status (succeeded|failed|cancelled), durationMs, attempts, apiCallsUsed, productsDiscovered, productsNormalized, nextCursor, hasMore, warnings[], errors[]{code, message, retriable}, metrics{discoveryDurationMs, checkpointDurationMs, rateLimitWaitMs, retryDelayMs, itemsProcessed, retries, checkpointsSaved}, schemaVersion, workflowVersion, plannerVersion, completedAt.
+- `DISCOVERY_RESULT_SCHEMA_VERSION = "1.0.0"` constante.
+- `toDiscoveryExecutionResult(params)` mapper em result.ts: converte WorkerResult (perspectiva interna do worker) → DiscoveryExecutionResult (perspectiva externa de observabilidade). Canonicaliza error codes automaticamente.
+
+### Mapeamento dos 10 módulos aos 4 slices
+
+Atualizado `index.ts` com cabeçalho documentando o mapeamento:
+
+- **A2.3.1 Worker Engine**: worker.ts (paging coordinator), executor.ts (single-fetch retry/timeout/rate-limit), provider-selection.ts (delega a ProviderSelectionPolicy)
+- **A2.3.2 Connector Executor**: types.ts (DiscoveryConnector contract), rate-limit.ts (TokenBucketRateLimiter per-provider)
+- **A2.3.3 Checkpoint**: checkpoint.ts (In-memory CheckpointStore + buildCheckpoint)
+- **A2.3.4 Events**: events.ts (factories Started/Completed/Failed), metrics.ts (WorkerMetricsCollector + NoopEventPublisher), result.ts (WorkerResult builders + WorkerErrors + toDiscoveryExecutionResult)
+- **Cross-cutting**: contracts.ts (C1-C5), retry.ts (ConfigurableRetryPolicy)
+
+### Testes (contracts.test.ts, 450 linhas, 39 testes)
+
+- C1 RetryPolicyConfig (12 testes): computeRetryDelay para fixed/linear/exponential, cap maxDelayMs, jitter range ±20%, isRetriableError com lista vazia/não-vazia, ConfigurableRetryPolicy respeita maxAttempts, rejeita non-retriable, filtra por retryableErrors, NoRetryPolicy nunca retry.
+- C2 ProviderSelectionPolicy (12 testes): Cheapest seleciona lowest costScore + tie por priority + empty case. Fastest seleciona lowest latency. Healthiest prefere healthy>degraded>offline + tie por errorRate. Weighted computa score com weights default + custom. Exact match + no-match. Factory cria cada estratégia + throw sem requestedCode.
+- C3 ErrorTaxonomy (8 testes): 11 códigos expostos, canonicalizeErrorCode pass-through + migration + unknown→UNKNOWN, DEFAULT_RETRIABILITY transient vs permanent, WorkerErrors factory produz códigos canônicos + retriable flag + fromCode canonicaliza.
+- C4 ProviderSnapshot (2 testes): build imutável com health/rateLimit, IDs únicos.
+- C5 DiscoveryExecutionResult (5 testes): map completed→succeeded, failed→failed com error details, cancelled→cancelled, canonicaliza legacy codes, schemaVersion 1.0.0.
+
+### Verificações
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 135 files, 0 violations (salto 133 → 135 com contracts.ts + contracts.test.ts)
+- ✓ bun test packages/domain/src/discovery/ → 115 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts)
+- ✓ HTTP 200
+- ✓ Nenhum novo bounded context criado (apenas contracts.ts dentro do módulo workers existente)
+- ✓ Nenhum ADR estrutural necessário (contratos são refinamentos dentro do módulo A2.3)
+- ✓ Backwards-compatível: ExponentialBackoffRetryPolicy e DefaultProviderSelector mantêm API legada
+
+Stage Summary:
+
+- 5 contratos transversais (C1-C5) incorporados aos módulos A2.3 existentes sem criar novos bounded contexts.
+- contracts.ts (470 linhas) centraliza os 5 contratos. retry.ts, provider-selection.ts, result.ts atualizados para implementá-los.
+- 39 novos testes em contracts.test.ts cobrindo todos os 5 contratos.
+- 115 testes totais passando no discovery module (9 planner + 43 orchestrator + 24 worker + 39 contracts).
+- Arquitetura permanece estável. Esforço direcionado para value delivery: próximo é A2.4 — Raw Product Store (persistir NormalizedDiscoveredProduct[] produzido pelos Workers).

@@ -1,42 +1,99 @@
 /**
  * @workspace/domain/discovery/workers/retry
  *
- * Exponential backoff retry policy with jitter.
+ * Retry strategies that interpret a declarative RetryPolicyConfig.
  *
- *   delay(attempt) = min(maxRetryDelayMs, baseRetryDelayMs * 2^(attempt-1)) + jitter
+ * The `RetryPolicy` interface (in types.ts) is the BEHAVIOR contract.
+ * `RetryPolicyConfig` (in contracts.ts) is the DATA contract.
  *
- * Non-retriable errors return null immediately (no retry).
+ * Three strategies interpret the same config:
+ *   - FixedBackoffStrategy:      delay = baseDelayMs
+ *   - LinearBackoffStrategy:     delay = baseDelayMs * attempt
+ *   - ExponentialBackoffStrategy: delay = baseDelayMs * 2^(attempt-1)
+ *
+ * All three honor maxDelayMs cap, jitter flag, and retryableErrors filter.
  */
 import type { RetryPolicy, WorkerError, WorkerConfig } from "./types";
+import {
+  computeRetryDelay,
+  isRetriableError,
+  type RetryPolicyConfig,
+  DefaultRetryPolicyConfig
+} from "./contracts";
 
-export class ExponentialBackoffRetryPolicy implements RetryPolicy {
+/**
+ * Bridge from WorkerConfig (legacy) to RetryPolicyConfig (declarative).
+ */
+export function workerConfigToRetryPolicy(config: WorkerConfig): RetryPolicyConfig {
+  return {
+    maxAttempts: config.maxRetries + 1,
+    backoffStrategy: "exponential",
+    baseDelayMs: config.baseRetryDelayMs,
+    maxDelayMs: config.maxRetryDelayMs,
+    jitter: true,
+    retryableErrors: []
+  };
+}
+
+/**
+ * Configurable retry policy backed by a RetryPolicyConfig.
+ * Replaces the original ExponentialBackoffRetryPolicy.
+ */
+export class ConfigurableRetryPolicy implements RetryPolicy {
   readonly maxAttempts: number;
 
-  constructor(
-    private readonly config: Pick<
-      WorkerConfig,
-      "maxRetries" | "baseRetryDelayMs" | "maxRetryDelayMs"
-    >
-  ) {
-    this.maxAttempts = config.maxRetries + 1; // initial attempt + retries
+  constructor(private readonly config: RetryPolicyConfig) {
+    this.maxAttempts = config.maxAttempts;
   }
 
   nextDelay(attempt: number, error: WorkerError): number | null {
-    // Never retry non-retriable errors
-    if (!error.retriable) return null;
+    // Check retriability via the config's filter
+    if (!isRetriableError(this.config, error.code, error.retriable)) {
+      return null;
+    }
     // No more attempts
     if (attempt >= this.maxAttempts) return null;
 
-    const exp = this.config.baseRetryDelayMs * Math.pow(2, attempt - 1);
-    const capped = Math.min(this.config.maxRetryDelayMs, exp);
-    // Jitter: ±20% to avoid thundering herd
-    const jitterFactor = 0.8 + Math.random() * 0.4;
-    return Math.round(capped * jitterFactor);
+    return computeRetryDelay(this.config, attempt);
+  }
+}
+
+/**
+ * Backwards-compatible exponential backoff policy.
+ * Uses RetryPolicyConfig under the hood with backoffStrategy="exponential".
+ */
+export class ExponentialBackoffRetryPolicy implements RetryPolicy {
+  readonly maxAttempts: number;
+  private readonly inner: ConfigurableRetryPolicy;
+
+  constructor(config: Pick<WorkerConfig, "maxRetries" | "baseRetryDelayMs" | "maxRetryDelayMs">) {
+    const declarative: RetryPolicyConfig = {
+      maxAttempts: config.maxRetries + 1,
+      backoffStrategy: "exponential",
+      baseDelayMs: config.baseRetryDelayMs,
+      maxDelayMs: config.maxRetryDelayMs,
+      jitter: true,
+      retryableErrors: []
+    };
+    this.inner = new ConfigurableRetryPolicy(declarative);
+    this.maxAttempts = this.inner.maxAttempts;
+  }
+
+  nextDelay(attempt: number, error: WorkerError): number | null {
+    return this.inner.nextDelay(attempt, error);
   }
 }
 
 export function createExponentialBackoffRetryPolicy(config: WorkerConfig): RetryPolicy {
   return new ExponentialBackoffRetryPolicy(config);
+}
+
+export function createConfigurableRetryPolicy(config: RetryPolicyConfig): RetryPolicy {
+  return new ConfigurableRetryPolicy(config);
+}
+
+export function createDefaultRetryPolicy(): RetryPolicy {
+  return new ConfigurableRetryPolicy(DefaultRetryPolicyConfig);
 }
 
 /**

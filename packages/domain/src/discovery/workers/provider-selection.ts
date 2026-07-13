@@ -1,14 +1,16 @@
 /**
  * @workspace/domain/discovery/workers/provider-selection
  *
- * ProviderSelector implementation.
+ * ProviderSelector implementation that delegates to a ProviderSelectionPolicy.
  *
- * Selection order:
- *   1. Exact match by job.providerCode (if connector is registered)
- *   2. Fallback: throw NoProviderAvailable
+ * Two layers:
+ *   - ProviderSelectionPolicy (contracts.ts): swappable strategy
+ *     (cheapest/fastest/healthiest/weighted/exact). Pure data-in, data-out.
+ *   - ProviderSelector (types.ts): integrates with the Worker's runtime
+ *     types (DiscoveryJob, DiscoveryConnector map, ProviderHealth).
  *
- * Health metadata is returned alongside the connector so the worker
- * can adjust expectations (degraded providers may be slower).
+ * The selector builds ProviderSelectionInput from the job + connectors,
+ * invokes the policy, and returns the chosen connector.
  */
 import type {
   ProviderSelector,
@@ -17,27 +19,72 @@ import type {
   ProviderHealth,
   WorkerError
 } from "./types";
+import type {
+  ProviderSelectionPolicy,
+  ProviderCandidate,
+  ProviderSelectionInput
+} from "./contracts";
+import { ExactProviderPolicy, createSelectionPolicy } from "./contracts";
 
 export class DefaultProviderSelector implements ProviderSelector {
+  constructor(private readonly policy?: ProviderSelectionPolicy) {}
+
   select(
     job: DiscoveryJob,
     connectors: ReadonlyMap<string, DiscoveryConnector>
   ): { connector: DiscoveryConnector; health: ProviderHealth | null } {
-    const connector = connectors.get(job.providerCode);
-    if (!connector) {
-      // Throw a structured WorkerError so the worker's error handling
-      // recognizes the code instead of wrapping it as UNKNOWN.
+    // Build candidates from registered connectors
+    const candidates: ProviderCandidate[] = [];
+    for (const [code, connector] of connectors) {
+      candidates.push({
+        providerCode: code,
+        providerVersion: connector.providerVersion,
+        health: {
+          providerCode: code,
+          status: "healthy",
+          lastSuccess: new Date(),
+          consecutiveFailures: 0,
+          averageLatencyMs: 0,
+          errorRate: 0,
+          totalRequests: 0,
+          totalErrors: 0
+        },
+        costScore: 50,
+        latencyMs: 100,
+        priority: 50
+      });
+    }
+
+    // Determine policy: explicit policy, or exact-match fallback
+    const policy = this.policy ?? new ExactProviderPolicy(job.providerCode);
+
+    const input: ProviderSelectionInput = {
+      capability: "discovery",
+      region: job.region,
+      candidates
+    };
+
+    const output = policy.select(input);
+
+    if (!output.providerCode) {
       const error: WorkerError & Error = Object.assign(
-        new Error(`No connector registered for providerCode '${job.providerCode}' (job ${job.id})`),
-        {
-          code: "NO_PROVIDER",
-          retriable: false
-        }
+        new Error(
+          `No connector selected for providerCode '${job.providerCode}' (job ${job.id}). Reason: ${output.reason}`
+        ),
+        { code: "NO_PROVIDER", retriable: false }
       );
       throw error;
     }
-    // Health is fetched separately by the Worker if needed; the selector
-    // is kept pure (no DB / registry lookups).
+
+    const connector = connectors.get(output.providerCode);
+    if (!connector) {
+      const error: WorkerError & Error = Object.assign(
+        new Error(`Selected provider '${output.providerCode}' not registered (job ${job.id})`),
+        { code: "NO_PROVIDER", retriable: false }
+      );
+      throw error;
+    }
+
     return { connector, health: null };
   }
 }
@@ -51,6 +98,18 @@ export class NoProviderAvailable extends Error {
   }
 }
 
-export function createProviderSelector(): ProviderSelector {
-  return new DefaultProviderSelector();
+export function createProviderSelector(policy?: ProviderSelectionPolicy): ProviderSelector {
+  return new DefaultProviderSelector(policy);
+}
+
+/**
+ * Convenience: create a selector with a specific strategy.
+ *   createProviderSelectorWithStrategy("cheapest")
+ *   createProviderSelectorWithStrategy("exact", { requestedCode: "aliexpress" })
+ */
+export function createProviderSelectorWithStrategy(
+  strategy: Parameters<typeof createSelectionPolicy>[0],
+  options?: Parameters<typeof createSelectionPolicy>[1]
+): ProviderSelector {
+  return new DefaultProviderSelector(createSelectionPolicy(strategy, options));
 }
