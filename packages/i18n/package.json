@@ -1,0 +1,34 @@
+{
+  "name": "@workspace/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internationalization — messages, routing, locale config.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./locale": {
+      "types": "./src/locale.ts",
+      "import": "./src/locale.ts"
+    },
+    "./messages": {
+      "types": "./src/messages/index.ts",
+      "import": "./src/messages/index.ts"
+    },
+    "./routing": {
+      "types": "./src/routing/index.ts",
+      "import": "./src/routing/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

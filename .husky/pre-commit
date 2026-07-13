@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "── lint-staged ─────────────────────────────────────"
+bunx lint-staged --quiet
+echo "── typecheck (root) ────────────────────────────────"
+bunx tsc --noEmit -p tsconfig.json

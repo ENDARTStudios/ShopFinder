@@ -1,0 +1,20 @@
+{
+  "name": "@workspace/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared build configuration (tsconfig, eslint, prettier) for the workspace.",
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./eslint.base.mjs": "./eslint.base.mjs",
+    "./prettier.config.mjs": "./prettier.config.mjs"
+  },
+  "files": [
+    "tsconfig.base.json",
+    "eslint.base.mjs",
+    "prettier.config.mjs"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

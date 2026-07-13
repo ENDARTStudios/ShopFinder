@@ -1,0 +1,54 @@
+{
+  "name": "@workspace/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Domain-Driven Design System — tokens, primitives, commerce, admin, marketing, charts components.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./tokens": {
+      "types": "./src/tokens/index.ts",
+      "import": "./src/tokens/index.ts"
+    },
+    "./primitives": {
+      "types": "./src/primitives/index.ts",
+      "import": "./src/primitives/index.ts"
+    },
+    "./commerce": {
+      "types": "./src/commerce/index.ts",
+      "import": "./src/commerce/index.ts"
+    },
+    "./admin": {
+      "types": "./src/admin/index.ts",
+      "import": "./src/admin/index.ts"
+    },
+    "./marketing": {
+      "types": "./src/marketing/index.ts",
+      "import": "./src/marketing/index.ts"
+    },
+    "./charts": {
+      "types": "./src/charts/index.ts",
+      "import": "./src/charts/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "^0.525.0",
+    "recharts": "^2.15.4"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

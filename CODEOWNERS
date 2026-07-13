@@ -1,0 +1,15 @@
+# Default owners for everything
+*                       @project-lead
+
+# Per-package ownership
+/packages/domain/       @project-lead
+/packages/contracts/    @project-lead
+/packages/ai/           @project-lead
+/packages/database/     @project-lead
+/packages/auth/         @project-lead
+/packages/integrations/ @project-lead
+
+# CI and security
+/.github/               @project-lead
+/SECURITY.md            @project-lead
+/CODEOWNERS             @project-lead

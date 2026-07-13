@@ -1,0 +1,47 @@
+{
+  "name": "@workspace/database",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Prisma client, mappers, repositories, query services, unit of work. SQLite (dev) → PostgreSQL (prod).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./mappers": {
+      "types": "./src/mappers/index.ts",
+      "import": "./src/mappers/index.ts"
+    },
+    "./repositories": {
+      "types": "./src/repositories/index.ts",
+      "import": "./src/repositories/index.ts"
+    },
+    "./queries": {
+      "types": "./src/queries/index.ts",
+      "import": "./src/queries/index.ts"
+    },
+    "./unit-of-work": {
+      "types": "./src/unit-of-work/index.ts",
+      "import": "./src/unit-of-work/index.ts"
+    },
+    "./cache": {
+      "types": "./src/cache/index.ts",
+      "import": "./src/cache/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "@workspace/domain": "workspace:*",
+    "@workspace/contracts": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
