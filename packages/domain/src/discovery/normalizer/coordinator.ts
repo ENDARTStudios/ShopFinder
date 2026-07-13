@@ -79,7 +79,7 @@ export class NormalizationCoordinator {
       const result = await this.deps.normalizer.normalize(record, product);
       await this.deps.repository.append(result);
       normalized.push(result);
-      semanticHashes.push(result.semanticHash);
+      semanticHashes.push(result.semanticFingerprint.value);
 
       // Update metrics
       metricsCollector.incrementTitle();
@@ -95,7 +95,7 @@ export class NormalizationCoordinator {
     // 3. Emit NormalizedProductsCreated + SemanticHashesGenerated
     if (this.deps.events && normalized.length > 0) {
       const hashCounts = normalized.map((n) => ({
-        semanticHash: n.semanticHash,
+        semanticHash: n.semanticFingerprint.value,
         phashCount: n.normalizedImages.length
       }));
 

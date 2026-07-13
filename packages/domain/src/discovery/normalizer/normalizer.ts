@@ -76,7 +76,8 @@ export class DefaultProductNormalizer implements ProductNormalizer {
     this.titleNormalizer = deps.titleNormalizer ?? new DefaultTitleNormalizer();
     this.brandNormalizer = deps.brandNormalizer ?? new DefaultBrandNormalizer();
     this.categoryNormalizer = deps.categoryNormalizer ?? new DefaultCategoryNormalizer();
-    this.attributeNormalizer = deps.attributeNormalizer ?? new DefaultAttributeNormalizer();
+    this.attributeNormalizer =
+      deps.attributeNormalizer ?? new DefaultAttributeNormalizer(versions.normalizerVersion);
     this.imageNormalizer = deps.imageNormalizer ?? new DefaultImageNormalizer();
     this.priceNormalizer = deps.priceNormalizer ?? new DefaultPriceNormalizer();
     this.semanticHasher = deps.semanticHasher ?? new DefaultSemanticHasher();
@@ -136,7 +137,7 @@ export class DefaultProductNormalizer implements ProductNormalizer {
     confidenceSum += priceResult.confidence;
     stageCount++;
 
-    // 7. Semantic hash
+    // 7. Semantic fingerprint (R1: versioned, not plain string)
     const semanticResult = await this.semanticHasher.compute(
       titleResult.value,
       brandResult.value,
@@ -148,17 +149,32 @@ export class DefaultProductNormalizer implements ProductNormalizer {
     confidenceSum += semanticResult.confidence;
     stageCount++;
 
-    const id = this.makeId(record, semanticResult.value) as unknown as NormalizedProductRecordId;
+    // R4: Resolve canonical brand ID (null if brand is UNKNOWN)
+    const canonicalBrandId =
+      brandResult.value !== "UNKNOWN"
+        ? `brand_${brandResult.value.toLowerCase().replace(/\s+/g, "_")}`
+        : null;
+
+    // R5: Resolve canonical category ID (null if UNCATEGORIZED)
+    const canonicalCategoryId =
+      categoryResult.value !== "UNCATEGORIZED" ? `cat_${categoryResult.value.toLowerCase()}` : null;
+
+    const id = this.makeId(
+      record,
+      semanticResult.value.value
+    ) as unknown as NormalizedProductRecordId;
 
     return {
       id,
       rawProductId: record.id,
       executionId: record.executionId,
       payloadHash: record.payloadHash,
-      semanticHash: semanticResult.value,
+      semanticFingerprint: semanticResult.value,
       normalizedTitle: titleResult.value,
       normalizedBrand: brandResult.value,
+      canonicalBrandId,
       normalizedCategory: categoryResult.value,
+      canonicalCategoryId,
       normalizedAttributes: attributeResult.value,
       normalizedImages: imageResult.value,
       normalizedPrice: priceResult.value,
@@ -178,12 +194,11 @@ export class DefaultProductNormalizer implements ProductNormalizer {
   }
 
   /**
-   * Deterministic ID: same (rawProductId, normalizerVersion, semanticHash) → same ID.
-   * Enables idempotent re-normalization: running the same normalizer version
-   * on the same raw record produces the same NormalizedProductRecord.
+   * Deterministic ID: same (rawProductId, normalizerVersion, semanticFingerprint) → same ID.
+   * Enables idempotent re-normalization.
    */
-  private makeId(record: RawProductRecord, semanticHash: string): string {
-    return `norm_${record.id}_${this.versions.normalizerVersion}_${semanticHash}`;
+  private makeId(record: RawProductRecord, semanticValue: string): string {
+    return `norm_${record.id}_${this.versions.normalizerVersion}_${semanticValue}`;
   }
 }
 

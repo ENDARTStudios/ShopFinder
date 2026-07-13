@@ -88,6 +88,10 @@ export interface CanonicalAttribute {
   readonly value: string;
   readonly confidence: number; // 0-1
   readonly sourceAttribute: string; // original marketplace attribute name
+  /** R3: Which normalizer version produced this attribute. */
+  readonly normalizerVersion: string;
+  /** R3: How this attribute was derived: "dictionary" | "inferred" | "ai" | "manual". */
+  readonly source: "dictionary" | "inferred" | "ai" | "manual";
 }
 
 // ── Price band (R6: normalize to bands, not absolute) ──────
@@ -111,14 +115,35 @@ export interface NormalizedPrice {
   readonly originalAmount: number;
 }
 
-// ── Image hash (R7: Perceptual Hash) ───────────────────────
+// ── Fingerprint (R1+R2: algorithm-versioned, swappable) ────
+
+/**
+ * A versioned fingerprint. The algorithm + version identify HOW the
+ * fingerprint was computed; the value is the actual hash/embedding.
+ *
+ * This enables swapping algorithms without schema migration:
+ *   v1: { algorithm: "fnv", version: "v1", value: "..." }
+ *   v2: { algorithm: "simhash", version: "v2", value: "..." }
+ *   v3: { algorithm: "embedding-cosine", version: "v3", value: "..." }
+ */
+export interface Fingerprint {
+  readonly algorithm: string;
+  readonly version: string;
+  readonly value: string;
+}
+
+/** Semantic fingerprint — for product-level deduplication. */
+export type SemanticFingerprint = Fingerprint;
+
+/** Image fingerprint — for visual deduplication. */
+export type ImageFingerprint = Fingerprint;
+
+// ── Image (R2: uses ImageFingerprint) ──────────────────────
 
 export interface NormalizedImage {
   readonly url: string;
-  /** Perceptual hash for deduplication (similar images → similar phash). */
-  readonly phash: string;
-  /** SHA-256 of the image bytes for exact-match dedup. */
-  readonly sha256?: string;
+  /** R2: Perceptual fingerprint for deduplication (algorithm-versioned). */
+  readonly fingerprint: ImageFingerprint;
 }
 
 // ── NormalizedProductRecord (R1: new artifact) ─────────────
@@ -128,12 +153,17 @@ export interface NormalizedProductRecord {
   readonly rawProductId: RawProductRecord["id"];
   readonly executionId: DiscoveryExecutionId;
   readonly payloadHash: string;
-  readonly semanticHash: string;
+  /** R1: Versioned semantic fingerprint (replaces plain semanticHash string). */
+  readonly semanticFingerprint: SemanticFingerprint;
 
   // Normalized fields
   readonly normalizedTitle: string;
   readonly normalizedBrand: string;
+  /** R4: Resolved canonical brand ID (null if not resolved to a known brand). */
+  readonly canonicalBrandId: string | null;
   readonly normalizedCategory: string;
+  /** R5: Resolved canonical category ID (null if not mapped to taxonomy). */
+  readonly canonicalCategoryId: string | null;
   readonly normalizedAttributes: ReadonlyArray<CanonicalAttribute>;
   readonly normalizedImages: ReadonlyArray<NormalizedImage>;
   readonly normalizedPrice: NormalizedPrice;
@@ -146,7 +176,6 @@ export interface NormalizedProductRecord {
   readonly discoveredAt: Date;
   readonly normalizedAt: Date;
   readonly partitionKey: string;
-
   // Versioning
   readonly normalizerVersions: NormalizerVersions;
   readonly rawVersions: RawProductRecord["versions"];

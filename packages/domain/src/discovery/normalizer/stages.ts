@@ -20,7 +20,9 @@ import type {
   CanonicalAttribute,
   NormalizedImage,
   NormalizedPrice,
-  CanonicalAttributeName
+  CanonicalAttributeName,
+  SemanticFingerprint,
+  ImageFingerprint
 } from "./types";
 import type { NormalizedDiscoveredProduct } from "../../marketplace";
 
@@ -93,7 +95,7 @@ export interface SemanticHasher {
     category: string,
     attributes: ReadonlyArray<CanonicalAttribute>,
     priceBand: string
-  ): Promise<NormalizationStageResult<string>>;
+  ): Promise<NormalizationStageResult<SemanticFingerprint>>;
 }
 
 // ── Default implementations (stubs suitable for initial dev) ──
@@ -172,14 +174,17 @@ export class DefaultCategoryNormalizer implements CategoryNormalizer {
 
 /**
  * Default attribute normalizer: uses canonical-attributes dictionary.
+ * R3: Produces CanonicalAttribute with normalizerVersion + source.
  */
 export class DefaultAttributeNormalizer implements AttributeNormalizer {
+  constructor(private readonly normalizerVersion: string = "1.0.0") {}
+
   async normalize(
     rawAttributes: Record<string, string>,
     _ctx: StageContext
   ): Promise<NormalizationStageResult<ReadonlyArray<CanonicalAttribute>>> {
-    const { canonicalizeAttributes } = await import("./canonical-attributes");
-    const canonical = canonicalizeAttributes(rawAttributes);
+    const { canonicalizeAttributesWithVersion } = await import("./canonical-attributes");
+    const canonical = canonicalizeAttributesWithVersion(rawAttributes, this.normalizerVersion);
     const unmapped = Object.keys(rawAttributes).length - canonical.length;
     return {
       value: canonical,
@@ -190,7 +195,8 @@ export class DefaultAttributeNormalizer implements AttributeNormalizer {
 }
 
 /**
- * Default image normalizer: computes phash for each image URL.
+ * Default image normalizer: computes fingerprint for each image URL.
+ * R2: Produces ImageFingerprint (algorithm-versioned) instead of plain phash.
  */
 export class DefaultImageNormalizer implements ImageNormalizer {
   async normalize(
@@ -201,8 +207,13 @@ export class DefaultImageNormalizer implements ImageNormalizer {
     const hasher = getDefaultImageHasher();
     const images: NormalizedImage[] = [];
     for (const url of imageUrls) {
-      const phash = await hasher.computePhash(url);
-      images.push({ url, phash });
+      const phashValue = await hasher.computePhash(url);
+      const fingerprint: ImageFingerprint = {
+        algorithm: hasher.algorithm,
+        version: "v1",
+        value: phashValue
+      };
+      images.push({ url, fingerprint });
     }
     return {
       value: images,
@@ -233,6 +244,7 @@ export class DefaultPriceNormalizer implements PriceNormalizer {
 
 /**
  * Default semantic hasher: FNV-1a over canonical fields.
+ * R1: Produces SemanticFingerprint (algorithm-versioned) instead of plain string.
  */
 export class DefaultSemanticHasher implements SemanticHasher {
   async compute(
@@ -241,7 +253,7 @@ export class DefaultSemanticHasher implements SemanticHasher {
     category: string,
     attributes: ReadonlyArray<CanonicalAttribute>,
     priceBand: string
-  ): Promise<NormalizationStageResult<string>> {
+  ): Promise<NormalizationStageResult<SemanticFingerprint>> {
     const parts = [
       title.toLowerCase().trim(),
       brand.toLowerCase().trim(),
@@ -262,9 +274,14 @@ export class DefaultSemanticHasher implements SemanticHasher {
     }
     h1 = Math.imul(h1 ^ h2, 0x01000193) >>> 0;
     h2 = Math.imul(h2 ^ h1, 0x01000193) >>> 0;
-    const hash = `sh_${h1.toString(16).padStart(8, "0")}${h2.toString(16).padStart(8, "0")}`;
+    const value = `${h1.toString(16).padStart(8, "0")}${h2.toString(16).padStart(8, "0")}`;
+    const fingerprint: SemanticFingerprint = {
+      algorithm: "fnv",
+      version: "v1",
+      value
+    };
     return {
-      value: hash,
+      value: fingerprint,
       warnings: [],
       confidence: 1.0
     };

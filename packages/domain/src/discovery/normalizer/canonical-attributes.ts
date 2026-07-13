@@ -167,32 +167,62 @@ export function canonicalizeAttributeName(rawName: string): CanonicalAttributeNa
 
 /**
  * Canonicalize a full attribute (name + value).
+ * R3: Includes normalizerVersion + source for provenance tracking.
  */
 export function canonicalizeAttribute(
   rawName: string,
-  rawValue: string
+  rawValue: string,
+  normalizerVersion: string = "1.0.0"
 ): CanonicalAttribute | null {
   const canonical = canonicalizeAttributeName(rawName);
   if (!canonical) return null;
   return {
     name: canonical,
     value: rawValue.trim(),
-    confidence: 0.9, // dictionary match = high confidence
-    sourceAttribute: rawName
+    confidence: 0.9,
+    sourceAttribute: rawName,
+    normalizerVersion,
+    source: "dictionary"
   };
 }
 
 /**
  * Canonicalize all attributes from a raw product.
  * Unknown attributes are skipped (not stored).
+ * R3: Includes normalizerVersion + source for provenance tracking.
  */
 export function canonicalizeAttributes(
-  rawAttributes: Record<string, string>
+  rawAttributes: Record<string, string>,
+  normalizerVersion: string = "1.0.0"
 ): ReadonlyArray<CanonicalAttribute> {
   const result: CanonicalAttribute[] = [];
   for (const [rawName, rawValue] of Object.entries(rawAttributes)) {
-    const canonical = canonicalizeAttribute(rawName, rawValue);
+    const canonical = canonicalizeAttribute(rawName, rawValue, normalizerVersion);
     if (canonical) result.push(canonical);
+  }
+  return result;
+}
+
+/**
+ * R3: Canonicalize attributes with normalizerVersion + source metadata.
+ * This is the enriched version that tracks provenance for each attribute.
+ */
+export function canonicalizeAttributesWithVersion(
+  rawAttributes: Record<string, string>,
+  normalizerVersion: string
+): ReadonlyArray<CanonicalAttribute> {
+  const result: CanonicalAttribute[] = [];
+  for (const [rawName, rawValue] of Object.entries(rawAttributes)) {
+    const canonicalName = canonicalizeAttributeName(rawName);
+    if (!canonicalName) continue;
+    result.push({
+      name: canonicalName,
+      value: rawValue.trim(),
+      confidence: 0.9,
+      sourceAttribute: rawName,
+      normalizerVersion,
+      source: "dictionary"
+    });
   }
   return result;
 }

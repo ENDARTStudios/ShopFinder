@@ -137,14 +137,16 @@ describe("A2.5 Product Normalizer", () => {
     });
   });
 
-  // ── R2: semanticHash on Normalized, not Raw ────────────
-  describe("R2: semanticHash on Normalized", () => {
-    it("should compute semanticHash on NormalizedProductRecord", async () => {
+  // ── R2: semanticFingerprint on Normalized, not Raw ─────
+  describe("R2: semanticFingerprint on Normalized", () => {
+    it("should compute semanticFingerprint on NormalizedProductRecord", async () => {
       const normalizer = new DefaultProductNormalizer(DefaultNormalizerVersions);
       const result = await normalizer.normalize(makeRawRecord(), makeProduct());
 
-      expect(result.semanticHash).toBeTruthy();
-      expect(result.semanticHash).toMatch(/^sh_/);
+      expect(result.semanticFingerprint).toBeTruthy();
+      expect(result.semanticFingerprint.algorithm).toBe("fnv");
+      expect(result.semanticFingerprint.version).toBe("v1");
+      expect(result.semanticFingerprint.value).toBeTruthy();
     });
 
     it("should NOT have semanticHash on RawProductRecord", () => {
@@ -241,7 +243,7 @@ describe("A2.5 Product Normalizer", () => {
       expect(result.normalizedAttributes.length).toBeGreaterThan(0);
       expect(result.normalizedImages.length).toBe(2);
       expect(result.normalizedPrice).toBeDefined();
-      expect(result.semanticHash).toBeTruthy();
+      expect(result.semanticFingerprint).toBeTruthy();
     });
   });
 
@@ -331,8 +333,9 @@ describe("A2.5 Product Normalizer", () => {
 
       expect(result.normalizedImages.length).toBe(2);
       for (const img of result.normalizedImages) {
-        expect(img.phash).toBeTruthy();
-        expect(img.phash.length).toBe(16);
+        expect(img.fingerprint).toBeTruthy();
+        expect(img.fingerprint.value).toBeTruthy();
+        expect(img.fingerprint.algorithm).toBe("stub-phash-v1");
       }
     });
 
@@ -344,7 +347,7 @@ describe("A2.5 Product Normalizer", () => {
         makeRawRecord(),
         makeProduct({ images: ["https://x.com/img.jpg"] })
       );
-      expect(result.normalizedImages[0]!.phash).toBeTruthy();
+      expect(result.normalizedImages[0]!.fingerprint.value).toBeTruthy();
     });
   });
 
@@ -495,7 +498,7 @@ describe("A2.5 Product Normalizer", () => {
       const record = await normalizer.normalize(makeRawRecord(), makeProduct());
       await repo.append(record);
 
-      const found = await repo.findBySemanticHash(record.semanticHash);
+      const found = await repo.findBySemanticHash(record.semanticFingerprint.value);
       expect(found.length).toBe(1);
       expect(found[0]!.id).toBe(record.id);
     });

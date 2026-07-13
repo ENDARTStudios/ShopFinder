@@ -867,3 +867,87 @@ Stage Summary:
 - Raw Store permanece estritamente imutável (semanticHash removido).
 - 183 testes totais passando no discovery module.
 - Próximo: A2.6 — Similarity/Deduplication (consome NormalizedProductsCreated, usa semanticHash + phash para detectar duplicatas).
+
+---
+
+Task ID: A2.5-refinements + A2.6 — Normalizer refinements + Similarity
+Agent: main (Super Z)
+Task: (1) Aplicar 5 refinamentos no Normalizer (SemanticFingerprint versionado, ImageFingerprint versionado, NormalizedAttribute enriquecido, canonicalBrandId, canonicalCategoryId). (2) Implementar A2.6 Similarity & Duplicate Detection com 10 refinamentos (SimilarityEvidence per-dimension, SimilarityPolicy configurável, clusters via Union-Find, 8 métricas, 4 eventos, discover-only). Roadmap ajustado: A2.7=Duplicate Resolution, A2.8=AI Evaluation (IA avalia apenas produto canônico).
+
+Work Log:
+
+### Parte 1 — Normalizer Refinements (R1-R5)
+
+- **R1. SemanticFingerprint**: novo tipo `Fingerprint { algorithm, version, value }`. `SemanticFingerprint = Fingerprint`. `NormalizedProductRecord.semanticHash: string` → `semanticFingerprint: SemanticFingerprint`. DefaultSemanticHasher produz `{ algorithm: "fnv", version: "v1", value: "..." }`. Permite trocar para simhash/minhash/embedding-cosine sem migrar schema.
+- **R2. ImageFingerprint**: `ImageFingerprint = Fingerprint`. `NormalizedImage.phash: string` → `fingerprint: ImageFingerprint`. DefaultImageNormalizer produz `{ algorithm: hasher.algorithm, version: "v1", value: phashValue }`. Permite trocar phash → dhash → whash → clip embedding.
+- **R3. NormalizedAttribute enriquecido**: `CanonicalAttribute` ganha `normalizerVersion: string` e `source: "dictionary" | "inferred" | "ai" | "manual"`. canonicalizeAttribute/canonicalizeAttributes agora incluem esses campos. DefaultAttributeNormalizer recebe normalizerVersion no constructor. canonicalizeAttributesWithVersion adicionado.
+- **R4. canonicalBrandId**: `NormalizedProductRecord.canonicalBrandId: string | null`. DefaultProductNormalizer resolve `brand_${normalizedBrand.toLowerCase()}` (null se UNKNOWN). Ajuda ranking — separa string display de ID canônico.
+- **R5. canonicalCategoryId**: `NormalizedProductRecord.canonicalCategoryId: string | null`. DefaultProductNormalizer resolve `cat_${normalizedCategory.toLowerCase()}` (null se UNCATEGORIZED).
+- Atualizados coordinator.ts, repository.ts, normalizer.test.ts para usar semanticFingerprint.value em vez de semanticHash.
+
+### Parte 2 — A2.6 Similarity (8 módulos)
+
+Criado em packages/domain/src/discovery/similarity/:
+
+- **types.ts** (200 linhas): DuplicateCandidateId, SimilarityClusterId, SimilarityBatchId (branded). SimilarityEvidence (titleSimilarity, brandSimilarity, imageSimilarity, attributeSimilarity, priceSimilarity, overallSimilarity, weights, explanation). SimilarityWeights (title 0.30, brand 0.20, image 0.25, attribute 0.15, price 0.10). DuplicateCandidate (id, productAId, productBId, evidence, status: "pending", createdAt, batchId — sem canonicalProductId, sem decidedBy). SimilarityCluster (id, memberIds[], evidence avg, candidateIds[], createdAt, batchId, memberCount). SimilarityPolicy (minimumTitleSimilarity 0.80, minimumBrandSimilarity 0.90, minimumImageSimilarity 0.85, minimumOverallSimilarity 0.85, weights, maxImageHammingDistance 5). SimilarityMetrics (8 counters: pairsCompared, pairsRejected, candidatesCreated, clustersCreated, averageSimilarity, averageImageSimilarity, averageTitleSimilarity, duplicatesDetected + durationMs). SimilarityAlgorithm interface. SimilarityRepository interface (appendCandidate, appendCluster, findCandidatesByProduct, findCluster, findClustersByMember, streamCandidates, streamClusters).
+
+- **algorithms.ts** (130 linhas): DefaultSimilarityAlgorithm (name: "default-v1"). compareTitle: Levenshtein ratio. compareBrand: exact match / canonical ID match / case-insensitive / Levenshtein. compareImages: max similarity across all image pairs (Hamming distance on fingerprints, same algorithm only). compareAttributes: Jaccard on (name, value) pairs. comparePrice: same band=1.0, adjacent=0.5, 2-apart=0.25, else=0. levenshteinDistance (DP, space-optimized single array). hammingDistance (char-level, pads unequal length).
+
+- **policy.ts** (60 linhas): evaluatePolicy(evidence, policy) → { pass, reason, failedThresholds }. Verifica 4 thresholds (title, brand, image, overall). computeOverallSimilarity(scores, weights) → weighted average. createSimilarityPolicy(overrides) → merged with defaults.
+
+- **clustering.ts** (115 linhas): UnionFind class (find com path compression, union por rank, getClusters). formClusters(candidates, batchId) → SimilarityCluster[]. Apenas clusters com 2+ members retornados. averageEvidence(evidences) → média de cada dimensão. Cada cluster carrega candidateIds que o formaram.
+
+- **metrics.ts** (55 linhas): InMemorySimilarityMetricsCollector. 8 counters + 3 acumuladores (totalSimilarity, totalImageSimilarity, totalTitleSimilarity para averages). start/increment*/addSimilarity/snapshot/reset.
+
+- **events.ts** (135 linhas): SIMILARITY_EVENT_TYPES = 4 tipos. SimilarityVersionedPayload (schemaVersion + algorithmVersion + policyVersion). 4 payload interfaces. 4 event types + 4 factories. A2.7 Duplicate Resolution consome DuplicateCandidatesDetected.
+
+- **repository.ts** (85 linhas): InMemorySimilarityRepository. candidatesById Map, candidatesByProduct Map (reverse), clustersById Map, clustersByMember Map (reverse). append idempotente. findCandidatesByProduct, findCluster, findClustersByMember. streamCandidates/streamClusters (AsyncIterable com filtros: batchId, productId, status). candidateCount/clusterCount getters.
+
+- **coordinator.ts** (150 linhas): SimilarityCoordinator.compare(input). Fluxo: (1) emit Started, (2) para cada par (i,j): 5 algorithms → evidence → evaluatePolicy → se pass: create candidate + append. (3) formClusters(candidates) → append clusters. (4) emit CandidatesDetected + ClustersCreated + Completed. makeCandidate determinístico. comparePair produz SimilarityEvidence com explanation human-readable (top 3 fatores).
+
+- **similarity.test.ts** (320 linhas): 24 testes em 8 describe blocks cobrindo R6-R10 + algorithms + events + repository + computeOverallSimilarity.
+
+### Decisões de design
+
+- **SimilarityEvidence per-dimension**: 5 scores (title/brand/image/attribute/price) + overall + weights + explanation. DecisionProvider consegue explicar decisões: "title=0.93, brand=1.00, image=0.97, attribute=0.88, price=0.74".
+- **SimilarityPolicy configurável**: 4 thresholds (title 0.80, brand 0.90, image 0.85, overall 0.85) + weights + maxImageHammingDistance. Nunca hardcoded. createSimilarityPolicy(overrides) para customização.
+- **Clusters via Union-Find**: não apenas pares A↔B, mas grupos A,B,C,D. Union-Find com path compression + union by rank. Apenas clusters 2+ members retornados. averageEvidence computa média das dimensões.
+- **Discover only (R10)**: candidatos sempre status="pending". Sem canonicalProductId, sem decidedBy, sem decidedAt. A2.7 Duplicate Resolution decide.
+- **Roadmap invertido**: A2.7=Duplicate Resolution (consolida ofertas em produto canônico), A2.8=AI Evaluation (avalia apenas o canônico). Reduz custo de inferência drasticamente — em marketplace global, mesmo produto aparece em dezenas de fornecedores.
+
+### Atualizações em arquivos existentes
+
+- packages/domain/src/discovery/types.ts: removido DuplicateCandidate/DuplicateCandidateId/DuplicateStatus legados (movidos para similarity/types.ts com design mais rico).
+- packages/domain/src/discovery/normalizer/types.ts: SemanticFingerprint, ImageFingerprint, CanonicalAttribute enriquecido, canonicalBrandId, canonicalCategoryId.
+- packages/domain/src/discovery/normalizer/stages.ts: SemanticHasher produz SemanticFingerprint, DefaultImageNormalizer produz ImageFingerprint, DefaultAttributeNormalizer recebe normalizerVersion.
+- packages/domain/src/discovery/normalizer/canonical-attributes.ts: canonicalizeAttributesWithVersion adicionado.
+- packages/domain/src/discovery/normalizer/normalizer.ts: produz semanticFingerprint + canonicalBrandId + canonicalCategoryId.
+- packages/domain/src/discovery/normalizer/coordinator.ts + repository.ts: usa semanticFingerprint.value.
+- packages/domain/src/discovery/index.ts: adicionado `export * from "./similarity"`.
+
+### Verificações
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 165 files, 0 violations (salto 155 → 165 com similarity module)
+- ✓ bun test packages/domain/src/discovery/ → 207 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store + 31 normalizer + 24 similarity)
+- ✓ HTTP 200
+- ✓ R1: SemanticFingerprint versionado (algorithm="fnv", version="v1")
+- ✓ R2: ImageFingerprint versionado (algorithm="stub-phash-v1", version="v1")
+- ✓ R3: NormalizedAttribute tem normalizerVersion + source
+- ✓ R4: canonicalBrandId separado de normalizedBrand
+- ✓ R5: canonicalCategoryId separado de normalizedCategory
+- ✓ R6: SimilarityEvidence com 5 dimensões + explanation
+- ✓ R7: SimilarityPolicy configurável (4 thresholds + weights)
+- ✓ R8: Clusters via Union-Find (3 produtos similares → 1 cluster de 3)
+- ✓ R9: 8 métricas tracked
+- ✓ R10: candidatos status="pending", sem canonicalProductId
+
+Stage Summary:
+
+- A2.5 refinements (R1-R5) + A2.6 Similarity entregues.
+- 8 módulos em similarity/ (types, algorithms, policy, clustering, metrics, events, repository, coordinator) + similarity.test.ts.
+- Pipeline A2.1→A2.2→A2.3→A2.4→A2.5→A2.6 completo: ... → NormalizedProductRecord → SimilarityCoordinator → DuplicateCandidate[] + SimilarityCluster[] (discover only) → A2.7 Duplicate Resolution (next).
+- Roadmap ajustado: A2.7=Duplicate Resolution, A2.8=AI Evaluation (IA avalia apenas produto canônico).
+- 207 testes totais passando no discovery module.
+- Próximo: A2.7 — Duplicate Resolution (consome DuplicateCandidatesDetected, consolida ofertas em CanonicalProduct, decide qual oferta é a principal).

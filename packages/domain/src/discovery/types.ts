@@ -66,22 +66,10 @@ export interface DiscoveryCheckpoint {
 // The richer design includes: executionId, compressed payload, payloadHash,
 // semanticHash, partitionKey, full versioning. Re-exported from raw-store.
 
-export type DuplicateCandidateId = import("../shared").BrandedId<"DuplicateCandidateId">;
-export type DuplicateStatus = "pending" | "confirmed" | "rejected" | "merged";
-export interface DuplicateCandidate {
-  readonly id: DuplicateCandidateId;
-  readonly productAId: string;
-  readonly productBId: string;
-  readonly providerA: string;
-  readonly providerB: string;
-  readonly similarityScore: number;
-  readonly similarityFactors: SimilarityFactors;
-  readonly status: DuplicateStatus;
-  readonly canonicalProductId?: CanonicalProductId;
-  readonly decidedAt?: Date;
-  readonly decidedBy?: "ai" | "human" | "auto";
-  readonly createdAt: Date;
-}
+// DuplicateCandidate, DuplicateCandidateId, and DuplicateStatus moved to
+// similarity/types.ts (A2.6). The richer design includes SimilarityEvidence,
+// SimilarityCluster, and SimilarityPolicy.
+
 export interface SimilarityFactors {
   readonly titleSimilarity: number;
   readonly imageSimilarity: number;

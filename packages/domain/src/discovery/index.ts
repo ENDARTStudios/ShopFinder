@@ -9,6 +9,7 @@
  *   workers/       — A2.3 Discovery Workers (jobs → NormalizedDiscoveredProduct[])
  *   raw-store/     — A2.4 Raw Product Store (append-only, payloadHash, compressed)
  *   normalizer/    — A2.5 Product Normalizer (Raw → NormalizedProductRecord, 7 stages)
+ *   similarity/    — A2.6 Similarity & Duplicate Detection (evidence + clusters, discover only)
  */
 
 // Re-export everything from submodules
@@ -18,3 +19,4 @@ export * from "./orchestrator";
 export * from "./workers";
 export * from "./raw-store";
 export * from "./normalizer";
+export * from "./similarity";

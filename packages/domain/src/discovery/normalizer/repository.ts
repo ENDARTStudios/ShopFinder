@@ -29,9 +29,9 @@ class InMemoryNormalizedProductRepository implements NormalizedProductRepository
     rawList.push(record);
     this.byRawProductId.set(record.rawProductId, rawList);
 
-    const hashList = this.bySemanticHash.get(record.semanticHash) ?? [];
+    const hashList = this.bySemanticHash.get(record.semanticFingerprint.value) ?? [];
     hashList.push(record);
-    this.bySemanticHash.set(record.semanticHash, hashList);
+    this.bySemanticHash.set(record.semanticFingerprint.value, hashList);
 
     return record;
   }
