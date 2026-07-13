@@ -705,3 +705,85 @@ Stage Summary:
 - 39 novos testes em contracts.test.ts cobrindo todos os 5 contratos.
 - 115 testes totais passando no discovery module (9 planner + 43 orchestrator + 24 worker + 39 contracts).
 - Arquitetura permanece estável. Esforço direcionado para value delivery: próximo é A2.4 — Raw Product Store (persistir NormalizedDiscoveredProduct[] produzido pelos Workers).
+
+---
+
+Task ID: A2.4 — Raw Product Store
+Agent: main (Super Z)
+Task: Implementar Raw Product Store append-only com dual-hash, versionamento completo, compressão transparente, partition key, eventos desacoplados (RawProductsPersisted + RawProductsReadyForNormalization), stream de leitura, e idempotência para reprocessamento. 37 testes cobrindo 10 critérios de aceite.
+
+Work Log:
+
+### Módulo criado em packages/domain/src/discovery/raw-store/ (7 arquivos + index + test):
+
+- **types.ts** (175 linhas): DiscoveryExecutionId + RawProductRecordId (branded). RawStoreVersions (6 campos: schemaVersion, workflowVersion, plannerVersion, providerVersion, connectorVersion, providerManifestVersion). RAW_STORE_SCHEMA_VERSION = "1.0.0". DiscoveryExecution (audit record: id, executionKey, planId, jobId, providerCode, providerSnapshot, status, startedAt, completedAt, durationMs, attempts, apiCallsUsed, productsDiscovered, reservationConsumed, metrics, versions, partitionKey, error?). RawProductRecord (payload record: id, executionId, providerCode, externalId, payload: Uint8Array, payloadHash, semanticHash: null, discoveredAt, partitionKey, versions). buildPartitionKey(provider, country, date) → `provider|country|yyyy-mm-dd`. RawProductRepository interface (appendExecution, appendProducts, findExecution, findProducts, streamProducts: AsyncIterable, countProducts — NO update/delete). StreamFilter (executionId?, providerCode?, partitionKey?, since?, until?). RawStoreCoordinatorInput + RawStoreCoordinatorResult.
+
+- **hashing.ts** (70 linhas): canonicalJsonStringify(value) — stable key order via recursive sort. computePayloadHash(payload) — FNV-1a 32-bit duas passadas (forward+backward+cross-mix) sobre canonical JSON. Retorna `ph_${16 hex chars}`. computeSemanticHash(_normalized) — stub retorna null em A2.4 (será implementado por A2.5 Normalizer baseado em title+brand+category+attributes+price band). NUNCA misturar payloadHash (identidade byte-level) com semanticHash (identidade semântica pós-normalização).
+
+- **compression.ts** (90 linhas): Compressor interface (compress/decompress suportam sync OU async para flexibilidade). NoopCompressor (UTF-8 via TextEncoder/TextDecoder, dev default). GzipCompressor (dynamic import de node:zlib, lazy init, async compress/decompress). getDefaultCompressor/setDefaultCompressor/createNoopCompressor/createGzipCompressor factories.
+
+- **events.ts** (135 linhas): RAW_STORE_EVENT_TYPES = ["discovery.raw.persisted", "discovery.raw.ready_for_normalization"]. RawStoreVersionedPayload (schemaVersion + 4 version fields). RawProductsPersistedPayload (executionId, executionKey, planId, jobId, providerCode, count, skipped, payloadHashes, partitionKey, durationMs). RawProductsReadyForNormalizationPayload (executionId, providerCode, count, partitionKeys). 2 event types + 2 factories (makeRawProductsPersistedEvent, makeRawProductsReadyForNormalizationEvent) com version injection.
+
+- **repository.ts** (110 linhas): InMemoryRawProductRepository. executions Map, products Map (por execution), hashIndex Map (executionId → Set<payloadHash> para idempotency check). appendExecution idempotente (mesmo executionId → retorna existing). appendProducts idempotente (mesmo (executionId, payloadHash) → skip). findExecution, findProducts. streamProducts: AsyncGenerator com filtros (executionId, providerCode, partitionKey, since, until). countProducts. executionCount/productCount getters. clear() para testes.
+
+- **coordinator.ts** (155 linhas): RawStoreCoordinator.persist(input). Fluxo: (1) makeExecutionId(executionKey, jobId) determinístico, (2) buildPartitionKey, (3) build DiscoveryExecution, (4) appendExecution idempotente, (5) para cada produto: canonicalJsonStringify + computePayloadHash + compressor.compress + build RawProductRecord, (6) appendProducts idempotente, (7) emit RawProductsPersisted, (8) se appended > 0: emit RawProductsReadyForNormalization. makeExecutionId e makeRecordId determinísticos (mesmo input → mesmo ID → idempotência). RawStoreCoordinatorDeps (repository, compressor?, events?).
+
+- **coordinator.test.ts** (580 linhas): 37 testes em 10 describe blocks cobrindo todos os 10 critérios de aceite + extras:
+  • Raw payload preservation (3): round-trip NoopCompressor, round-trip GzipCompressor, gzip < original para repetitive payloads
+  • Append-only semantics (3): sem update/delete no prototype, só append+find+stream+count, idempotente em re-append
+  • PayloadHash (4): determinístico de canonical JSON, mesmo hash independente de property order, hashes diferentes para payloads diferentes, skip duplicatas dentro mesma execução
+  • SemanticHash (2): null em A2.4, separado de payloadHash
+  • ProviderSnapshot (2): persistido em execution record, preserva health metadata completo
+  • Full versioning (2): 6 version fields em execution, 6 version fields em cada record
+  • Compression (2): Uint8Array armazenado, swap noop↔gzip transparente
+  • Events (5): 2 eventos emitidos, payload com count+hashes+partitionKey, partitionKeys em ReadyForNormalization, não emite Ready quando 0 products, versions em payloads
+  • Stream reads (5): stream por execution, filter por providerCode, filter por partitionKey, countProducts, stream one-at-a-time (10 products)
+  • Reprocessing (4): safe re-run (no duplicates), mesmo execution ID, mesmas payloadHashes (from stored), re-import com different compressor
+  • Partition key (3): format provider|country|yyyy-mm-dd, UTC date, partition key em cada record
+  • Failed execution (2): persiste status=failed com error details, não emite ReadyForNormalization
+
+### Atualizações em arquivos existentes:
+
+- **packages/domain/src/discovery/types.ts**: removido RawProductRecord/RawProductRecordId legados (movidos para raw-store/types.ts com design mais rico).
+- **packages/domain/src/discovery/workers/types.ts**: adicionado `products?: ReadonlyArray<NormalizedDiscoveredProduct>` ao WorkerResult. Present apenas quando state==="completed". Consumido por A2.4 RawStoreCoordinator.
+- **packages/domain/src/discovery/workers/worker.ts**: acumula produtos em `allProducts[]` durante paging loop. Passa `products: allProducts` para `completed()`.
+- **packages/domain/src/discovery/workers/result.ts**: `completed()` aceita `products?` param e inclui no WorkerResult.
+- **packages/domain/src/discovery/index.ts**: adicionado `export * from "./raw-store"`.
+
+### Design decisions:
+
+- **Duas entidades separadas**: DiscoveryExecution (audit: quem, quando, qual provider, qual versão, métricas) vs RawProductRecord (payload: bytes comprimidos, hash, partition key). Permite responder "qual execução produziu esse produto? qual provider? qual versão?".
+- **Dual hash**: payloadHash (FNV-1a sobre canonical JSON — replay/cache/audit) vs semanticHash (null em A2.4, preenchido por A2.5 Normalizer — deduplicação). Nunca misturar.
+- **Append-only**: repository não tem update/delete. Re-append de mesmo (executionId, payloadHash) é no-op. Preserva histórico completo — quando fornecedor altera anúncio amanhã, grava outro RawRecord.
+- **Compressão transparente**: Compressor interface suporta sync (Noop) e async (Gzip). Coordinator usa `await compressor.compress()` — funciona para ambos. Gzip usa dynamic import de node:zlib (lazy, evita require() lint error).
+- **Partition key**: `provider|country|yyyy-mm-dd` (UTC). Previsto para escala global — migra facilmente para particionamento nativo PostgreSQL ou sharding.
+- **Eventos desacoplados**: RawProductsPersisted (raw bytes safely stored) + RawProductsReadyForNormalization (downstream Normalizer may consume). Split permite re-rodar normalização sem re-persistir.
+- **Stream de leitura**: `streamProducts(filter): AsyncIterable<RawProductRecord>` — downstream consumer (A2.5) lê um por vez sem carregar tudo na memória.
+- **Idempotência determinística**: executionId = `exec_${executionKey}_${jobId}`, recordId = `raw_${executionId}_${payloadHash}`. Mesmo input → mesmo ID → re-persist é no-op.
+- **Full versioning**: cada record carrega schemaVersion + workflowVersion + plannerVersion + providerVersion + connectorVersion + providerManifestVersion. Salva meses de investigação futura.
+
+### Verificações (checklist de aceite):
+
+- ✓ bunx tsc --noEmit → 0 errors
+- ✓ bun run lint → 0 errors, 5 warnings cosméticos (preexistentes)
+- ✓ bun run test:arch → 143 files, 0 violations (salto 135 → 143 com raw-store module)
+- ✓ bun test packages/domain/src/discovery/ → 152 pass, 0 fail (9 planner + 43 orchestrator + 24 worker + 39 contracts + 37 raw-store)
+- ✓ HTTP 200
+- ✓ Payload bruto preservado exatamente (round-trip Noop + Gzip)
+- ✓ Append-only (sem update/delete no repository)
+- ✓ PayloadHash (FNV-1a sobre canonical JSON, determinístico)
+- ✓ SemanticHash separado (null em A2.4, preenchido por A2.5)
+- ✓ ProviderSnapshot persistido em DiscoveryExecution
+- ✓ Versionamento completo (6 version fields em execution + records)
+- ✓ Compressão transparente (Noop + Gzip swap via interface)
+- ✓ Eventos publicados (RawProductsPersisted + RawProductsReadyForNormalization)
+- ✓ Stream de leitura (AsyncIterable com filtros)
+- ✓ Reprocessamento possível (idempotente, mesmo IDs, sem duplicatas)
+
+Stage Summary:
+
+- A2.4 (Raw Product Store) entregue e validado contra checklist completo.
+- 7 arquivos em packages/domain/src/discovery/raw-store/ (types, hashing, compression, events, repository, coordinator, index) + coordinator.test.ts.
+- Pipeline A2.1→A2.2→A2.3→A2.4 completo: Signals → Planner → Plans → Orchestrator → Jobs → Workers → NormalizedDiscoveredProduct → RawStoreCoordinator → RawProductRepository (append-only, compressed, dual-hash, partitioned).
+- 152 testes totais passando no discovery module.
+- Próximo: A2.5 — Normalizer (consome RawProductsReadyForNormalization, preenche semanticHash, produz produtos normalizados para A2.6 Similarity).

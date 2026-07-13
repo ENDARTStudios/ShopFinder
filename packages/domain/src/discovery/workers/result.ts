@@ -22,6 +22,7 @@ export function completed(params: {
   jobId: string;
   providerCode: string;
   productsDiscovered: number;
+  products?: ReadonlyArray<import("./types").NormalizedDiscoveredProduct>;
   nextCursor?: string;
   hasMore: boolean;
   attempts: number;
@@ -35,6 +36,7 @@ export function completed(params: {
     jobId: params.jobId,
     providerCode: params.providerCode,
     productsDiscovered: params.productsDiscovered,
+    products: params.products,
     nextCursor: params.nextCursor,
     hasMore: params.hasMore,
     attempts: params.attempts,

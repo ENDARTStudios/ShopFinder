@@ -264,6 +264,12 @@ export interface WorkerResult {
   readonly jobId: string;
   readonly providerCode: string;
   readonly productsDiscovered: number;
+  /**
+   * The actual products discovered during execution.
+   * Present only when state === "completed" and products were collected.
+   * Consumed by A2.4 RawStoreCoordinator for persistence.
+   */
+  readonly products?: ReadonlyArray<NormalizedDiscoveredProduct>;
   readonly nextCursor?: string;
   readonly hasMore: boolean;
   readonly attempts: number;
