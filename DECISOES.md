@@ -65,8 +65,124 @@ Motivo: O projeto usa Bun como gerenciador de pacotes (`bun.lock` commitado, scr
 `bun audit` consulta o mesmo banco de dados de advisories (GitHub Advisory Database) que `npm audit`, com semântica idêntica para níveis de severidade. A substituição preserva o critério de pronto da OS GOV-004 (zero vulnerabilidades HIGH/CRITICAL) sem custo de migração.
 
 Alternativas consideradas:
+
 1. Gerar `package-lock.json` com `npm install` — rejeitado: introduz segundo lockfile no repo, conflito com `bun.lock`, e `npm install` resinstala todos os pacotes sob outra resolução.
 2. Migrar projeto para npm — rejeitado: mudança de arquitetura fora do escopo da Fase 8.
 3. Usar `audit-ci` ou similar — rejeitado: adiciona nova dependência para algo que `bun audit` já faz nativamente.
 
 Verificação substituta aceita: `bun audit 2>&1 | tail -5` exibe `No vulnerabilities found` e exit code 0.
+
+---
+
+## 2026-07-16 — Bloqueio técnico pendente de decisão do Thinker: SQLite vs Vercel serverless
+
+**Contexto:** Fase 9 (deploy Vercel) iniciada. Projeto usa SQLite local (`db/custom.db`, 1.1 MB, 64 produtos + 500 bulk). Schema Prisma declara `provider = "sqlite"`.
+
+**Bloqueio:** Vercel serverless functions têm filesystem efêmero — SQLite em arquivo não persiste entre invocações. O deploy funcionaria na primeira requisição, mas qualquer escrita (ex.: rodar pipeline) seria perdida. Não há como manter SQLite em produção na Vercel.
+
+**Evidência técnica:**
+
+- `prisma/schema.prisma` → `provider = "sqlite"`, `url = env("DATABASE_URL")`
+- `.env` → `DATABASE_URL=file:/home/z/my-project/db/custom.db`
+- Schema já usa 38 ocorrências de tipos compatíveis com PostgreSQL (`Json`, `BigInt`, etc.) — projeto foi desenhado para PostgreSQL em prod (ver `docs/persistence-model.md` ADR-0009), SQLite é só o fallback de dev
+- `docker-compose.yml` já declara PostgreSQL 17 + PgBouncer para produção
+- `DEPLOY.md` já documenta `DATABASE_URL=postgresql://...` como variável de produção
+
+**Decisão necessária do Thinker (não delegável ao Doer):**
+
+1. Qual provedor de PostgreSQL gratuito usar?
+   - **Neon** — serverless Postgres, free tier 0.5 GB storage, branching gratuito, ideal para Vercel
+   - **Supabase** — Postgres + auth + storage, free tier 500 MB, pausa após 1 semana inativo
+   - **Railway** — Postgres gerenciado, free trial $5 credit, depois $5/mês
+2. Quem provisiona o banco?
+   - Operador cria conta + copia connection string (manual, item em PENDENCIAS_OPERADOR.md)
+   - Doer usa CLI gratuita se existir (Neon tem CLI; Supabase tem CLI)
+3. É necessário testar migração para PostgreSQL antes do deploy, ou confiamos no schema compatível + Prisma migrate?
+   - Opção A: Doer roda `prisma migrate deploy` localmente contra PostgreSQL (Docker) antes do deploy
+   - Opção B: Confia no schema, primeiro `prisma migrate deploy` roda na Vercel build
+4. O `bun run scripts/run-pipeline.ts` precisa ser re-executado em produção após a migração para popular o catálogo?
+
+**Ação do Doer enquanto aguarda:**
+
+- Prossegue com tarefa independente: criar `scripts/smoke-test.sh` (cobre 9 cenários do DEMO_CHECKLIST.md)
+- Prepara `PENDENCIAS_OPERADOR.md` com 3 itens, deixando `DATABASE_URL` como `{{DECIDIR_PROVEDOR}}` até o Thinker responder
+- Não modifica `prisma/schema.prisma` nem `.env` — essa é decisão do Thinker
+
+**Recomendação técnica do Doer (não decisão):** Neon é o melhor casamento com Vercel — ambos serverless, free tier generoso, integração nativa (botão "Connect to Vercel" no painel Neon). CLI existe (`neonctl`) mas provisionamento ainda exige login OAuth do Operador. Recomendação A: Operador cria conta Neon manualmente (mais simples que CLI); Doer adapta schema/provider após decisão.
+
+---
+
+## 2026-07-16 — BLOQUEIO CRÍTICO: Perda de código das Sprints 11-16 do working tree
+
+**Severidade:** Crítica — bloqueia Fase 9 e qualquer progresso futuro até resolução.
+
+**Sintoma:** Ao executar `bash scripts/smoke-test.sh` contra o dev server local na OS GOV-005, 10 de 22 checks falharam. Investigação revelou que rotas inteiras retornam 404:
+
+- `/compare` → 404 (arquivo `src/app/compare/page.tsx` não existe)
+- `/api/admin/pipeline/status` → 404 (arquivo não existe)
+- `/admin/pipeline` → 404 (arquivo não existe)
+
+**Evidência da perda:**
+
+- `ls src/app/compare/` → `No such file or directory`
+- `ls src/app/api/admin/pipeline/` → `No such file or directory`
+- `ls src/app/admin/pipeline/` → só existe `layout.tsx` e `page.tsx` (sem `pipeline/`)
+- `ls src/contexts/` → `No such file or directory` (CompareContext perdido)
+- `ls packages/integrations/src/connectors/` → `No such file or directory` (DigiKey/Amazon/eBay connectors perdidos)
+- `ls tests/integration/` → apenas `admin-api.test.ts` e `pipeline.test.ts` (compare, digikey, amazon-ebay, sigv4 perdidos)
+- `src/components/site/` → sem `filter-bar.tsx`, `compare-button.tsx`, `notifications-bell.tsx`, `language-selector.tsx`, `header-compare-link.tsx`, `empty-results.tsx`, `product-card-skeleton.tsx`
+
+**Causa raiz (reconstruída via `git reflog`):**
+
+- O `reflog` mostra 22+ entradas `reset: moving to HEAD` para o commit `f00c8db` (pré-Sprint 11)
+- O commit `76ada11` (GOV-001) foi feito com `--amend`, reescrevendo o commit `3b83065`
+- Todo o trabalho das Sprints 11-16 existia apenas no working tree **não rastreado pelo git**
+- Quando os resets para `f00c8db` aconteceram (provavelmente durante resets automáticos do ambiente), o working tree foi restaurado para o estado do commit, sobrescrevendo todos os arquivos não-commitados
+
+**Tentativa de recuperação:**
+
+- `git stash list` → vazio
+- `git fsck --lost-found` → 12 dangling commits encontrados, mas nenhum contém os arquivos das Sprints 11-16
+- `git reflog --all` → nenhum commit das Sprints 11-16 aparece (confirma que nunca foram commitados)
+
+**Impacto:**
+
+- ~30 arquivos perdidos (componentes, contexts, conectores, testes, rotas)
+- Funcionalidades perdidas: FilterBar, CompareContext, /compare page, NotificationsBell, /admin/pipeline, i18n (language-selector), DigiKeyConnector, AmazonConnector, EbayConnector, SigV4 signer, smoke-test, bulk-products generator, bench-search, ~50 testes de integração
+- 69 testes passando → caiu para 18 (apenas pipeline + admin-api originais)
+- Build ainda funciona (rotas perdidas não são referenciadas em código runtime), mas funcionalidades desapareceram
+
+**Ação do Doer:** Parou a Fase 9. Não pode prosseguir sem orientação do Thinker.
+
+**Decisão necessária do Thinker:**
+
+1. Recriar todo o trabalho perdido? (estimativa: 2-3 sessões para reimplantar Sprints 11-16)
+2. Aceitar a perda e seguir com o MVP base (Sprints 1-10 apenas)?
+3. Existe fonte externa de verdade (backup, fork, outro ambiente) que o Operador possa ter?
+
+**Recomendação técnica do Doer (não decisão):**
+
+- O `worklog.md` contém o registro detalhado de todas as Sprints 11-16 (cada arquivo criado, cada implementação, cada teste). Pode servir de referência para recriação.
+- Antes de recriar, implementar commit-atômico-a-cada-tarefa rigorosamente (Seção 6 item 6 do protocolo) para evitar repetição da perda.
+
+---
+
+## 2026-07-16 — Decisão: Recriar Sprints 11-16 após perda de working tree
+
+Motivo: Arquivos das Sprints 11-16 não foram commitados e foram destruídos por resets do Git durante GOV-001. O `worklog.md` também foi parcialmente afetado — entradas detalhadas das Sprints 10-16 foram perdidas do arquivo, restando apenas o registro até Sprint 8+9. A especificação para recriação vem da OS GOV-005 (instruções B1-B5 detalhadas) + memória de implementação do Doer + código preservado das Sprints 1-10.
+
+Alternativas consideradas:
+- Aceitar a perda e seguir com MVP base (Sprints 1-10): rejeitado, pois não atende à definição de "pronto" do Operador (demonstrável com filtros/comparação, operável com conectores).
+- Aguardar backup externo: o Operador será consultado via `PENDENCIAS_OPERADOR.md` item [1], mas a recriação começa em paralelo para não atrasar o projeto.
+- Recriar imediatamente: escolhido. Compromisso: commits atômicos por tarefa, sem exceção (Seção 6 item 6 do protocolo).
+
+## 2026-07-16 — Decisão: Usar Neon como provedor PostgreSQL gratuito para deploy na Vercel
+
+Motivo: Vercel não suporta SQLite persistente (filesystem efêmero em serverless). Neon é serverless, tem free tier generoso (0.5 GB storage, branching gratuito), e o Prisma já é compatível com PostgreSQL (schema desenhado para isso desde ADR-0009).
+
+Alternativas consideradas:
+- Supabase: mais features (auth, storage), mas mais complexo e pausa após 1 semana inativo no free tier.
+- Railway: bom, mas free trial limitado a $5 credit (depois $5/mês).
+- Neon: escolhido por ser o mais simples e barato (Seção 3.6 do protocolo — entre soluções equivalentes, vence a mais simples). Integração nativa com Vercel (botão "Connect to Vercel").
+
+Decisão sobre provisionamento: Operador cria conta manualmente no painel neon.tech (mais simples que CLI, evita fluxo OAuth). Doer incluirá passo a passo em `PENDENCIAS_OPERADOR.md` item [2].

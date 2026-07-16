@@ -4267,3 +4267,95 @@ Stage Summary:
 - Plano cobre exatamente os 3 pilares do Operador (demonstrável, operável com dados reais, documentado) + entrega (Seção 9 do protocolo).
 - Doer está pronto para iniciar a Fase 8 assim que o Thinker emitir a próxima Ordem de Serviço.
 - Conforme instrução da OS, a execução das tarefas **não** começa agora — esta OS era apenas para criar o arquivo.
+
+---
+
+Task ID: GOV-004 — Fase 8.1 (npm audit) + Fase 8.2 (CodeQL)
+Agent: Doer
+Task: Executar auditoria de dependências e configurar SAST com CodeQL, conforme PLANO_MESTRE.md.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+- **Tarefa 8.1 — npm audit:**
+  - `npm audit --audit-level=high` falhou com ENOLOCK (projeto usa `bun.lock`, npm exige `package-lock.json`).
+  - `npm i --package-lock-only` falhou com `Cannot read properties of null (reading 'matches')` — npm não consegue interpretar `bun.lock`.
+  - Decisão: usar `bun audit` (mesma fonte de advisories, GitHub Advisory Database). Registrada em `DECISOES.md`.
+  - `bun audit` inicial: 54 vulnerabilidades (24 HIGH, 25 moderate, 5 low).
+  - `bun update` (compatível): 54 → 28 (24 → 14 HIGH).
+  - `bun update --latest` nas dev tools (eslint 9→10, lint-staged 15→17, commitlint 19→21): ainda 14 HIGH.
+  - Adicionados 14 `overrides` no `package.json` para forçar versões seguras de transitivas: lodash, lodash-es, minimatch, flatted, defu, js-cookie, picomatch, js-yaml, postcss, prismjs, @babel/core, brace-expansion, uuid, diff.
+  - `rm -rf node_modules bun.lock && bun install` + `bun audit` → **0 vulnerabilidades** (No vulnerabilities found, exit 0).
+  - Bug colateral: `.env` perdeu `NEXTAUTH_SECRET` durante a reinstalação → admin-api.test.ts falhou com JWEDecryptionFailed. Restaurado `.env` com `NEXTAUTH_SECRET` estável. Testes voltaram a passar.
+  - Validação pós-update: `bunx next build` ✓ (20 rotas), `test:arch` ✓ (262 arquivos, 0 violações), `bun test tests/integration/` ✓ (18/18 pass).
+  - Commit atômico `b1713f8` — `chore: corrigir vulnerabilidades npm audit`.
+- **Tarefa 8.2 — CodeQL:**
+  - Criado `.github/workflows/codeql.yml` (51 linhas):
+    - Triggers: push to main, PR to main, schedule (Mon 03:00 UTC), workflow_dispatch
+    - Job `analyze` com matrix `language: [javascript-typescript]`
+    - Uses `actions/checkout@v4`, `github/codeql-action/init@v3` (queries: security-extended), `github/codeql-action/analyze@v3`
+    - Permissions: actions:read, contents:read, security-events:write
+  - YAML validado com `python3 -c "import yaml; yaml.safe_load(...)"`
+  - Commit atômico `e99133b` — `ci: adicionar workflow CodeQL`.
+- **Marcação `[x]` no PLANO_MESTRE.md** (Seção 6 do protocolo exige evidência):
+  - 8.1 marcada `[x]` com evidência inline: `bun audit` exit 0, commit `b1713f8`, referência a `DECISOES.md`.
+  - 8.2 marcada `[x]` com evidência inline: YAML válido, commit `e99133b`, execução real depende de push.
+  - Commit `bf24a8c` — `docs: marcar Fase 8.1 e 8.2 como concluidas`.
+
+Stage Summary:
+
+- Fase 8 inteira concluída: 2/2 tarefas `[x]`.
+- Plano agora tem 15 tarefas pendentes (era 17).
+- 0 vulnerabilidades HIGH/CRITICAL no `bun audit` (era 24).
+- Workflow CodeQL commitado e validado; rodará automaticamente no primeiro push para `main` no GitHub.
+- 3 commits atômicos: `b1713f8` (deps), `e99133b` (codeql), `bf24a8c` (plan update).
+- Decisão registrada em `DECISOES.md`: substituição `npm audit` → `bun audit` (projeto usa Bun).
+- Próxima fase desbloqueada: **Fase 9 — Deploy online (Vercel)**, exigirá ações do Operador (criar conta Vercel, conectar repositório, configurar env vars) — algumas tarefas gerarão entradas em `PENDENCIAS_OPERADOR.md`.
+- Doer aguarda próxima Ordem de Serviço do Thinker.
+
+---
+
+Task ID: GOV-005 — Fase 9 (Deploy Vercel) — PARADO por bloqueio crítico
+Agent: Doer
+Task: Preparar PENDENCIAS_OPERADOR.md, criar smoke-test.sh, iniciar deploy Vercel.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+- **Bloqueio técnico previsto (SQLite vs Vercel)** identificado e registrado em `DECISOES.md`. Thinker notificado via registro. Doer prosseguiu com tarefa independente (smoke-test.sh) enquanto aguarda decisão sobre provedor PostgreSQL.
+- **Tarefa 9.4 (smoke-test.sh):** Criado `scripts/smoke-test.sh` (165 linhas) cobrindo 9 cenários do `DEMO_CHECKLIST.md`:
+  1. Landing page (HTTP 200 + ShopFinder + tagline PT + form busca + seção nichos)
+  2. Catálogo API (HTTP 200 + produtos + AM5 + 750W ontológicos)
+  3. Detail page (HTTP 200 + seção specs + botão Comparar + enrichedSpecs via API)
+  4. /compare empty state (HTTP 200 + mensagem PT)
+  5. /compare?slugs= (HTTP 200 + título "Comparar Produtos")
+  6. /admin (HTTP 200 ou 307 + gate de auth)
+  7. /api/admin/pipeline/status (HTTP 401 sem auth)
+  8. i18n (cookie locale=en → tagline EN "smart shopping")
+  9. 404 handling
+  - `bash -n scripts/smoke-test.sh` → sintaxe válida ✓
+  - `chmod +x` aplicado
+  - Usa `bun -e` para parsear JSON do catalog API (consistente com stack do projeto)
+
+- **BLOQUEIO CRÍTICO DETECTADO ao rodar smoke-test local:**
+  - 10 de 22 checks falharam
+  - Cenários 4, 5, 7 retornaram 404 — rotas `/compare`, `/api/admin/pipeline/status`, `/admin/pipeline` NÃO EXISTEM no working tree
+  - Investigação revelou perda catastrófica: todo o código das Sprints 11-16 (FilterBar, CompareContext, /compare page, NotificationsBell, /admin/pipeline, i18n language-selector, DigiKey/Amazon/eBay connectors, SigV4 signer, ~50 testes, smoke-test, bulk-products, bench-search) sumiu
+  - Causa raiz via `git reflog`: 22+ resets para `f00c8db` (pré-Sprint 11) sobrescreveram working tree não-commitado
+  - Tentativa de recuperação: `git stash list` vazio; `git fsck --lost-found` tem 12 dangling commits mas nenhum contém os arquivos perdidos
+  - **Trabalho das Sprints 11-16 nunca foi commitado no git** — existia apenas no working tree
+  - Estado atual: apenas Sprints 1-10 + GOV-001 a GOV-004 preservados
+
+- **Ação do Doer:** Parou a Fase 9 imediatamente conforme Seção 6 item 7 do protocolo.
+  - Bloqueio crítico registrado em `DECISOES.md` com evidência completa, causa raiz, tentativa de recuperação, impacto, e decisão necessária do Thinker.
+  - Não criou `PENDENCIAS_OPERADOR.md` itens (depende de resolução do bloqueio + decisão SQLite).
+  - Não fez commit dos arquivos criados (smoke-test.sh funciona mas teste contra deploy real depende de rotas que sumiram).
+
+Stage Summary:
+
+- **Fase 9 bloqueada** por perda de código.
+- `scripts/smoke-test.sh` criado e funcional (sintaxe OK), mas falha em 10/22 checks porque as rotas testadas não existem mais.
+- Doer aguarda orientação URGENTE do Thinker sobre:
+  1. Recriar Sprints 11-16 (referência: `worklog.md` tem registro detalhado) vs. aceitar perda vs. fonte externa de recuperação
+  2. Decisão sobre provedor PostgreSQL (Neon vs Supabase vs Railway) — bloqueio previsto, ainda pendente
+- Nenhum commit feito nesta sessão. Apenas `scripts/smoke-test.sh` (untracked) e atualizações em `DECISOES.md` + `worklog.md` (não staged).
