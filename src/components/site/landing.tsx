@@ -29,6 +29,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/site/mode-toggle";
 import { LanguageSelector } from "@/components/site/language-selector";
+import { HeaderCompareLink } from "@/components/site/header-compare-link";
+import { CompareButton } from "@/components/site/compare-button";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
 import { FilterBar } from "@/components/site/filter-bar";
@@ -213,6 +215,7 @@ function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSelector />
+          <HeaderCompareLink />
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
             <ShoppingCart className="mr-1.5 h-4 w-4" />
             {t("login")}
@@ -825,13 +828,12 @@ function ProductsSection({
                         ${product.priceRange.min.toFixed(2)} – ${product.priceRange.max.toFixed(2)}
                       </div>
                     </div>
-                    <Button
+                    <CompareButton
+                      slug={product.slug}
                       size="sm"
                       variant="default"
                       className="bg-emerald-500 hover:bg-emerald-600"
-                    >
-                      Comparar
-                    </Button>
+                    />
                   </div>
 
                   {/* Offers detail */}

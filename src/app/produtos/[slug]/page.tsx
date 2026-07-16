@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CompatibleProducts } from "./compatible-products";
+import { CompareButton } from "@/components/site/compare-button";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -210,6 +211,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <TrendingUp className="h-4 w-4 text-emerald-500" />
                 {totalStock.toLocaleString()} unidades em estoque
               </div>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <CompareButton slug={product.slug} size="default" navigateOnAdd />
             </div>
             {traceId && (
               <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">
