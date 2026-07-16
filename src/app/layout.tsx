@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
+import { CompareProvider } from "@/contexts/compare-context";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -106,11 +107,13 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="flex min-h-screen flex-col">
-              {children}
-              <SiteFooter />
-            </div>
-            <Toaster />
+            <CompareProvider>
+              <div className="flex min-h-screen flex-col">
+                {children}
+                <SiteFooter />
+              </div>
+              <Toaster />
+            </CompareProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
