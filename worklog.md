@@ -4206,3 +4206,31 @@ Stage Summary:
 - Governança V2.0 estabelecida no repositório.
 - Doer confirma leitura completa do `PROTOCOLO_MESTRE.md` e está pronto para executar o Discovery (Seção 4) assim que o Thinker enviar as 7 perguntas ao Operador.
 - Próximo passo bloqueado: Discovery. O `PLANO_MESTRE.md` não será escrito até o Discovery estar completo em `DECISOES.md`.
+
+---
+
+Task ID: GOV-002 — Discovery inicial registrado em DECISOES.md
+Agent: Doer
+Task: Registrar as 7 perguntas e respostas do Discovery (Seção 4 do PROTOCOLO_MESTRE.md) em DECISOES.md, sem interpretar ou discutir o conteúdo.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md` (re-confirmado nesta sessão).
+- Lido `PLANO_MESTRE.md` — não existe (ainda não foi gerado; depende desta tarefa concluir).
+- Lido `DECISOES.md` — continha apenas cabeçalho e data de criação (de GOV-001).
+- Recebidas as 7 perguntas e respostas do Discovery do Operador, repassadas pelo Thinker.
+- Registradas em `DECISOES.md` sob o título `## 2026-07-16 — Discovery`, formato `### N. Pergunta` seguido da resposta em prosa/bullets conforme fornecido.
+- Nenhuma interpretação, edição ou discussão das respostas — transcrição fiel.
+- Commit atômico `62607e2` com mensagem `docs: discovery inicial registrado em DECISOES.md`.
+- Verificação:
+  - `grep -c "^### [0-9]\." DECISOES.md` → 7 perguntas numeradas ✓
+  - `grep "^## 2026-07-16 — Discovery" DECISOES.md` → título presente ✓
+  - Cada `### N.` é seguido de pelo menos um parágrafo de resposta ✓
+  - `git log -1 --oneline` → `62607e2 docs: discovery inicial registrado em DECISOES.md` ✓
+
+Stage Summary:
+
+- Discovery concluído e registrado em `DECISOES.md`.
+- 7 perguntas, 7 respostas, formato padrão atendido.
+- Próximo passo desbloqueado: Thinker gera o `PLANO_MESTRE.md` com base no Anexo A, podado conforme as respostas do Discovery (em especial: login já existe → Fase 3 aplica; sem pagamento/upload → Fases 6 condicionais não entram; deploy online é parte da definição de "pronto" → Fase 9 obrigatória; documentação já existente precisa ser auditada contra o novo critério de pronto).
+- Doer aguarda próxima Ordem de Serviço.
