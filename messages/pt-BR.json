@@ -167,6 +167,8 @@
     "manufacturer": "Fabricante",
     "category": "Categoria",
     "rating": "Avaliação",
+    "rowAttribute": "Atributo",
+    "products": "produtos",
     "headerCompare": "Comparar",
     "headerAdd": "Adicionar à comparação",
     "headerRemove": "Remover da comparação",

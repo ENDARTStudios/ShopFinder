@@ -57,6 +57,26 @@ interface SerializedProduct {
     shipsFrom: string;
     fulfillmentDays: number[];
   }>;
+  /** Rich attributes with source/confidence/evidence. Populated when `?slugs=` is used (compare page). */
+  enrichedSpecs?: Array<{
+    id: string;
+    name: string;
+    value: string;
+    source: string | null;
+    sourceName: string | null;
+    confidence: number | null;
+    evidence: Array<{
+      sourceType: string;
+      sourceName: string;
+      confidence: number;
+      extractedValue: string;
+      normalizedValue: string;
+      url: string;
+      retrievedAt: string;
+    }>;
+  }>;
+  /** Manufacturer name extracted from the pipeline-format description. */
+  manufacturer?: string | null;
 }
 
 function serializeProduct(p: any): SerializedProduct {
@@ -96,6 +116,44 @@ function serializeProduct(p: any): SerializedProduct {
 
   const specs = (p.attributes ?? []).map((a: any) => ({ name: a.name, value: a.value }));
 
+  // Rich (enriched) specs are only serialized when the underlying attribute
+  // carries provenance fields. Used by the compare page to render source
+  // badges and confidence bars.
+  const enrichedSpecs = (p.attributes ?? [])
+    .filter((a: any) => a.source !== null && a.source !== undefined)
+    .map((a: any) => {
+      let evidence: Array<{
+        sourceType: string;
+        sourceName: string;
+        confidence: number;
+        extractedValue: string;
+        normalizedValue: string;
+        url: string;
+        retrievedAt: string;
+      }> = [];
+      if (a.evidence) {
+        try {
+          const parsed = JSON.parse(a.evidence);
+          if (Array.isArray(parsed)) evidence = parsed;
+        } catch {
+          // ignore parse errors
+        }
+      }
+      return {
+        id: a.id,
+        name: a.name,
+        value: a.value,
+        source: a.source,
+        sourceName: a.sourceName,
+        confidence: a.confidence !== null ? Number(a.confidence) : null,
+        evidence
+      };
+    });
+
+  // Manufacturer extracted from pipeline-format description ("Manufacturer: Intel Corporation.")
+  const manufacturerMatch = (p.description ?? "").match(/Manufacturer:\s*(.+?)\./);
+  const manufacturer = manufacturerMatch?.[1] ?? null;
+
   return {
     id: p.id,
     sku: p.sku,
@@ -118,7 +176,9 @@ function serializeProduct(p: any): SerializedProduct {
     imageLabel,
     specs,
     mpn: p.sku.replace("SF-", "").replace(/-/g, ""),
-    offers
+    offers,
+    enrichedSpecs,
+    manufacturer
   };
 }
 
@@ -155,6 +215,7 @@ export async function GET(request: NextRequest) {
       const nicheId = searchParams.get("niche");
       const categorySlug = searchParams.get("category");
       const q = searchParams.get("q");
+      const slugsParam = searchParams.get("slugs");
       const limit = parseInt(searchParams.get("limit") ?? "50", 10);
       const offset = parseInt(searchParams.get("offset") ?? "0", 10);
 
@@ -165,6 +226,20 @@ export async function GET(request: NextRequest) {
 
       if (categorySlug) {
         where.category = { slug: categorySlug };
+      }
+
+      // Filter by an explicit list of slugs (used by the compare page).
+      // Comma-separated; empty segments ignored. Capped at 20 to avoid abuse.
+      if (slugsParam !== null) {
+        const slugs = slugsParam
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .slice(0, 20);
+        if (slugs.length === 0) {
+          return NextResponse.json({ products: [], total: 0, limit, offset });
+        }
+        where.slug = { in: slugs };
       }
 
       let products = await prisma.product.findMany({
