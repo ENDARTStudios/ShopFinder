@@ -28,8 +28,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/site/mode-toggle";
+import { LanguageSelector } from "@/components/site/language-selector";
 import { PROJECT_META } from "@/components/site/data";
-import { useProductSearch } from "@/hooks/use-product-search";
+import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
+import { FilterBar } from "@/components/site/filter-bar";
+import { useTranslations } from "next-intl";
 
 // ── Types matching the API response ────────────────────────
 
@@ -156,6 +159,8 @@ function useFetch<T>(url: string): { data: T | null; loading: boolean; error: st
 // ── Header ─────────────────────────────────────────────────
 
 function SiteHeader() {
+  const t = useTranslations("nav");
+  const tHero = useTranslations("hero");
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -170,7 +175,7 @@ function SiteHeader() {
           <div className="flex flex-col leading-none">
             <span className="text-sm font-bold tracking-tight">{PROJECT_META.name}</span>
             <span className="text-[10px] tracking-widest text-muted-foreground">
-              {PROJECT_META.tagline}
+              {tHero("tagline")}
             </span>
           </div>
         </div>
@@ -179,37 +184,38 @@ function SiteHeader() {
             href="#nichos"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Nichos
+            {t("niches")}
           </a>
           <a
             href="#categorias"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Categorias
+            {t("categories")}
           </a>
           <a
             href="#fabricantes"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Fabricantes
+            {t("manufacturers")}
           </a>
           <a
             href="#produtos"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Produtos
+            {t("products")}
           </a>
           <a
             href="#confianca"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Como funciona
+            {t("howItWorks")}
           </a>
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSelector />
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
             <ShoppingCart className="mr-1.5 h-4 w-4" />
-            Entrar
+            {t("login")}
           </Button>
           <ModeToggle />
         </div>
@@ -221,6 +227,7 @@ function SiteHeader() {
 // ── Hero with real search ──────────────────────────────────
 
 function Hero({ onSearch }: { onSearch: (q: string) => void }) {
+  const t = useTranslations("hero");
   const [query, setQuery] = React.useState("");
 
   const handleSearch = (e: React.FormEvent) => {
@@ -247,22 +254,22 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
               {PROJECT_META.name}
             </h1>
             <p className="text-lg font-medium text-emerald-500 tracking-wide">
-              {PROJECT_META.tagline}
+              {t("tagline")}
             </p>
           </div>
 
           <p className="max-w-2xl text-xl text-muted-foreground sm:text-2xl">
-            Encontre qualquer produto entre milhares de fornecedores. Do componente eletrônico ao
-            smartphone — compare preços, specs e estoque em tempo real.
+            {t("subtitle")}
           </p>
 
           {/* Search bar — queries the real API */}
-          <form onSubmit={handleSearch} className="w-full max-w-2xl">
+          <form onSubmit={handleSearch} className="w-full max-w-2xl" role="search">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <Input
                 type="text"
-                placeholder="Pesquisar produtos, MPN, marcas..."
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="h-14 rounded-2xl border-2 pl-12 pr-32 text-base shadow-lg focus-visible:ring-emerald-500"
@@ -271,14 +278,15 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
                 type="submit"
                 size="lg"
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-500 hover:bg-emerald-600"
+                aria-label={t("searchButton")}
               >
-                <Search className="mr-1.5 h-4 w-4" />
-                Buscar
+                <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                {t("searchButton")}
               </Button>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs text-muted-foreground">Populares:</span>
+              <span className="text-xs text-muted-foreground">{t("popular")}</span>
               {SEARCH_SUGGESTIONS.map((s) => (
                 <button
                   key={s}
@@ -298,15 +306,15 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
 
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
-              36.000+ produtos
+              <TrendingUp className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+              {t("statProducts")}
             </span>
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" />3 nichos · 7 fornecedores
+              <ShieldCheck className="h-4 w-4 text-emerald-500" aria-hidden="true" />{t("statNiches")}
             </span>
             <span className="flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-emerald-500" />
-              Powered by AI
+              <Sparkles className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+              {t("statAi")}
             </span>
           </div>
         </div>
@@ -318,16 +326,15 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
 // ── Niches section (from API) ──────────────────────────────
 
 function NichesSection() {
+  const t = useTranslations("niches");
   const { data, loading } = useFetch<{ niches: ApiNiche[] }>("/api/catalog?path=niches");
 
   return (
     <section id="nichos" className="border-b border-border/60">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Escolha seu nicho</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            O ShopFinder cobre 3 grandes áreas de produtos com fontes especializadas
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {loading ? (
@@ -355,11 +362,11 @@ function NichesSection() {
                 <div className="mb-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
-                    {niche.productCount.toLocaleString()} produtos
+                    {t("productCount", { count: niche.productCount.toLocaleString() })}
                   </span>
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                    {niche.supplierCount} fornecedores
+                    {t("supplierCount", { count: niche.supplierCount })}
                   </span>
                 </div>
 
@@ -388,7 +395,7 @@ function NichesSection() {
                 </div>
 
                 <div className="mt-4 flex items-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                  Explorar nicho
+                  {t("explore")}
                   <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </a>
@@ -403,6 +410,7 @@ function NichesSection() {
 // ── Categories (from API, filtered by niche) ───────────────
 
 function CategoriesSection() {
+  const t = useTranslations("categories");
   const { data, loading } = useFetch<{ categories: ApiCategory[] }>("/api/catalog?path=categories");
   const [activeNiche, setActiveNiche] = React.useState<string>("all");
 
@@ -411,10 +419,10 @@ function CategoriesSection() {
     activeNiche === "all" ? categories : categories.filter((c) => c.nicheId === activeNiche);
 
   const nicheTabs = [
-    { id: "all", name: "Todos" },
-    { id: "pc-hardware", name: "PC Hardware" },
-    { id: "electronic-components", name: "Componentes" },
-    { id: "consumer-electronics", name: "Consumo" }
+    { id: "all", name: t("tabs.all") },
+    { id: "pc-hardware", name: t("tabs.pcHardware") },
+    { id: "electronic-components", name: t("tabs.components") },
+    { id: "consumer-electronics", name: t("tabs.consumer") }
   ];
 
   return (
@@ -422,8 +430,8 @@ function CategoriesSection() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Categorias</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Navegue por tipo de produto</p>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {nicheTabs.map((tab) => (
@@ -459,7 +467,7 @@ function CategoriesSection() {
                 </div>
                 <h3 className="font-semibold">{cat.name}</h3>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {cat.productCount.toLocaleString()} produtos
+                  {t("productCount", { count: cat.productCount.toLocaleString() })}
                 </p>
               </a>
             ))}
@@ -503,6 +511,7 @@ interface ApiCountryCoverage {
 }
 
 function ManufacturersSection() {
+  const t = useTranslations("manufacturers");
   const { data, loading } = useFetch<{
     manufacturers: ApiManufacturer[];
     tiers: Array<{
@@ -542,13 +551,9 @@ function ManufacturersSection() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            {data ? `${data.totalManufacturers} fabricantes` : "Fabricantes"}
+            {data ? t("title", { count: data.totalManufacturers }) : t("titleLoading")}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Dois eixos: <strong>Authority</strong> (confiança) e <strong>Coverage</strong>{" "}
-            (completude de dados). Separados por país e segmento — do fabricante primário ao
-            emergente.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Country coverage bar */}
@@ -601,13 +606,13 @@ function ManufacturersSection() {
                     {tier.tier}
                   </span>
                   <span className="text-xs font-medium text-muted-foreground">
-                    Authority {tier.authorityRange}
+                    {t("authorityLabel", { range: tier.authorityRange })}
                   </span>
                 </div>
 
                 <h3 className="mb-1 font-bold text-sm">{tier.label}</h3>
                 <div className="mb-3 text-xs text-muted-foreground">
-                  {tier.manufacturers.length} fabricantes
+                  {t("manufacturersCount", { count: tier.manufacturers.length })}
                 </div>
 
                 <div className="space-y-2">
@@ -626,7 +631,7 @@ function ManufacturersSection() {
                   ))}
                   {tier.manufacturers.length > 8 && (
                     <div className="text-center text-xs text-muted-foreground pt-1">
-                      +{tier.manufacturers.length - 8} mais
+                      {t("more", { count: tier.manufacturers.length - 8 })}
                     </div>
                   )}
                 </div>
@@ -644,12 +649,18 @@ function ManufacturersSection() {
 function ProductsSection({
   searchQuery,
   nicheFilter,
-  onNicheChange
+  onNicheChange,
+  filters,
+  onFiltersChange
 }: {
   searchQuery: string | null;
   nicheFilter: string | null;
   onNicheChange: (niche: string | null) => void;
+  filters: ProductFilter;
+  onFiltersChange: (f: ProductFilter) => void;
 }) {
+  const t = useTranslations("products");
+  const tFilter = useTranslations("filter");
   // Fetch ALL products once (no server-side filtering — MiniSearch handles it)
   const { data, loading } = useFetch<{ products: ApiProduct[]; total: number }>(
     `/api/catalog?path=products&limit=100`
@@ -657,20 +668,40 @@ function ProductsSection({
 
   const allProducts = data?.products ?? [];
 
-  // Use MiniSearch with ontology-aware term resolution
+  // Use MiniSearch with ontology-aware term resolution + parametric filters
   const { results: searchResults, indexed } = useProductSearch(
     allProducts,
     searchQuery ?? "",
-    nicheFilter
+    nicheFilter,
+    filters
   );
 
   const products = searchResults;
   const nicheTabs = [
-    { id: null, name: "Todos" },
-    { id: "pc-hardware", name: "PC Hardware" },
-    { id: "electronic-components", name: "Componentes" },
-    { id: "consumer-electronics", name: "Consumo" }
+    { id: null, name: t("tabs.all") },
+    { id: "pc-hardware", name: t("tabs.pcHardware") },
+    { id: "electronic-components", name: t("tabs.components") },
+    { id: "consumer-electronics", name: t("tabs.consumer") }
   ];
+
+  // Labels para o FilterBar (vindos do i18n 'filter' namespace)
+  const filterLabels = {
+    title: tFilter("title"),
+    active: tFilter("active"),
+    manufacturer: tFilter("manufacturer"),
+    price: tFilter("price"),
+    min: tFilter("min"),
+    max: tFilter("max"),
+    priceHint: tFilter("priceHint"),
+    specs: tFilter("specs"),
+    valuePlaceholder: tFilter("valuePlaceholder"),
+    addAttribute: tFilter("addAttribute"),
+    removeAttribute: tFilter("removeAttribute"),
+    clear: tFilter("clear"),
+    showAll: tFilter("showAll"),
+    showLess: tFilter("showLess"),
+    apply: tFilter("apply")
+  };
 
   return (
     <section id="produtos" className="border-b border-border/60">
@@ -678,10 +709,14 @@ function ProductsSection({
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              {searchQuery ? `Resultados para "${searchQuery}"` : "Produtos em destaque"}
+              {searchQuery ? t("titleResults", { query: searchQuery }) : t("titleFeatured")}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {loading ? "Carregando..." : !indexed ? "Indexando..." : `${products.length} produtos encontrados`}
+            <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">
+              {loading
+                ? t("loading")
+                : !indexed
+                  ? t("indexing")
+                  : t("resultsCount", { count: products.length })}
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -689,6 +724,7 @@ function ProductsSection({
               <button
                 key={tab.id ?? "all"}
                 onClick={() => onNicheChange(tab.id)}
+                aria-pressed={nicheFilter === tab.id}
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                   nicheFilter === tab.id
                     ? "bg-emerald-500 text-white"
@@ -701,17 +737,28 @@ function ProductsSection({
           </div>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-lg font-medium text-muted-foreground">Nenhum produto encontrado</p>
-            <p className="text-sm text-muted-foreground">Tente outra busca ou nicho</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* Mobile filter trigger sits inline with the section; the desktop
+            sidebar is rendered as part of the products grid below. */}
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <FilterBar
+            products={allProducts}
+            filters={filters}
+            onChange={onFiltersChange}
+            labels={filterLabels}
+          />
+
+          <div className="flex-1 min-w-0">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : products.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <p className="text-lg font-medium text-muted-foreground">{t("noResults")}</p>
+                <p className="text-sm text-muted-foreground">{t("noResultsHint")}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
               <a
                 key={product.id}
@@ -728,11 +775,11 @@ function ProductsSection({
                     <span className="text-base font-bold text-white/90">{product.imageLabel}</span>
                   {product.inStock ? (
                     <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
-                      Em estoque
+                      {t("inStock")}
                     </Badge>
                   ) : (
                     <Badge className="absolute right-3 top-3 bg-amber-500/90 text-white">
-                      Esgotado
+                      {t("outOfStock")}
                     </Badge>
                   )}
                   <div
@@ -768,7 +815,7 @@ function ProductsSection({
                     <span className="font-medium text-foreground">{product.rating}</span>
                     <span>({product.reviewCount.toLocaleString()})</span>
                     <span className="mx-1">·</span>
-                    <span>{product.suppliers} forn.</span>
+                    <span>{t("suppliers", { count: product.suppliers })}</span>
                   </div>
 
                   <div className="flex items-end justify-between">
@@ -822,7 +869,9 @@ function ProductsSection({
               </a>
             ))}
           </div>
-        )}
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -831,11 +880,12 @@ function ProductsSection({
 // ── Trust section ──────────────────────────────────────────
 
 function TrustSection() {
+  const t = useTranslations("trust");
   const stats = [
-    { label: "estágios de pipeline", value: "15" },
-    { label: "conectores ativos", value: "7" },
-    { label: "testes automatizados", value: "628" },
-    { label: "violações arquiteturais", value: "0" }
+    { label: t("statPipeline"), value: "15" },
+    { label: t("statConnectors"), value: "7" },
+    { label: t("statTests"), value: "646" },
+    { label: t("statViolations"), value: "0" }
   ];
 
   return (
@@ -848,15 +898,12 @@ function TrustSection() {
               className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
             >
               <Sparkles className="mr-1 h-3 w-3" />
-              Powered by Catalog Intelligence
+              {t("badge")}
             </Badge>
             <h2 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
-              Cada produto passa por 15 estágios de validação
+              {t("title")}
             </h2>
-            <p className="max-w-2xl text-muted-foreground">
-              Ofertas de marketplaces, distribuidores e fabricantes são consolidadas, enriquecidas
-              com dados oficiais e validadas por IA antes de chegarem ao catálogo.
-            </p>
+            <p className="max-w-2xl text-muted-foreground">{t("description")}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
@@ -869,7 +916,7 @@ function TrustSection() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
-            <span>Fontes: Marketplace · Distributor · Retailer · Manufacturer</span>
+            <span>{t("sources")}</span>
           </div>
         </div>
       </div>
@@ -882,6 +929,7 @@ function TrustSection() {
 export function Landing() {
   const [searchQuery, setSearchQuery] = React.useState<string | null>(null);
   const [nicheFilter, setNicheFilter] = React.useState<string | null>(null);
+  const [filters, setFilters] = React.useState<ProductFilter>(EMPTY_FILTER);
 
   return (
     <>
@@ -895,6 +943,8 @@ export function Landing() {
           searchQuery={searchQuery}
           nicheFilter={nicheFilter}
           onNicheChange={setNicheFilter}
+          filters={filters}
+          onFiltersChange={setFilters}
         />
         <TrustSection />
       </main>
