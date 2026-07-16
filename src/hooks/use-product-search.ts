@@ -8,12 +8,49 @@
  *
  * This enables semantic search: "placa-mãe para i9" finds motherboards
  * with socket LGA1700 (the i9's socket), not just products with "i9" in the title.
+ *
+ * Sprint 11: hook estendido para aceitar `ProductFilter` (manufacturers,
+ * priceMin/Max, attributes). Filtros aplicados APÓS a busca textual —
+ * MiniSearch retorna candidatos, depois o filtro paramétrico reduz.
  */
 "use client";
 
 import * as React from "react";
 import MiniSearch from "minisearch";
 import type { ApiProduct } from "@/components/site/landing";
+
+// ── Filter contract ────────────────────────────────────────
+
+/**
+ * ProductFilter — declarative parametric filter applied AFTER textual search.
+ *
+ * - `manufacturers`: list of brand names (matched against `product.brand`).
+ * - `priceMin`, `priceMax`: USD price bounds (inclusive). When `priceRange.min`
+ *   is 0 (no offers yet), the product's own base price is used instead.
+ * - `attributes`: map of attribute name → lowercase substring that must
+ *   appear in the attribute value (e.g. `{ "psu.wattage": "850" }`).
+ *   Empty values are ignored.
+ */
+export interface ProductFilter {
+  manufacturers: string[];
+  priceMin?: number;
+  priceMax?: number;
+  attributes: Record<string, string>;
+}
+
+export const EMPTY_FILTER: ProductFilter = {
+  manufacturers: [],
+  attributes: {}
+};
+
+export function isFilterEmpty(f: ProductFilter): boolean {
+  return (
+    f.manufacturers.length === 0 &&
+    f.priceMin === undefined &&
+    f.priceMax === undefined &&
+    Object.values(f.attributes).every((v) => !v || v.trim() === "")
+  );
+}
 
 // MiniSearch document type — extends ApiProduct with searchable attribute IDs
 interface SearchableProduct extends ApiProduct {
@@ -30,7 +67,7 @@ const SEARCH_ALIASES: Record<string, string> = {
   // CPU
   "socket": "cpu.socket", "soquete": "cpu.socket", "cpu_socket": "cpu.socket",
   "cores": "cpu.cores", "nucleos": "cpu.cores", "núcleos": "cpu.cores",
-  "threads": "cpu.threads", "threads": "cpu.threads",
+  "threads": "cpu.threads",
   "base_clock": "cpu.base_clock", "frequencia": "cpu.base_clock", "frequência": "cpu.base_clock",
   "turbo": "cpu.max_turbo", "boost": "cpu.max_turbo",
   "tdp": "cpu.tdp", "consumo": "cpu.tdp",
@@ -71,12 +108,51 @@ function resolveSearchTerms(query: string): { text: string; attributeIds: string
   return { text: query, attributeIds };
 }
 
+// ── Parametric filtering (post-search) ─────────────────────
+
+function passesParametricFilter(p: ApiProduct, filter: ProductFilter): boolean {
+  // Manufacturer (brand) filter
+  if (filter.manufacturers.length > 0) {
+    if (!filter.manufacturers.includes(p.brand)) return false;
+  }
+
+  // Price filter — use the offer range if available, otherwise base price.
+  if (filter.priceMin !== undefined || filter.priceMax !== undefined) {
+    const effectiveMin = p.priceRange.min > 0 ? p.priceRange.min : p.price;
+    const effectiveMax = p.priceRange.max > 0 ? p.priceRange.max : p.price;
+    if (filter.priceMin !== undefined && effectiveMax < filter.priceMin) return false;
+    if (filter.priceMax !== undefined && effectiveMin > filter.priceMax) return false;
+  }
+
+  // Attribute filters — match by canonical attribute name OR display label
+  // substring; value matched by substring (case-insensitive).
+  const attrEntries = Object.entries(filter.attributes).filter(
+    ([, v]) => v && v.trim() !== ""
+  );
+  if (attrEntries.length > 0) {
+    for (const [attrName, valueQuery] of attrEntries) {
+      const lowered = valueQuery.toLowerCase().trim();
+      const match = p.specs.find((s) => {
+        const name = s.name.toLowerCase();
+        const value = s.value.toLowerCase();
+        const nameMatches =
+          name === attrName.toLowerCase() || name.includes(attrName.toLowerCase());
+        return nameMatches && value.includes(lowered);
+      });
+      if (!match) return false;
+    }
+  }
+
+  return true;
+}
+
 // ── Hook ───────────────────────────────────────────────────
 
 export function useProductSearch(
   allProducts: ApiProduct[],
   query: string,
-  nicheFilter: string | null
+  nicheFilter: string | null,
+  productFilter: ProductFilter = EMPTY_FILTER
 ) {
   const [searchIndex, setSearchIndex] = React.useState<MiniSearch<SearchableProduct> | null>(null);
   const [indexed, setIndexed] = React.useState(false);
@@ -134,36 +210,41 @@ export function useProductSearch(
       filtered = allProducts.filter((p) => p.nicheId === nicheFilter);
     }
 
-    // If no query, return all (filtered by niche)
+    // Textual search phase
+    let textMatches: ApiProduct[];
     if (!query.trim()) {
-      return filtered;
+      textMatches = filtered;
+    } else {
+      // Resolve ontology terms
+      const { text, attributeIds } = resolveSearchTerms(query);
+
+      // Build search query — search for text AND resolved attribute IDs
+      const searchQueries: Array<{ queries: string[]; fields?: string[]; boost?: Record<string, number> }> = [
+        { queries: [text] }
+      ];
+
+      if (attributeIds.length > 0) {
+        // Also search for the attribute values (e.g., "AM5", "LGA1700")
+        const valueTerms = text.split(/\s+/).filter((t) => t.length >= 2);
+        searchQueries.push({
+          queries: valueTerms,
+          fields: ["attributeValues", "attributeIds"],
+          boost: { attributeValues: 3, attributeIds: 2 }
+        });
+      }
+
+      // Execute search
+      const searchResults = searchIndex.search(searchQueries as any);
+      const resultSlugs = new Set(searchResults.map((r) => r.slug));
+      textMatches = filtered.filter((p) => resultSlugs.has(p.slug));
     }
 
-    // Resolve ontology terms
-    const { text, attributeIds } = resolveSearchTerms(query);
-
-    // Build search query — search for text AND resolved attribute IDs
-    const searchQueries: Array<{ queries: string[]; fields?: string[]; boost?: Record<string, number> }> = [
-      { queries: [text] }
-    ];
-
-    if (attributeIds.length > 0) {
-      // Also search for the attribute values (e.g., "AM5", "LGA1700")
-      const valueTerms = text.split(/\s+/).filter((t) => t.length >= 2);
-      searchQueries.push({
-        queries: valueTerms,
-        fields: ["attributeValues", "attributeIds"],
-        boost: { attributeValues: 3, attributeIds: 2 }
-      });
+    // Parametric filter phase (Sprint 11)
+    if (isFilterEmpty(productFilter)) {
+      return textMatches;
     }
-
-    // Execute search
-    const searchResults = searchIndex.search(searchQueries as any);
-
-    // Map back to original products (filter by niche if set)
-    const resultSlugs = new Set(searchResults.map((r) => r.slug));
-    return filtered.filter((p) => resultSlugs.has(p.slug));
-  }, [query, nicheFilter, indexed, searchIndex, allProducts]);
+    return textMatches.filter((p) => passesParametricFilter(p, productFilter));
+  }, [query, nicheFilter, productFilter, indexed, searchIndex, allProducts]);
 
   return { results, indexed };
 }
