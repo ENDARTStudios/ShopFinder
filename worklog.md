@@ -4359,3 +4359,74 @@ Stage Summary:
   1. Recriar Sprints 11-16 (referência: `worklog.md` tem registro detalhado) vs. aceitar perda vs. fonte externa de recuperação
   2. Decisão sobre provedor PostgreSQL (Neon vs Supabase vs Railway) — bloqueio previsto, ainda pendente
 - Nenhum commit feito nesta sessão. Apenas `scripts/smoke-test.sh` (untracked) e atualizações em `DECISOES.md` + `worklog.md` (não staged).
+
+---
+
+Task ID: REC-001 + REC-002 — Mitigação de perda + recriação Sprint 11
+Agent: Doer
+Task: Confirmar backup com Operador + recriar Sprint 11 (FilterBar + i18n) seguindo OS GOV-005, com commits atômicos por tarefa.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+- **Achado crítico:** `worklog.md` também foi parcialmente afetado pelos resets. Entradas detalhadas das Sprints 10-16 que escrevi em sessões anteriores foram perdidas do arquivo. Worklog atual vai de Sprint 8+9 direto para GOV-001. Especificação para recriação vem da OS GOV-005 (instruções B1-B5) + memória do Doer + código preservado das Sprints 1-10. Registrado em `DECISOES.md`.
+
+- **Parte A — Itens do Operador (commit 5933953):**
+  - `DECISOES.md`: 2 decisões registradas (Recriar Sprints 11-16 + Usar Neon como provedor PostgreSQL)
+  - `PENDENCIAS_OPERADOR.md`: 2 itens adicionados
+    - Item [1]: Verificar backup externo das Sprints 11-16
+    - Item [2]: Criar conta Neon gratuita + obter connection string (sem pedir para colar no chat — Seção 8 protocolo)
+  - Commit: `docs: adicionar itens do Operador sobre backup e Neon`
+
+- **Parte B — Recriação Sprint 11 (4 commits atômicos):**
+
+  **B1 (commit eb2583b):** `feat: estender useProductSearch com ProductFilter`
+  - Adicionada interface `ProductFilter` (manufacturers[], priceMin/Max, attributes Record)
+  - Constante `EMPTY_FILTER` e helper `isFilterEmpty()`
+  - Função `passesParametricFilter()` aplicada APÓS busca textual MiniSearch
+  - Hook aceita 4o argumento opcional (default EMPTY_FILTER) — backward compatible
+
+  **B2 (commit 6e99b8e):** `feat: recriar FilterBar com ProductFilter`
+  - Componente client-side ~470 linhas
+  - Filtros: fabricantes (checkboxes top-10 + expansor), preço min/max, atributos dinâmicos (select + substring)
+  - Layout responsivo: sidebar sticky 256px desktop, Sheet drawer mobile
+  - Acessibilidade: role="region", aria-label nos inputs, aria-label no badge
+  - Labels parametrizadas (default PT-BR, override via props.labels) — prepara para i18n
+
+  **B3 (commit 4bbec57):** `feat: configurar next-intl com seletor PT/EN`
+  - `src/i18n/request.ts`: getRequestConfig lê cookie 'locale' (default pt-BR), carrega messages/<locale>.json
+  - `messages/pt-BR.json`: ~120 chaves (nav, hero, niches, categories, manufacturers, products, filter, trust, footer, language, detail, admin, compare)
+  - `messages/en.json`: tradução EN completa
+  - `src/components/site/language-selector.tsx`: toggle PT|EN, persiste cookie (max-age 1 ano, SameSite=Lax), reload para aplicar mudanças server-side, role="group", aria-label por botão
+  - `next.config.ts`: withNextIntl wrapper com createNextIntlPlugin
+
+  **B4 (commit 763b1b1):** `feat: integrar FilterBar e i18n na landing page`
+  - `src/app/layout.tsx`: async RootLayout, getLocale()+getMessages(), NextIntlClientProvider, generateMetadata() com getTranslations('hero'), <html lang={locale}>
+  - `src/components/site/site-footer.tsx`: useTranslations('hero') para tagline, useTranslations('footer') para copyright
+  - `src/components/site/landing.tsx`: 6 seções migradas para useTranslations
+    - SiteHeader: nav + login + LanguageSelector
+    - Hero: tagline/subtitle/placeholder/button/popular/stats + role="search" + aria-labels
+    - NichesSection: title/subtitle/productCount/supplierCount/explore
+    - CategoriesSection: title/subtitle/tabs/productCount + aria-pressed
+    - ManufacturersSection: title/titleLoading/subtitle/manufacturersCount/authorityLabel/more
+    - ProductsSection: aceita filters+onFiltersChange, passa filters como 4o arg para useProductSearch, renderiza <FilterBar> com labels i18n, titleFeatured/titleResults/loading/indexing/resultsCount/noResults/noResultsHint/tabs/inStock/outOfStock/suppliers/offersFrom/noStock/units/compare + aria-live no contador
+    - TrustSection: badge/title/description/stats/sources
+    - Landing: estado filters + setFilters (EMPTY_FILTER inicial)
+
+- **B5 — Validação:**
+  - `bunx next build` ✓ (15 rotas Dinâmicas, sem erros)
+  - `bun run test:arch` ✓ (262 arquivos, 0 violações)
+  - `bun test tests/integration/` ✓ (18/18 pass, 88 expects)
+  - `curl http://localhost:3000/` (PT default) → 'compra inteligente' + 'Filtros' + role='region' ✓
+  - `curl -H "Cookie: locale=en" http://localhost:3000/` (EN) → 'smart shopping' + 'Filters' + role='region' ✓
+
+Stage Summary:
+
+- Sprint 11 recriada com sucesso. 5 commits atômicos (1 Parte A + 4 Parte B).
+- Funcionalidades restauradas: ProductFilter no hook, FilterBar component, next-intl config, ~120 chaves i18n PT/EN, LanguageSelector, integração completa na landing + footer + layout.
+- 0 regressões: build OK, 262 architecture rules OK, 18/18 integration tests OK.
+- Commits desta sessão: 5933953 (Parte A), eb2583b (B1), 6e99b8e (B2), 4bbec57 (B3), 763b1b1 (B4).
+- Doer aguarda:
+  1. Resposta do Operador sobre backup externo (PENDENCIAS_OPERADOR item [1]) — se tiver backup, interrompe recriação e usa backup
+  2. Resposta do Operador sobre Neon (PENDENCIAS_OPERADOR item [2]) — desbloqueia Fase 9
+  3. Próxima OS do Thinker: continuar recriação (Sprint 12: /compare, CompareContext, CompareButton) ou outra prioridade
