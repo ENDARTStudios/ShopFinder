@@ -4430,3 +4430,55 @@ Stage Summary:
   1. Resposta do Operador sobre backup externo (PENDENCIAS_OPERADOR item [1]) — se tiver backup, interrompe recriação e usa backup
   2. Resposta do Operador sobre Neon (PENDENCIAS_OPERADOR item [2]) — desbloqueia Fase 9
   3. Próxima OS do Thinker: continuar recriação (Sprint 12: /compare, CompareContext, CompareButton) ou outra prioridade
+
+---
+
+Task ID: REC-003 — Recriação Sprint 12 (Comparação de Produtos)
+Agent: Doer
+Task: Recriar CompareContext, página /compare, CompareButton, HeaderCompareLink, MiniSearchBox, extensão do catalog API com enrichedSpecs, integração na landing e detail page, e 17+ testes de integração.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+- Verificado estado atual: src/contexts/, src/app/compare/, src/components/site/compare-button.tsx não existiam. Schema ProductAttribute confirmado com source/sourceName/confidence/evidence.
+
+- **C1 (commit 70f3c6a):** `feat: recriar CompareContext com persistencia localStorage (Sprint 12)`
+  - `src/contexts/compare-context.tsx` (~190 linhas): React Context com items: string[] (max 4), API completa (addItem/removeItem/toggleItem/clearAll/hasItem/isSelected/isFull/compareUrl), persistência localStorage envelope versionada {version:1, items:[...]}, hidratação pós-mount, custom event para cross-tab, tolerante a envelope legado e parsing errors
+  - `src/app/layout.tsx`: CompareProvider envolve children dentro de ThemeProvider, dentro de NextIntlClientProvider
+
+- **C2 (commit 84d4e32):** `feat: recriar CompareButton e HeaderCompareLink (Sprint 12)`
+  - `src/components/site/compare-button.tsx` (~110 linhas): 3 estados (não selecionado/selecionado/cheio), e.preventDefault+stopPropagation para não triggerar <a> parent, props (slug/variant/size/className/navigateOnAdd/onFull), aria-pressed/aria-label dinâmico, contador (N/4)
+  - `src/components/site/header-compare-link.tsx` (~40 linhas): renderiza apenas quando items.length>0, link estilizado (border emerald, bg emerald/10) com ícone Scale + contador Badge, aria-label descritivo, link para compareUrl
+
+- **C3 (commit 5d7b9a3):** `feat: recriar pagina /compare com matriz de specs e ofertas (Sprint 12)`
+  - `src/app/api/catalog/route.ts`: suporte ?slugs= (comma-separated, cap 20, empty filter), SerializedProduct estendido com enrichedSpecs (source/sourceName/confidence/evidence[]) + manufacturer extraído via regex
+  - `src/components/site/mini-search-box.tsx` (~140 linhas): input com dropdown, fetch todos produtos uma vez, filtro client-side, debounce 150ms, click-outside fecha
+  - `src/app/compare/page.tsx` (~600 linhas): client component com Suspense wrapper (useSearchParams), tipos CompareProduct/CompareOffer/CompareEnrichedSpec, buildUnifiedRows (união atributos, prefere enriched sobre plain), sync URL bidirecional, empty state, spec matrix (sticky first column, headers com gradient + title + remove, linhas manufacturer/category/rating/atributos, cada célula com value + source badge + confidence bar), offers matrix (best price highlight emerald, price range, suppliers, total stock), MiniSearchBox na coluna add
+  - `messages/pt-BR.json` + `messages/en.json`: adicionadas chaves compare.rowAttribute e compare.products
+
+- **C4 (commit 090725e):** `feat: integrar comparacao na landing e detail page (Sprint 12)`
+  - `src/components/site/landing.tsx`: imports HeaderCompareLink + CompareButton; SiteHeader ganha HeaderCompareLink entre LanguageSelector e botão Entrar; botão dummy "Comparar" no ProductCard substituído por <CompareButton slug={product.slug} .../>
+  - `src/app/produtos/[slug]/page.tsx`: import CompareButton; <CompareButton slug={product.slug} size="default" navigateOnAdd /> abaixo do bloco preço/stock
+
+- **C5 (commit 6c631fb):** `test: recriar 23 testes de integracao do CompareContext e /compare (Sprint 12)`
+  - `tests/integration/compare.test.tsx` (~300 linhas, 23 testes):
+    - Catalog API ?slugs= (6): retorna filtrados, enrichedSpecs com provenance, manufacturer, slug inválido vazio, segments vazios ignorados, cap 20
+    - /compare page (2): empty state PT, shell com slugs
+    - CompareContext state machine pure logic (10): start empty, addItem, removeItem, max capacity 4, isSelected, clearAll, idempotente, toggleItem, toggleItem max capacity, removeItem safe
+    - CompareContext persistence + hydration (5): persiste envelope, hidrata mount, versão desconhecida reset, tolera bare array, tolera null/corrupted
+
+- **Validação final:**
+  - `bunx next build` ✓ (16 rotas Dinâmicas, +/compare, Compiled successfully in 12.9s)
+  - `bun run test:arch` ✓ (262 arquivos, 0 violações)
+  - `bun test tests/integration/` ✓ (41/41 pass, 135 expects — 18 antigos + 23 novos)
+  - `curl /api/catalog?path=products&slugs=intel-core-i9-14900k,amd-ryzen-9-7950x` → 2 produtos, enrichedSpecs[0].source='manufacturer', manufacturer='Advanced Micro Devices'
+
+Stage Summary:
+
+- Sprint 12 recriada com sucesso. 5 commits atômicos (C1-C5).
+- Funcionalidades restauradas: CompareContext com persistência localStorage, /compare page com matriz de specs (source badges + confidence bars) e matriz de ofertas (best price highlight), CompareButton toggle visual, HeaderCompareLink com badge, MiniSearchBox para adicionar produtos, catalog API com enrichedSpecs + ?slugs= filter.
+- 23 testes de integração criados (supera os 17 exigidos pela OS).
+- 41 testes totais passando (18 antigos + 23 novos), 0 regressões.
+- URLs shareable: /compare?slugs=a,b,c pode ser copiada e colada.
+- Commits desta sessão: 70f3c6a (C1), 84d4e32 (C2), 5d7b9a3 (C3), 090725e (C4), 6c631fb (C5).
+- Próxima OS: Sprint 13 (conectores híbridos + /admin/pipeline + NotificationsBell + StageMetrics) ou aguardar resposta do Operador sobre backup/Neon.
