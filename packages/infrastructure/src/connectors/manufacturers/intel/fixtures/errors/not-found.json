@@ -1,0 +1,5 @@
+{
+  "error": "Product not found",
+  "code": "NOT_FOUND",
+  "message": "The requested product code does not exist in Intel Ark."
+}

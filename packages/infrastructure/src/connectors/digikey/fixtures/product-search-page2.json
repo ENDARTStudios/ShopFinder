@@ -1,0 +1,35 @@
+{
+  "Products": {
+    "Products": [
+      {
+        "DigiKeyPartNumber": "1276-6907-1-ND",
+        "ManufacturerPartNumber": "CL10A106KP8NNNC",
+        "ManufacturerName": "Samsung Electro-Mechanics",
+        "ManufacturerId": 1276,
+        "ProductDescription": "CAP CER 10UF 10V X5R 0603",
+        "DetailedDescription": "10µF ±10% 10V Ceramic Capacitor X5R 0603 (1608 Metric)",
+        "ProductUrl": "https://www.digikey.com/en/products/detail/samsung-electro-mechanics/CL10A106KP8NNNC/5962286",
+        "PrimaryPhotoUrl": "https://media.digikey.com/photos/samsung/cl10a.jpg",
+        "PrimaryDatasheetUrl": "https://media.digikey.com/pdf/Data%20Sheets/Samsung%20PDFs/CL_Series_MLCC.pdf",
+        "UnitPrice": 0.12,
+        "Currency": "USD",
+        "QuantityAvailable": 9842103,
+        "MinimumOrderQuantity": 1,
+        "ProductStatus": "Active",
+        "RohsStatus": "ROHS3 Compliant",
+        "LeadStatus": "Lead Free",
+        "ClassValue": "Capacitors",
+        "ProductGroup": "Ceramic Capacitors",
+        "Parameters": [
+          { "ParameterName": "Capacitance", "ParameterValue": "10µF" },
+          { "ParameterName": "Voltage Rated", "ParameterValue": "10V" },
+          { "ParameterName": "Tolerance", "ParameterValue": "±10%" },
+          { "ParameterName": "Package / Case", "ParameterValue": "0603 (1608 Metric)" }
+        ]
+      }
+    ],
+    "TotalCount": 3,
+    "Count": 1,
+    "Offset": 2
+  }
+}

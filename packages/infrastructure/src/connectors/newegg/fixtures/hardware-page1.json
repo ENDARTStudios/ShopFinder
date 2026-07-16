@@ -1,0 +1,67 @@
+{
+  "ItemList": [
+    {
+      "ItemID": "N82E16819118056",
+      "Title": "Intel Core i9-14900K 24-Core 3.2GHz LGA 1700 125W Desktop Processor",
+      "Brand": "Intel",
+      "Category": "CPUs / Processors",
+      "SubCategory": "Desktop Processors",
+      "SellingPrice": 549.99,
+      "OriginalPrice": 629.99,
+      "Currency": "USD",
+      "ImageUrl": "https://c1.neweggimages.com/ProductImage/19-118-056-V01.jpg",
+      "AdditionalImages": [
+        "https://c1.neweggimages.com/ProductImage/19-118-056-V02.jpg",
+        "https://c1.neweggimages.com/ProductImage/19-118-056-V03.jpg"
+      ],
+      "ProductUrl": "https://www.newegg.com/intel-core-i9-14900k/p/N82E16819118056",
+      "Condition": "New",
+      "SellerName": "Newegg",
+      "Shipping": "Free Shipping",
+      "InStock": true,
+      "UPC": "735858465432",
+      "Model": "BX8071514900K",
+      "Specs": {
+        "Core Count": "24",
+        "Thread Count": "32",
+        "Base Clock": "3.2 GHz",
+        "Boost Clock": "6.0 GHz",
+        "L3 Cache": "36 MB",
+        "TDP": "125 W",
+        "Socket": "LGA 1700",
+        "Lithography": "Intel 7"
+      }
+    },
+    {
+      "ItemID": "N82E16814126480",
+      "Title": "NVIDIA GeForce RTX 4080 SUPER 16GB GDDR6X PCI Express 4.0 Graphics Card",
+      "Brand": "NVIDIA",
+      "Category": "Graphics Cards",
+      "SubCategory": "Desktop Graphics Cards",
+      "SellingPrice": 999.99,
+      "OriginalPrice": 1099.99,
+      "Currency": "USD",
+      "ImageUrl": "https://c1.neweggimages.com/ProductImage/14-126-480-V01.jpg",
+      "ProductUrl": "https://www.newegg.com/nvidia-rtx-4080-super/p/N82E16814126480",
+      "Condition": "New",
+      "SellerName": "Newegg",
+      "Shipping": "Free Shipping",
+      "InStock": true,
+      "UPC": "812674012345",
+      "Model": "RTX 4080 SUPER",
+      "Specs": {
+        "GPU": "GeForce RTX 4080 SUPER",
+        "Memory": "16 GB GDDR6X",
+        "Memory Interface": "256-bit",
+        "Core Clock": "2310 MHz",
+        "Boost Clock": "2550 MHz",
+        "CUDA Cores": "10240",
+        "Interface": "PCI Express 4.0",
+        "Power Connector": "16-pin"
+      }
+    }
+  ],
+  "TotalCount": 543,
+  "TotalPageCount": 28,
+  "CurrentPageNumber": 1
+}

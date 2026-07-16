@@ -1,0 +1,69 @@
+{
+  "Products": {
+    "Products": [
+      {
+        "DigiKeyPartNumber": "STM32F407VGT6-ND",
+        "ManufacturerPartNumber": "STM32F407VGT6",
+        "ManufacturerName": "STMicroelectronics",
+        "ManufacturerId": 412,
+        "ProductDescription": "IC MCU 32BIT 1MB FLASH 100LQFP",
+        "DetailedDescription": "ARM Cortex-M4 STM32F4 Series Microcontrollers IC 32-Bit Single-Core 168MHz 1MB (1M x 8) Flash",
+        "ProductUrl": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32F407VGT6/2755668",
+        "PrimaryPhotoUrl": "https://media.digikey.com/photos/stmicro/stm32f407vgt6.jpg",
+        "PrimaryDatasheetUrl": "https://www.st.com/resource/en/datasheet/stm32f407vg.pdf",
+        "UnitPrice": 14.21,
+        "Currency": "USD",
+        "QuantityAvailable": 45821,
+        "MinimumOrderQuantity": 1,
+        "ProductStatus": "Active",
+        "RohsStatus": "ROHS3 Compliant",
+        "LeadStatus": "Lead Free",
+        "CustomTariffNumber": "8542.31.0080",
+        "ClassValue": "Integrated Circuits (ICs)",
+        "ProductGroup": "Embedded Microcontrollers",
+        "Series": "STM32 F4",
+        "Parameters": [
+          { "ParameterName": "Core Processor", "ParameterValue": "ARM Cortex-M4" },
+          { "ParameterName": "Program Memory Size", "ParameterValue": "1MB (1M x 8)" },
+          { "ParameterName": "Speed", "ParameterValue": "168MHz" },
+          { "ParameterName": "Package / Case", "ParameterValue": "100-LQFP" },
+          { "ParameterName": "Operating Temperature", "ParameterValue": "-40°C ~ 85°C" },
+          { "ParameterName": "Voltage Supply", "ParameterValue": "1.8V ~ 3.6V" },
+          { "ParameterName": "RAM Size", "ParameterValue": "192K x 8" },
+          { "ParameterName": "Data Converters", "ParameterValue": "A/D 24x12b; D/A 2x12b" }
+        ]
+      },
+      {
+        "DigiKeyPartNumber": "296-47351-1-ND",
+        "ManufacturerPartNumber": "TPS61088RWUR",
+        "ManufacturerName": "Texas Instruments",
+        "ManufacturerId": 296,
+        "ProductDescription": "IC BOOST REGULATOR 12V 11A 12VQFN",
+        "DetailedDescription": "Boost Switching Regulator IC Positive 4.2V 13.2V 12A 12-VQFN (3x3)",
+        "ProductUrl": "https://www.digikey.com/en/products/detail/texas-instruments/TPS61088RWUR/7488955",
+        "PrimaryPhotoUrl": "https://media.digikey.com/photos/ti/tps61088.jpg",
+        "PrimaryDatasheetUrl": "https://www.ti.com/lit/ds/symlink/tps61088.pdf",
+        "UnitPrice": 3.87,
+        "Currency": "USD",
+        "QuantityAvailable": 12050,
+        "MinimumOrderQuantity": 1,
+        "ProductStatus": "Active",
+        "RohsStatus": "ROHS3 Compliant",
+        "LeadStatus": "Lead Free",
+        "ClassValue": "Integrated Circuits (ICs)",
+        "ProductGroup": "Power Management (PMIC)",
+        "Series": "TPS61088",
+        "Parameters": [
+          { "ParameterName": "Topology", "ParameterValue": "Boost" },
+          { "ParameterName": "Output Voltage", "ParameterValue": "4.2V ~ 13.2V" },
+          { "ParameterName": "Output Current", "ParameterValue": "12A" },
+          { "ParameterName": "Package / Case", "ParameterValue": "12-VQFN (3x3)" },
+          { "ParameterName": "Frequency", "ParameterValue": "200kHz ~ 2.2MHz" }
+        ]
+      }
+    ],
+    "TotalCount": 2847,
+    "Count": 2,
+    "Offset": 0
+  }
+}

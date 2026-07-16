@@ -1,0 +1,39 @@
+{
+  "name": "@workspace/infrastructure",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Infrastructure implementations — Prisma repositories, object storage, connectors",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./prisma/schema": {
+      "types": "./prisma/schema.prisma",
+      "import": "./prisma/schema.prisma"
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "@workspace/domain": "workspace:*",
+    "@workspace/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "prisma": "^6.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "Product": {
+    "ProductCode": "BX80715305K",
+    "ProductName": "Intel Core Ultra 9 285K Processor",
+    "ProductFamily": "Intel Core Ultra 9 Processors (Series 2)",
+    "ProductStatus": "Launched",
+    "LaunchDate": "2024-10-24",
+    "EndOfLifeDate": null,
+    "SuccessorProductCode": null,
+    "Specifications": [
+      { "Label": "Total Cores", "Value": "24" },
+      { "Label": "P-Core", "Value": "8" },
+      { "Label": "E-Core", "Value": "16" },
+      { "Label": "Total Threads", "Value": "24" },
+      { "Label": "Processor Base Frequency", "Value": "3.7 GHz" },
+      { "Label": "Max Turbo Frequency", "Value": "5.7 GHz" },
+      { "Label": "Cache", "Value": "36 MB" },
+      { "Label": "Processor Base Power", "Value": "125 W" },
+      { "Label": "Maximum Turbo Power", "Value": "250 W" },
+      { "Label": "Lithography", "Value": "Intel 3" },
+      { "Label": "Socket", "Value": "FCLGA1851" },
+      { "Label": "Max Memory Size", "Value": "192 GB" },
+      { "Label": "Memory Types", "Value": "DDR5 6400 MT/s" },
+      { "Label": "Max Memory Channels", "Value": "2" },
+      { "Label": "PCIe Version", "Value": "5.0 and 4.0" },
+      { "Label": "PCIe Lanes", "Value": "20" },
+      { "Label": "Package Size", "Value": "45.0 × 45.0 mm" },
+      { "Label": "TCASE", "Value": "105 °C" },
+      { "Label": "Graphics", "Value": "Intel Graphics" }
+    ],
+    "Downloads": [
+      {
+        "Title": "Intel Core Ultra 9 285K Datasheet",
+        "URL": "https://cdrdv2.intel.com/v1/dl/getContent/830234",
+        "Type": "Datasheet",
+        "Version": null,
+        "Date": "2024-10-24"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://cdrdv2.intel.com/v1/images/ultra9-285k-primary.jpg",
+        "Alt": "Intel Core Ultra 9 285K primary image",
+        "Width": 1000,
+        "Height": 800
+      }
+    ]
+  }
+}

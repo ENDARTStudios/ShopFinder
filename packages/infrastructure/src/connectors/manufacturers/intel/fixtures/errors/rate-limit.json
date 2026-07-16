@@ -1,0 +1,6 @@
+{
+  "error": "Rate limit exceeded",
+  "code": "RATE_LIMIT",
+  "message": "Intel API rate limit exceeded. Please retry after 60 seconds.",
+  "retryAfterSeconds": 60
+}

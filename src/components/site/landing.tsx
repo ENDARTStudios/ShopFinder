@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/site/mode-toggle";
 import { PROJECT_META } from "@/components/site/data";
+import { useProductSearch } from "@/hooks/use-product-search";
 
 // ── Types matching the API response ────────────────────────
 
@@ -638,7 +639,7 @@ function ManufacturersSection() {
   );
 }
 
-// ── Products (from API, with search + niche filter) ────────
+// ── Products (from API + MiniSearch ontology-enhanced search) ──
 
 function ProductsSection({
   searchQuery,
@@ -649,15 +650,21 @@ function ProductsSection({
   nicheFilter: string | null;
   onNicheChange: (niche: string | null) => void;
 }) {
-  const params = new URLSearchParams({ path: "products" });
-  if (nicheFilter) params.set("niche", nicheFilter);
-  if (searchQuery) params.set("q", searchQuery);
-
+  // Fetch ALL products once (no server-side filtering — MiniSearch handles it)
   const { data, loading } = useFetch<{ products: ApiProduct[]; total: number }>(
-    `/api/catalog?${params.toString()}`
+    `/api/catalog?path=products&limit=100`
   );
 
-  const products = data?.products ?? [];
+  const allProducts = data?.products ?? [];
+
+  // Use MiniSearch with ontology-aware term resolution
+  const { results: searchResults, indexed } = useProductSearch(
+    allProducts,
+    searchQuery ?? "",
+    nicheFilter
+  );
+
+  const products = searchResults;
   const nicheTabs = [
     { id: null, name: "Todos" },
     { id: "pc-hardware", name: "PC Hardware" },
@@ -674,7 +681,7 @@ function ProductsSection({
               {searchQuery ? `Resultados para "${searchQuery}"` : "Produtos em destaque"}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {loading ? "Buscando..." : `${data?.total ?? 0} produtos encontrados`}
+              {loading ? "Carregando..." : !indexed ? "Indexando..." : `${products.length} produtos encontrados`}
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -706,15 +713,19 @@ function ProductsSection({
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
-              <Card
+              <a
                 key={product.id}
-                className="group overflow-hidden transition-all hover:shadow-xl"
+                href={`/produtos/${product.slug}`}
+                className="block"
               >
-                <div
-                  className="relative flex h-40 items-center justify-center"
-                  style={{ background: product.imageGradient }}
+                <Card
+                  className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40"
                 >
-                  <span className="text-base font-bold text-white/90">{product.imageLabel}</span>
+                  <div
+                    className="relative flex h-40 items-center justify-center"
+                    style={{ background: product.imageGradient }}
+                  >
+                    <span className="text-base font-bold text-white/90">{product.imageLabel}</span>
                   {product.inStock ? (
                     <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
                       Em estoque
@@ -807,7 +818,8 @@ function ProductsSection({
                     </div>
                   )}
                 </CardContent>
-              </Card>
+                </Card>
+              </a>
             ))}
           </div>
         )}

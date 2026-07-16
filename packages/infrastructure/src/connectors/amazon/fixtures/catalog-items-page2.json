@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "asin": "B0E5554443",
+      "item": {
+        "itemName": "Smart Watch Fitness Tracker with Heart Rate Monitor",
+        "brand": "Garmin"
+      },
+      "images": {
+        "images": [
+          { "url": "https://m.media-amazon.com/images/I/71watch123456._AC_SL1500_.jpg", "variant": "MAIN", "height": 1500, "width": 1500 }
+        ]
+      },
+      "attributes": {
+        "item_name": [{ "value": "Smart Watch Fitness Tracker with Heart Rate Monitor", "language_tag": "en_US" }],
+        "brand": [{ "value": "Garmin" }],
+        "display_type": [{ "value": "OLED" }],
+        "water_resistant": [{ "value": "true" }]
+      },
+      "productTypes": ["SMART_WATCH"],
+      "browseClassification": { "browseNodeId": "79399011", "name": "Smartwatches" },
+      "summaries": [
+        {
+          "marketplaceId": "ATVPDKIKX0DER",
+          "listPrice": { "amount": 299.99, "currency": "USD" },
+          "itemName": "Smart Watch Fitness Tracker with Heart Rate Monitor"
+        }
+      ]
+    }
+  ],
+  "pagination": {}
+}

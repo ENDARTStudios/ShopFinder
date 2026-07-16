@@ -1,0 +1,9 @@
+{
+  "error_response": {
+    "code": 500,
+    "msg": "Internal Server Error",
+    "sub_code": "ISP_INTERNAL_ERROR",
+    "sub_msg": "Service unavailable",
+    "request_id": "err500abc"
+  }
+}

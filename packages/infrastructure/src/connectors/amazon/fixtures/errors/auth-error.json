@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "code": "Unauthorized",
+      "message": "Access token is expired or invalid",
+      "details": "The LWA access token has expired"
+    }
+  ]
+}

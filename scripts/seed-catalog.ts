@@ -861,6 +861,68 @@ function toMinorUnits(usd: number): bigint {
 async function main() {
   console.log("🌱 Seeding ShopFinder catalog...\n");
 
+  // 0. Ensure Store exists (force-reset wipes it)
+  console.log("  → Store...");
+  await prisma.store.upsert({
+    where: { id: STORE_ID },
+    update: {
+      name: "ShopFinder — Default Store",
+      slug: "default",
+      defaultCurrency: "USD",
+      defaultLocale: "pt-BR",
+      settings: JSON.stringify({ timezone: "America/Sao_Paulo", taxInclusive: false, roundToMinorUnit: true }),
+      status: "active"
+    },
+    create: {
+      id: STORE_ID,
+      name: "ShopFinder — Default Store",
+      slug: "default",
+      defaultCurrency: "USD",
+      defaultLocale: "pt-BR",
+      settings: JSON.stringify({ timezone: "America/Sao_Paulo", taxInclusive: false, roundToMinorUnit: true }),
+      status: "active"
+    }
+  });
+
+  // Also ensure at least one User exists (Store requires it via some FK constraints)
+  await prisma.user.upsert({
+    where: { email: "admin@shopfinder.local" },
+    update: {},
+    create: {
+      email: "admin@shopfinder.local",
+      passwordHash: "dummy",
+      roles: JSON.stringify(["admin"]),
+      storeId: STORE_ID,
+      status: "active"
+    }
+  });
+
+  // Ensure Country/Currency data exists (required by some FK constraints)
+  const countryCount = await prisma.country.count();
+  if (countryCount === 0) {
+    await prisma.country.createMany({
+      data: [
+        { code: "US", name: "United States", region: "Americas" },
+        { code: "BR", name: "Brazil", region: "Americas" },
+        { code: "CN", name: "China", region: "Asia" },
+        { code: "TW", name: "Taiwan", region: "Asia" },
+        { code: "JP", name: "Japan", region: "Asia" },
+        { code: "KR", name: "South Korea", region: "Asia" }
+      ]
+    });
+  }
+  const currencyCount = await prisma.currency.count();
+  if (currencyCount === 0) {
+    await prisma.currency.createMany({
+      data: [
+        { code: "USD", name: "US Dollar", symbol: "$", decimalPlaces: 2 },
+        { code: "BRL", name: "Brazilian Real", symbol: "R$", decimalPlaces: 2 },
+        { code: "EUR", name: "Euro", symbol: "€", decimalPlaces: 2 },
+        { code: "CNY", name: "Chinese Yuan", symbol: "¥", decimalPlaces: 2 }
+      ]
+    });
+  }
+
   // 1. Categories — store niches as metadata in description
   console.log("  → Categories...");
   const categoryMap = new Map<string, string>();

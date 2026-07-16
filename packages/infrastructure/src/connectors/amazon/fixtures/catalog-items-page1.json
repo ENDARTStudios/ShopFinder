@@ -1,0 +1,64 @@
+{
+  "items": [
+    {
+      "asin": "B0D1234567",
+      "item": {
+        "itemName": "Wireless Bluetooth Earbuds Pro with Active Noise Cancellation",
+        "brand": "Sony"
+      },
+      "images": {
+        "images": [
+          { "url": "https://m.media-amazon.com/images/I/61abc123456._AC_SL1500_.jpg", "variant": "MAIN", "height": 1500, "width": 1500 },
+          { "url": "https://m.media-amazon.com/images/I/71def789012._AC_SL1500_.jpg", "variant": "PT01", "height": 1500, "width": 1500 }
+        ]
+      },
+      "attributes": {
+        "item_name": [{ "value": "Wireless Bluetooth Earbuds Pro with Active Noise Cancellation", "language_tag": "en_US" }],
+        "brand": [{ "value": "Sony" }],
+        "color": [{ "value": "Black" }],
+        "material": [{ "value": "Silicone" }],
+        "batteries_included": [{ "value": "true" }],
+        "item_weight": [{ "value": "50 grams" }]
+      },
+      "productTypes": ["HEADPHONES"],
+      "browseClassification": { "browseNodeId": "12097479011", "name": "Earbud & In-Ear Headphones" },
+      "summaries": [
+        {
+          "marketplaceId": "ATVPDKIKX0DER",
+          "listPrice": { "amount": 149.99, "currency": "USD" },
+          "itemName": "Wireless Bluetooth Earbuds Pro with Active Noise Cancellation"
+        }
+      ]
+    },
+    {
+      "asin": "B0C9876543",
+      "item": {
+        "itemName": "USB-C Fast Charging Cable 100W Braided",
+        "brand": "Anker"
+      },
+      "images": {
+        "images": [
+          { "url": "https://m.media-amazon.com/images/I/51xyz456789._AC_SL1200_.jpg", "variant": "MAIN", "height": 1200, "width": 1200 }
+        ]
+      },
+      "attributes": {
+        "item_name": [{ "value": "USB-C Fast Charging Cable 100W Braided", "language_tag": "en_US" }],
+        "brand": [{ "value": "Anker" }],
+        "color": [{ "value": "Black" }],
+        "cable_length": [{ "value": "6 feet" }]
+      },
+      "productTypes": ["CABLE"],
+      "browseClassification": { "browseNodeId": "3015379011", "name": "USB Cables" },
+      "summaries": [
+        {
+          "marketplaceId": "ATVPDKIKX0DER",
+          "listPrice": { "amount": 19.99, "currency": "USD" },
+          "itemName": "USB-C Fast Charging Cable 100W Braided"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "nextToken": "token_page2_abc123"
+  }
+}

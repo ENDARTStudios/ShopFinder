@@ -1,0 +1,78 @@
+{
+  "Product": {
+    "ProductCode": "100-000000514",
+    "ProductName": "AMD EPYC 9654",
+    "ProductFamily": "AMD EPYC 9004 Processors",
+    "ProductStatus": "Active",
+    "LaunchDate": "2022-11-10",
+    "EndOfLifeDate": null,
+    "SuccessorProductCode": null,
+    "Categories": [
+      {
+        "CategoryName": "General Specifications",
+        "Specifications": [
+          { "Name": "# of CPU Cores", "Value": "96" },
+          { "Name": "# of Threads", "Value": "192" },
+          { "Name": "Base Clock", "Value": "2.4 GHz" },
+          { "Name": "Max Boost Clock", "Value": "3.7 GHz" },
+          { "Name": "Default TDP", "Value": "360 W" },
+          { "Name": "cTDP", "Value": "320 W" },
+          { "Name": "L2 Cache", "Value": "96 MB" },
+          { "Name": "L3 Cache", "Value": "384 MB" },
+          { "Name": "Lithography", "Value": "TSMC 5nm FinFET" },
+          { "Name": "CPU Socket", "Value": "SP5 (LGA 6096)" },
+          { "Name": "Processor Technology for I/O Die", "Value": "TSMC 6nm" }
+        ]
+      },
+      {
+        "CategoryName": "Memory Specifications",
+        "Specifications": [
+          { "Name": "Max Memory Size", "Value": "6144 GB" },
+          { "Name": "Memory Type", "Value": "DDR5" },
+          { "Name": "Memory Channels", "Value": "12" },
+          { "Name": "Maximum Memory Speed", "Value": "4800 MHz" }
+        ]
+      },
+      {
+        "CategoryName": "PCIe Specifications",
+        "Specifications": [
+          { "Name": "PCI Express Version", "Value": "PCIe 5.0" },
+          { "Name": "Max PCIe Lanes", "Value": "128" }
+        ]
+      },
+      {
+        "CategoryName": "Thermal & Physical Specifications",
+        "Specifications": [
+          { "Name": "Max Operating Temperature (Tjmax)", "Value": "90 °C" },
+          { "Name": "Package Dimensions", "Value": "71.0 × 56.5 mm" },
+          { "Name": "Weight", "Value": "85 grams" },
+          { "Name": "Energy Star Eligible", "Value": "No" }
+        ]
+      }
+    ],
+    "Downloads": [
+      {
+        "Title": "AMD EPYC 9654 Datasheet",
+        "URL": "https://www.amd.com/datasheets/epyc-9654.pdf",
+        "Type": "Datasheet",
+        "Version": null,
+        "Date": "2022-11-10"
+      },
+      {
+        "Title": "AMD EPYC 9004 Series Product Brief",
+        "URL": "https://www.amd.com/datasheets/epyc-9004-brief.pdf",
+        "Type": "Manual",
+        "Version": null,
+        "Date": "2022-11-10"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://www.amd.com/datasheets/images/epyc-9654-primary.jpg",
+        "Alt": "AMD EPYC 9654 primary image",
+        "Width": 1000,
+        "Height": 800
+      }
+    ]
+  }
+}

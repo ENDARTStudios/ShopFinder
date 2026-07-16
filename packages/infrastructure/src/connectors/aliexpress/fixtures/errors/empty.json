@@ -1,0 +1,16 @@
+{
+  "aliexpress_affiliate_product_query_response": {
+    "resp_result": {
+      "resp_code": 200,
+      "resp_msg": "success",
+      "result": {
+        "current_page_no": 1,
+        "total_page_no": 1,
+        "total_results": 0,
+        "products": {
+          "product": []
+        }
+      }
+    }
+  }
+}

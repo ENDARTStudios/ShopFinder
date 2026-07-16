@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "errorId": 1000,
+      "domain": "API_BROWSE",
+      "category": "REQUEST",
+      "message": "Access token has expired",
+      "parameters": []
+    }
+  ]
+}

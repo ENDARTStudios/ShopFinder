@@ -1,27 +1,34 @@
 /**
  * @workspace/domain/discovery/enrichment
  *
- * Manufacturer Enrichment module — rich manufacturer domain model.
+ * Product Knowledge Graph — Knowledge Source Management System.
  *
- * Replaces the simple Tier A/B/C/D system with two independent axes:
- *   - AuthorityScore (0-100): how trustworthy the source is
- *   - CoverageScore (0-100): how complete the manufacturer's data is
+ * The ShopFinder operates over a Product Knowledge Graph where the
+ * catalog is a projection, not the source of truth.
  *
- * Each manufacturer is a full entity with:
- *   - Country of origin (US, TW, CN, JP, KR, DE, NL)
- *   - Segments (CPU, GPU, Motherboard, SSD, Memory, Cooling, etc.)
- *   - Multilingual aliases (English + Chinese characters + pinyin)
- *   - Commercial brands (separate from manufacturer entity)
- *   - Status (ACTIVE, DISCONTINUED, OEM, ODM)
- *   - Official domains (website, support, download center, datasheet base)
- *   - Supported certifications (CE, FCC, RoHS, UL, ANATEL, INMETRO, etc.)
+ * Aggregates:
+ *   - Manufacturer (identity, authority, coverage, capabilities, certifications)
+ *   - ConnectorDefinition (template: protocol, endpoint, auth, capabilities)
+ *   - ConnectorInstance (runtime: environment, health, sync state)
+ *   - ProductAttribute (conclusion with AttributeEvidence[])
+ *   - AttributeEvidence (single source observation)
+ *   - InformationSource (raw source metadata)
+ *   - ManufacturerVersion (immutable history)
+ *   - AuthorityPolicy (dynamic authority resolution)
+ *   - ConfidenceScore (multi-dimensional: manufacturer, consensus, freshness, parser, ai)
+ *   - DecisionExplanation (structured audit trail)
  *
- * 77 manufacturers registered:
- *   Tier A (14): Intel, AMD, NVIDIA, Samsung, etc.
- *   Tier B (18): ASUS, MSI, Gigabyte, Dell, etc.
- *   Tier C (35): Colorful, Huananzhi, DeepCool, Jonsbo, etc.
- *   Tier D (10): Kllisre, Atermiter, SZCPU, etc.
+ * Ontology:
+ *   - AttributeDefinition (canonical IDs: cpu.socket, gpu.memory, etc.)
+ *   - resolveAttribute(rawName) → AttributeDefinition
+ *
+ * Knowledge Graph:
+ *   - KnowledgeNode (typed: manufacturer, product, brand, category, offer, etc.)
+ *   - KnowledgeEdge (typed: manufactures, owns_brand, compatible_with, etc.)
+ *   - Query helpers: getNeighbors, getEdges, findNode, getGraphStats
  */
 
 export * from "./types";
 export * from "./registry";
+export * from "./ontology";
+export * from "./knowledge-graph";

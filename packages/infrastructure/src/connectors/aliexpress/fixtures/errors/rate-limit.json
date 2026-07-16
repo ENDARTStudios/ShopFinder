@@ -1,0 +1,9 @@
+{
+  "error_response": {
+    "code": 429,
+    "msg": "Remote service error",
+    "sub_code": "ISP_RATE_LIMIT",
+    "sub_msg": "Request rate too high",
+    "request_id": "abc123def456"
+  }
+}

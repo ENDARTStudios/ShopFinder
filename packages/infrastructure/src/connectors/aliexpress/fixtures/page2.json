@@ -1,0 +1,35 @@
+{
+  "aliexpress_affiliate_product_query_response": {
+    "resp_result": {
+      "resp_code": 200,
+      "resp_msg": "success",
+      "result": {
+        "current_page_no": 2,
+        "total_page_no": 2,
+        "total_results": 25,
+        "products": {
+          "product": [
+            {
+              "product_id": "4005555444433",
+              "product_title": "Smart Watch Fitness Tracker Heart Rate Monitor",
+              "product_detail_url": "https://www.aliexpress.com/item/4005555444433.html",
+              "shop_name": "SmartLife Store",
+              "category_name": "Smart Watches",
+              "first_level_category_name": "Consumer Electronics",
+              "second_level_category_name": "Smart Watches",
+              "product_image_url": "https://ae01.alicdn.com/kf/HTB1watch1234567.jpg",
+              "original_price": "59.99",
+              "currency": "USD",
+              "evaluate_rate": "4.5",
+              "evaluation_count": "432",
+              "order_count": "120",
+              "product_props": [
+                { "prop_name": "Brand Name", "prop_value": "Huawei" }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

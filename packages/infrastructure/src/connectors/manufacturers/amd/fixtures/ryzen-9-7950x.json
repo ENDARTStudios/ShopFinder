@@ -1,0 +1,102 @@
+{
+  "Product": {
+    "ProductCode": "100-100000514WOF",
+    "ProductName": "AMD Ryzen 9 7950X",
+    "ProductFamily": "AMD Ryzen 9 Desktop Processors",
+    "ProductStatus": "Active",
+    "LaunchDate": "2022-09-27",
+    "EndOfLifeDate": null,
+    "SuccessorProductCode": null,
+    "Categories": [
+      {
+        "CategoryName": "General Specifications",
+        "Specifications": [
+          { "Name": "# of CPU Cores", "Value": "16" },
+          { "Name": "# of Threads", "Value": "32" },
+          { "Name": "Base Clock", "Value": "4.5 GHz" },
+          { "Name": "Max Boost Clock", "Value": "5.7 GHz" },
+          { "Name": "Default TDP", "Value": "170 W" },
+          { "Name": "cTDP", "Value": "162 W" },
+          { "Name": "PBO Limit", "Value": "230 W" },
+          { "Name": "L1 Cache", "Value": "1 MB" },
+          { "Name": "L2 Cache", "Value": "16 MB" },
+          { "Name": "L3 Cache", "Value": "64 MB" },
+          { "Name": "Lithography", "Value": "TSMC 5nm FinFET" },
+          { "Name": "CPU Socket", "Value": "Socket AM5" },
+          { "Name": "Motherboard Chipsets", "Value": "X670E; X670; B650E; B650" }
+        ]
+      },
+      {
+        "CategoryName": "Memory Specifications",
+        "Specifications": [
+          { "Name": "Max Memory Size", "Value": "128 GB" },
+          { "Name": "Memory Type", "Value": "DDR5" },
+          { "Name": "Memory Channels", "Value": "2" },
+          { "Name": "Maximum Memory Speed", "Value": "5200 MHz" }
+        ]
+      },
+      {
+        "CategoryName": "PCIe Specifications",
+        "Specifications": [
+          { "Name": "PCI Express Version", "Value": "PCIe 5.0" },
+          { "Name": "Max PCIe Lanes", "Value": "24" }
+        ]
+      },
+      {
+        "CategoryName": "Graphics Specifications",
+        "Specifications": [
+          { "Name": "Graphics", "Value": "Yes" },
+          { "Name": "Graphics Model", "Value": "AMD Radeon Graphics" },
+          { "Name": "Max Resolution (HDMI)", "Value": "4096 x 2160" },
+          { "Name": "Max Resolution (DP)", "Value": "5120 x 2880" }
+        ]
+      },
+      {
+        "CategoryName": "Thermal & Physical Specifications",
+        "Specifications": [
+          { "Name": "Max Operating Temperature (Tjmax)", "Value": "95 °C" },
+          { "Name": "Package Dimensions", "Value": "40 × 40 mm" },
+          { "Name": "Weight", "Value": "35 grams" },
+          { "Name": "Energy Star Eligible", "Value": "Yes" }
+        ]
+      }
+    ],
+    "Downloads": [
+      {
+        "Title": "AMD Ryzen 9 7950X Datasheet",
+        "URL": "https://www.amd.com/datasheets/ryzen-9-7950x.pdf",
+        "Type": "Datasheet",
+        "Version": null,
+        "Date": "2022-09-27"
+      },
+      {
+        "Title": "AMD Chipset Drivers",
+        "URL": "https://www.amd.com/en/support/downloads/drivers/chipset/amd-chipset-drivers.exe",
+        "Type": "Driver",
+        "Version": "5.08.02.027",
+        "Date": "2024-01-15"
+      },
+      {
+        "Title": "AMD Ryzen Master Utility",
+        "URL": "https://www.amd.com/en/support/downloads/ryzen-master.exe",
+        "Type": "Utility",
+        "Version": "2.12.0.3215",
+        "Date": "2024-03-10"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://www.amd.com/datasheets/images/ryzen-9-7950x-primary.jpg",
+        "Alt": "AMD Ryzen 9 7950X primary image",
+        "Width": 1000,
+        "Height": 800
+      },
+      {
+        "URL": "https://www.amd.com/datasheets/images/ryzen-9-7950x-angle.jpg",
+        "Alt": "AMD Ryzen 9 7950X side angle",
+        "Width": 800,
+        "Height": 600
+      }
+    ]
+  }
+}

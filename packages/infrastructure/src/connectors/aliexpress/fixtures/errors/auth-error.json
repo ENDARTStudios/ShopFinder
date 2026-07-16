@@ -1,0 +1,9 @@
+{
+  "error_response": {
+    "code": 401,
+    "msg": "Invalid signature",
+    "sub_code": "ISP_SIGN_ERROR",
+    "sub_msg": "The signature is invalid",
+    "request_id": "autherr123"
+  }
+}

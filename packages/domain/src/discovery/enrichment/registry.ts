@@ -10,7 +10,7 @@
  *   - segmentCoverage: coverage per segment (e.g. ASUS Motherboard:100, GPU:98, Monitor:82)
  *   - authority: authority per attribute type (specs:100, pricing:10, inventory:5, ...)
  *   - capabilities: explicit matrix of what enrichment steps to run
- *   - Segments: product categories they manufacture
+  *   - Segments: product categories they manufacture
  *   - Aliases: multilingual (English + Chinese characters + pinyin)
  *   - Brands: commercial brand names (separate from manufacturer entity)
  *   - Status: ACTIVE, DISCONTINUED, OEM, ODM
@@ -27,16 +27,30 @@ import type {
   AuthorityByAttribute,
   CapabilityProfile,
   CapabilityLevel,
-  ManufacturerConnector,
-  ConnectorId,
+  ConnectorDefinition,
+  ConnectorInstance,
+  ConnectorDefinitionId,
+  ConnectorInstanceId,
+  ConnectorStatus,
+  ConnectorKind,
+  ConnectorEnvironment,
+  AuthType,
+  ProtocolType,
+  DataCapability,
+  ConnectorCapabilityDescriptor,
   InformationSource,
   InformationSourceId,
   ManufacturerVersion,
-  ManufacturerVersionId,
-  ConnectorStatus,
-  ConnectorKind
+  ManufacturerVersionId
 } from "./types";
-import { DEFAULT_MANUFACTURER_AUTHORITY, DEFAULT_CAPABILITIES } from "./types";
+import {
+  DEFAULT_MANUFACTURER_AUTHORITY,
+  DEFAULT_CAPABILITIES,
+  EXCELLENT_REST_CAPABILITY,
+  GOOD_REST_CAPABILITY,
+  PARTIAL_SCRAPE_CAPABILITY,
+  NO_CAPABILITY
+} from "./types";
 
 // Helper to create a manufacturer without boilerplate
 function m(params: {
@@ -90,27 +104,53 @@ function m(params: {
 
 // ── ManufacturerConnector registry (operational, separate from Manufacturer) ──
 
-function c(params: {
+// ── Connector Definition + Instance helpers ───────────────
+
+function cd(params: {
   manufacturerCode: string;
   name: string;
   kind: ConnectorKind;
   version: string;
-  status: ConnectorStatus;
-  successRate: number;
-  averageLatencyMs: number;
+  protocol: ProtocolType;
   endpoint: string;
-  authType: string;
-  rateLimitRemaining?: number | null;
-  rateLimitWindow?: number | null;
-}): ManufacturerConnector {
-  const manufacturerId = `mfr_${params.manufacturerCode}` as unknown as ManufacturerId;
+  authType: AuthType;
+  rateLimitPerHour: number;
+  capabilities: ConnectorCapabilityDescriptor;
+  parserModule: string;
+  mapperModule: string;
+}): ConnectorDefinition {
   return {
-    id: `conn_${params.manufacturerCode}_${params.kind}` as unknown as ConnectorId,
-    manufacturerId,
+    id: `cdef_${params.manufacturerCode}_${params.kind}` as unknown as ConnectorDefinitionId,
     manufacturerCode: params.manufacturerCode,
     name: params.name,
     kind: params.kind,
     version: params.version,
+    protocol: params.protocol,
+    endpoint: params.endpoint,
+    authType: params.authType,
+    capabilities: params.capabilities,
+    parserModule: params.parserModule,
+    mapperModule: params.mapperModule,
+    rateLimitPerHour: params.rateLimitPerHour
+  };
+}
+
+function ci(params: {
+  manufacturerCode: string;
+  kind: ConnectorKind;
+  environment: ConnectorEnvironment;
+  status: ConnectorStatus;
+  successRate: number;
+  averageLatencyMs: number;
+  rateLimitRemaining?: number | null;
+  rateLimitWindow?: number | null;
+}): ConnectorInstance {
+  const defId = `cdef_${params.manufacturerCode}_${params.kind}` as unknown as ConnectorDefinitionId;
+  return {
+    id: `cinst_${params.manufacturerCode}_${params.kind}_${params.environment}` as unknown as ConnectorInstanceId,
+    definitionId: defId,
+    manufacturerCode: params.manufacturerCode,
+    environment: params.environment,
     status: params.status,
     successRate: params.successRate,
     averageLatencyMs: params.averageLatencyMs,
@@ -118,173 +158,86 @@ function c(params: {
     lastFailure: params.status === "degraded" ? new Date(Date.now() - 1800000).toISOString() : null,
     rateLimitRemaining: params.rateLimitRemaining ?? null,
     rateLimitWindow: params.rateLimitWindow ?? null,
-    endpoint: params.endpoint,
-    authType: params.authType
+    credentialsRef: params.status !== "not_configured" ? `secret://${params.manufacturerCode}/${params.kind}` : null
   };
 }
 
-export const CONNECTORS: ReadonlyArray<ManufacturerConnector> = [
-  // Tier A — live connectors
-  c({
-    manufacturerCode: "intel",
-    name: "Intel Ark API",
-    kind: "official_api",
-    version: "ark-v1",
-    status: "healthy",
-    successRate: 99.8,
-    averageLatencyMs: 420,
-    endpoint: "https://api.intel.com/ark/v1",
-    authType: "api_key",
-    rateLimitRemaining: 850
-  }),
-  c({
-    manufacturerCode: "amd",
-    name: "AMD Product Master API",
-    kind: "official_api",
-    version: "product-master-v1",
-    status: "healthy",
-    successRate: 99.5,
-    averageLatencyMs: 380,
-    endpoint: "https://api.amd.com/product-master/v1",
-    authType: "api_key",
-    rateLimitRemaining: 920
-  }),
-  c({
-    manufacturerCode: "nvidia",
-    name: "NVIDIA Product API",
-    kind: "official_api",
-    version: "nvapi-v1",
-    status: "healthy",
-    successRate: 99.2,
-    averageLatencyMs: 510,
-    endpoint: "https://api.nvidia.com/v1",
-    authType: "api_key",
-    rateLimitRemaining: 780
-  }),
-  c({
-    manufacturerCode: "samsung",
-    name: "Samsung Semiconductor API",
-    kind: "official_api",
-    version: "ss-v1",
-    status: "healthy",
-    successRate: 98.9,
-    averageLatencyMs: 620,
-    endpoint: "https://api.samsungsemiconductor.com/v1",
-    authType: "oauth2",
-    rateLimitRemaining: 450
-  }),
-  // Tier B — live connectors
-  c({
-    manufacturerCode: "asus",
-    name: "ASUS Product API",
-    kind: "official_api",
-    version: "asus-v1",
-    status: "healthy",
-    successRate: 97.5,
-    averageLatencyMs: 750,
-    endpoint: "https://api.asus.com/v1",
-    authType: "oauth2",
-    rateLimitRemaining: 320
-  }),
-  c({
-    manufacturerCode: "msi",
-    name: "MSI Product API",
-    kind: "official_api",
-    version: "msi-v1",
-    status: "healthy",
-    successRate: 96.8,
-    averageLatencyMs: 820,
-    endpoint: "https://api.msi.com/v1",
-    authType: "api_key",
-    rateLimitRemaining: 210
-  }),
-  // Tier C — scraper connectors for Chinese manufacturers
-  c({
-    manufacturerCode: "colorful",
-    name: "Colorful Scraper",
-    kind: "scraper",
-    version: "scraper-v1",
-    status: "healthy",
-    successRate: 94.5,
-    averageLatencyMs: 820,
-    endpoint: "https://www.colorful.cn/products",
-    authType: "none",
-    rateLimitRemaining: null
-  }),
-  c({
-    manufacturerCode: "huananzhi",
-    name: "Huananzhi Scraper",
-    kind: "scraper",
-    version: "scraper-v1",
-    status: "degraded",
-    successRate: 87.2,
-    averageLatencyMs: 1850,
-    endpoint: "https://huananzhi.com/products",
-    authType: "none",
-    rateLimitRemaining: 23
-  }),
-  c({
-    manufacturerCode: "deepcool",
-    name: "DeepCool Scraper",
-    kind: "scraper",
-    version: "scraper-v1",
-    status: "healthy",
-    successRate: 95.1,
-    averageLatencyMs: 680,
-    endpoint: "https://www.deepcool.com/products",
-    authType: "none",
-    rateLimitRemaining: null
-  }),
-  c({
-    manufacturerCode: "jonsbo",
-    name: "Jonsbo Scraper",
-    kind: "scraper",
-    version: "scraper-v1",
-    status: "healthy",
-    successRate: 93.8,
-    averageLatencyMs: 910,
-    endpoint: "https://www.jonsbo.com/products",
-    authType: "none",
-    rateLimitRemaining: null
-  }),
-  c({
-    manufacturerCode: "minisforum",
-    name: "Minisforum API",
-    kind: "official_api",
-    version: "mf-v1",
-    status: "healthy",
-    successRate: 96.2,
-    averageLatencyMs: 540,
-    endpoint: "https://api.minisforum.com/v1",
-    authType: "api_key",
-    rateLimitRemaining: 180
-  }),
-  // Partner connectors (via AliExpress)
-  c({
-    manufacturerCode: "netac",
-    name: "Netac via AliExpress",
-    kind: "partner",
-    version: "aliexpress-v1",
-    status: "healthy",
-    successRate: 92.3,
-    averageLatencyMs: 1200,
-    endpoint: "https://api.aliexpress.com",
-    authType: "oauth2",
-    rateLimitRemaining: null
-  }),
-  c({
-    manufacturerCode: "gloway",
-    name: "Gloway via AliExpress",
-    kind: "partner",
-    version: "aliexpress-v1",
-    status: "healthy",
-    successRate: 91.8,
-    averageLatencyMs: 1250,
-    endpoint: "https://api.aliexpress.com",
-    authType: "oauth2",
-    rateLimitRemaining: null
-  })
+// ── Capability descriptor presets ──────────────────────────
+
+const FULL_REST_CAPS: ConnectorCapabilityDescriptor = {
+  specifications: EXCELLENT_REST_CAPABILITY,
+  datasheets: EXCELLENT_REST_CAPABILITY,
+  drivers: EXCELLENT_REST_CAPABILITY,
+  firmware: EXCELLENT_REST_CAPABILITY,
+  images: EXCELLENT_REST_CAPABILITY,
+  warranty: EXCELLENT_REST_CAPABILITY,
+  certifications: EXCELLENT_REST_CAPABILITY,
+  lifecycle: EXCELLENT_REST_CAPABILITY,
+  support: EXCELLENT_REST_CAPABILITY
+};
+
+const STANDARD_REST_CAPS: ConnectorCapabilityDescriptor = {
+  specifications: GOOD_REST_CAPABILITY,
+  datasheets: GOOD_REST_CAPABILITY,
+  drivers: NO_CAPABILITY,
+  firmware: NO_CAPABILITY,
+  images: GOOD_REST_CAPABILITY,
+  warranty: GOOD_REST_CAPABILITY,
+  certifications: PARTIAL_SCRAPE_CAPABILITY,
+  lifecycle: GOOD_REST_CAPABILITY,
+  support: PARTIAL_SCRAPE_CAPABILITY
+};
+
+const SCRAPE_CAPS: ConnectorCapabilityDescriptor = {
+  specifications: PARTIAL_SCRAPE_CAPABILITY,
+  datasheets: NO_CAPABILITY,
+  drivers: NO_CAPABILITY,
+  firmware: NO_CAPABILITY,
+  images: PARTIAL_SCRAPE_CAPABILITY,
+  warranty: NO_CAPABILITY,
+  certifications: PARTIAL_SCRAPE_CAPABILITY,
+  lifecycle: NO_CAPABILITY,
+  support: NO_CAPABILITY
+};
+
+// ── Connector Definitions (templates) ─────────────────────
+
+export const CONNECTOR_DEFINITIONS: ReadonlyArray<ConnectorDefinition> = [
+  cd({ manufacturerCode: "intel", name: "Intel Ark API", kind: "official_api", version: "ark-v1", protocol: "rest", endpoint: "https://api.intel.com/ark/v1", authType: "api_key", rateLimitPerHour: 1000, capabilities: FULL_REST_CAPS, parserModule: "intel/parser.ts", mapperModule: "intel/mapper.ts" }),
+  cd({ manufacturerCode: "amd", name: "AMD Product Master API", kind: "official_api", version: "product-master-v1", protocol: "rest", endpoint: "https://api.amd.com/product-master/v1", authType: "api_key", rateLimitPerHour: 1000, capabilities: FULL_REST_CAPS, parserModule: "amd/parser.ts", mapperModule: "amd/mapper.ts" }),
+  cd({ manufacturerCode: "nvidia", name: "NVIDIA Product API", kind: "official_api", version: "nvapi-v1", protocol: "rest", endpoint: "https://api.nvidia.com/v1", authType: "api_key", rateLimitPerHour: 800, capabilities: FULL_REST_CAPS, parserModule: "nvidia/parser.ts", mapperModule: "nvidia/mapper.ts" }),
+  cd({ manufacturerCode: "samsung", name: "Samsung Semiconductor API", kind: "official_api", version: "ss-v1", protocol: "rest", endpoint: "https://api.samsungsemiconductor.com/v1", authType: "oauth2", rateLimitPerHour: 500, capabilities: STANDARD_REST_CAPS, parserModule: "samsung/parser.ts", mapperModule: "samsung/mapper.ts" }),
+  cd({ manufacturerCode: "asus", name: "ASUS Product API", kind: "official_api", version: "asus-v1", protocol: "rest", endpoint: "https://api.asus.com/v1", authType: "oauth2", rateLimitPerHour: 400, capabilities: STANDARD_REST_CAPS, parserModule: "asus/parser.ts", mapperModule: "asus/mapper.ts" }),
+  cd({ manufacturerCode: "msi", name: "MSI Product API", kind: "official_api", version: "msi-v1", protocol: "rest", endpoint: "https://api.msi.com/v1", authType: "api_key", rateLimitPerHour: 300, capabilities: STANDARD_REST_CAPS, parserModule: "msi/parser.ts", mapperModule: "msi/mapper.ts" }),
+  cd({ manufacturerCode: "colorful", name: "Colorful Scraper", kind: "scraper", version: "scraper-v1", protocol: "scrape_html", endpoint: "https://www.colorful.cn/products", authType: "none", rateLimitPerHour: 100, capabilities: SCRAPE_CAPS, parserModule: "colorful/parser.ts", mapperModule: "colorful/mapper.ts" }),
+  cd({ manufacturerCode: "huananzhi", name: "Huananzhi Scraper", kind: "scraper", version: "scraper-v1", protocol: "scrape_html", endpoint: "https://huananzhi.com/products", authType: "none", rateLimitPerHour: 50, capabilities: SCRAPE_CAPS, parserModule: "huananzhi/parser.ts", mapperModule: "huananzhi/mapper.ts" }),
+  cd({ manufacturerCode: "deepcool", name: "DeepCool Scraper", kind: "scraper", version: "scraper-v1", protocol: "scrape_html", endpoint: "https://www.deepcool.com/products", authType: "none", rateLimitPerHour: 100, capabilities: SCRAPE_CAPS, parserModule: "deepcool/parser.ts", mapperModule: "deepcool/mapper.ts" }),
+  cd({ manufacturerCode: "jonsbo", name: "Jonsbo Scraper", kind: "scraper", version: "scraper-v1", protocol: "scrape_html", endpoint: "https://www.jonsbo.com/products", authType: "none", rateLimitPerHour: 80, capabilities: SCRAPE_CAPS, parserModule: "jonsbo/parser.ts", mapperModule: "jonsbo/mapper.ts" }),
+  cd({ manufacturerCode: "minisforum", name: "Minisforum API", kind: "official_api", version: "mf-v1", protocol: "rest", endpoint: "https://api.minisforum.com/v1", authType: "api_key", rateLimitPerHour: 200, capabilities: STANDARD_REST_CAPS, parserModule: "minisforum/parser.ts", mapperModule: "minisforum/mapper.ts" }),
+  cd({ manufacturerCode: "netac", name: "Netac via AliExpress", kind: "partner", version: "aliexpress-v1", protocol: "rest", endpoint: "https://api.aliexpress.com", authType: "oauth2", rateLimitPerHour: 300, capabilities: STANDARD_REST_CAPS, parserModule: "netac/parser.ts", mapperModule: "netac/mapper.ts" }),
+  cd({ manufacturerCode: "gloway", name: "Gloway via AliExpress", kind: "partner", version: "aliexpress-v1", protocol: "rest", endpoint: "https://api.aliexpress.com", authType: "oauth2", rateLimitPerHour: 300, capabilities: STANDARD_REST_CAPS, parserModule: "gloway/parser.ts", mapperModule: "gloway/mapper.ts" })
 ];
+
+// ── Connector Instances (runtime) ──────────────────────────
+
+export const CONNECTOR_INSTANCES: ReadonlyArray<ConnectorInstance> = [
+  ci({ manufacturerCode: "intel", kind: "official_api", environment: "production", status: "healthy", successRate: 99.8, averageLatencyMs: 420, rateLimitRemaining: 850 }),
+  ci({ manufacturerCode: "amd", kind: "official_api", environment: "production", status: "healthy", successRate: 99.5, averageLatencyMs: 380, rateLimitRemaining: 920 }),
+  ci({ manufacturerCode: "nvidia", kind: "official_api", environment: "production", status: "healthy", successRate: 99.2, averageLatencyMs: 510, rateLimitRemaining: 780 }),
+  ci({ manufacturerCode: "samsung", kind: "official_api", environment: "production", status: "healthy", successRate: 98.9, averageLatencyMs: 620, rateLimitRemaining: 450 }),
+  ci({ manufacturerCode: "asus", kind: "official_api", environment: "production", status: "healthy", successRate: 97.5, averageLatencyMs: 750, rateLimitRemaining: 320 }),
+  ci({ manufacturerCode: "msi", kind: "official_api", environment: "production", status: "healthy", successRate: 96.8, averageLatencyMs: 820, rateLimitRemaining: 210 }),
+  ci({ manufacturerCode: "colorful", kind: "scraper", environment: "production", status: "healthy", successRate: 94.5, averageLatencyMs: 820 }),
+  ci({ manufacturerCode: "huananzhi", kind: "scraper", environment: "production", status: "degraded", successRate: 87.2, averageLatencyMs: 1850, rateLimitRemaining: 23 }),
+  ci({ manufacturerCode: "deepcool", kind: "scraper", environment: "production", status: "healthy", successRate: 95.1, averageLatencyMs: 680 }),
+  ci({ manufacturerCode: "jonsbo", kind: "scraper", environment: "production", status: "healthy", successRate: 93.8, averageLatencyMs: 910 }),
+  ci({ manufacturerCode: "minisforum", kind: "official_api", environment: "production", status: "healthy", successRate: 96.2, averageLatencyMs: 540, rateLimitRemaining: 180 }),
+  ci({ manufacturerCode: "netac", kind: "partner", environment: "partner", status: "healthy", successRate: 92.3, averageLatencyMs: 1200 }),
+  ci({ manufacturerCode: "gloway", kind: "partner", environment: "partner", status: "healthy", successRate: 91.8, averageLatencyMs: 1250 })
+];
+
+// Legacy compat: flat connector list combining definition + instance
+export const CONNECTORS = CONNECTOR_INSTANCES;
 
 // ── InformationSource registry (provenance examples) ───────
 
@@ -297,7 +250,7 @@ function is(params: {
   rawValue: string;
 }): InformationSource {
   const manufacturerId = `mfr_${params.manufacturerCode}` as unknown as ManufacturerId;
-  const connectorId = `conn_${params.manufacturerCode}_official_api` as unknown as ConnectorId;
+  const connectorId = `cinst_${params.manufacturerCode}_official_api_production` as unknown as ConnectorInstanceId;
   return {
     id: `isrc_${params.manufacturerCode}_${params.attributeName}` as unknown as InformationSourceId,
     manufacturerId,
@@ -314,70 +267,14 @@ function is(params: {
 }
 
 export const INFORMATION_SOURCES: ReadonlyArray<InformationSource> = [
-  is({
-    manufacturerCode: "intel",
-    attributeType: "specifications",
-    attributeName: "cores",
-    url: "https://ark.intel.com/14900k",
-    confidence: 1.0,
-    rawValue: "24"
-  }),
-  is({
-    manufacturerCode: "intel",
-    attributeType: "specifications",
-    attributeName: "base_clock",
-    url: "https://ark.intel.com/14900k",
-    confidence: 1.0,
-    rawValue: "3.2 GHz"
-  }),
-  is({
-    manufacturerCode: "intel",
-    attributeType: "specifications",
-    attributeName: "tdp",
-    url: "https://ark.intel.com/14900k",
-    confidence: 1.0,
-    rawValue: "125 W"
-  }),
-  is({
-    manufacturerCode: "amd",
-    attributeType: "specifications",
-    attributeName: "cores",
-    url: "https://api.amd.com/product-master/v1/products/100-100000514WOF",
-    confidence: 1.0,
-    rawValue: "16"
-  }),
-  is({
-    manufacturerCode: "amd",
-    attributeType: "specifications",
-    attributeName: "max_turbo",
-    url: "https://api.amd.com/product-master/v1/products/100-100000514WOF",
-    confidence: 1.0,
-    rawValue: "5.7 GHz"
-  }),
-  is({
-    manufacturerCode: "colorful",
-    attributeType: "specifications",
-    attributeName: "socket",
-    url: "https://www.colorful.cn/product/x79-turbo",
-    confidence: 0.85,
-    rawValue: "LGA2011"
-  }),
-  is({
-    manufacturerCode: "huananzhi",
-    attributeType: "specifications",
-    attributeName: "socket",
-    url: "https://huananzhi.com/product/x99-f8",
-    confidence: 0.75,
-    rawValue: "LGA2011-3"
-  }),
-  is({
-    manufacturerCode: "deepcool",
-    attributeType: "specifications",
-    attributeName: "tdp",
-    url: "https://www.deepcool.com/product/ak620",
-    confidence: 0.9,
-    rawValue: "260W"
-  })
+  is({ manufacturerCode: "intel", attributeType: "specifications", attributeName: "cores", url: "https://ark.intel.com/14900k", confidence: 1.0, rawValue: "24" }),
+  is({ manufacturerCode: "intel", attributeType: "specifications", attributeName: "base_clock", url: "https://ark.intel.com/14900k", confidence: 1.0, rawValue: "3.2 GHz" }),
+  is({ manufacturerCode: "intel", attributeType: "specifications", attributeName: "tdp", url: "https://ark.intel.com/14900k", confidence: 1.0, rawValue: "125 W" }),
+  is({ manufacturerCode: "amd", attributeType: "specifications", attributeName: "cores", url: "https://api.amd.com/product-master/v1/products/100-100000514WOF", confidence: 1.0, rawValue: "16" }),
+  is({ manufacturerCode: "amd", attributeType: "specifications", attributeName: "max_turbo", url: "https://api.amd.com/product-master/v1/products/100-100000514WOF", confidence: 1.0, rawValue: "5.7 GHz" }),
+  is({ manufacturerCode: "colorful", attributeType: "specifications", attributeName: "socket", url: "https://www.colorful.cn/product/x79-turbo", confidence: 0.85, rawValue: "LGA2011" }),
+  is({ manufacturerCode: "huananzhi", attributeType: "specifications", attributeName: "socket", url: "https://huananzhi.com/product/x99-f8", confidence: 0.75, rawValue: "LGA2011-3" }),
+  is({ manufacturerCode: "deepcool", attributeType: "specifications", attributeName: "tdp", url: "https://www.deepcool.com/product/ak620", confidence: 0.90, rawValue: "260W" })
 ];
 
 // ── ManufacturerVersion registry (immutable history) ───────
@@ -395,46 +292,114 @@ function v(params: {
     version: params.version,
     effectiveFrom: params.version === 1 ? "2024-01-01T00:00:00Z" : new Date().toISOString(),
     changes: params.changes,
-    previousVersionId:
-      params.version > 1
-        ? (`mver_${params.manufacturerCode}_${params.version - 1}` as unknown as ManufacturerVersionId)
-        : null
+    previousVersionId: params.version > 1
+      ? `mver_${params.manufacturerCode}_${params.version - 1}` as unknown as ManufacturerVersionId
+      : null
   };
 }
 
 export const MANUFACTURER_VERSIONS: ReadonlyArray<ManufacturerVersion> = [
   v({ manufacturerCode: "intel", version: 1, changes: ["Initial profile"] }),
-  v({
-    manufacturerCode: "intel",
-    version: 2,
-    changes: ["Added Arc GPU segment", "Updated downloadCenter URL"]
-  }),
+  v({ manufacturerCode: "intel", version: 2, changes: ["Added Arc GPU segment", "Updated downloadCenter URL"] }),
   v({ manufacturerCode: "amd", version: 1, changes: ["Initial profile"] }),
-  v({
-    manufacturerCode: "amd",
-    version: 2,
-    changes: ["Added Ryzen 9000 series", "Updated datasheetBase"]
-  }),
-  v({
-    manufacturerCode: "colorful",
-    version: 1,
-    changes: ["Initial profile", "Added Chinese aliases: 七彩虹, qicaihong"]
-  }),
-  v({
-    manufacturerCode: "huananzhi",
-    version: 1,
-    changes: ["Initial profile", "Low coverage — limited public documentation"]
-  }),
+  v({ manufacturerCode: "amd", version: 2, changes: ["Added Ryzen 9000 series", "Updated datasheetBase"] }),
+  v({ manufacturerCode: "colorful", version: 1, changes: ["Initial profile", "Added Chinese aliases: 七彩虹, qicaihong"] }),
+  v({ manufacturerCode: "huananzhi", version: 1, changes: ["Initial profile", "Low coverage — limited public documentation"] }),
   v({ manufacturerCode: "deepcool", version: 1, changes: ["Initial profile"] }),
-  v({
-    manufacturerCode: "deepcool",
-    version: 2,
-    changes: ["Added Peripherals segment", "Updated authority for specifications"]
+  v({ manufacturerCode: "deepcool", version: 2, changes: ["Added Peripherals segment", "Updated authority for specifications"] }),
+  v({ manufacturerCode: "jonsbo", version: 1, changes: ["Initial profile", "Added Cooling segment"] })
+];
+
+// ── Provenance Graph: ProductAttribute with AttributeEvidence[] ──
+// Each attribute is a CONCLUSION drawn from multiple evidence sources.
+
+import type { ProductAttribute, AttributeEvidence, EvidenceId, ProductAttributeId } from "./types";
+
+function ev(params: {
+  sourceType: string;
+  sourceName: string;
+  confidence: number;
+  extractedValue: string;
+  normalizedValue: string;
+  url: string;
+}): AttributeEvidence {
+  return {
+    id: `evd_${params.sourceName}_${params.normalizedValue}_${Math.random().toString(36).slice(2, 6)}` as unknown as EvidenceId,
+    sourceType: params.sourceType as any,
+    sourceName: params.sourceName,
+    connectorId: null,
+    confidence: params.confidence,
+    extractedValue: params.extractedValue,
+    normalizedValue: params.normalizedValue,
+    checksum: `${params.sourceName}_${params.extractedValue.length}`,
+    retrievedAt: new Date().toISOString(),
+    url: params.url
+  };
+}
+
+function pa(params: {
+  name: string;
+  value: string;
+  attributeType: string;
+  evidence: ReadonlyArray<AttributeEvidence>;
+}): ProductAttribute {
+  const confidence = params.evidence.reduce((sum, e) => sum + e.confidence, 0) / params.evidence.length;
+  return {
+    id: `pattr_${params.name}_${Math.random().toString(36).slice(2, 6)}` as unknown as ProductAttributeId,
+    name: params.name,
+    value: params.value,
+    attributeType: params.attributeType as any,
+    evidence: params.evidence,
+    resolvedAt: new Date().toISOString(),
+    resolver: "default-authority-v1",
+    confidence
+  };
+}
+
+export const PRODUCT_ATTRIBUTES: ReadonlyArray<ProductAttribute> = [
+  // Intel i9-14900K socket — 4 evidence sources
+  pa({
+    name: "socket",
+    value: "LGA1700",
+    attributeType: "specifications",
+    evidence: [
+      ev({ sourceType: "manufacturer", sourceName: "Intel Ark", confidence: 1.0, extractedValue: "FCLGA1700", normalizedValue: "LGA1700", url: "https://ark.intel.com/14900k" }),
+      ev({ sourceType: "datasheet", sourceName: "Intel Datasheet PDF", confidence: 0.99, extractedValue: "LGA1700", normalizedValue: "LGA1700", url: "https://cdrdv2.intel.com/datasheet/14900k.pdf" }),
+      ev({ sourceType: "distributor", sourceName: "DigiKey", confidence: 0.96, extractedValue: "Socket LGA1700", normalizedValue: "LGA1700", url: "https://www.digikey.com/product-detail/14900k" }),
+      ev({ sourceType: "marketplace", sourceName: "Amazon", confidence: 0.72, extractedValue: "LGA 1700", normalizedValue: "LGA1700", url: "https://amazon.com/dp/B0CJ4LL1YK" })
+    ]
   }),
-  v({
-    manufacturerCode: "jonsbo",
-    version: 1,
-    changes: ["Initial profile", "Added Cooling segment"]
+  // Intel i9-14900K cores — 3 evidence sources
+  pa({
+    name: "cores",
+    value: "24",
+    attributeType: "specifications",
+    evidence: [
+      ev({ sourceType: "manufacturer", sourceName: "Intel Ark", confidence: 1.0, extractedValue: "24", normalizedValue: "24", url: "https://ark.intel.com/14900k" }),
+      ev({ sourceType: "datasheet", sourceName: "Intel Datasheet PDF", confidence: 0.99, extractedValue: "24 (8P+16E)", normalizedValue: "24", url: "https://cdrdv2.intel.com/datasheet/14900k.pdf" }),
+      ev({ sourceType: "marketplace", sourceName: "Newegg", confidence: 0.85, extractedValue: "24 Cores", normalizedValue: "24", url: "https://www.newegg.com/p/N82E16819118410" })
+    ]
+  }),
+  // AMD Ryzen 9 7950X socket — 3 evidence sources
+  pa({
+    name: "socket",
+    value: "AM5",
+    attributeType: "specifications",
+    evidence: [
+      ev({ sourceType: "manufacturer", sourceName: "AMD Product Master", confidence: 1.0, extractedValue: "Socket AM5", normalizedValue: "AM5", url: "https://api.amd.com/product-master/v1/products/100-100000514WOF" }),
+      ev({ sourceType: "datasheet", sourceName: "AMD Datasheet PDF", confidence: 0.99, extractedValue: "AM5", normalizedValue: "AM5", url: "https://www.amd.com/datasheets/ryzen-9-7950x.pdf" }),
+      ev({ sourceType: "marketplace", sourceName: "Amazon", confidence: 0.78, extractedValue: "AM5 Socket", normalizedValue: "AM5", url: "https://amazon.com/dp/B0BBJ59PJ5" })
+    ]
+  }),
+  // Colorful X79 socket — 2 evidence sources (lower confidence)
+  pa({
+    name: "socket",
+    value: "LGA2011",
+    attributeType: "specifications",
+    evidence: [
+      ev({ sourceType: "manufacturer", sourceName: "Colorful Website", confidence: 0.85, extractedValue: "LGA2011", normalizedValue: "LGA2011", url: "https://www.colorful.cn/product/x79-turbo" }),
+      ev({ sourceType: "marketplace", sourceName: "AliExpress", confidence: 0.65, extractedValue: "2011 pin", normalizedValue: "LGA2011", url: "https://aliexpress.com/item/colorful-x79" })
+    ]
   })
 ];
 
@@ -471,7 +436,7 @@ const tierA: ReadonlyArray<Manufacturer> = [
       lifecycle: "excellent",
       support: "excellent"
     },
-
+    
     aliases: ["intel", "intel corporation"],
     brands: ["Intel", "Core", "Xeon", "NUC", "Arc"],
     officialWebsite: "https://www.intel.com",
@@ -928,7 +893,7 @@ const tierC: ReadonlyArray<Manufacturer> = [
       lifecycle: "none",
       support: "partial"
     },
-
+    
     aliases: ["colorful", "七彩虹", "qicaihong", "igame"],
     brands: ["Colorful", "iGame", "BattleAgent"],
     officialWebsite: "https://www.colorful.cn",
@@ -977,7 +942,7 @@ const tierC: ReadonlyArray<Manufacturer> = [
       lifecycle: "none",
       support: "none"
     },
-
+    
     aliases: ["huananzhi", "华南", "huanánzhì"],
     brands: ["Huananzhi"],
     officialWebsite: "https://huananzhi.com",
@@ -1615,3 +1580,70 @@ export function routeBrandToManufacturer(brand: string): Manufacturer | null {
 
   return null;
 }
+
+// ═══════════════════════════════════════════════════════════
+// KNOWLEDGE GRAPH — example nodes and edges
+// ═══════════════════════════════════════════════════════════
+
+import {
+  node as kn,
+  edge as ke,
+  type KnowledgeNode,
+  type KnowledgeEdge,
+  type KnowledgeGraph
+} from "./knowledge-graph";
+
+const kgNodes: KnowledgeNode[] = [
+  // Manufacturers
+  kn({ type: "manufacturer", label: "Intel", externalId: "mfr_intel", properties: { country: "US", authority: 100 } }),
+  kn({ type: "manufacturer", label: "AMD", externalId: "mfr_amd", properties: { country: "US", authority: 100 } }),
+  kn({ type: "manufacturer", label: "Colorful", externalId: "mfr_colorful", properties: { country: "CN", authority: 90 } }),
+  // Products
+  kn({ type: "product", label: "Intel Core i9-14900K", externalId: "prod_i9_14900k", properties: { mpn: "BX8071514900K" } }),
+  kn({ type: "product", label: "AMD Ryzen 9 7950X", externalId: "prod_r9_7950x", properties: { mpn: "100-100000514WOF" } }),
+  kn({ type: "product", label: "Colorful X79 Turbo", externalId: "prod_colorful_x79", properties: { mpn: "X79-TURBO" } }),
+  // Brands
+  kn({ type: "brand", label: "Core", externalId: "brand_core" }),
+  kn({ type: "brand", label: "Ryzen", externalId: "brand_ryzen" }),
+  kn({ type: "brand", label: "iGame", externalId: "brand_igame" }),
+  // Categories
+  kn({ type: "category", label: "CPU", externalId: "cat_cpu" }),
+  kn({ type: "category", label: "Motherboard", externalId: "cat_motherboard" }),
+  // Attributes
+  kn({ type: "product_attribute", label: "cpu.socket = LGA1700", externalId: "attr_i9_socket", properties: { attributeId: "cpu.socket", value: "LGA1700" } }),
+  kn({ type: "product_attribute", label: "cpu.cores = 24", externalId: "attr_i9_cores", properties: { attributeId: "cpu.cores", value: "24" } }),
+  kn({ type: "product_attribute", label: "cpu.socket = AM5", externalId: "attr_r9_socket", properties: { attributeId: "cpu.socket", value: "AM5" } }),
+  // Datasheets
+  kn({ type: "datasheet", label: "Intel i9-14900K Datasheet", externalId: "ds_i9_14900k", properties: { url: "https://cdrdv2.intel.com/datasheet/14900k.pdf", format: "pdf" } }),
+  // Connectors
+  kn({ type: "connector_instance", label: "Intel Ark API", externalId: "cinst_intel_official_api_production", properties: { status: "healthy", successRate: 99.8 } }),
+  kn({ type: "connector_instance", label: "Colorful Scraper", externalId: "cinst_colorful_scraper_production", properties: { status: "healthy", successRate: 94.5 } }),
+];
+
+const kgEdges: KnowledgeEdge[] = [
+  // manufactures
+  ke({ source: kgNodes[0]!.id, target: kgNodes[3]!.id, type: "manufactures" }), // Intel → i9-14900K
+  ke({ source: kgNodes[1]!.id, target: kgNodes[4]!.id, type: "manufactures" }), // AMD → Ryzen 9 7950X
+  ke({ source: kgNodes[2]!.id, target: kgNodes[5]!.id, type: "manufactures" }), // Colorful → X79 Turbo
+  // owns_brand
+  ke({ source: kgNodes[0]!.id, target: kgNodes[6]!.id, type: "owns_brand" }), // Intel → Core
+  ke({ source: kgNodes[1]!.id, target: kgNodes[7]!.id, type: "owns_brand" }), // AMD → Ryzen
+  ke({ source: kgNodes[2]!.id, target: kgNodes[8]!.id, type: "owns_brand" }), // Colorful → iGame
+  // belongs_to (product → category)
+  ke({ source: kgNodes[3]!.id, target: kgNodes[9]!.id, type: "belongs_to" }), // i9 → CPU
+  ke({ source: kgNodes[4]!.id, target: kgNodes[9]!.id, type: "belongs_to" }), // Ryzen 9 → CPU
+  ke({ source: kgNodes[5]!.id, target: kgNodes[10]!.id, type: "belongs_to" }), // X79 → Motherboard
+  // has_attribute (product → attribute)
+  ke({ source: kgNodes[3]!.id, target: kgNodes[11]!.id, type: "has_attribute" }), // i9 → socket=LGA1700
+  ke({ source: kgNodes[3]!.id, target: kgNodes[12]!.id, type: "has_attribute" }), // i9 → cores=24
+  ke({ source: kgNodes[4]!.id, target: kgNodes[13]!.id, type: "has_attribute" }), // Ryzen 9 → socket=AM5
+  // supported_by (attribute → datasheet)
+  ke({ source: kgNodes[11]!.id, target: kgNodes[14]!.id, type: "supported_by" }), // i9 socket ← Datasheet
+  // retrieved_by (datasheet → connector)
+  ke({ source: kgNodes[14]!.id, target: kgNodes[15]!.id, type: "retrieved_by" }), // Datasheet ← Intel Ark API
+];
+
+export const KNOWLEDGE_GRAPH: KnowledgeGraph = {
+  nodes: kgNodes,
+  edges: kgEdges
+};

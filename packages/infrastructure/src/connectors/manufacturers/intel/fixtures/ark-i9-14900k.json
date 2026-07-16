@@ -1,0 +1,62 @@
+{
+  "Product": {
+    "ProductCode": "BX8071514900K",
+    "ProductName": "Intel Core i9-14900K Processor",
+    "ProductFamily": "13th Generation Intel Core i9 Processors",
+    "ProductStatus": "Launched",
+    "LaunchDate": "2023-10-17",
+    "EndOfLifeDate": null,
+    "SuccessorProductCode": null,
+    "Specifications": [
+      { "Label": "Total Cores", "Value": "24" },
+      { "Label": "P-Core", "Value": "8" },
+      { "Label": "E-Core", "Value": "16" },
+      { "Label": "Total Threads", "Value": "32" },
+      { "Label": "Processor Base Frequency", "Value": "3.2 GHz" },
+      { "Label": "Max Turbo Frequency", "Value": "6.0 GHz" },
+      { "Label": "Cache", "Value": "36 MB" },
+      { "Label": "Processor Base Power", "Value": "125 W" },
+      { "Label": "Maximum Turbo Power", "Value": "253 W" },
+      { "Label": "Lithography", "Value": "Intel 7" },
+      { "Label": "Socket", "Value": "FCLGA1700" },
+      { "Label": "Max Memory Size", "Value": "192 GB" },
+      { "Label": "Memory Types", "Value": "DDR5 5600 MT/s, DDR4 3200 MT/s" },
+      { "Label": "Max Memory Channels", "Value": "2" },
+      { "Label": "PCIe Version", "Value": "5.0 and 4.0" },
+      { "Label": "PCIe Lanes", "Value": "20" },
+      { "Label": "Package Size", "Value": "45.0 × 45.0 mm" },
+      { "Label": "TCASE", "Value": "100 °C" },
+      { "Label": "Graphics", "Value": "Intel UHD Graphics 770" }
+    ],
+    "Downloads": [
+      {
+        "Title": "Intel Core i9-14900K Datasheet",
+        "URL": "https://cdrdv2.intel.com/v1/dl/getContent/792757",
+        "Type": "Datasheet",
+        "Version": null,
+        "Date": "2023-10-17"
+      },
+      {
+        "Title": "Intel Core 14th Gen Desktop Product Brief",
+        "URL": "https://cdrdv2.intel.com/v1/dl/getContent/789782",
+        "Type": "Manual",
+        "Version": null,
+        "Date": "2023-10-17"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://cdrdv2.intel.com/v1/images/14900k-primary.jpg",
+        "Alt": "Intel Core i9-14900K primary image",
+        "Width": 1000,
+        "Height": 800
+      },
+      {
+        "URL": "https://cdrdv2.intel.com/v1/images/14900k-angle.jpg",
+        "Alt": "Intel Core i9-14900K side angle",
+        "Width": 800,
+        "Height": 600
+      }
+    ]
+  }
+}

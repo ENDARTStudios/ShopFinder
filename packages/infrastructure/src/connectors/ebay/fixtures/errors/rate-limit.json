@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "errorId": 2000,
+      "domain": "API_BROWSE",
+      "category": "RATE_LIMIT",
+      "message": "Too many requests. Please try again later.",
+      "parameters": []
+    }
+  ]
+}

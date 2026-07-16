@@ -1,0 +1,30 @@
+{
+  "ItemList": [
+    {
+      "ItemID": "N82E16820167530",
+      "Title": "Samsung 990 PRO 2TB PCIe 4.0 NVMe M.2 2280 Internal SSD",
+      "Brand": "Samsung",
+      "Category": "Solid State Drives",
+      "SubCategory": "Internal SSDs",
+      "SellingPrice": 179.99,
+      "Currency": "USD",
+      "ImageUrl": "https://c1.neweggimages.com/ProductImage/20-167-530-V01.jpg",
+      "ProductUrl": "https://www.newegg.com/samsung-990-pro-2tb/p/N82E16820167530",
+      "Condition": "New",
+      "SellerName": "Newegg",
+      "Shipping": "Free Shipping",
+      "InStock": true,
+      "Model": "MZ-V9P2T0BW",
+      "Specs": {
+        "Capacity": "2 TB",
+        "Interface": "PCIe 4.0 NVMe",
+        "Form Factor": "M.2 2280",
+        "Read Speed": "7450 MB/s",
+        "Write Speed": "6900 MB/s"
+      }
+    }
+  ],
+  "TotalCount": 543,
+  "TotalPageCount": 28,
+  "CurrentPageNumber": 2
+}

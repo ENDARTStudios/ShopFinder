@@ -1,0 +1,24 @@
+{
+  "itemSummaries": [
+    {
+      "itemId": "v1|5555444433|0",
+      "title": "Samsung 990 PRO 2TB NVMe Gen4 Internal SSD",
+      "price": { "value": "179.99", "currency": "USD" },
+      "image": { "imageUrl": "https://i.ebayimg.com/images/g/ssd990/s-l500.jpg" },
+      "brand": "Samsung",
+      "categoryPath": "Computers/Tablets & Networking:Drives, Storage & Blank Media:Solid State Drives",
+      "categoryId": "175672",
+      "condition": "New",
+      "itemWebUrl": "https://www.ebay.com/itm/5555444433",
+      "seller": { "username": "storage_deals", "feedbackPercentage": "97.8" },
+      "shippingOptions": [
+        { "shippingCost": { "value": "0.00", "currency": "USD" }, "type": "FREE" }
+      ],
+      "itemLocation": { "country": "US" },
+      "shortDescription": "Samsung 990 PRO 2TB PCIe 4.0 NVMe M.2 SSD. Read speeds up to 7450 MB/s."
+    }
+  ],
+  "total": 3,
+  "limit": 2,
+  "offset": 2
+}

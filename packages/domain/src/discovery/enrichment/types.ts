@@ -132,10 +132,7 @@ export interface Manufacturer {
   readonly certifications: ReadonlyArray<Certification>;
 }
 
-// ── Authority by attribute ─────────────────────────────────
-// Different sources are authoritative for different information types.
-// The manufacturer is authoritative for specs/images/docs/lifecycle/warranty,
-// but NOT for pricing/inventory (distributors and retailers are better).
+// ── Attribute types ────────────────────────────────────────
 
 export type AttributeType =
   | "specifications"
@@ -160,31 +157,209 @@ export const ATTRIBUTE_LABELS: Record<AttributeType, string> = {
   compatibility: "Compatibilidade"
 };
 
-// ── Capability levels (quality, not just boolean) ──────────
-// none = doesn't provide this data
-// partial = provides incomplete or low-quality data
-// good = provides adequate data
-// excellent = provides comprehensive, high-quality data
+// ═══════════════════════════════════════════════════════════
+// 1. PROVENANCE GRAPH — AttributeEvidence
+// ═══════════════════════════════════════════════════════════
+// An attribute is not a single assertion — it's a CONCLUSION drawn
+// from multiple evidence sources. This is the Knowledge Graph model.
+
+export type EvidenceId = BrandedId<"EvidenceId">;
+export type ProductAttributeId = BrandedId<"ProductAttributeId">;
+
+export type SourceType =
+  | "manufacturer"
+  | "datasheet"
+  | "distributor"
+  | "retailer"
+  | "marketplace"
+  | "ai_inference"
+  | "user_input"
+  | "third_party";
+
+export interface AttributeEvidence {
+  readonly id: EvidenceId;
+  readonly sourceType: SourceType;
+  readonly sourceName: string;         // "Intel Ark", "DigiKey", "Amazon"
+  readonly connectorId: ConnectorId | null;
+  readonly confidence: number;          // 0-1
+  readonly extractedValue: string;      // raw value as found
+  readonly normalizedValue: string;     // value after normalization
+  readonly checksum: string;            // SHA-256 of extractedValue
+  readonly retrievedAt: string;         // ISO date
+  readonly url: string;                 // exact URL
+}
+
+export interface ProductAttribute {
+  readonly id: ProductAttributeId;
+  readonly name: string;                // "socket", "cores", "base_clock"
+  readonly value: string;               // final concluded value "LGA1700"
+  readonly attributeType: AttributeType;
+  readonly evidence: ReadonlyArray<AttributeEvidence>;
+  readonly resolvedAt: string;          // when the conclusion was reached
+  readonly resolver: string;            // "authority_policy_v1"
+  readonly confidence: number;          // 0-1, weighted from evidence
+}
+
+// ── InformationSource (raw source metadata, separate from evidence) ──
+
+export type InformationSourceId = BrandedId<"InformationSourceId">;
+
+export interface InformationSource {
+  readonly id: InformationSourceId;
+  readonly manufacturerId: ManufacturerId;
+  readonly manufacturerCode: string;
+  readonly connectorId: ConnectorId | null;
+  readonly attributeType: AttributeType;
+  readonly attributeName: string;
+  readonly url: string;
+  readonly retrievedAt: string;
+  readonly checksum: string;
+  readonly confidence: number;
+  readonly rawValue: string;
+}
+
+// ═══════════════════════════════════════════════════════════
+// 2. AUTHORITY POLICY — dynamic, not static
+// ═══════════════════════════════════════════════════════════
+// Authority is resolved by a Policy, not hardcoded per manufacturer.
+// The resolver considers: country, segment, age, connector, confidence.
+
+export interface AuthorityPolicyInput {
+  readonly attribute: AttributeType;
+  readonly sourceType: SourceType;
+  readonly manufacturerCode: string;
+  readonly manufacturerCountry: CountryCode;
+  readonly segment: ProductSegment | null;
+  readonly connectorKind: ConnectorKind | null;
+  readonly evidenceAge: number;         // seconds since retrieval
+  readonly evidenceConfidence: number;  // 0-1
+}
+
+export interface AuthorityPolicyResult {
+  readonly score: number;               // 0-100
+  readonly reason: string;
+  readonly factors: ReadonlyArray<{ name: string; value: number; weight: number }>;
+}
+
+export interface AuthorityPolicy {
+  readonly name: string;
+  readonly version: string;
+  resolve(input: AuthorityPolicyInput): AuthorityPolicyResult;
+}
+
+// ── Default AuthorityPolicy implementation ─────────────────
+
+export const DEFAULT_AUTHORITY_POLICY: AuthorityPolicy = {
+  name: "default-authority-v1",
+  version: "1.0.0",
+  resolve(input: AuthorityPolicyInput): AuthorityPolicyResult {
+    const factors: Array<{ name: string; value: number; weight: number }> = [];
+
+    // Factor 1: Source type base authority
+    const sourceBase: Record<SourceType, number> = {
+      manufacturer: 100,
+      datasheet: 95,
+      distributor: 80,
+      retailer: 70,
+      marketplace: 60,
+      ai_inference: 50,
+      user_input: 40,
+      third_party: 30
+    };
+    const sourceScore = sourceBase[input.sourceType] ?? 50;
+    factors.push({ name: "source_type", value: sourceScore, weight: 0.40 });
+
+    // Factor 2: Evidence confidence
+    factors.push({ name: "confidence", value: input.evidenceConfidence * 100, weight: 0.30 });
+
+    // Factor 3: Freshness (newer = better, decays over 30 days)
+    const ageDays = input.evidenceAge / 86400;
+    const freshnessScore = Math.max(0, 100 - (ageDays / 30) * 100);
+    factors.push({ name: "freshness", value: freshnessScore, weight: 0.15 });
+
+    // Factor 4: Connector quality (official_api > scraper > partner)
+    const connectorScore = input.connectorKind === "official_api" ? 100
+      : input.connectorKind === "scraper" ? 70
+      : input.connectorKind === "partner" ? 60
+      : input.connectorKind === "mirror" ? 80
+      : 50;
+    factors.push({ name: "connector", value: connectorScore, weight: 0.15 });
+
+    // Weighted sum
+    const score = Math.round(
+      factors.reduce((sum, f) => sum + f.value * f.weight, 0)
+    );
+
+    const reason = `source=${input.sourceType}(${sourceScore}) conf=${input.evidenceConfidence} age=${ageDays.toFixed(1)}d connector=${input.connectorKind ?? "none"}`;
+
+    return { score, reason, factors };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// 3. CONNECTOR REGISTRY — Definition + Instance
+// ═══════════════════════════════════════════════════════════
+// ConnectorDefinition = template (what the connector IS)
+// ConnectorInstance = runtime (how it's deployed + health)
+
+export type ConnectorDefinitionId = BrandedId<"ConnectorDefinitionId">;
+export type ConnectorInstanceId = BrandedId<"ConnectorInstanceId">;
+
+export type ConnectorKind = "official_api" | "scraper" | "mirror" | "partner";
+export type ConnectorStatus = "healthy" | "degraded" | "down" | "not_configured";
+export type ConnectorEnvironment = "production" | "staging" | "internal" | "partner";
+
+export type AuthType = "api_key" | "oauth2" | "basic" | "hmac" | "none";
+export type ProtocolType = "rest" | "graphql" | "soap" | "scrape_html" | "ftp" | "file";
+
+export interface ConnectorDefinition {
+  readonly id: ConnectorDefinitionId;
+  readonly manufacturerCode: string;
+  readonly name: string;                // "Intel Ark API"
+  readonly kind: ConnectorKind;
+  readonly version: string;             // "ark-v1"
+  readonly protocol: ProtocolType;
+  readonly endpoint: string;
+  readonly authType: AuthType;
+  readonly capabilities: ConnectorCapabilityDescriptor;
+  readonly parserModule: string;        // "intel/parser.ts"
+  readonly mapperModule: string;        // "intel/mapper.ts"
+  readonly rateLimitPerHour: number;
+}
+
+export interface ConnectorInstance {
+  readonly id: ConnectorInstanceId;
+  readonly definitionId: ConnectorDefinitionId;
+  readonly manufacturerCode: string;
+  readonly environment: ConnectorEnvironment;
+  readonly status: ConnectorStatus;
+  readonly successRate: number;
+  readonly averageLatencyMs: number;
+  readonly lastSuccessfulSync: string | null;
+  readonly lastFailure: string | null;
+  readonly rateLimitRemaining: number | null;
+  readonly rateLimitWindow: number | null;
+  readonly credentialsRef: string | null;   // reference to secret store
+}
+
+// Legacy alias for backward compat
+export type ConnectorId = ConnectorInstanceId;
+export type ManufacturerConnector = ConnectorInstance;
+
+// ═══════════════════════════════════════════════════════════
+// 4. DECLARATIVE CAPABILITIES — not opinion, but facts
+// ═══════════════════════════════════════════════════════════
+// Instead of "drivers = excellent", describe WHAT the connector provides.
 
 export type CapabilityLevel = "none" | "partial" | "good" | "excellent";
 
 export const CAPABILITY_LEVEL_VALUES: Record<CapabilityLevel, number> = {
-  none: 0,
-  partial: 25,
-  good: 75,
-  excellent: 100
+  none: 0, partial: 25, good: 75, excellent: 100
 };
 
 export type CapabilityKey =
-  | "specifications"
-  | "datasheets"
-  | "drivers"
-  | "firmware"
-  | "images"
-  | "warranty"
-  | "certifications"
-  | "lifecycle"
-  | "support";
+  | "specifications" | "datasheets" | "drivers" | "firmware"
+  | "images" | "warranty" | "certifications" | "lifecycle" | "support";
 
 export type CapabilityProfile = Readonly<Record<CapabilityKey, CapabilityLevel>>;
 
@@ -200,59 +375,85 @@ export const CAPABILITY_LABELS: Record<CapabilityKey, string> = {
   support: "Suporte"
 };
 
-// ── ManufacturerConnector (operational aggregate, separate from Manufacturer) ──
-// Multiple connectors can exist for the same manufacturer:
-//   - official API connector
-//   - scraper connector
-//   - mirror/partner connector
-// Swapping a connector doesn't change the manufacturer identity.
+export interface ConnectorCapabilityDescriptor {
+  readonly specifications: DataCapability;
+  readonly datasheets: DataCapability;
+  readonly drivers: DataCapability;
+  readonly firmware: DataCapability;
+  readonly images: DataCapability;
+  readonly warranty: DataCapability;
+  readonly certifications: DataCapability;
+  readonly lifecycle: DataCapability;
+  readonly support: DataCapability;
+}
 
-export type ConnectorId = BrandedId<"ConnectorId">;
+export interface DataCapability {
+  readonly level: CapabilityLevel;
+  readonly formats: ReadonlyArray<string>;      // ["pdf", "json", "xml", "html"]
+  readonly languages: ReadonlyArray<string>;     // ["en", "zh", "pt"]
+  readonly supportsSearch: boolean;
+  readonly supportsVersionHistory: boolean;
+  readonly supportsLocalization: boolean;
+  readonly supportsChecksums: boolean;
+  readonly supportsAPI: boolean;
+  readonly supportsBulk: boolean;
+  readonly supportsPagination: boolean;
+}
 
-export type ConnectorStatus = "healthy" | "degraded" | "down" | "not_configured";
+// ── Default capability descriptors ─────────────────────────
 
-export type ConnectorKind = "official_api" | "scraper" | "mirror" | "partner";
+export const NO_CAPABILITY: DataCapability = {
+  level: "none", formats: [], languages: [],
+  supportsSearch: false, supportsVersionHistory: false, supportsLocalization: false,
+  supportsChecksums: false, supportsAPI: false, supportsBulk: false, supportsPagination: false
+};
 
-export interface ManufacturerConnector {
-  readonly id: ConnectorId;
-  readonly manufacturerId: ManufacturerId;
-  readonly manufacturerCode: string;
-  readonly name: string; // "Intel Ark API", "Colorful Scraper"
-  readonly kind: ConnectorKind;
-  readonly version: string; // "ark-v1", "scraper-v2"
+export const EXCELLENT_REST_CAPABILITY: DataCapability = {
+  level: "excellent", formats: ["json", "xml"], languages: ["en"],
+  supportsSearch: true, supportsVersionHistory: true, supportsLocalization: true,
+  supportsChecksums: true, supportsAPI: true, supportsBulk: true, supportsPagination: true
+};
+
+export const GOOD_REST_CAPABILITY: DataCapability = {
+  level: "good", formats: ["json"], languages: ["en"],
+  supportsSearch: true, supportsVersionHistory: false, supportsLocalization: false,
+  supportsChecksums: false, supportsAPI: true, supportsBulk: false, supportsPagination: true
+};
+
+export const PARTIAL_SCRAPE_CAPABILITY: DataCapability = {
+  level: "partial", formats: ["html"], languages: ["zh", "en"],
+  supportsSearch: false, supportsVersionHistory: false, supportsLocalization: false,
+  supportsChecksums: false, supportsAPI: false, supportsBulk: false, supportsPagination: false
+};
+
+// ── Default profiles for Manufacturer ──────────────────────
+
+export const DEFAULT_MANUFACTURER_AUTHORITY: AuthorityByAttribute = {
+  specifications: 100, images: 95, documentation: 100,
+  lifecycle: 100, warranty: 98, compatibility: 95,
+  pricing: 10, inventory: 5
+};
+
+export const DEFAULT_CAPABILITIES: CapabilityProfile = {
+  specifications: "excellent", datasheets: "good", drivers: "none",
+  firmware: "none", images: "good", warranty: "good",
+  certifications: "partial", lifecycle: "good", support: "partial"
+};
+
+// ── Legacy connector type re-export ────────────────────────
+
+export type ConnectorHealth = {
   readonly status: ConnectorStatus;
-  readonly successRate: number; // 0-100
+  readonly successRate: number;
   readonly averageLatencyMs: number;
   readonly lastSuccessfulSync: string | null;
   readonly lastFailure: string | null;
   readonly rateLimitRemaining: number | null;
-  readonly rateLimitWindow: number | null; // seconds
-  readonly endpoint: string; // "https://api.intel.com/ark/v1"
-  readonly authType: string; // "api_key", "oauth2", "none"
-}
+};
 
-// ── InformationSource (provenance for each enriched attribute) ──
-// Every enriched attribute can be traced back to its source.
-
-export type InformationSourceId = BrandedId<"InformationSourceId">;
-
-export interface InformationSource {
-  readonly id: InformationSourceId;
-  readonly manufacturerId: ManufacturerId;
-  readonly manufacturerCode: string;
-  readonly connectorId: ConnectorId | null;
-  readonly attributeType: AttributeType;
-  readonly attributeName: string; // "cores", "base_clock", "tdp"
-  readonly url: string; // exact URL the data came from
-  readonly retrievedAt: string; // ISO date
-  readonly checksum: string; // SHA-256 of the raw value
-  readonly confidence: number; // 0-1
-  readonly rawValue: string; // original value before normalization
-}
-
-// ── ManufacturerVersion (immutable history of profile changes) ──
-// Follows the same "artifacts are immutable" philosophy as the rest
-// of the ShopFinder pipeline.
+// ═══════════════════════════════════════════════════════════
+// ManufacturerVersion (immutable history — unchanged)
+// ═══════════════════════════════════════════════════════════
 
 export type ManufacturerVersionId = BrandedId<"ManufacturerVersionId">;
 
@@ -260,13 +461,13 @@ export interface ManufacturerVersion {
   readonly id: ManufacturerVersionId;
   readonly manufacturerId: ManufacturerId;
   readonly manufacturerCode: string;
-  readonly version: number; // 1, 2, 3, ...
-  readonly effectiveFrom: string; // ISO date
-  readonly changes: ReadonlyArray<string>; // ["Changed officialWebsite", "Added segment: GPU"]
+  readonly version: number;
+  readonly effectiveFrom: string;
+  readonly changes: ReadonlyArray<string>;
   readonly previousVersionId: ManufacturerVersionId | null;
 }
 
-// ── Legacy tier mapping (for backward compat) ──────────────
+// ── Legacy tier mapping ────────────────────────────────────
 
 export type ManufacturerTier = "A" | "B" | "C" | "D";
 
@@ -284,29 +485,156 @@ export function getTier(authorityScore: number): ManufacturerTier {
   return "D";
 }
 
-// ── Default helpers ────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// CONFIDENCE SCORE — multi-dimensional, not just a number
+// ═══════════════════════════════════════════════════════════
 
-export const DEFAULT_MANUFACTURER_AUTHORITY: AuthorityByAttribute = {
-  specifications: 100,
-  images: 95,
-  documentation: 100,
-  lifecycle: 100,
-  warranty: 98,
-  compatibility: 95,
-  pricing: 10,
-  inventory: 5
-};
+export interface ConfidenceScore {
+  readonly overall: number;         // 0-100, weighted composite
+  readonly manufacturer: number;    // 0-100, authority of manufacturer source
+  readonly consensus: number;       // 0-100, agreement across sources
+  readonly freshness: number;       // 0-100, how recent the data is
+  readonly parser: number;          // 0-100, extraction quality
+  readonly ai: number;              // 0-100, AI model confidence
+}
 
-export const DEFAULT_CAPABILITIES: CapabilityProfile = {
-  specifications: "excellent",
-  datasheets: "good",
-  drivers: "none",
-  firmware: "none",
-  images: "good",
-  warranty: "good",
-  certifications: "partial",
-  lifecycle: "good",
-  support: "partial"
-};
+export function computeOverallConfidence(components: Omit<ConfidenceScore, "overall">): number {
+  const weights = { manufacturer: 0.30, consensus: 0.25, freshness: 0.15, parser: 0.15, ai: 0.15 };
+  return Math.round(
+    components.manufacturer * weights.manufacturer +
+    components.consensus * weights.consensus +
+    components.freshness * weights.freshness +
+    components.parser * weights.parser +
+    components.ai * weights.ai
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// DECISION EXPLANATION — structured audit trail from PolicyEngine
+// ═══════════════════════════════════════════════════════════
+
+export interface DecisionExplanation {
+  readonly attributeName: string;           // "cpu.socket"
+  readonly chosenValue: string;              // "LGA1700"
+  readonly confidence: ConfidenceScore;
+  readonly winningEvidence: AttributeEvidence;
+  readonly discardedEvidence: ReadonlyArray<{
+    evidence: AttributeEvidence;
+    reason: string;                          // "Lower authority source"
+  }>;
+  readonly policyApplied: string;            // "default-authority-v1"
+  readonly reason: string;                   // "Manufacturer outranks Marketplace. Manufacturer confidence 100. Marketplace confidence 72. Consensus 96%."
+}
 
 export type { BrandedId };
+
+// ═══════════════════════════════════════════════════════════
+// LEGACY COMPAT — aliases for the original enrichment module
+// These exist so that packages/infrastructure/src/connectors/manufacturers/
+// can still import from @workspace/domain/discovery/enrichment/types
+// until they are migrated to ConnectorDefinition + ConnectorInstance.
+// ═══════════════════════════════════════════════════════════
+
+export type ManufacturerCode = string;
+
+export interface ManufacturerCapabilities {
+  readonly supportsDatasheets: boolean;
+  readonly supportsDrivers: boolean;
+  readonly supportsBios: boolean;
+  readonly supportsFirmware: boolean;
+  readonly supportsLifecycle: boolean;
+  readonly supportsCertifications: boolean;
+  readonly supportsWarranty: boolean;
+  readonly supportsPhysicalSpecs: boolean;
+  readonly supportsCompatibility: boolean;
+  readonly supportsOfficialImages: boolean;
+}
+
+export interface ManufacturerEnrichmentRequest {
+  readonly manufacturer: string;
+  readonly mpn: string | null;
+  readonly brand: string;
+  readonly title: string;
+  readonly gtin: string | null;
+  readonly upc: string | null;
+  readonly ean: string | null;
+  readonly traceId: import("../../shared").DiscoveryTraceId;
+}
+
+export interface OfficialIdentifiers {
+  readonly mpn: string | null;
+  readonly ean: string | null;
+  readonly upc: string | null;
+  readonly gtin: string | null;
+  readonly family: string | null;
+  readonly successorMpn: string | null;
+}
+
+export interface ManufacturerSpec {
+  readonly name: string;
+  readonly value: string;
+  readonly unit: string | null;
+  readonly sourceUrl: string;
+  readonly confidence: number;
+}
+
+export interface LifecycleInfo {
+  readonly status: "active" | "announced" | "end_of_life" | "discontinued" | "obsolete" | "unknown";
+  readonly launchDate: string | null;
+  readonly eolDate: string | null;
+  readonly endOfSaleDate: string | null;
+  readonly successorMpn: string | null;
+  readonly sourceUrl: string;
+}
+
+export interface ManufacturerDownload {
+  readonly kind: "datasheet" | "manual" | "driver" | "bios" | "firmware" | "certificate" | "other";
+  readonly title: string;
+  readonly url: string;
+  readonly mimeType: string;
+  readonly sizeBytes: number | null;
+  readonly version: string | null;
+  readonly publishedAt: string | null;
+}
+
+export interface OfficialImage {
+  readonly url: string;
+  readonly kind: "primary" | "angle" | "detail" | "diagram" | "package" | "environmental";
+  readonly width: number | null;
+  readonly height: number | null;
+  readonly fingerprint: { algorithm: string; version: string; value: string };
+}
+
+export interface WarrantyInfo {
+  readonly durationMonths: number | null;
+  readonly type: "limited" | "lifetime" | "extended" | "none" | "unknown";
+  readonly region: string | null;
+  readonly termsUrl: string | null;
+}
+
+export interface ManufacturerSource {
+  readonly id: ManufacturerSourceId;
+  readonly canonicalProductId: import("../resolution/types").CanonicalProductId;
+  readonly manufacturer: string;
+  readonly matchedMpn: string;
+  readonly identifiers: OfficialIdentifiers;
+  readonly specifications: ReadonlyArray<ManufacturerSpec>;
+  readonly lifecycle: LifecycleInfo;
+  readonly downloads: ReadonlyArray<ManufacturerDownload>;
+  readonly images: ReadonlyArray<OfficialImage>;
+  readonly certifications: ReadonlyArray<Certification>;
+  readonly warranty: WarrantyInfo;
+  readonly physical: {
+    readonly lengthMm: number | null;
+    readonly widthMm: number | null;
+    readonly heightMm: number | null;
+    readonly weightGrams: number | null;
+    readonly packageContents: ReadonlyArray<string>;
+  };
+  readonly compatibility: ReadonlyArray<string>;
+  readonly fetchStatus: "ok" | "partial" | "not_found" | "error";
+  readonly fetchWarnings: ReadonlyArray<string>;
+  readonly fetchedAt: Date;
+  readonly sourceUrl: string;
+  readonly schemaVersion: "1.0.0";
+}

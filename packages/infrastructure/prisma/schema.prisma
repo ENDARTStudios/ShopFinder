@@ -1,0 +1,146 @@
+// ======================================================================
+// ShopFinder — Prisma Schema
+// ======================================================================
+//
+// Single schema file organized in domain blocks. Each block corresponds
+// to a pipeline module in @workspace/domain/discovery/.
+//
+// Currently active: Discovery (Raw Store + Normalizer).
+// Future: Resolution, Evaluation, Catalog, Publication, Monitoring.
+//
+// All tables carry ArtifactMetadata columns (traceId, artifactVersion,
+// schemaVersion, createdAt, producer) for cross-cutting traceability.
+//
+// Provider: PostgreSQL (production). SQLite still works for local tests
+// by changing provider to "sqlite" and DATABASE_URL to a file: path.
+// ======================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma-client"
+}
+
+datasource db {
+  // SQLite for dev/test. For PostgreSQL production:
+  // 1. Change provider to "postgresql"
+  // 2. Set DATABASE_URL to postgresql:// connection string
+  // 3. Run: bunx prisma migrate dev --name init
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ======================================================================
+// Discovery — Raw Store + Normalizer (First Vertical Slice)
+// ======================================================================
+
+/// Audit record for a single discovery execution (one job run).
+model DiscoveryExecution {
+  id                  String   @id
+  executionKey        String
+  planId              String
+  jobId               String
+  providerCode        String
+  providerSnapshot    String   // JSON serialized
+  status              String   // "succeeded" | "failed" | "cancelled"
+  startedAt           DateTime
+  completedAt         DateTime
+  durationMs          Int
+  attempts            Int
+  apiCallsUsed        Int
+  productsDiscovered  Int
+  reservationConsumed Boolean
+  metrics             String   // JSON serialized
+  versions            String   // JSON serialized
+  partitionKey        String
+  error               String?  // JSON serialized
+  traceId             String?
+  metadata            String?  // JSON serialized    // ArtifactMetadata
+
+  rawProductRecords   RawProductRecord[]
+
+  createdAt           DateTime @default(now())
+
+  @@index([executionKey])
+  @@index([planId])
+  @@index([jobId])
+  @@index([providerCode])
+  @@index([partitionKey])
+  @@index([traceId])
+  @@index([status])
+  @@map("discovery_executions")
+}
+
+/// Raw product record — append-only payload storage.
+/// Large payloads stored in Object Storage (S3/MinIO); only metadata in DB.
+model RawProductRecord {
+  id                  String   @id
+  executionId         String
+  providerCode        String
+  externalId          String
+  payloadKey          String   // Object Storage key (S3/MinIO)
+  payloadHash         String
+  payloadCompression  String   @default("noop") // "noop" | "gzip"
+  payloadSize         Int      // bytes
+  discoveredAt        DateTime
+  partitionKey        String
+  versions            String   // JSON serialized
+  metadata            String?  // JSON serialized    // ArtifactMetadata
+
+  discoveryExecution     DiscoveryExecution     @relation(fields: [executionId], references: [id])
+  normalizedProductRecords NormalizedProductRecord[]
+
+  createdAt           DateTime @default(now())
+
+  @@unique([executionId, payloadHash])
+  @@index([executionId])
+  @@index([providerCode])
+  @@index([partitionKey])
+  @@index([payloadHash])
+  @@index([discoveredAt])
+  @@map("raw_product_records")
+}
+
+/// Normalized product record — derived artifact from RawProductRecord.
+model NormalizedProductRecord {
+  id                  String   @id
+  rawProductId        String
+  executionId         String
+  payloadHash         String
+  semanticFingerprint String   // { algorithm, version, value }
+  normalizedTitle     String
+  normalizedBrand     String
+  canonicalBrandId    String?
+  normalizedCategory  String
+  canonicalCategoryId String?
+  normalizedAttributes String   // JSON serialized
+  normalizedImages    String   // JSON serialized
+  normalizedPrice     String   // JSON serialized
+  providerCode        String
+  externalId          String
+  region              String
+  language            String
+  discoveredAt        DateTime
+  normalizedAt        DateTime
+  partitionKey        String
+  normalizerVersions  String   // JSON serialized
+  rawVersions         String   // JSON serialized
+  schemaVersion       String   @default("1.0.0")
+  confidenceScore     Float
+  warnings            String   // JSON serialized
+  metadata            String?  // JSON serialized    // ArtifactMetadata
+
+  rawProductRecord    RawProductRecord @relation(fields: [rawProductId], references: [id])
+
+  createdAt           DateTime @default(now())
+
+  @@unique([rawProductId, normalizerVersions])
+  @@index([rawProductId])
+  @@index([executionId])
+  @@index([providerCode])
+  @@index([partitionKey])
+  @@index([canonicalBrandId])
+  @@index([canonicalCategoryId])
+  @@index([normalizedBrand])
+  @@index([normalizedCategory])
+  @@map("normalized_product_records")
+}

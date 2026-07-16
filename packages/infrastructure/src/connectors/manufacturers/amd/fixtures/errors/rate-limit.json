@@ -1,0 +1,6 @@
+{
+  "error": "Rate limit exceeded",
+  "code": "RATE_LIMIT",
+  "message": "AMD API rate limit exceeded. Please retry after 60 seconds.",
+  "retryAfterSeconds": 60
+}
