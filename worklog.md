@@ -4234,3 +4234,36 @@ Stage Summary:
 - 7 perguntas, 7 respostas, formato padrão atendido.
 - Próximo passo desbloqueado: Thinker gera o `PLANO_MESTRE.md` com base no Anexo A, podado conforme as respostas do Discovery (em especial: login já existe → Fase 3 aplica; sem pagamento/upload → Fases 6 condicionais não entram; deploy online é parte da definição de "pronto" → Fase 9 obrigatória; documentação já existente precisa ser auditada contra o novo critério de pronto).
 - Doer aguarda próxima Ordem de Serviço.
+
+---
+
+Task ID: GOV-003 — Adicionar PLANO_MESTRE.md com fases pos-MVP
+Agent: Doer
+Task: Criar PLANO_MESTRE.md na raiz do repositório com o conteúdo exato fornecido pelo Thinker (poda do Anexo A conforme Discovery), sem alterações.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md` (re-confirmado nesta sessão).
+- Lido `PLANO_MESTRE.md` — não existia (esta tarefa o cria).
+- Lido `DECISOES.md` — Discovery registrado em GOV-002 (7 perguntas/respostas).
+- Criado `PLANO_MESTRE.md` (70 linhas) com o conteúdo exato fornecido pelo Thinker, sem alterações.
+- Conteúdo: 5 fases (8, 9, 10, 11, 12), 17 tarefas pendentes, cada uma com checkbox `[ ]`, descrição, e comando de verificação executável.
+- Fases cobrem os 3 pilares da definição de "pronto" do Operador:
+  - Fase 8 (Testes/segurança): 2 tarefas — `npm audit` + CodeQL SAST
+  - Fase 9 (Deploy online): 4 tarefas — Vercel, env vars, smoke-test
+  - Fase 10 (Dados reais): 4 tarefas — credenciais eBay, pipeline live, curadoria
+  - Fase 11 (Documentação final): 4 tarefas — validar DEPLOY/operator/engineer/credentials guides
+  - Fase 12 (Entrega): 3 tarefas — confirmação Operador, MANUAL_DO_OPERADOR, PENDENCIAS vazio
+- Commit atômico `ba3efc1` com mensagem `docs: adicionar PLANO_MESTRE.md com fases pos-MVP`.
+- Verificação da OS executada:
+  - `head -50 PLANO_MESTRE.md` → renderiza as 4 primeiras fases corretamente ✓
+  - `grep -c '^- \[ \]' PLANO_MESTRE.md` → 17 tarefas pendentes ✓ (2+4+4+4+3 = 17, bate com a soma das fases)
+- Nenhuma fase já concluída foi listada como pendente — Fases 0-7 do Anexo A não entram no plano (já entregues no MVP ou condicionais não aplicáveis segundo Discovery).
+
+Stage Summary:
+
+- `PLANO_MESTRE.md` criado e commitado.
+- 17 tarefas pendentes distribuídas em 5 fases.
+- Plano cobre exatamente os 3 pilares do Operador (demonstrável, operável com dados reais, documentado) + entrega (Seção 9 do protocolo).
+- Doer está pronto para iniciar a Fase 8 assim que o Thinker emitir a próxima Ordem de Serviço.
+- Conforme instrução da OS, a execução das tarefas **não** começa agora — esta OS era apenas para criar o arquivo.

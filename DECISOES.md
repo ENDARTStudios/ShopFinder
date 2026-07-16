@@ -55,3 +55,18 @@ Não há prazo rígido. O MVP está concluído. O próximo passo é demonstrar a
 3. **Documentado** — qualquer pessoa com acesso ao repositório consegue: (a) subir a plataforma do zero seguindo o `DEPLOY.md`, (b) operar o dashboard seguindo o `operator-guide.md`, (c) adicionar um novo conector seguindo o `engineer-guide.md`.
 
 Só depois desses três itens eu considero o projeto concluído como produto funcional.
+
+---
+
+## 2026-07-16 — Decisão: usar `bun audit` em vez de `npm audit` na Fase 8.1
+
+Motivo: O projeto usa Bun como gerenciador de pacotes (`bun.lock` commitado, scripts em `package.json` rodam via `bun run`). `npm audit` exige `package-lock.json`, que o npm se recusa a gerar a partir do `bun.lock` (erro `Cannot read properties of null (reading 'matches')`). Forçar geração do lock com `npm install` migraria o projeto para o ecossistema npm, contrariando a decisão arquitetural de usar Bun e possivelmente quebrando o `bun install` idempotente.
+
+`bun audit` consulta o mesmo banco de dados de advisories (GitHub Advisory Database) que `npm audit`, com semântica idêntica para níveis de severidade. A substituição preserva o critério de pronto da OS GOV-004 (zero vulnerabilidades HIGH/CRITICAL) sem custo de migração.
+
+Alternativas consideradas:
+1. Gerar `package-lock.json` com `npm install` — rejeitado: introduz segundo lockfile no repo, conflito com `bun.lock`, e `npm install` resinstala todos os pacotes sob outra resolução.
+2. Migrar projeto para npm — rejeitado: mudança de arquitetura fora do escopo da Fase 8.
+3. Usar `audit-ci` ou similar — rejeitado: adiciona nova dependência para algo que `bun audit` já faz nativamente.
+
+Verificação substituta aceita: `bun audit 2>&1 | tail -5` exibe `No vulnerabilities found` e exit code 0.
