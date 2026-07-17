@@ -1095,19 +1095,124 @@ async function stage10_materialize(traceId: string, compliant: any, signal: Pipe
   return product;
 }
 
+// ── Pipeline execution log (Sprint 13 REC-005) ──────────────
+//
+// Persists a SyncExecutionLog row at the end of each run so the operator
+// dashboard (/admin/pipeline) can render a timeline of recent executions.
+// The Integration + SyncJob rows are upserted with reserved IDs so they're
+// stable across runs.
+
+const PIPELINE_INTEGRATION_ID = "pipeline-runner-integration";
+const PIPELINE_SYNC_JOB_ID = "pipeline-runner-job";
+
+async function ensurePipelineIntegrationAndJob(): Promise<string> {
+  const integration = await prisma.integration.upsert({
+    where: { id: PIPELINE_INTEGRATION_ID },
+    update: {
+      type: "supplier_catalog_sync",
+      name: "Pipeline Runner",
+      providerCode: "internal",
+      status: "active",
+      config: { kind: "pipeline_runner" }
+    },
+    create: {
+      id: PIPELINE_INTEGRATION_ID,
+      type: "supplier_catalog_sync",
+      name: "Pipeline Runner",
+      providerCode: "internal",
+      status: "active",
+      config: { kind: "pipeline_runner" }
+    }
+  });
+
+  const syncJob = await prisma.syncJob.upsert({
+    where: { id: PIPELINE_SYNC_JOB_ID },
+    update: {
+      integrationId: integration.id,
+      name: "End-to-end pipeline",
+      scheduleCron: "0 */6 * * *",
+      scheduleTimezone: "UTC",
+      trigger: "manual",
+      enabled: true
+    },
+    create: {
+      id: PIPELINE_SYNC_JOB_ID,
+      integrationId: integration.id,
+      name: "End-to-end pipeline",
+      scheduleCron: "0 */6 * * *",
+      scheduleTimezone: "UTC",
+      trigger: "manual",
+      enabled: true
+    }
+  });
+
+  return syncJob.id;
+}
+
+async function recordExecutionLog(
+  syncJobId: string,
+  result: {
+    startedAt: Date;
+    finishedAt: Date;
+    status: "succeeded" | "failed";
+    signalsProcessed: number;
+    productsMaterialized: number;
+    productsFailed: number;
+    ebayMode: string;
+    errorMessage?: string;
+    stageMetrics?: Record<string, number>;
+  }
+): Promise<void> {
+  const durationMs = result.finishedAt.getTime() - result.startedAt.getTime();
+  await prisma.syncExecutionLog.create({
+    data: {
+      syncJobId,
+      trigger: "manual",
+      status: result.status,
+      startedAt: result.startedAt,
+      finishedAt: result.finishedAt,
+      durationMs,
+      itemsProcessed: result.signalsProcessed,
+      itemsSucceeded: result.productsMaterialized,
+      itemsFailed: result.productsFailed,
+      errorMessage: result.errorMessage ?? null,
+      metadata: {
+        ebayMode: result.ebayMode,
+        storeId: STORE_ID,
+        runner: "scripts/run-pipeline.ts",
+        stageMetrics: result.stageMetrics ?? {}
+      }
+    }
+  });
+
+  await prisma.syncJob.update({
+    where: { id: syncJobId },
+    data: {
+      lastRunAt: result.finishedAt,
+      nextRunAt: new Date(result.finishedAt.getTime() + 6 * 60 * 60 * 1000)
+    }
+  });
+}
+
+// ── Stage timing helper ────────────────────────────────────
+
+function timeStage<T>(stageMetrics: Record<string, number>, name: string, fn: () => T | Promise<T>): Promise<T> {
+  const start = Date.now();
+  return Promise.resolve(fn()).then((result) => {
+    stageMetrics[name] = (stageMetrics[name] ?? 0) + (Date.now() - start);
+    return result;
+  });
+}
+
 // ── Main pipeline runner ───────────────────────────────────
 
 async function main() {
-  console.log("🚀 ShopFinder Pipeline Runner — Sprint 1\n");
+  const startedAt = new Date();
+  console.log("🚀 ShopFinder Pipeline Runner\n");
   console.log(`  Signals: ${SIGNALS.length}`);
   console.log(`  Store ID: ${STORE_ID}`);
 
   // Instantiate the eBay connector to report its mode (live/replay).
-  // In replay mode (no credentials), it reads from fixtures/ebay/.
-  // In live mode (EBAY_APP_ID + EBAY_CERT_ID set), it would hit the real
-  // eBay Browse API. The pipeline does not call the connector directly yet —
-  // this instantiation is a discovery signal that surfaces in the run log
-  // and prepares the connector for future integration stages.
   let ebayMode: "live" | "replay" = "replay";
   try {
     const { EbayConnector } = await import("@workspace/integrations");
@@ -1117,54 +1222,46 @@ async function main() {
   } catch (err) {
     console.log(`  eBay connector: unavailable (${err instanceof Error ? err.message : String(err)})`);
   }
-  console.log("");
+
+  // Ensure the SyncJob exists so we can attach the execution log.
+  const { syncJobId } = await ensurePipelineIntegrationAndJob().then((id) => ({ syncJobId: id }));
+
+  // Stage timing accumulator
+  const stageMetrics: Record<string, number> = {};
 
   let success = 0;
   let skipped = 0;
+  let failureMessage: string | undefined;
 
-  for (const signal of SIGNALS) {
-    console.log(`\n══════════════════════════════════════════`);
-    console.log(`  Processing: ${signal.keyword}`);
-    console.log(`══════════════════════════════════════════`);
+  try {
+    for (const signal of SIGNALS) {
+      console.log(`\n══════════════════════════════════════════`);
+      console.log(`  Processing: ${signal.keyword}`);
+      console.log(`══════════════════════════════════════════`);
 
-    try {
-      // Stage 1: DiscoverySignal
-      const s1 = stage1_createSignal(signal);
-
-      // Stage 2: DiscoveryJob
-      const s2 = stage2_createJob(s1.traceId, s1.signal);
-
-      // Stage 3: Worker (simulated fetch)
-      const s3 = stage3_simulateFetch(s2.traceId, signal);
-
-      // Stage 4: Normalize
-      const s4 = stage4_normalize(s3.traceId, signal);
-
-      // Stage 5: Similarity clustering
-      const s5 = stage5_cluster(s4.traceId, s4.normalized);
-
-      // Stage 6: Resolution → CanonicalProduct
-      const s6 = stage6_resolve(s5.traceId, s5.normalized);
-
-      // Stage 7b: Manufacturer Enrichment
-      const s7 = stage7b_enrich(s6.traceId, s6.canonical, signal);
-
-      // Stage 8: AI Evaluation (mock)
-      const s8 = stage8_evaluate(s7.traceId, s7.enriched);
-
-      // Stage 9: Compliance (mock — pass all)
-      const s9 = stage9_compliance(s8.traceId, s8.evaluated);
-
-      // Stage 10: Materialize to database
-      await stage10_materialize(s9.traceId, s9.compliant, signal);
-
-      success++;
-    } catch (error) {
-      console.error(`  ❌ Failed: ${signal.keyword}`);
-      console.error(`     Error: ${error instanceof Error ? error.message : String(error)}`);
-      skipped++;
+      try {
+        const s1 = await timeStage(stageMetrics, "1.discovery_signal", () => stage1_createSignal(signal));
+        const s2 = await timeStage(stageMetrics, "2.discovery_job", () => stage2_createJob(s1.traceId, s1.signal));
+        const s3 = await timeStage(stageMetrics, "3.worker_fetch", () => stage3_simulateFetch(s2.traceId, signal));
+        const s4 = await timeStage(stageMetrics, "4.normalize", () => stage4_normalize(s3.traceId, signal));
+        const s5 = await timeStage(stageMetrics, "5.similarity_cluster", () => stage5_cluster(s4.traceId, s4.normalized));
+        const s6 = await timeStage(stageMetrics, "6.canonical_resolution", () => stage6_resolve(s5.traceId, s5.normalized));
+        const s7 = await timeStage(stageMetrics, "7.manufacturer_enrichment", () => stage7b_enrich(s6.traceId, s6.canonical, signal));
+        const s8 = await timeStage(stageMetrics, "8.ai_evaluation", () => stage8_evaluate(s7.traceId, s7.enriched));
+        const s9 = await timeStage(stageMetrics, "9.compliance", () => stage9_compliance(s8.traceId, s8.evaluated));
+        await timeStage(stageMetrics, "10.catalog_materialization", () => stage10_materialize(s9.traceId, s9.compliant, signal));
+        success++;
+      } catch (error) {
+        console.error(`  ❌ Failed: ${signal.keyword}`);
+        console.error(`     Error: ${error instanceof Error ? error.message : String(error)}`);
+        skipped++;
+      }
     }
+  } catch (error) {
+    failureMessage = error instanceof Error ? error.message : String(error);
   }
+
+  const finishedAt = new Date();
 
   // Summary
   console.log(`\n══════════════════════════════════════════`);
@@ -1173,13 +1270,12 @@ async function main() {
   console.log(`  Signals processed: ${SIGNALS.length}`);
   console.log(`  Products materialized: ${success}`);
   console.log(`  Failed: ${skipped}`);
+  console.log(`  eBay mode: ${ebayMode}`);
 
   // Verify
   const totalProducts = await prisma.product.count();
   const totalAttrs = await prisma.productAttribute.count();
-  const enrichedAttrs = await prisma.productAttribute.count({
-    where: { source: { not: null } }
-  });
+  const enrichedAttrs = await prisma.productAttribute.count({ where: { source: { not: null } } });
   const totalOffers = await prisma.productOffer.count();
 
   console.log(`\n  Database state:`);
@@ -1187,7 +1283,35 @@ async function main() {
   console.log(`    Total attributes: ${totalAttrs}`);
   console.log(`    Enriched attributes (with source): ${enrichedAttrs}`);
   console.log(`    Total offers: ${totalOffers}`);
+
+  // Stage timings
+  console.log(`\n  Stage timings (ms):`);
+  for (const [name, ms] of Object.entries(stageMetrics)) {
+    console.log(`    ${name.padEnd(34)} ${ms}ms`);
+  }
   console.log(`══════════════════════════════════════════\n`);
+
+  // Record the execution log (best-effort — don't fail the run on log error).
+  try {
+    await recordExecutionLog(syncJobId, {
+      startedAt,
+      finishedAt,
+      status: failureMessage ? "failed" : "succeeded",
+      signalsProcessed: SIGNALS.length,
+      productsMaterialized: success,
+      productsFailed: skipped,
+      ebayMode,
+      errorMessage: failureMessage,
+      stageMetrics
+    });
+    console.log(`  ✓ Execution log recorded (syncJobId=${syncJobId})\n`);
+  } catch (logError) {
+    console.warn(`  ⚠ Failed to record execution log: ${logError instanceof Error ? logError.message : String(logError)}`);
+  }
+
+  if (failureMessage) {
+    throw new Error(failureMessage);
+  }
 }
 
 main()
