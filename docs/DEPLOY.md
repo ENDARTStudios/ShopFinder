@@ -1,5 +1,9 @@
 # ShopFinder — Deployment Guide
 
+**URL de produção:** `<URL_DO_OPERADOR>` (a confirmar)  
+**Plataforma:** Vercel + Neon (PostgreSQL)  
+**Status:** Deploy concluído em 2026-07-17
+
 This document covers environment variables, database setup, Docker, and
 connector activation for production deployment.
 

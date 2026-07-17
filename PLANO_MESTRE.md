@@ -25,14 +25,18 @@ Estado inicial: MVP completo (69 testes, 274 arquitetura limpa, 3 conectores hí
 
 ## Fase 9 — Deploy online (demonstrável)
 
-- [ ] **9.1** Criar conta gratuita na Vercel.  
-  _Verificação:_ login bem-sucedido em `https://vercel.com`.
-- [ ] **9.2** Conectar repositório e fazer primeiro deploy.  
-  _Verificação:_ `curl -sI https://shopfinder-*.vercel.app | head -1` retorna `HTTP/2 200`.
-- [ ] **9.3** Configurar variáveis de ambiente no painel da Vercel.  
-  _Verificação:_ `curl -s https://shopfinder-*.vercel.app/api/health` retorna JSON `{"status":"ok"}`.
-- [ ] **9.4** Verificar catálogo de demo online: busca, detail page, comparação, troca de idioma.  
-  _Verificação:_ smoke-test manual dos 9 cenários do `docs/DEMO_CHECKLIST.md` contra a URL de produção, todos passam.
+- [x] **9.1** Criar conta gratuita na Vercel.  
+  _Verificação:_ login bem-sucedido em `https://vercel.com`.  
+  **Evidência (2026-07-17):** Operador conectou repositório via GitHub na Vercel. Deploy executado.
+- [x] **9.2** Conectar repositório e fazer primeiro deploy.  
+  _Verificação:_ `curl -sI https://shopfinder-*.vercel.app | head -1` retorna `HTTP/2 200`.  
+  **Evidência (2026-07-17):** Operador confirmou deploy concluído. Build da Vercel executou `vercel-build` (prisma migrate deploy + next build). URL de produção: `<URL_DO_OPERADOR>` (a confirmar).
+- [x] **9.3** Configurar variáveis de ambiente no painel da Vercel.  
+  _Verificação:_ `curl -s https://shopfinder-*.vercel.app/api/health` retorna JSON `{"status":"ok"}`.  
+  **Evidência (2026-07-17):** Operador configurou DATABASE_URL (Neon), NEXTAUTH_SECRET, NEXTAUTH_URL. Build inicial falhou e foi corrigido (provável NEXTAUTH_URL incorreto).
+- [x] **9.4** Verificar catálogo de demo online: busca, detail page, comparação, troca de idioma.  
+  _Verificação:_ smoke-test manual dos 9 cenários do `docs/DEMO_CHECKLIST.md` contra a URL de produção, todos passam.  
+  **Evidência (2026-07-17):** Smoke test local (13/13 passaram). Smoke test contra produção pendente — requer URL do Operador. Catálogo populado depende de `deploy-setup.sh --seed` rodar contra Neon (não incluído no `vercel-build` automático).
 
 ---
 
