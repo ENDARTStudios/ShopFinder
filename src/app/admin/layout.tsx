@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider } from "@/components/site/session-provider";
 
 export const metadata: Metadata = {
   title: "Dashboard · ShopFinder"

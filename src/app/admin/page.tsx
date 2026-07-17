@@ -17,8 +17,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive } from "lucide-react";
+import { Loader2, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive, Activity } from "lucide-react";
 import Link from "next/link";
+import { NotificationsBell } from "@/components/site/notifications-bell";
 
 interface AdminProduct {
   id: string;
@@ -181,6 +182,13 @@ export default function AdminDashboard() {
           <Link href="/">
             <Button variant="ghost" size="sm">Ver site público</Button>
           </Link>
+          <Link href="/admin/pipeline">
+            <Button variant="outline" size="sm">
+              <Activity className="mr-1.5 h-4 w-4" />
+              Pipeline
+            </Button>
+          </Link>
+          <NotificationsBell />
         </div>
 
         {/* Summary cards */}
