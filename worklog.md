@@ -4692,3 +4692,58 @@ imediato assim que o Operador:
 2. Conectar repositório na Vercel com `DATABASE_URL` apontando para Neon
 3. Configurar `NEXTAUTH_SECRET` e `NEXTAUTH_URL` no painel da Vercel
 4. Executar `prisma migrate deploy` + `bun run scripts/run-pipeline.ts` no ambiente de produção
+
+---
+
+## DEP-002-A + DEP-002-B — Preparação do Deploy Vercel + Neon
+
+**Data:** 2026-07-17  
+**Executor:** Doer  
+
+### DEP-002-A (commit 7f65245): Marcar itens [1] e [2] como concluídos
+
+- Item [1] (backup): marcado `[x]` — Operador confirmou (não tem backup; Sprints 11-16 foram recriadas)
+- Item [2] (Neon): marcado `[x]` — Operador confirmou (connection string anotada em local seguro)
+
+### DEP-002-B (commit 4fa7c8d): Preparar scripts de deploy + item [3]
+
+**package.json:**
+- `postinstall`: `bun run scripts/select-prisma-provider.ts && prisma generate` — garante provider PostgreSQL + Prisma client no build da Vercel
+- `vercel-build`: `prisma migrate deploy && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/` — aplica migrations no Neon + compila Next.js + copia assets para standalone
+
+**scripts/deploy-setup.sh (novo):**
+- Script de conveniência para rodar localmente ou em CI
+- 3 etapas: `prisma migrate deploy`, `run-pipeline.ts`, `generate-bulk-products.ts --count 500`
+- Suporta `--migrate` (apenas migrations) e `--seed` (apenas pipeline+bulk)
+- Idempotente, `chmod +x`, `bash -n` validado
+
+**PENDENCIAS_OPERADOR.md item [3]:**
+- Instruções completas para o Operador conectar repositório na Vercel
+- Variáveis: `DATABASE_URL` (Neon), `NEXTAUTH_SECRET` (openssl rand), `NEXTAUTH_URL` (após deploy)
+- Build automático: select provider + prisma generate + migrate deploy + next build
+- Como saber que deu certo + o que responder
+
+### Validação
+
+- `bunx next build` → ✓ Compiled successfully in 14.4s
+- `bun run test:arch` → 269 arquivos, 0 violações
+- `bash -n scripts/deploy-setup.sh` → ✓ Sintaxe válida
+- `grep postinstall package.json` → select-prisma-provider.ts && prisma generate ✓
+- `grep vercel-build package.json` → prisma migrate deploy && next build ✓
+- `grep [3] PENDENCIAS_OPERADOR.md` → item [3] presente ✓
+
+### Estado do deploy
+
+O projeto está **a uma ação humana de distância do ar**. O Operador precisa:
+1. Acessar vercel.com
+2. Conectar o repositório ShopFinder
+3. Configurar 3 variáveis de ambiente (DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL)
+4. Clicar "Deploy"
+
+O build da Vercel fará automaticamente: select provider → prisma generate → prisma migrate deploy → next build.
+
+Após o Operador confirmar "feito o item 3 — URL é https://...", o Doer executará:
+- `DEPLOY_URL=<URL> bash scripts/smoke-test.sh` (9 cenários contra produção)
+- `curl <URL>/api/catalog?path=products&limit=1` (verificar catálogo populado)
+- Atualizar `PLANO_MESTRE.md` (Fase 9 concluída)
+- Atualizar `docs/DEPLOY.md` (URL de produção registrada)
