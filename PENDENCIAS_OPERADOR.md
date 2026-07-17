@@ -49,7 +49,7 @@ Depois de feito: responda "feito o item 2 — connection string anotada". **NÃO
 
 ---
 
-### [3] Conectar repositório na Vercel e configurar variáveis de ambiente
+### [x] [3] Conectar repositório na Vercel e configurar variáveis de ambiente — CONCLUÍDO em 2026-07-17
 
 Por quê: Publicar a plataforma online com o banco de dados Neon.
 
