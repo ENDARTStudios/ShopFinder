@@ -74,3 +74,26 @@ Passo a passo:
 Como saber que deu certo: A landing page carrega com a barra de busca e produtos.
 
 Depois de feito: responda "feito o item 3 — URL é https://..."
+
+---
+
+### [4] Executar o script de seed para popular o catálogo
+
+Por quê: O banco de dados de produção (Neon) está vazio — o build da Vercel aplica as migrations mas não popula o catálogo. Precisamos gerar os produtos de demonstração.
+
+Onde: No seu terminal, dentro da pasta do projeto ShopFinder.
+
+Passo a passo:
+1. Abra o terminal na pasta do projeto ShopFinder (no seu computador).
+2. Execute o seguinte comando, substituindo `<SUA_CONNECTION_STRING>` pela string que você anotou no item [2] (a connection string do Neon, no formato `postgresql://...`):
+   ```
+   DATABASE_URL="<SUA_CONNECTION_STRING>" bash scripts/deploy-setup.sh
+   ```
+3. Aguarde a execução terminar (1-2 minutos). Você verá mensagens como "Aplicando migrations...", "Populando catálogo..." e "Gerando produtos de demonstração...".
+4. O script é idempotente — se algo der errado, você pode rodar de novo sem duplicar dados.
+
+Como saber que deu certo: O script termina sem erros e você vê a mensagem "Deploy setup concluído." no final.
+
+Depois de feito: responda "feito o item 4 — catálogo populado"
+
+> **Importante:** A connection string é inserida diretamente no seu terminal, **nunca** no chat. O Doer não tem acesso a ela.
