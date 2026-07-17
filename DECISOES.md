@@ -186,3 +186,25 @@ Alternativas consideradas:
 - Neon: escolhido por ser o mais simples e barato (Seção 3.6 do protocolo — entre soluções equivalentes, vence a mais simples). Integração nativa com Vercel (botão "Connect to Vercel").
 
 Decisão sobre provisionamento: Operador cria conta manualmente no painel neon.tech (mais simples que CLI, evita fluxo OAuth). Doer incluirá passo a passo em `PENDENCIAS_OPERADOR.md` item [2].
+
+---
+
+## 2026-07-16 — Decisão do Operador: Licenciamento proprietário (All Rights Reserved)
+
+Origem: Decisão direta do Operador (Seção 1 do `PROTOCOLO_MESTRE.md` — "é o dono do produto").
+
+Conteúdo:
+- `LICENSE` criado na raiz do repositório com texto exato definido pelo Operador: Copyright © 2026 END ART Studios, All Rights Reserved. Software proprietário e confidencial. Proibido uso, cópia, modificação, distribuição, sublicenciamento, publicação, engenharia reversa sem permissão escrita prévia do titular.
+- `NOTICE` criado na raiz com: nome do projeto (ShopFinder — compra inteligente), titular dos direitos autorais (END ART Studios), e contato comercial para licenciamento (endart.studios@gmail.com).
+
+Motivo: Estabelecer base legal para futuras negociações de licenciamento comercial conforme modelo de negócio da ShopFinder (assinatura profissional, APIs de catálogo). Prática comum em projetos proprietários.
+
+Impacto técnico: Nenhum. Apenas 2 arquivos novos na raiz do repositório. Código permanece sob governança do `PROTOCOLO_MESTRE.md`.
+
+Commit: `87003bd` — `chore: adicionar LICENSE proprietario e NOTICE com contato comercial`.
+
+Verificação: Ambos arquivos em UTF-8, conteúdo conforme especificado pelo Operador, na raiz do repositório.
+
+Status do projeto: Permanece na Fase 9 (Deploy Vercel), aguardando Operador responder aos itens `[1]` (backup externo das Sprints 11-16) e `[2]` (criação do banco Neon) em `PENDENCIAS_OPERADOR.md`.
+
+Doer em espera pela próxima instrução.
