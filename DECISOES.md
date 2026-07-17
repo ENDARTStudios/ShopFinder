@@ -233,3 +233,37 @@ Verificação:
 - Teste manual: `DATABASE_URL=postgresql://...` → provider muda para "postgresql"; sem DATABASE_URL → "sqlite" ✓
 
 Risco: baixo. Alteração de configuração, sem impacto funcional. O schema em si não muda — apenas o provider declarado.
+
+---
+
+## 2026-07-17 — Decisão (REC-004): Recriação eBay Connector — Opção A (híbrido com fallback automático)
+
+Motivo: O conector eBay original (Sprint 13) foi perdido no reset do working tree. A Opção A (híbrido com fallback automático) foi escolhida por ser a mais simples (Seção 3.6 do protocolo) e por alinhar com o padrão já estabelecido para outros conectores futuros (DigiKey, Amazon).
+
+Implementação:
+- Transport layer criada em `packages/integrations/src/transports/`:
+  - `Transport.ts` — interface `Transport`, `TransportRequest`, `TransportResponse`, helper `buildQueryString`
+  - `ReplayTransport.ts` — lê fixtures JSON do filesystem, lança `MissingFixtureError` quando arquivo não existe
+  - `FetchTransport.ts` — HTTPS real via `fetch` global, 4 estratégias de auth (none/bearer/basic/oauth2-client-credentials), OAuth2 token cached com refresh 60s antes do expiry
+- `EbayConnector` em `packages/integrations/src/connectors/ebay/EbayConnector.ts`:
+  - Detecta `EBAY_APP_ID` + `EBAY_CERT_ID` (ou aliases `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET`) do ambiente
+  - Se creds presentes e `EBAY_FORCE_REPLAY=false` → FetchTransport (mode="live") com OAuth2 client-credentials contra sandbox ou production
+  - Senão → ReplayTransport (mode="replay") lendo de `fixtures/ebay/`
+  - Aceita `transport` injetado para testes
+  - Métodos: `searchByKeyword(keyword, opts)`, `getItemDetails(itemId)`, `hasCredentials()`
+- Fixture `fixtures/ebay/get_buy_browse_v1_item_summary_search.json` com 4 itens (RTX 3080, IBM Model M, Ryzen 9 5950X, Arduino Uno R3)
+- Pipeline `scripts/run-pipeline.ts` instancia `EbayConnector` no início do `main()` e reporta o mode no log
+- 6 testes de integração cobrem: fallback replay, force-replay, live mode, aliases, transport injetado, fixture resolution
+
+Alternativas consideradas:
+- Opção B (apenas replay, sem FetchTransport): rejeitada — não permitiria ativação live quando credenciais chegarem.
+- Opção C (apenas FetchTransport, sem fallback): rejeitada — quebraria sandbox e CI sem credenciais.
+- Opção A (híbrido): escolhida — detecta credenciais automaticamente, fallback transparente, ativação live sem mudanças de código.
+
+Verificação:
+- `bun test tests/integration/ebay-connector.test.ts` → 6/6 pass, 18 expects
+- `bun test tests/integration/` → 47/47 pass (18 originais + 23 compare + 6 ebay), 153 expects
+- `bunx next build` → ✓ Compiled successfully
+- `bun run test:arch` → 269 arquivos, 0 violações
+
+Risco: baixo. Código isolado em `packages/integrations/`, sem conexão externa ativa no modo replay (default).

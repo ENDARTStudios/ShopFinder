@@ -1100,7 +1100,24 @@ async function stage10_materialize(traceId: string, compliant: any, signal: Pipe
 async function main() {
   console.log("🚀 ShopFinder Pipeline Runner — Sprint 1\n");
   console.log(`  Signals: ${SIGNALS.length}`);
-  console.log(`  Store ID: ${STORE_ID}\n`);
+  console.log(`  Store ID: ${STORE_ID}`);
+
+  // Instantiate the eBay connector to report its mode (live/replay).
+  // In replay mode (no credentials), it reads from fixtures/ebay/.
+  // In live mode (EBAY_APP_ID + EBAY_CERT_ID set), it would hit the real
+  // eBay Browse API. The pipeline does not call the connector directly yet —
+  // this instantiation is a discovery signal that surfaces in the run log
+  // and prepares the connector for future integration stages.
+  let ebayMode: "live" | "replay" = "replay";
+  try {
+    const { EbayConnector } = await import("@workspace/integrations");
+    const ebay = new EbayConnector();
+    ebayMode = ebay.mode;
+    console.log(`  eBay connector mode: ${ebay.mode}`);
+  } catch (err) {
+    console.log(`  eBay connector: unavailable (${err instanceof Error ? err.message : String(err)})`);
+  }
+  console.log("");
 
   let success = 0;
   let skipped = 0;

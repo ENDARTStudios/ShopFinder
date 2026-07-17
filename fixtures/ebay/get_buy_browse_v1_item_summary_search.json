@@ -1,0 +1,54 @@
+{
+  "status": 200,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "itemSummaries": [
+      {
+        "itemId": "v1|110576894234|0",
+        "title": "NVIDIA GeForce RTX 3080 Founders Edition 10GB GDDR6X",
+        "price": { "value": "549.00", "currency": "USD" },
+        "seller": { "username": "gpu_reseller_2024", "feedbackPercentage": 98.7, "feedbackScore": 1234 },
+        "itemLocation": { "country": "US", "postalCode": "94102" },
+        "itemWebUrl": "https://www.ebay.com/itm/110576894234",
+        "condition": "USED",
+        "thumbnailImages": [{ "imageUrl": "https://i.ebayimg.com/images/g/abc/s-l225.jpg" }],
+        "categories": [{ "categoryId": "27386", "categoryPath": "Computers/Tablets & Networking:Computer Components & Parts:Graphics/Video Cards" }]
+      },
+      {
+        "itemId": "v1|110577001122|0",
+        "title": "Vintage IBM Model M Keyboard 1992 - Working",
+        "price": { "value": "189.50", "currency": "USD" },
+        "seller": { "username": "retro_tech_treasures", "feedbackPercentage": 100.0, "feedbackScore": 856 },
+        "itemLocation": { "country": "US" },
+        "itemWebUrl": "https://www.ebay.com/itm/110577001122",
+        "condition": "USED",
+        "thumbnailImages": [{ "imageUrl": "https://i.ebayimg.com/images/g/def/s-l225.jpg" }],
+        "categories": [{ "categoryId": "175672", "categoryPath": "Computers/Tablets & Networking:Keyboards, Mice & Pointers:Keyboards & Keypads" }]
+      },
+      {
+        "itemId": "v1|110578200776|0",
+        "title": "AMD Ryzen 9 5950X 16-Core 32-Thread Desktop Processor",
+        "price": { "value": "399.00", "currency": "USD" },
+        "seller": { "username": "amd_authorized", "feedbackPercentage": 99.5, "feedbackScore": 4521 },
+        "itemLocation": { "country": "US" },
+        "itemWebUrl": "https://www.ebay.com/itm/110578200776",
+        "condition": "NEW",
+        "thumbnailImages": [{ "imageUrl": "https://i.ebayimg.com/images/g/xyz/s-l225.jpg" }],
+        "categories": [{ "categoryId": "27386", "categoryPath": "Computers/Tablets & Networking:Computer Components & Parts:CPUs/Processors" }]
+      },
+      {
+        "itemId": "v1|110579884210|0",
+        "title": "Arduino Uno R3 Microcontroller Board - Sealed",
+        "price": { "value": "27.95", "currency": "USD" },
+        "seller": { "username": "diy_electronics_nyc", "feedbackPercentage": 97.2, "feedbackScore": 312 },
+        "itemLocation": { "country": "US" },
+        "itemWebUrl": "https://www.ebay.com/itm/110579884210",
+        "condition": "NEW",
+        "categories": [{ "categoryId": "26188", "categoryPath": "Business & Industrial:Electrical & Test Equipment:Electronic Components" }]
+      }
+    ],
+    "total": 4,
+    "href": "https://api.ebay.com/buy/browse/v1/item_summary/search?q=electronics&limit=50"
+  },
+  "finalUrl": "https://api.ebay.com/buy/browse/v1/item_summary/search?q=electronics"
+}
