@@ -13,6 +13,8 @@
 - Custo zero deixou de ser absoluto — nunca justifica pular segurança necessária.
 - Estado persistente formalizado em 4 arquivos (antes só existia o plano).
 - Execução paralela de tarefas independentes permitida; escrita no checklist continua serializada.
+- **Atualização posterior:** Fase 0 e "Ação imediata do Doer" passaram a incluir `LICENSE`/`NOTICE`; o schema `TAREFA`/`STATUS` da Seção 2 foi movido para `PROMPT_THINKER_MESTRE.md`/`PROMPT_DOER_MESTRE.md` (fonte única, evita duas cópias divergindo).
+- **Terceira atualização:** `PROMPT_THINKER_MESTRE.md`/`PROMPT_DOER_MESTRE.md` evoluíram para v1.1 (JSON estrito, loop TDD, limite de tentativas, sandbox explícito). Seção 6 deste arquivo passou a apontar para eles como fonte única do loop; nova Restrição #10 sobre sandbox do Doer.
 
 ---
 
@@ -40,16 +42,7 @@
 
 ### 2. Como cada papel se comunica
 
-**Thinker → Doer** — formato de ordem de serviço, nunca prosa:
-```
-TAREFA: <id, mesmo número do item no PLANO_MESTRE.md>
-OBJETIVO: <uma frase>
-ARQUIVOS AFETADOS: <lista>
-RESTRIÇÕES: <o que não pode>
-CRITÉRIO DE PRONTO: <o que precisa ser verdade pra fechar>
-VERIFICAÇÃO: <comando/teste que prova que funcionou>
-```
-Se dá pra interpretar de duas formas, a ordem está mal escrita — Thinker reescreve antes de enviar.
+**Thinker → Doer** — formato de ordem de serviço, nunca prosa. O schema exato dos blocos `TAREFA` e `STATUS` está definido em `PROMPT_THINKER_MESTRE.md` e `PROMPT_DOER_MESTRE.md` — os dois usam os mesmos campos, letra por letra, para que um interprete o outro sem ambiguidade. Se dá pra interpretar de duas formas, a ordem está mal escrita — Thinker reescreve antes de enviar.
 
 **Thinker → Operador** — linguagem simples, zero jargão sem explicação, frase curta, direto ao resultado. Usada em três momentos: Discovery (Seção 4), aprovação de decisão que afeta o produto, e resumo curto ao fim de cada **fase** (não de cada tarefa): o que mudou, o que falta, o que precisa da atenção dele.
 
@@ -70,6 +63,7 @@ Se dá pra interpretar de duas formas, a ordem está mal escrita — Thinker ree
 7. **Automação sempre antes de instrução manual** ao Operador (Seção 7).
 8. **Continuidade nunca depende de memória de conversa** — todo o necessário vive em arquivo (Seção 5).
 9. **Sem placeholder, sem TODO, sem stub.** Entrega incompleta mantém a tarefa aberta.
+10. **Doer opera só dentro do diretório do projeto.** Nunca lê, escreve ou executa fora dele; nunca expõe porta ou serviço não declarado (detalhe em `PROMPT_DOER_MESTRE.md`, Seção 2).
 
 ---
 
@@ -122,15 +116,9 @@ flowchart LR
 
 ### 6. Loop de execução do Doer
 
-1. Ler `PROTOCOLO_MESTRE.md` inteiro.
-2. Ler `PLANO_MESTRE.md` e `DECISOES.md`.
-3. Ir para a primeira tarefa `[ ]` de cima para baixo.
-4. Implementar exatamente o que a tarefa pede — nada a mais, nada a menos.
-5. Verificar com evidência real (rodar teste/comando, guardar a saída) — nunca supor sucesso.
-6. Marcar `[x]`, commit atômico (`feat:`, `fix:`, `security:`, `test:`, `chore:`, `docs:`).
-7. Travou? Registrar o erro exato + o que tentou, notificar o Thinker, seguir noutra tarefa não-dependente enquanto aguarda.
-8. Tarefas sem dependência entre si podem rodar em paralelo. A escrita no `PLANO_MESTRE.md` continua serializada — uma tarefa marca `[x]` por vez, pra não corromper o checklist compartilhado.
-9. Nunca perguntar ao Operador o que já está respondido em `DECISOES.md`.
+O passo a passo exato (ordem TDD, limite de tentativas, formato de escalonamento) está definido em `PROMPT_DOER_MESTRE.md`, Seções 5–7 — fonte única, para não haver duas versões do loop divergindo.
+
+Resumo: ler o estado do projeto (este arquivo + `PLANO_MESTRE.md` + `DECISOES.md`) → pegar a próxima tarefa não bloqueada → implementar → verificar com evidência real → fechar com `[x]` ou escalar com hipótese de causa. Nunca perguntar ao Operador o que já está respondido em `DECISOES.md`.
 
 ---
 
@@ -176,7 +164,7 @@ Só é "concluído" quando: todas as fases aplicáveis do `PLANO_MESTRE.md` est�
 
 Stack padrão (ajustável): Next.js/React + TypeScript no front; NestJS ou Fastify no back; PostgreSQL. **Monolito modular por padrão** — microsserviços só com justificativa real de escala/organização. Redis e fila (BullMQ/Kafka/RabbitMQ) são `[CONDICIONAL]`.
 
-- **Fase 0 – Setup** `[OBRIGATÓRIO]`: repo, `.gitignore`, `.env.example` sem valor real, lint, dependências travadas por hash.
+- **Fase 0 – Setup** `[OBRIGATÓRIO]`: repo, `.gitignore`, `LICENSE`/`NOTICE` (conteúdo exato em `PROMPT_DOER_MESTRE.md`), `.env.example` sem valor real, lint, dependências travadas por hash.
 - **Fase 1 – Infra base** `[OBRIGATÓRIO]`: HTTPS, helmet, rate limit, validação de entrada (Zod), CORS restrito, erro sem vazar stack trace, `/health`.
 - **Fase 2 – Dados** `[OBRIGATÓRIO]`: schema com migration. Tabelas de usuário/sessão/papéis e criptografia de coluna são `[CONDICIONAL: mesmo gatilho da Fase 3]`. Senha/token sempre hash (argon2/bcrypt custo ≥12).
 - **Fase 3 – Auth** `[CONDICIONAL: projeto tem login]`: sessão via token opaco + cookie `httpOnly Secure SameSite`, lockout progressivo, RBAC. 2FA/TOTP `[CONDICIONAL: dado sensível ou pedido do Operador]`.
@@ -193,5 +181,6 @@ Stack padrão (ajustável): Next.js/React + TypeScript no front; NestJS ou Fasti
 
 1. Criar e commitar este arquivo (`PROTOCOLO_MESTRE.md`) na raiz do repositório com este conteúdo integral.
 2. Criar e commitar `DECISOES.md` e `PENDENCIAS_OPERADOR.md` (vazios).
-3. Rodar o Discovery (Seção 4) com o Operador antes de gerar o `PLANO_MESTRE.md`.
-4. Não escrever nenhuma linha de código do produto antes dos passos 1–3 estarem completos.
+3. Criar e commitar `LICENSE` e `NOTICE` (conteúdo exato definido em `PROMPT_DOER_MESTRE.md`, Seções 11–12).
+4. Rodar o Discovery (Seção 4) com o Operador antes de gerar o `PLANO_MESTRE.md`.
+5. Não escrever nenhuma linha de código do produto antes dos passos 1–4 estarem completos.
