@@ -208,3 +208,28 @@ Verificação: Ambos arquivos em UTF-8, conteúdo conforme especificado pelo Ope
 Status do projeto: Permanece na Fase 9 (Deploy Vercel), aguardando Operador responder aos itens `[1]` (backup externo das Sprints 11-16) e `[2]` (criação do banco Neon) em `PENDENCIAS_OPERADOR.md`.
 
 Doer em espera pela próxima instrução.
+
+---
+
+## 2026-07-17 — Decisão (DEP-001): Provider Prisma dinâmico via select-prisma-provider.ts
+
+Motivo: Prisma não suporta `provider = env("DATABASE_PROVIDER")` nativamente — o campo `provider` em `datasource db {}` deve ser uma string literal. Para suportar SQLite (dev) e PostgreSQL (prod Neon) sem manter dois schemas separados manualmente, criamos um script que reescreve o `provider` em `prisma/schema.prisma` baseado em `DATABASE_URL`.
+
+Implementação:
+- `scripts/select-prisma-provider.ts` — lê `DATABASE_URL`, se começa com `postgresql://` ou `postgres://` → `provider = "postgresql"`, senão → `provider = "sqlite"`. Idempotente.
+- `package.json` scripts `db:generate`, `db:push`, `db:migrate`, `db:reset` agora chamam `select-prisma-provider.ts` antes do comando Prisma.
+- `postinstall` hook chama `select-prisma-provider.ts` após `bun install` (que pode resetar o schema via prisma generate).
+- Novo script isolado `db:select-provider` para invocação manual.
+
+Alternativas consideradas:
+- Dois arquivos `schema.prisma` + `schema.postgres.prisma` com symlink: rejeitado, frágil e confunde IDE.
+- `prisma-multi-tenant`: rejeitado, adiciona dependência para algo que um script de 5 linhas resolve.
+- Deixar `provider = "sqlite"` fixo e documentar: rejeitado, quebra o deploy Vercel/Neon automaticamente.
+
+Verificação:
+- `npx prisma validate` → exit 0 ✓
+- `packages/database/src/client.ts` → `new PrismaClient()` sem URL hardcode (Prisma lê DATABASE_URL do env) ✓
+- `scripts/run-pipeline.ts` → sem referência a sqlite/file: ✓
+- Teste manual: `DATABASE_URL=postgresql://...` → provider muda para "postgresql"; sem DATABASE_URL → "sqlite" ✓
+
+Risco: baixo. Alteração de configuração, sem impacto funcional. O schema em si não muda — apenas o provider declarado.
