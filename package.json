@@ -30,7 +30,8 @@
     "db:seed": "bun run scripts/seed.ts",
     "db:studio": "prisma studio",
     "prepare": "husky",
-    "postinstall": "bun run scripts/select-prisma-provider.ts",
+    "postinstall": "bun run scripts/select-prisma-provider.ts && prisma generate",
+    "vercel-build": "prisma migrate deploy && next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "clean": "rm -rf .next .turbo node_modules/.cache **/dist **/.turbo"
   },
   "dependencies": {

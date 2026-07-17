@@ -46,3 +46,31 @@ Depois de feito: responda "feito o item 2 — connection string anotada". **NÃO
 ---
 
 <!-- Novos itens adicionados abaixo deste comentário, mantendo numeração sequencial. -->
+
+---
+
+### [3] Conectar repositório na Vercel e configurar variáveis de ambiente
+
+Por quê: Publicar a plataforma online com o banco de dados Neon.
+
+Onde: https://vercel.com
+
+Passo a passo:
+1. Acesse https://vercel.com e clique "Continue with GitHub".
+2. Clique "Add New Project" e selecione o repositório ShopFinder.
+3. Em "Configure Project", vá em "Environment Variables" e adicione:
+   - `DATABASE_URL` → (cole aqui a connection string do Neon que você anotou no item [2])
+   - `NEXTAUTH_SECRET` → (abra um terminal no seu computador e rode: `openssl rand -base64 32` — copie o resultado e cole aqui)
+   - `NEXTAUTH_URL` → (deixe em branco por enquanto; após o primeiro deploy, volte aqui e preencha com `https://SEU_PROJETO.vercel.app`)
+4. Clique "Deploy".
+5. Aguarde a conclusão do deploy (1-2 minutos). O build da Vercel vai automaticamente:
+   - Selecionar o provider PostgreSQL do Prisma (baseado no `DATABASE_URL`)
+   - Gerar o Prisma client
+   - Aplicar as migrations no banco Neon
+   - Compilar o Next.js
+6. Acesse a URL gerada (algo como `https://shopfinder-xxxxx.vercel.app`).
+7. Se a página carregar com a busca e produtos, está funcionando. Se aparecer erro, volte aqui e preencha `NEXTAUTH_URL` com a URL gerada, depois clique "Redeploy".
+
+Como saber que deu certo: A landing page carrega com a barra de busca e produtos.
+
+Depois de feito: responda "feito o item 3 — URL é https://..."
