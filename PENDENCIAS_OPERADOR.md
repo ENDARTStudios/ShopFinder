@@ -77,7 +77,7 @@ Depois de feito: responda "feito o item 3 — URL é https://..."
 
 ---
 
-### [4] Executar o script de seed para popular o catálogo
+### [x] [4] Executar o script de seed para popular o catálogo — CONCLUÍDO em 2026-07-17
 
 Por quê: O banco de dados de produção (Neon) está vazio — o build da Vercel aplica as migrations mas não popula o catálogo. Precisamos gerar os produtos de demonstração.
 
@@ -100,7 +100,7 @@ Depois de feito: responda "feito o item 4 — catálogo populado"
 
 ---
 
-### [5] Corrigir o login do painel de administração
+### [x] [5] Corrigir o login do painel de administração — CONCLUÍDO em 2026-07-17
 
 Por quê: O login em `/admin` não funciona porque a variável `NEXTAUTH_URL` pode estar incorreta na Vercel. Também precisamos criar um usuário administrador no banco de dados de produção (o Neon começa vazio, sem usuários).
 

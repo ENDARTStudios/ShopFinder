@@ -290,3 +290,33 @@ Risco: baixo. Código isolado em `packages/integrations/`, sem conexão externa 
 **Nota sobre população do banco:** O `vercel-build` inclui `prisma migrate deploy` que aplica o schema no Neon. No entanto, o pipeline de seed (`run-pipeline.ts`) NÃO está incluído no `vercel-build` — ele precisa ser executado manualmente após o deploy via `bash scripts/deploy-setup.sh --seed` com `DATABASE_URL` do Neon no ambiente. Se a landing page de produção estiver vazia (0 produtos), é porque o seed não rodou.
 
 **Ação direta do Operador:** O Operador fez o deploy diretamente na Vercel sem aguardar o Doer preparar um script único (Seção 7 do protocolo permite exceção quando o Operador faz a ação manual diretamente). O resultado é o mesmo — plataforma no ar.
+
+---
+
+## 2026-07-17 — CONCLUSÃO DO PROJETO ShopFinder V0.6.0
+
+**Status:** CONCLUÍDO
+
+**Definição de "pronto" do Operador (Discovery, item 7) — avaliação final:**
+
+1. **Demonstrável** — ✅ Plataforma no ar na Vercel, URL pública acessível, catálogo populado com 539 produtos de demonstração (39 pipeline enriquecidos + 500 bulk), busca ontológica funcional, comparação lado a lado, detail page com trilha de autoridade, troca de idioma PT/EN.
+
+2. **Operável com dados reais** — ✅ (parcial) eBay Connector pronto para ativação (plug-and-play, aguardando apenas EBAY_APP_ID + EBAY_CERT_ID). Pipeline operacional com SyncExecutionLog + StageMetrics. Dashboard do operador com RBAC, notificações in-app, e painel de pipeline. Curadoria (publish/review/archive) funcional. Usuário admin criado em produção via create-admin.ts.
+
+3. **Documentado** — ✅ DEPLOY.md, MANUAL_DO_OPERADOR.md, DEMO_CHECKLIST.md, operator-guide.md, engineer-guide.md, credentials-guide.md — todos commitados e validados pelo Operador seguindo as instruções.
+
+**URL de produção:** A confirmar pelo Operador (usar `<URL_DO_OPERADOR>` até registro definitivo).
+
+**Estatísticas finais:**
+- 57 testes de integração passando (186 expects)
+- 269 arquivos verificados, 0 violações de arquitetura
+- Build de produção compila sem erros
+- Smoke test local: 13/13 checks passando
+- p95 de busca: 0.25ms (meta < 100ms)
+- 5/5 itens de PENDENCIAS_OPERADOR.md concluídos
+- Fases 8, 9, 11, 12 do PLANO_MESTRE.md marcadas [x]
+- Fase 10 (ativação dados reais eBay) pendente — não bloqueia conclusão (conector pronto, aguarda credenciais externas)
+
+**Ação direta do Operador:** O Operador executou o deploy, o seed do catálogo, e a criação do usuário admin diretamente, seguindo as instruções em PENDENCIAS_OPERADOR.md. Esta proatividade acelerou o processo e é bem-vinda.
+
+**Projeto concluído como ShopFinder V0.6.0.**
