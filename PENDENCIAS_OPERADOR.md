@@ -4,7 +4,7 @@ Criado em: 2026-07-16
 
 ---
 
-### [1] Verificar se existe backup ou fork do repositório com o código das Sprints 11-16
+### [x] [1] Verificar se existe backup ou fork do repositório com o código das Sprints 11-16 — CONCLUÍDO em 2026-07-17
 
 Por quê: Houve perda de arquivos não commitados durante a introdução da governança V2.0. O código das Sprints 11-16 (filtros de busca, comparação de produtos, internacionalização, conectores híbridos, painel de pipeline) foi perdido do working tree do repositório. Precisamos saber se você tem o projeto salvo em outro lugar antes de gastar esforço recriando tudo.
 
@@ -21,7 +21,7 @@ Depois de feito: responda "feito o item 1 — tenho backup em [detalhes do local
 
 ---
 
-### [2] Criar banco de dados gratuito no Neon (PostgreSQL)
+### [x] [2] Criar banco de dados gratuito no Neon (PostgreSQL) — CONCLUÍDO em 2026-07-17
 
 Por quê: A plataforma será publicada na Vercel (ambiente online). A Vercel não suporta banco de dados SQLite em arquivo (cada requisição roda em um ambiente efêmero e perde alterações). Precisamos de um PostgreSQL externo gratuito para o banco de dados em produção.
 
