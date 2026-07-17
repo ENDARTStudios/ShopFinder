@@ -4629,3 +4629,66 @@ Stage Summary:
 - .dockerignore mantém contexto de build enxuto.
 - 57 testes de integração passando, 269 arquitetura sem violações, build limpo.
 - Plataforma pronta para demonstração imediata. Resta apenas ação do Operador para deploy online (Neon + Vercel).
+
+---
+
+## VAL-001 — Relatório de Validação Final Pré-Deploy
+
+**Data:** 2026-07-17  
+**Executor:** Doer  
+**OS:** VAL-001 — Validação Final da Recriação  
+**Depende de:** REC-002, REC-003, REC-004, REC-005, REC-006 (todas concluídas)
+
+### Verificações executadas
+
+| # | Comando | Resultado | Detalhe |
+|---|---|---|---|
+| 1 | `bun test tests/integration/` | ✅ PASS | 57/57 pass, 0 fail, 186 expect() calls, 6 arquivos (pipeline 9, admin-api 9, compare 23, ebay-connector 6, pipeline-status 5, notifications 5) |
+| 2 | `bunx next build` | ✅ PASS | ✓ Compiled successfully in 18.6s, 13/13 static pages geradas, 17 rotas Dinâmicas, exit 0 |
+| 3 | `bun run test:arch` | ✅ PASS | 269 arquivos verificados, 0 violações, exit 0 |
+| 4 | `bun run scripts/bench-search.ts` | ✅ PASS | p95 = 0.25ms (meta < 100ms), max = 2.71ms, catalog = 39 produtos, 10 queries × 50 iterações = 500 searches |
+| 5 | `bash scripts/smoke-test.sh` | ✅ PASS | 13/13 checks passaram, 0 falhas, exit 0, 9 cenários cobertos (Landing, Catalog API, Detail, Compare, i18n, Admin 401, /admin gate, /api/admin/products 401, 404) |
+
+### Resumo de funcionalidades recriadas e validadas
+
+| Sprint | Componente | REC | Status |
+|---|---|---|---|
+| 11 | FilterBar + i18n (next-intl PT/EN) | REC-002 | ✅ Operacional |
+| 12 | CompareContext + /compare + CompareButton + HeaderCompareLink | REC-003 | ✅ Operacional |
+| 13 | eBay Connector híbrido (Transport layer + ReplayTransport + FetchTransport) | REC-004 | ✅ Operacional (mode=replay, pronto para live) |
+| 13 | Pipeline Admin + SyncExecutionLog + StageMetrics + NotificationsBell | REC-005 | ✅ Operacional |
+| 14-16 | generate-bulk-products + bench-search + smoke-test + DEMO_CHECKLIST + DEPLOY.md + Dockerfile + .dockerignore | REC-006 | ✅ Operacional |
+| DEP-001 | Provider Prisma dinâmico (SQLite dev / PostgreSQL prod) | DEP-001 | ✅ Operacional |
+
+### Estado do catálogo
+
+- 39 produtos publicados (SF-PIPE-*)
+- 173 atributos enriquecidos com source/confidence/evidence
+- 150 offers de 7 suppliers
+- 14 categorias em 3 nichos
+
+### Estado dos conectores
+
+| Conector | Mode | CredentialsConfigured | Pronto para live? |
+|---|---|---|---|
+| eBay | replay | false | ✅ Sim — definir EBAY_APP_ID + EBAY_CERT_ID |
+| DigiKey | not_configured | false | ❌ Conector não recriado ainda |
+| Amazon | not_configured | false | ❌ Conector não recriado ainda |
+
+### Bloqueios remanescentes (externos ao desenvolvimento)
+
+1. **Fase 9 (Deploy Vercel)** — aguarda Operador responder `PENDENCIAS_OPERADOR.md`:
+   - Item [1]: verificar se existe backup externo das Sprints 11-16
+   - Item [2]: criar conta Neon gratuita e obter connection string PostgreSQL
+2. **DigiKey/Amazon connectors** — não bloqueiam demo nem deploy; podem ser recriados posteriormente
+
+### Declaração final
+
+**PRONTO PARA DEPLOY.**
+
+Todas as 5 verificações passaram sem falhas. O projeto está apto para deploy
+imediato assim que o Operador:
+1. Criar conta Neon (item [2] em PENDENCIAS_OPERADOR.md)
+2. Conectar repositório na Vercel com `DATABASE_URL` apontando para Neon
+3. Configurar `NEXTAUTH_SECRET` e `NEXTAUTH_URL` no painel da Vercel
+4. Executar `prisma migrate deploy` + `bun run scripts/run-pipeline.ts` no ambiente de produção
