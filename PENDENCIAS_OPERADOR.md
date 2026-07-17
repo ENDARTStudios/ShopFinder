@@ -97,3 +97,37 @@ Como saber que deu certo: O script termina sem erros e você vê a mensagem "Dep
 Depois de feito: responda "feito o item 4 — catálogo populado"
 
 > **Importante:** A connection string é inserida diretamente no seu terminal, **nunca** no chat. O Doer não tem acesso a ela.
+
+---
+
+### [5] Corrigir o login do painel de administração
+
+Por quê: O login em `/admin` não funciona porque a variável `NEXTAUTH_URL` pode estar incorreta na Vercel. Também precisamos criar um usuário administrador no banco de dados de produção (o Neon começa vazio, sem usuários).
+
+Onde: Painel da Vercel (https://vercel.com) e terminal local.
+
+Passo a passo:
+
+**Parte 5a — Corrigir NEXTAUTH_URL:**
+1. Acesse https://vercel.com e faça login.
+2. Clique no projeto ShopFinder.
+3. Vá em "Settings" → "Environment Variables".
+4. Encontre a variável `NEXTAUTH_URL`. Se ela estiver vazia ou incorreta, edite para:
+   `https://shopfinder-xxxxx.vercel.app`
+   (substitua pela URL real do seu projeto, sem barra no final)
+5. Clique em "Save".
+6. Vá em "Deployments" e clique em "Redeploy" no último deploy para aplicar a alteração.
+
+**Parte 5b — Criar usuário administrador:**
+1. Após o Redeploy terminar (status "Ready"), abra o terminal na pasta do projeto.
+2. Execute o seguinte comando, substituindo `<SUA_CONNECTION_STRING>` pela string do Neon (item [2]), e escolhendo seu email e senha:
+   ```
+   DATABASE_URL="<SUA_CONNECTION_STRING>" bun run scripts/create-admin.ts --email "seu@email.com" --password "uma senha segura"
+   ```
+3. Você verá a mensagem "✓ Usuário admin criado/atualizado".
+
+Como saber que deu certo: Você consegue acessar `https://<sua-url>/admin` e fazer login com o email e senha criados.
+
+Depois de feito: responda "feito o item 5 — admin acessível"
+
+> **Importante:** A connection string é inserida diretamente no seu terminal, **nunca** no chat.
