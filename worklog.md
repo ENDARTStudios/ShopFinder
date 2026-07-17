@@ -4812,3 +4812,48 @@ Assim que o Operador fornecer a URL, o Doer executará:
 3. ✅ **Documentado** — DEPLOY.md, MANUAL_DO_OPERADOR.md, DEMO_CHECKLIST.md, operator-guide.md, engineer-guide.md, credentials-guide.md
 
 A única etapa pendente é a confirmação da URL pelo Operador para executar o smoke test final contra produção.
+
+---
+
+## POS-DEP-002 — Correção Pós-Deploy (Catálogo e Autenticação)
+
+**Data:** 2026-07-17  
+**Executor:** Doer  
+
+### Problemas identificados
+
+1. **Catálogo vazio em produção:** O `vercel-build` aplica migrations (`prisma migrate deploy`) mas NÃO roda o pipeline de seed. O banco Neon começa vazio após as migrations.
+2. **Login admin não funciona:** `NEXTAUTH_URL` pode estar incorreto no painel da Vercel, e o banco Neon não tem usuários (começa vazio).
+
+### Ações executadas
+
+**Commit 1 (b52fa2e):** `docs: adicionar item [4] para popular catálogo de produção`
+- `PENDENCIAS_OPERADOR.md` item [4] adicionado: instrui Operador a rodar `DATABASE_URL="<SUA_CONNECTION_STRING>" bash scripts/deploy-setup.sh` localmente
+- `scripts/deploy-setup.sh` verificado: executável, sintaxe OK, testado localmente com `--seed` (539 produtos gerados, depois limpos)
+- Script é idempotente (pipeline usa upsert por SKU)
+
+**Commit 2 (eca6a9e):** `feat: adicionar script create-admin.ts e item [5] para correção de auth`
+- `scripts/create-admin.ts` criado: cria/atualiza usuário com role 'admin' via `hashPassword` (bcrypt), idempotente (upsert por email, preserva roles existentes)
+- Testado localmente: `test-admin@shopfinder.test` criado com roles: admin
+- `PENDENCIAS_OPERADOR.md` item [5] adicionado:
+  - Parte 5a: Corrigir `NEXTAUTH_URL` no painel Vercel (URL exata sem barra no final) + Redeploy
+  - Parte 5b: Criar usuário admin via `DATABASE_URL="<STRING>" bun run scripts/create-admin.ts --email "..." --password "..."`
+- Connection string NUNCA no chat (Seção 8 do protocolo)
+
+### Estado das pendências do Operador
+
+| Item | Descrição | Status |
+|---|---|---|
+| [1] | Verificar backup externo | ✅ Concluído |
+| [2] | Criar conta Neon | ✅ Concluído |
+| [3] | Conectar repositório na Vercel | ✅ Concluído |
+| [4] | Executar script de seed para popular catálogo | ⏳ Aguarda Operador |
+| [5] | Corrigir login admin (NEXTAUTH_URL + create-admin) | ⏳ Aguarda Operador |
+
+### Próximos passos
+
+Assim que o Operador confirmar "feito o item 4" e "feito o item 5", o Doer executará:
+1. `DEPLOY_URL=<URL> bash scripts/smoke-test.sh` — 9 cenários contra produção
+2. `curl -s <URL>/api/catalog?path=products&limit=1 | jq '.total'` — verificar catálogo populado
+3. Marcar Fase 9 como totalmente concluída no PLANO_MESTRE.md
+4. Declarar projeto concluído
