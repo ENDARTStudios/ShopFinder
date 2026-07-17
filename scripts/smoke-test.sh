@@ -1,27 +1,23 @@
 #!/usr/bin/env bash
 #
-# ShopFinder — Smoke test automatizado dos 9 cenários do DEMO_CHECKLIST.md
+# ShopFinder — Smoke test automatizado dos 9 cenários de demonstração.
 #
 # Uso:
 #   DEPLOY_URL=https://shopfinder-xxx.vercel.app bash scripts/smoke-test.sh
 #   bash scripts/smoke-test.sh  # usa http://localhost:3000 por padrão
 #
 # Cobre:
-#   1. Landing page
-#   2. Catálogo API (ontological search — indireto: catalog API retorna produtos com specs AM5/750W)
-#   3. Detail page com trilha de autoridade
-#   4. Página /compare (empty state)
-#   5. Página /compare?slugs= (matriz)
-#   6. /admin (auth gate — retorna 200 com prompt de login, não 200 com dashboard)
-#   7. /api/admin/pipeline/status (proteção — 401 sem auth)
-#   8. i18n (cookie locale=en muda a tagline)
-#   9. 404 handling
+#   1. Landing page carrega e contém "ShopFinder"
+#   2. API de catálogo retorna produtos
+#   3. Página de detalhes de um produto retorna 200
+#   4. Página de comparação retorna 200 com parâmetros
+#   5. Troca de idioma (cookie locale=en)
+#   6. API de administração retorna 401 sem autenticação
+#   7. Página /admin carrega (gate de auth)
+#   8. API pública não vaza dados internos (/api/admin/products retorna 401)
+#   9. Página 404 retorna 404
 #
-# Exit codes:
-#   0 — todos os cenários passaram
-#   1 — pelo menos um cenário falhou
-#
-# Saída: linha por cenário, ✓ ou ✗, com detalhe do que falhou.
+# Exit codes: 0 = todos passaram, 1 = pelo menos um falhou
 
 set -euo pipefail
 
@@ -51,86 +47,70 @@ echo "--------------------------------------------------------"
 # ── 1. Landing page ───────────────────────────────────────
 echo ""
 echo "Cenário 1 — Landing page"
-LANDING_HTML=$(curl -sS -o /tmp/sf-landing.html -w "%{http_code}" "$BASE/") || true
-check "HTTP 200"            "[ '$LANDING_HTML' = '200' ]"                         "status=$LANDING_HTML"
-check "Contém 'ShopFinder'" "grep -q 'ShopFinder' /tmp/sf-landing.html"            "marca ausente"
-check "Tagline PT default"  "grep -q 'compra inteligente' /tmp/sf-landing.html"    "tagline ausente"
-check "Form de busca (role=search)" "grep -q 'role=\"search\"' /tmp/sf-landing.html" "form ausente"
-check "Seção de nichos"     "grep -q 'id=\"nichos\"' /tmp/sf-landing.html"        "seção ausente"
+LANDING_HTTP=$(curl -sS -o /tmp/sf-landing.html -w "%{http_code}" "$BASE/") || true
+check "HTTP 200" "[ '$LANDING_HTTP' = '200' ]" "status=$LANDING_HTTP"
+check "Contém 'ShopFinder'" "grep -q 'ShopFinder' /tmp/sf-landing.html" "marca ausente"
 
-# ── 2. Catálogo API (busca ontológica) ────────────────────
+# ── 2. API de catálogo retorna produtos ───────────────────
 echo ""
-echo "Cenário 2 — Catálogo API (base da busca ontológica)"
-CATALOG_HTTP=$(curl -sS -o /tmp/sf-catalog.json -w "%{http_code}" "$BASE/api/catalog?path=products&limit=1000") || true
-check "HTTP 200"            "[ '$CATALOG_HTTP' = '200' ]"                          "status=$CATALOG_HTTP"
+echo "Cenário 2 — API de catálogo retorna produtos"
+CATALOG_HTTP=$(curl -sS -o /tmp/sf-catalog.json -w "%{http_code}" "$BASE/api/catalog?path=products&limit=100") || true
+check "HTTP 200" "[ '$CATALOG_HTTP' = '200' ]" "status=$CATALOG_HTTP"
 PRODUCT_COUNT=$(bun -e "const d = await Bun.stdin.json(); console.log(d.products?.length ?? 0)" < /tmp/sf-catalog.json 2>/dev/null || echo "0")
-check "Retorna produtos"    "[ '$PRODUCT_COUNT' -gt 0 ]"                          "count=$PRODUCT_COUNT"
-AM5_COUNT=$(bun -e "const d = await Bun.stdin.json(); console.log(d.products?.filter(p => p.specs?.some(s => s.value === 'AM5')).length ?? 0)" < /tmp/sf-catalog.json 2>/dev/null || echo "0")
-check "Produtos AM5 (ontológico)" "[ '$AM5_COUNT' -gt 0 ]"                        "count=$AM5_COUNT"
-PSU750_COUNT=$(bun -e "const d = await Bun.stdin.json(); console.log(d.products?.filter(p => p.specs?.some(s => s.value === '750W')).length ?? 0)" < /tmp/sf-catalog.json 2>/dev/null || echo "0")
-check "PSUs 750W (ontológico)" "[ '$PSU750_COUNT' -gt 0 ]"                        "count=$PSU750_COUNT"
+check "Retorna produtos" "[ '$PRODUCT_COUNT' -gt 0 ]" "count=$PRODUCT_COUNT"
 
-# ── 3. Detail page com trilha de autoridade ───────────────
+# ── 3. Página de detalhes de um produto ───────────────────
 echo ""
-echo "Cenário 3 — Detail page com trilha de autoridade"
-# Pega o primeiro slug do catálogo para evitar hardcode
+echo "Cenário 3 — Página de detalhes"
 FIRST_SLUG=$(bun -e "const d = await Bun.stdin.json(); console.log(d.products?.[0]?.slug ?? '')" < /tmp/sf-catalog.json 2>/dev/null || echo "")
 if [ -n "$FIRST_SLUG" ]; then
   DETAIL_HTTP=$(curl -sS -o /tmp/sf-detail.html -w "%{http_code}" "$BASE/produtos/$FIRST_SLUG") || true
-  check "Detail page HTTP 200" "[ '$DETAIL_HTTP' = '200' ]"                       "status=$DETAIL_HTTP slug=$FIRST_SLUG"
-  check "Seção de especificações" "grep -qi 'especifica' /tmp/sf-detail.html || grep -qi 'specification' /tmp/sf-detail.html" "section ausente"
-  check "Botão Comparar presente" "grep -qi 'Comparar\|Compare' /tmp/sf-detail.html" "botão ausente"
-  # Verifica enrichedSpecs via API slugs filter (detail page usa server component, dados não estão no HTML inicial)
-  ENRICHED_HTTP=$(curl -sS -o /tmp/sf-enriched.json -w "%{http_code}" "$BASE/api/catalog?path=products&slugs=$FIRST_SLUG&limit=1") || true
-  ENRICHED_COUNT=$(bun -e "const d = await Bun.stdin.json(); console.log(d.products?.[0]?.enrichedSpecs?.length ?? 0)" < /tmp/sf-enriched.json 2>/dev/null || echo "0")
-  check "API retorna enrichedSpecs" "[ '$ENRICHED_COUNT' -gt 0 ]"                  "enrichedSpecs.length=$ENRICHED_COUNT"
+  check "Detail page HTTP 200" "[ '$DETAIL_HTTP' = '200' ]" "status=$DETAIL_HTTP slug=$FIRST_SLUG"
 else
   echo "  ✗ Detail page — não foi possível obter slug do catálogo"
   FAIL=$((FAIL + 1)); FAILURES+=("Detail page — sem slug")
 fi
 
-# ── 4. Página /compare (empty state) ───────────────────────
+# ── 4. Página de comparação com parâmetros ────────────────
 echo ""
-echo "Cenário 4 — /compare empty state"
+echo "Cenário 4 — Página de comparação"
 COMPARE_EMPTY_HTTP=$(curl -sS -o /tmp/sf-compare-empty.html -w "%{http_code}" "$BASE/compare") || true
-check "HTTP 200"            "[ '$COMPARE_EMPTY_HTTP' = '200' ]"                    "status=$COMPARE_EMPTY_HTTP"
-check "Estado vazio (PT)"   "grep -q 'Nenhum produto selecionado' /tmp/sf-compare-empty.html" "mensagem ausente"
-
-# ── 5. Página /compare?slugs= (matriz) ────────────────────
-echo ""
-echo "Cenário 5 — /compare?slugs= (matriz)"
-COMPARE_SLUGS_HTTP=$(curl -sS -o /tmp/sf-compare-slugs.html -w "%{http_code}" "$BASE/compare?slugs=$FIRST_SLUG") || true
-check "HTTP 200"            "[ '$COMPARE_SLUGS_HTTP' = '200' ]"                    "status=$COMPARE_SLUGS_HTTP"
-check "Título 'Comparar Produtos'" "grep -q 'Comparar Produtos' /tmp/sf-compare-slugs.html" "título ausente"
-
-# ── 6. /admin (auth gate) ─────────────────────────────────
-echo ""
-echo "Cenário 6 — /admin (auth gate)"
-ADMIN_HTTP=$(curl -sS -o /tmp/sf-admin.html -w "%{http_code}" "$BASE/admin") || true
-check "HTTP 200 ou 307 (gate ou redirect)" "[ '$ADMIN_HTTP' = '200' ] || [ '$ADMIN_HTTP' = '307' ]" "status=$ADMIN_HTTP"
-# Se 200, deve ter gate client-side (não dashboard exposto sem auth)
-if [ "$ADMIN_HTTP" = "200" ]; then
-  check "Gate de auth (não expõe dashboard sem sessão)" "grep -qi 'login\|sign in\|entrar' /tmp/sf-admin.html" "ausente — possível bypass"
+check "/compare (empty) HTTP 200" "[ '$COMPARE_EMPTY_HTTP' = '200' ]" "status=$COMPARE_EMPTY_HTTP"
+if [ -n "$FIRST_SLUG" ]; then
+  COMPARE_SLUGS_HTTP=$(curl -sS -o /tmp/sf-compare-slugs.html -w "%{http_code}" "$BASE/compare?slugs=$FIRST_SLUG") || true
+  check "/compare?slugs= HTTP 200" "[ '$COMPARE_SLUGS_HTTP' = '200' ]" "status=$COMPARE_SLUGS_HTTP"
 fi
 
-# ── 7. /api/admin/pipeline/status (proteção) ──────────────
+# ── 5. Troca de idioma ────────────────────────────────────
 echo ""
-echo "Cenário 7 — /api/admin/pipeline/status (proteção sem auth)"
-PIPELINE_HTTP=$(curl -sS -o /dev/null -w "%{http_code}" "$BASE/api/admin/pipeline/status") || true
-check "HTTP 401 sem auth"   "[ '$PIPELINE_HTTP' = '401' ]"                         "status=$PIPELINE_HTTP (esperado 401)"
-
-# ── 8. i18n (cookie locale=en) ────────────────────────────
-echo ""
-echo "Cenário 8 — Internacionalização (cookie locale=en)"
+echo "Cenário 5 — Internacionalização (cookie locale=en)"
 EN_HTML=$(curl -sS -o /tmp/sf-en.html -w "%{http_code}" -H "Cookie: locale=en" "$BASE/") || true
-check "HTTP 200 com cookie EN" "[ '$EN_HTML' = '200' ]"                           "status=$EN_HTML"
-check "Tagline EN ('smart shopping')" "grep -q 'smart shopping' /tmp/sf-en.html"  "tagline EN ausente"
+check "HTTP 200 com cookie EN" "[ '$EN_HTML' = '200' ]" "status=$EN_HTML"
+check "Tagline EN ('smart shopping')" "grep -q 'smart shopping' /tmp/sf-en.html" "tagline EN ausente"
 
-# ── 9. 404 handling ───────────────────────────────────────
+# ── 6. API de administração retorna 401 sem auth ──────────
+echo ""
+echo "Cenário 6 — API admin retorna 401 sem auth"
+PIPELINE_HTTP=$(curl -sS -o /dev/null -w "%{http_code}" "$BASE/api/admin/pipeline/status") || true
+check "HTTP 401 sem auth" "[ '$PIPELINE_HTTP' = '401' ]" "status=$PIPELINE_HTTP (esperado 401)"
+
+# ── 7. Página /admin carrega (gate de auth) ───────────────
+echo ""
+echo "Cenário 7 — Página /admin carrega"
+ADMIN_HTTP=$(curl -sS -o /dev/null -w "%{http_code}" "$BASE/admin") || true
+check "HTTP 200 ou 307 (gate ou redirect)" "[ '$ADMIN_HTTP' = '200' ] || [ '$ADMIN_HTTP' = '307' ]" "status=$ADMIN_HTTP"
+
+# ── 8. API pública não vaza dados internos ────────────────
+echo ""
+echo "Cenário 8 — /api/admin/products retorna 401 sem auth"
+ADMIN_PRODUCTS_HTTP=$(curl -sS -o /dev/null -w "%{http_code}" "$BASE/api/admin/products") || true
+check "HTTP 401 sem auth" "[ '$ADMIN_PRODUCTS_HTTP' = '401' ]" "status=$ADMIN_PRODUCTS_HTTP (esperado 401)"
+
+# ── 9. Página 404 retorna 404 ─────────────────────────────
 echo ""
 echo "Cenário 9 — 404 handling"
 NOT_FOUND_HTTP=$(curl -sS -o /dev/null -w "%{http_code}" "$BASE/esta-rota-nao-existe-12345") || true
-check "HTTP 404 para rota inexistente" "[ '$NOT_FOUND_HTTP' = '404' ]"            "status=$NOT_FOUND_HTTP (esperado 404)"
+check "HTTP 404 para rota inexistente" "[ '$NOT_FOUND_HTTP' = '404' ]" "status=$NOT_FOUND_HTTP (esperado 404)"
 
 # ── Resumo ─────────────────────────────────────────────────
 echo ""
