@@ -4482,3 +4482,55 @@ Stage Summary:
 - URLs shareable: /compare?slugs=a,b,c pode ser copiada e colada.
 - Commits desta sessão: 70f3c6a (C1), 84d4e32 (C2), 5d7b9a3 (C3), 090725e (C4), 6c631fb (C5).
 - Próxima OS: Sprint 13 (conectores híbridos + /admin/pipeline + NotificationsBell + StageMetrics) ou aguardar resposta do Operador sobre backup/Neon.
+
+---
+
+Task ID: DEP-001 + REC-004 — Provider Prisma dinâmico + eBay Connector híbrido
+Agent: Doer
+Task: Validar compatibilidade Prisma com PostgreSQL (DEP-001) e recriar eBay Connector no padrão híbrido com 6 testes (REC-004). Tarefas independentes executadas em paralelo.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+- Adotado `PROMPT_THINKER_MESTRE.md` v1.0 com formato de OS incluindo `DEPENDE_DE` e `RISCO`.
+
+**DEP-001 — Provider Prisma dinâmico (commit 5859c2a):**
+- Criado `scripts/select-prisma-provider.ts` — lê `DATABASE_URL`, se `postgresql://` ou `postgres://` → provider = "postgresql", senão → provider = "sqlite". Idempotente.
+- `package.json` scripts `db:generate`, `db:push`, `db:migrate`, `db:reset` atualizados para chamar o seletor antes do comando Prisma.
+- `postinstall` hook garante provider correto após `bun install`.
+- Novo script isolado `db:select-provider` para invocação manual.
+- Verificação: `npx prisma validate` → exit 0; `packages/database/src/client.ts` → `new PrismaClient()` sem URL hardcode; `scripts/run-pipeline.ts` → sem referência a sqlite/file:.
+- Teste manual: `DATABASE_URL=postgresql://...` muda provider para "postgresql"; sem env mantém "sqlite".
+- Decisão registrada em `DECISOES.md`.
+
+**REC-004 — eBay Connector híbrido (commit dda2bae):**
+- Transport layer criada em `packages/integrations/src/transports/`:
+  - `Transport.ts` — interface Transport, TransportRequest, TransportResponse, buildQueryString
+  - `ReplayTransport.ts` — lê fixtures JSON, lança MissingFixtureError
+  - `FetchTransport.ts` — HTTPS real, 4 auth strategies (none/bearer/basic/oauth2-client-credentials), OAuth2 cached
+- `EbayConnector` em `packages/integrations/src/connectors/ebay/EbayConnector.ts`:
+  - Detecta EBAY_APP_ID + EBAY_CERT_ID (ou aliases) do ambiente
+  - Creds + FORCE_REPLAY=false → FetchTransport (mode="live") com OAuth2
+  - Senão → ReplayTransport (mode="replay") lendo de fixtures/ebay/
+  - Aceita transport injetado para testes
+  - Métodos: searchByKeyword, getItemDetails, hasCredentials
+- Fixture `fixtures/ebay/get_buy_browse_v1_item_summary_search.json` com 4 itens (RTX 3080, IBM Model M, Ryzen 9 5950X, Arduino Uno R3)
+- Pipeline `scripts/run-pipeline.ts` instancia EbayConnector no início do main() e reporta mode no log
+- 6 testes de integração (tests/integration/ebay-connector.test.ts): fallback replay, force-replay, live mode, aliases, transport injetado, fixture resolution
+- Decisão Opção A (híbrido com fallback automático) registrada em `DECISOES.md`.
+
+**Validação final:**
+- `npx prisma validate` → exit 0 ✓
+- `bun test tests/integration/ebay-connector.test.ts` → 6/6 pass, 18 expects ✓
+- `bun run test:arch` → 269 arquivos, 0 violações ✓
+- `bun test tests/integration/` → 47/47 pass (18 originais + 23 compare + 6 ebay), 153 expects ✓
+- `bunx next build` → ✓ Compiled successfully
+
+Stage Summary:
+
+- DEP-001 e REC-004 concluídas. 2 commits atômicos (5859c2a + dda2bae).
+- Provider Prisma agora é dinâmico (SQLite dev / PostgreSQL prod) via script automático.
+- eBay Connector híbrido operacional: detecta credenciais automaticamente, faz fallback para fixtures, pronto para ativação live quando EBAY_APP_ID + EBAY_CERT_ID forem definidos.
+- Transport layer reutilizável para futuros conectores (DigiKey, Amazon).
+- 47 testes de integração passando (era 41), 269 arquitetura sem violações.
+- Próxima OS: continuar recriação Sprint 13 (DigiKey + Amazon connectors, /admin/pipeline, NotificationsBell, StageMetrics) ou aguardar resposta do Operador sobre backup/Neon.
