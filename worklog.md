@@ -4583,3 +4583,49 @@ Stage Summary:
 - `NotificationsBell` integrado no header do admin com badge de não-lidas.
 - 57 testes de integração passando (era 47), 269 arquitetura sem violações.
 - Sprint 13 parcialmente recriada: eBay Connector (REC-004) + Pipeline Admin + Notificações (REC-005). Faltam: DigiKey/Amazon connectors, StageMetrics no pipeline (já incluído neste commit).
+
+---
+
+Task ID: REC-006 — Recriação de scripts de apoio, docs e Dockerfile (Sprints 14-16 essenciais)
+Agent: Doer
+Task: Recriar scripts de geração de volume, benchmark de busca, smoke-test, checklist de demo, Dockerfile multi-estágio, .dockerignore, e DEPLOY.md.
+
+Work Log:
+
+- Lido `PROTOCOLO_MESTRE.md`, `PLANO_MESTRE.md`, `DECISOES.md` no início da sessão.
+
+**Commit 1:** `feat: recriar scripts de geracao de produtos em massa e benchmark de busca`
+- `scripts/generate-bulk-products.ts`: gera N produtos sintéticos (default 500, --count=N) replicando SF-PIPE-* com 8 variantes × ciclos. --clean remove SF-BULK-* com cascade FK. Testado: 10 produtos em 73ms.
+- `scripts/bench-search.ts`: 10 queries × 50 iterações, reporta min/median/p95/max, verdict PASS/WARN/FAIL. Testado: 39 produtos, p95 = 0.27ms — PASS.
+
+**Commit 2 (1a10cae):** `feat: recriar smoke-test automatizado com 9 cenarios`
+- `scripts/smoke-test.sh` atualizado com 9 cenários: Landing, Catalog API, Detail, Compare (empty+slugs), i18n (cookie locale=en), Admin API 401, /admin gate, /api/admin/products 401, 404 handling.
+- 13 checks, todos passando.
+
+**Commit 3:** `docs: recriar DEMO_CHECKLIST e atualizar DEPLOY.md`
+- `docs/DEMO_CHECKLIST.md`: 9 cenários timed (~13 min), pre-demo setup, Q&A backup, post-demo cleanup.
+- `docs/DEPLOY.md`: env vars, Neon PostgreSQL, connector activation (eBay plug-and-play, DigiKey/Amazon not yet implemented), Docker build, docker-compose.app.yml, first-time setup, Caddy reverse proxy, security checklist.
+
+**Commit 4:** `feat: recriar Dockerfile multi-estagio e .dockerignore`
+- `Dockerfile` 3 stages (deps/builder/runner): oven/bun:1.3-debian, non-root user nextjs, HEALTHCHECK, select-prisma-provider no build, copia standalone + static + public + messages + prisma + scripts + fixtures.
+- `.dockerignore`: exclui .git, .next, node_modules, db/*.db, .env, docs, .ai, tests, skills.
+- Validação: python3 verificou estrutura (3 stages, CMD, EXPOSE, HEALTHCHECK, USER).
+
+**Validação final:**
+- `bun run scripts/generate-bulk-products.ts --count=0 --clean` → limpa SF-BULK-* ✓
+- `bun run scripts/bench-search.ts` → p95 = 0.27ms, ✅ PASS ✓
+- `bash scripts/smoke-test.sh` → 13/13 passaram, 0 falhas ✓
+- `ls -la docs/DEMO_CHECKLIST.md Dockerfile .dockerignore` → todos existem ✓
+- `bunx next build` → ✓ Compiled successfully ✓
+- `bun run test:arch` → 269 arquivos, 0 violações ✓
+- `bun test tests/integration/` → 57/57 pass, 186 expects ✓
+
+Stage Summary:
+
+- REC-006 concluída. 4 commits atômicos.
+- Scripts de apoio recriados: generate-bulk-products (volume demo), bench-search (latency benchmark), smoke-test (9 cenários automatizados).
+- Documentação recriada: DEMO_CHECKLIST.md (roteiro de demo), DEPLOY.md (deploy guide com connector activation).
+- Dockerfile multi-estágio production-ready: 3 stages, non-root, HEALTHCHECK, Prisma provider dinâmico no build.
+- .dockerignore mantém contexto de build enxuto.
+- 57 testes de integração passando, 269 arquitetura sem violações, build limpo.
+- Plataforma pronta para demonstração imediata. Resta apenas ação do Operador para deploy online (Neon + Vercel).
