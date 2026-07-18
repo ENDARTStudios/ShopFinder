@@ -114,7 +114,7 @@
     "react-hook-form": "^7.81.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^3.0.6",
-    "react-syntax-highlighter": "^15.6.6",
+    "react-syntax-highlighter": "^16.1.1",
     "recharts": "^2.15.4",
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",
