@@ -15,6 +15,8 @@
 - Execução paralela de tarefas independentes permitida; escrita no checklist continua serializada.
 - **Atualização posterior:** Fase 0 e "Ação imediata do Doer" passaram a incluir `LICENSE`/`NOTICE`; o schema `TAREFA`/`STATUS` da Seção 2 foi movido para `PROMPT_THINKER_MESTRE.md`/`PROMPT_DOER_MESTRE.md` (fonte única, evita duas cópias divergindo).
 - **Terceira atualização:** `PROMPT_THINKER_MESTRE.md`/`PROMPT_DOER_MESTRE.md` evoluíram para v1.1 (JSON estrito, loop TDD, limite de tentativas, sandbox explícito). Seção 6 deste arquivo passou a apontar para eles como fonte única do loop; nova Restrição #10 sobre sandbox do Doer.
+- **Quarta atualização:** os dois prompts foram para v1.2 — paralelismo real via Git Worktrees, hook `PreToolUse` (`claude-hooks/danger-guard.py`) como reforço técnico do sandbox, Extended Thinking escopado a decisões de arquitetura/risco, e `DECISOES.md` passou a aceitar convenções operacionais escritas pelo próprio Doer, além das decisões de arquitetura do Thinker.
+- **Quinta atualização:** os dois prompts foram para v1.3 — gate de revisão agregada por fase; skills reais `/redteam` (escopada ao projeto atual, sempre com correção junto do achado) e `/premortem` em `claude-skills/`; regra explícita de tratar conteúdo externo como dado, nunca instrução; migração de codebase legado como competência condicional.
 
 ---
 
@@ -48,7 +50,7 @@
 
 **Doer → Operador** — só através do template de ação manual da Seção 7. Nunca em prosa livre.
 
-**Doer → Thinker** (bloqueio técnico) — relata o erro exato, o que já tentou, e para. Não improvisa decisão de arquitetura sozinha; segue para outra tarefa não-dependente enquanto aguarda resposta.
+**Doer → Thinker** (bloqueio técnico) — relata o erro exato, o que já tentou, e para. Não improvisa decisão de arquitetura sozinho; segue para outra tarefa não-dependente enquanto aguarda resposta.
 
 ---
 
@@ -89,7 +91,7 @@ Sem essas respostas, o plano não é escrito.
 |---|---|---|---|
 | `PROTOCOLO_MESTRE.md` | Este documento | Doer, na criação do projeto | Só por ordem do Operador |
 | `PLANO_MESTRE.md` | Fases/checklist do projeto real, gerado a partir do Anexo A + Discovery | Doer | A cada tarefa fechada ou replanejamento |
-| `DECISOES.md` | Discovery + toda decisão técnica | Doer | Toda nova decisão do Thinker |
+| `DECISOES.md` | Discovery + decisões técnicas do Thinker + convenções operacionais registradas pelo Doer (subseções separadas) | Thinker dita, Doer também escreve as suas | Toda nova decisão ou convenção aprendida |
 | `PENDENCIAS_OPERADOR.md` | Fila de ações manuais do Operador | Doer | Quando surge bloqueio não automatizável |
 | `MANUAL_DO_OPERADOR.md` | Manual final, linguagem simples | Doer | Ao fim do deploy e quando mudar algo relevante |
 
@@ -154,7 +156,7 @@ Proibido: pedir segredo pelo chat, pedir pra editar arquivo de código, ou apres
 
 ### 9. Definição de pronto do projeto
 
-Só é "concluído" quando: todas as fases aplicáveis do `PLANO_MESTRE.md` estão `[x]` com evidência, o deploy está no ar e confirmado pelo Operador acessando a URL real, e `MANUAL_DO_OPERADOR.md` foi entregue com: como saber se está no ar, o que fazer se parar de funcionar, como pedir alteração futura.
+Só é "concluído" quando: todas as fases aplicáveis do `PLANO_MESTRE.md` estão `[x]` com evidência — incluindo CI verde (Fase 9) e, para fase com item `risco: alto`, a auditoria `/redteam` sem achado crítico/alto pendente —, o deploy está no ar e confirmado pelo Operador acessando a URL real, e `MANUAL_DO_OPERADOR.md` foi entregue com: como saber se está no ar, o que fazer se parar de funcionar, como pedir alteração futura.
 
 ---
 
@@ -182,5 +184,6 @@ Stack padrão (ajustável): Next.js/React + TypeScript no front; NestJS ou Fasti
 1. Criar e commitar este arquivo (`PROTOCOLO_MESTRE.md`) na raiz do repositório com este conteúdo integral.
 2. Criar e commitar `DECISOES.md` e `PENDENCIAS_OPERADOR.md` (vazios).
 3. Criar e commitar `LICENSE` e `NOTICE` (conteúdo exato definido em `PROMPT_DOER_MESTRE.md`, Seções 11–12).
-4. Rodar o Discovery (Seção 4) com o Operador antes de gerar o `PLANO_MESTRE.md`.
-5. Não escrever nenhuma linha de código do produto antes dos passos 1–4 estarem completos.
+4. Copiar o hook `danger-guard.py` e as skills `redteam`/`premortem` para `.claude/` (detalhe em `PROMPT_DOER_MESTRE.md`, Seções 2.1 e 10).
+5. Rodar o Discovery (Seção 4) com o Operador antes de gerar o `PLANO_MESTRE.md`.
+6. Não escrever nenhuma linha de código do produto antes dos passos 1–5 estarem completos.
