@@ -37,7 +37,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^6.11.1",
+    "@prisma/client": "^7.9.0",
     "@workspace/domain": "workspace:*",
     "@workspace/contracts": "workspace:*"
   },
