@@ -1,4 +1,4 @@
-# PLANO_MESTRE.md — Almanaque dos Clubes
+# PLANO_MESTRE.md — ShopFinder
 
 > Gerado sob PROTOCOLO_MESTRE.md v2.0 (Seção 5).
 > Conflito entre este arquivo e o Protocolo: o Protocolo vence.
@@ -9,7 +9,7 @@
 
 - [ ] Fase 0 – Setup `[OBRIGATÓRIO]`
 - [ ] Fase 1 – Infra base `[OBRIGATÓRIO]`
-- [x] Fase 2 – Dados `[OBRIGATÓRIO + auth/billing/audit]` ✅ (2026-07-20)
+- [ ] Fase 2 – Dados `[OBRIGATÓRIO + auth/billing/audit]` ✅ (2026-07-20)
 - [ ] Fase 3 – Auth `[OBRIGATÓRIO, 2FA TOTP opcional]`
 - [ ] Fase 4 – APIs/CRUDs `[OBRIGATÓRIO + billing]`
 - [ ] Fase 5 – Frontend `[OBRIGATÓRIO]`
@@ -87,19 +87,19 @@ de evidência**, não por presunção.
 
 ## FASE 2 — DADOS `[OBRIGATÓRIO + auth/billing/audit]` ✅
 
-- [x] 2.1 Prisma schema canônico (`schema.prisma`) com provider PostgreSQL.
-- [x] 2.2 Migration inicial versionada e aplicada.
-- [x] 2.3 Tabelas de domínio: `clubs`, `players`, `competitions`, `rankings`, `matches`, `seasons`.
-- [x] 2.4 Tabelas de auth: `users`, `roles`, `permissions`, `user_roles`, `sessions`.
-- [x] 2.5 Tabelas de billing: `subscriptions`, `plans` (Free/Pro/Elite), `invoices`, `payment_events`.
-- [x] 2.6 Tabelas de auditoria: `audit_logs` (imutável, append-only, com hash de cadeia).
-- [x] 2.7 Tabelas de governança: `data_sources` (procedência), `entity_revisions` (versionamento).
-- [x] 2.8 Senha/token sempre hash com argon2id (custo ≥ 12). Nunca em texto plano.
-- [x] 2.9 Soft delete em entidades críticas (`deleted_at` em `clubs`, `players`, `users`).
-- [x] 2.10 Criptografia a nível de coluna para email e telefone (envelope encryption com chave mestra do deploy).
-- [x] 2.11 Seed de admin inicial com senha forte e obrigatoriedade de troca no primeiro login.
-- [x] 2.12 Índices em todas as chaves estrangeiras + colunas de busca frequente.
-- [x] 2.13 Restrições de unicidade documentadas (`@@unique([name, country])`, etc.).
+- [ ] 2.1 Prisma schema canônico (`schema.prisma`) com provider PostgreSQL.
+- [ ] 2.2 Migration inicial versionada e aplicada.
+- [ ] 2.3 Tabelas de domínio: `clubs`, `players`, `competitions`, `rankings`, `matches`, `seasons`.
+- [ ] 2.4 Tabelas de auth: `users`, `roles`, `permissions`, `user_roles`, `sessions`.
+- [ ] 2.5 Tabelas de billing: `subscriptions`, `plans` (Free/Pro/Elite), `invoices`, `payment_events`.
+- [ ] 2.6 Tabelas de auditoria: `audit_logs` (imutável, append-only, com hash de cadeia).
+- [ ] 2.7 Tabelas de governança: `data_sources` (procedência), `entity_revisions` (versionamento).
+- [ ] 2.8 Senha/token sempre hash com argon2id (custo ≥ 12). Nunca em texto plano.
+- [ ] 2.9 Soft delete em entidades críticas (`deleted_at` em `clubs`, `players`, `users`).
+- [ ] 2.10 Criptografia a nível de coluna para email e telefone (envelope encryption com chave mestra do deploy).
+- [ ] 2.11 Seed de admin inicial com senha forte e obrigatoriedade de troca no primeiro login.
+- [ ] 2.12 Índices em todas as chaves estrangeiras + colunas de busca frequente.
+- [ ] 2.13 Restrições de unicidade documentadas (`@@unique([name, country])`, etc.).
 
 **Verificação:**
 - `prisma migrate dev --schema=prisma/schema.prisma --name init` roda limpo em PostgreSQL.
@@ -110,10 +110,10 @@ de evidência**, não por presunção.
 
 ## FASE 3 — AUTH `[OBRIGATÓRIO, 2FA TOTP opcional]`
 
-- [x] 3.0 Preflight Auth (deps + env.ts com Zod + .env.example)
-- [x] 3.1 Setup JWT + Cookie + tipos Fastify
-- [x] 3.2 Rotas Register / Login / Logout
-- [x] 3.3 Refresh token flow (incluído em 3.2)
+- [ ] 3.0 Preflight Auth (deps + env.ts com Zod + .env.example)
+- [ ] 3.1 Setup JWT + Cookie + tipos Fastify
+- [ ] 3.2 Rotas Register / Login / Logout
+- [ ] 3.3 Refresh token flow (incluído em 3.2)
 - [ ] 3.4 Middleware de Autenticação (`authenticate` preHandler)
 - [ ] 3.5 Middleware RBAC (`requirePermission`, `requireRole`)
 - [ ] 3.6 Reset de senha (token único, expira 15min, enviado por email mock)
@@ -140,10 +140,10 @@ REST versionado `/api/v1`. Cada módulo em `apps/api/src/modules/<nome>/` com `r
 - [ ] 4.4 CRUD `rankings` (rankings históricos — versionados, imutáveis após publicação).
 - [ ] 4.5 CRUD `matches` (partidas) + `seasons` (temporadas).
 - [ ] 4.6 Módulo `billing`:
-  - [ ] 4.6.1 Modelos Free/Pro/Elite definidos em `plans`.
-  - [ ] 4.6.2 Integração com provedor de pagamento (avaliar Stripe vs Pix direto vs PagSeguro — decisão em `DECISOES.md`).
-  - [ ] 4.6.3 Webhook de pagamento assinado (HMAC) e idempotente.
-  - [ ] 4.6.4 Upgrade/downgrade de plano com prorratação.
+- [ ] 4.6.1 Modelos Free/Pro/Elite definidos em `plans`.
+- [ ] 4.6.2 Integração com provedor de pagamento (avaliar Stripe vs Pix direto vs PagSeguro — decisão em `DECISOES.md`).
+- [ ] 4.6.3 Webhook de pagamento assinado (HMAC) e idempotente.
+- [ ] 4.6.4 Upgrade/downgrade de plano com prorratação.
 - [ ] 4.7 Módulo `admin` (RBAC admin apenas): CRUD de usuários, atribuição de papéis, moderação.
 - [ ] 4.8 Busca textual: índice PostgreSQL `tsvector` ou `pg_trgm` (decidir em `DECISOES.md`).
 - [ ] 4.9 Paginação cursor-based em endpoints de lista (mais estável que offset em alta escala).
@@ -184,22 +184,22 @@ Stack: Next.js 16 + TypeScript + Tailwind + shadcn/ui (todos open-source e gratu
 ## FASE 6 — AVANÇADO `[upload/fila/cache/IA-RAG OBRIGATÓRIOS]`
 
 - [ ] 6.1 **Upload seguro** `[OBRIGATÓRIO]`:
-  - [ ] 6.1.1 Validação de tipo MIME real (magic bytes, não só extensão).
-  - [ ] 6.1.2 Tamanho máximo configurável por tipo de upload.
-  - [ ] 6.1.3 Antivírus: ClamAV rodando em container separado (gratuito).
-  - [ ] 6.1.4 Armazenamento em S3-compatível (MinIO local em dev, Cloudflare R2 em prod — gratuito até 10GB).
-  - [ ] 6.1.5 Nomes de arquivo aleatórios (UUID) — nunca nome do usuário.
+- [ ] 6.1.1 Validação de tipo MIME real (magic bytes, não só extensão).
+- [ ] 6.1.2 Tamanho máximo configurável por tipo de upload.
+- [ ] 6.1.3 Antivírus: ClamAV rodando em container separado (gratuito).
+- [ ] 6.1.4 Armazenamento em S3-compatível (MinIO local em dev, Cloudflare R2 em prod — gratuito até 10GB).
+- [ ] 6.1.5 Nomes de arquivo aleatórios (UUID) — nunca nome do usuário.
 - [ ] 6.2 **Fila assíncrona** `[OBRIGATÓRIO]`: BullMQ + Redis para ETL, envio de emails, processamento de imagem, reprocessamento de rankings.
 - [ ] 6.3 **Cache Redis** `[OBRIGATÓRIO]`: read-through em consultas frequentes (lista de clubes, top rankings). Invalidação por evento (write-through em updates).
 - [ ] 6.4 **Pipeline ETL** `[OBRIGATÓRIO]`:
-  - [ ] 6.4.1 Conectores para fontes públicas (RSSSF, FBref, Wikipedia via API).
-  - [ ] 6.4.2 Job agendado (cron) para atualização periódica.
-  - [ ] 6.4.3 Rastreabilidade: cada atualização registra fonte + timestamp em `data_sources`.
+- [ ] 6.4.1 Conectores para fontes públicas (RSSSF, FBref, Wikipedia via API).
+- [ ] 6.4.2 Job agendado (cron) para atualização periódica.
+- [ ] 6.4.3 Rastreabilidade: cada atualização registra fonte + timestamp em `data_sources`.
 - [ ] 6.5 **IA / RAG** `[OBRIGATÓRIO]`:
-  - [ ] 6.5.1 Embeddings de entidades (clubs, players, competições) armazenados em pgvector (extensão PostgreSQL gratuita).
-  - [ ] 6.5.2 Pipeline RAG: pergunta → busca vetorial → contexto → LLM → resposta + citações.
-  - [ ] 6.5.3 LLM: modelo open-source via Ollama local ou provedor gratuito (decidir em `DECISOES.md`).
-  - [ ] 6.5.4 Cada resposta registra fontes citadas para auditoria.
+- [ ] 6.5.1 Embeddings de entidades (clubs, players, competições) armazenados em pgvector (extensão PostgreSQL gratuita).
+- [ ] 6.5.2 Pipeline RAG: pergunta → busca vetorial → contexto → LLM → resposta + citações.
+- [ ] 6.5.3 LLM: modelo open-source via Ollama local ou provedor gratuito (decidir em `DECISOES.md`).
+- [ ] 6.5.4 Cada resposta registra fontes citadas para auditoria.
 - [ ] 6.6 **Knowledge Graph** `[OBRIGATÓRIO]`: relações entre entidades (jogador→clube→competição→título). Materializado em tabelas + exposto em endpoint `/api/v1/graph`.
 - [ ] 6.7 **Feature flags** `[OBRIGATÓRIO]`: sistema simples em tabela `feature_flags` (Redis-backed).
 - [ ] 6.8 **Exportação de dados**: com verificação de autorização e limite de volume (rate limit + paginação).
@@ -254,20 +254,20 @@ Stack: Next.js 16 + TypeScript + Tailwind + shadcn/ui (todos open-source e gratu
 ## FASE 9 — CI/CD E DEPLOY `[OBRIGATÓRIO]`
 
 - [ ] 9.1 Pipeline GitHub Actions:
-  - [ ] 9.1.1 Lint + typecheck em todo PR.
-  - [ ] 9.1.2 Testes unitários + integração.
-  - [ ] 9.1.3 SAST (CodeQL) + dependency scan.
-  - [ ] 9.1.4 Build Docker multi-stage com `prune` de dev deps.
-  - [ ] 9.1.5 Scan de imagem com Trivy (gratuito).
-  - [ ] 9.1.6 Deploy automático em staging após merge em `main`.
+- [ ] 9.1.1 Lint + typecheck em todo PR.
+- [ ] 9.1.2 Testes unitários + integração.
+- [ ] 9.1.3 SAST (CodeQL) + dependency scan.
+- [ ] 9.1.4 Build Docker multi-stage com `prune` de dev deps.
+- [ ] 9.1.5 Scan de imagem com Trivy (gratuito).
+- [ ] 9.1.6 Deploy automático em staging após merge em `main`.
 - [ ] 9.2 Secrets no CI: variáveis protegidas do GitHub (never in code).
 - [ ] 9.3 Deploy em produção: blue-green ou rolling update (zero downtime).
 - [ ] 9.4 Plataforma de deploy: Fly.io ou Railway (free tier compatível com PostgreSQL + Redis). Decisão em `DECISOES.md`.
 - [ ] 9.5 Observabilidade:
-  - [ ] 9.5.1 Logs centralizados: Loki (gratuito) ou logs nativos do Fly.io.
-  - [ ] 9.5.2 Métricas: Prometheus + Grafana (gratuito) ou Better Stack free tier.
-  - [ ] 9.5.3 Alertas: erros 5xx > 1% em 5 min, falhas de auth > 50 em 1 min.
-  - [ ] 9.5.4 Uptime check externo (UptimeRobot free).
+- [ ] 9.5.1 Logs centralizados: Loki (gratuito) ou logs nativos do Fly.io.
+- [ ] 9.5.2 Métricas: Prometheus + Grafana (gratuito) ou Better Stack free tier.
+- [ ] 9.5.3 Alertas: erros 5xx > 1% em 5 min, falhas de auth > 50 em 1 min.
+- [ ] 9.5.4 Uptime check externo (UptimeRobot free).
 - [ ] 9.6 Healthcheck HTTP no deploy (`/api/v1/health`).
 - [ ] 9.7 Backup automático do PostgreSQL (diário, retenção 30 dias).
 - [ ] 9.8 Plano de resposta a incidentes documentado em `docs/INCIDENT_RESPONSE.md`.
