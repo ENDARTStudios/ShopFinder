@@ -31,9 +31,11 @@ import { ModeToggle } from "@/components/site/mode-toggle";
 import { LanguageSelector } from "@/components/site/language-selector";
 import { HeaderCompareLink } from "@/components/site/header-compare-link";
 import { CompareButton } from "@/components/site/compare-button";
+import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
 import { FilterBar } from "@/components/site/filter-bar";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 // ── Types matching the API response ────────────────────────
@@ -160,6 +162,28 @@ function useFetch<T>(url: string): { data: T | null; loading: boolean; error: st
 
 // ── Header ─────────────────────────────────────────────────
 
+function CartButton() {
+  const { itemCount, openCart } = useCart();
+  const t = useTranslations("cart");
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="hidden sm:inline-flex relative"
+      onClick={openCart}
+      aria-label={t("title")}
+    >
+      <ShoppingCart className="mr-1.5 h-4 w-4" />
+      {t("title")}
+      {itemCount > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white">
+          {itemCount}
+        </span>
+      )}
+    </Button>
+  );
+}
+
 function SiteHeader() {
   const t = useTranslations("nav");
   const tHero = useTranslations("hero");
@@ -216,10 +240,12 @@ function SiteHeader() {
         <div className="flex items-center gap-2">
           <LanguageSelector />
           <HeaderCompareLink />
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <ShoppingCart className="mr-1.5 h-4 w-4" />
-            {t("login")}
-          </Button>
+          <CartButton />
+          <Link href="/login" className="hidden sm:inline-flex">
+            <Button variant="ghost" size="sm">
+              {t("login")}
+            </Button>
+          </Link>
           <ModeToggle />
         </div>
       </div>

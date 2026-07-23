@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
 import { CompareProvider } from "@/contexts/compare-context";
+import { CartProvider } from "@/context/cart-context";
+import { CartDrawer } from "@/components/site/cart-drawer";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -108,11 +110,14 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <CompareProvider>
-              <div className="flex min-h-screen flex-col">
-                {children}
-                <SiteFooter />
-              </div>
-              <Toaster />
+              <CartProvider>
+                <div className="flex min-h-screen flex-col">
+                  {children}
+                  <SiteFooter />
+                </div>
+                <CartDrawer />
+                <Toaster />
+              </CartProvider>
             </CompareProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

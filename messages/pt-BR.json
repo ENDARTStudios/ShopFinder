@@ -63,7 +63,9 @@
     "offersFrom": "Ofertas de {count} fornecedores:",
     "noStock": "sem estoque",
     "units": "{count} un.",
-    "compare": "Comparar"
+    "compare": "Comparar",
+    "addToCart": "Adicionar ao carrinho",
+    "buy": "Comprar"
   },
   "filter": {
     "title": "Filtros",
@@ -173,5 +175,17 @@
     "headerAdd": "Adicionar à comparação",
     "headerRemove": "Remover da comparação",
     "headerFull": "Comparador cheio"
+  },
+  "cart": {
+    "title": "Carrinho",
+    "close": "Fechar",
+    "empty": "Seu carrinho está vazio",
+    "viewProducts": "Ver produtos",
+    "removeItem": "Remover item",
+    "decreaseQty": "Diminuir quantidade",
+    "increaseQty": "Aumentar quantidade",
+    "subtotal": "Subtotal",
+    "checkout": "Finalizar compra",
+    "continueShopping": "Continuar comprando"
   }
 }

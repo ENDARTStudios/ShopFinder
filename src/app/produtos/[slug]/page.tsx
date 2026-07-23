@@ -34,6 +34,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { CompatibleProducts } from "./compatible-products";
 import { CompareButton } from "@/components/site/compare-button";
+import { AddToCartButton } from "@/components/site/add-to-cart-button";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -213,6 +214,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
+              <AddToCartButton
+                sku={product.sku}
+                title={product.title}
+                price={minPrice}
+                currency={product.basePriceCurrencyCode || "USD"}
+                imageLabel={imageLabel}
+                size="default"
+                className="bg-emerald-500 hover:bg-emerald-600"
+              />
               <CompareButton slug={product.slug} size="default" navigateOnAdd />
             </div>
             {traceId && (
