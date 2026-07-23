@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "pre-commit": [".claude/hooks/danger-guard.py", ".claude/hooks/conventional-commit-guard.py"]
+  }
+}
