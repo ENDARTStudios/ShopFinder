@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: danger-guard
+        name: Danger Guard
+        entry: python3 .claude/hooks/danger-guard.py
+        language: script
+      - id: conventional-commit
+        name: Conventional Commit
+        entry: python3 .claude/hooks/conventional-commit-guard.py
+        language: script
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
