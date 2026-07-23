@@ -29,8 +29,8 @@ export function CartDrawer() {
 
   return (
     <Sheet open={isCartOpen} onOpenChange={(open) => !open && closeCart()}>
-      <SheetContent className="flex w-full flex-col sm:max-w-md">
-        <SheetHeader className="border-b border-border/60 pb-4">
+      <SheetContent className="flex w-full flex-col sm:max-w-md p-0 overflow-x-hidden">
+        <SheetHeader className="border-b border-border/60 pb-4 px-4 pt-4">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2 text-lg">
               <ShoppingCart className="h-5 w-5" />
@@ -60,7 +60,7 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto py-4">
+            <div className="flex-1 overflow-y-auto px-4 py-4">
               <ul className="space-y-4">
                 {items.map((item) => (
                   <li
@@ -125,7 +125,7 @@ export function CartDrawer() {
               </ul>
             </div>
 
-            <div className="border-t border-border/60 pt-4">
+            <div className="border-t border-border/60 px-4 pb-4 pt-4">
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm font-medium">{t("subtotal")}</span>
                 <span className="text-lg font-bold tabular-nums">

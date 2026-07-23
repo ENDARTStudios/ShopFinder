@@ -61,19 +61,19 @@ export default function CheckoutPage() {
               <CardContent>
                 <ul className="divide-y divide-border/60">
                   {items.map((item) => (
-                    <li key={item.sku} className="flex items-center justify-between py-3">
-                      <div className="flex items-center gap-3">
+                    <li key={item.sku} className="flex items-center gap-3 py-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted text-xs font-bold text-muted-foreground">
                           {item.imageLabel ?? item.title.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm font-medium">{item.title}</p>
+                          <p className="text-sm font-medium break-words">{item.title}</p>
                           <p className="text-xs text-muted-foreground">
                             {formatPrice(item.price, item.currency)} × {item.qty}
                           </p>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold tabular-nums">
+                      <span className="text-sm font-semibold tabular-nums shrink-0 whitespace-nowrap">
                         {formatPrice(item.price * item.qty, item.currency)}
                       </span>
                     </li>
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <Button className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600" size="lg" disabled>
+                <Button className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed" size="lg" disabled>
                   Pagar — {formatPrice(subtotal, items[0]?.currency ?? "USD")}
                 </Button>
 
