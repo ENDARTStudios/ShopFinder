@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ShoppingCart, ArrowLeft, CreditCard, Lock } from "lucide-react";
+import { ShoppingCart, ArrowLeft, CreditCard, Lock, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/context/cart-context";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,38 @@ function formatPrice(price: number, currency: string): string {
 export default function CheckoutPage() {
   const t = useTranslations("cart");
   const { items, itemCount, subtotal } = useCart();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  async function handlePayment() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ sku: i.sku, qty: i.qty })),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error ?? "Erro ao iniciar pagamento");
+      }
+
+      if (!data.url) {
+        throw new Error("URL de pagamento não recebida");
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+      setLoading(false);
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -99,7 +131,7 @@ export default function CheckoutPage() {
                     <span className="font-medium">Pagamento seguro (Stripe/Pix)</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Ativado na próxima etapa (T020). Por enquanto, você pode simular a compra.
+                    Pagamento processado via Stripe com segurança.
                   </p>
                 </div>
 
@@ -122,9 +154,25 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <Button className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed" size="lg" disabled>
-                  Pagar — {formatPrice(subtotal, items[0]?.currency ?? "USD")}
+                <Button
+                  className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  size="lg"
+                  onClick={handlePayment}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    `Pagar — ${formatPrice(subtotal, items[0]?.currency ?? "USD")}`
+                  )}
                 </Button>
+
+                {error && (
+                  <p className="mt-3 text-center text-sm text-red-500">{error}</p>
+                )}
 
                 <p className="mt-3 text-center text-xs text-muted-foreground">
                   Pagamento seguro via Stripe · Seus dados não são compartilhados
