@@ -27,3 +27,5 @@ coverage/
 # Claude
 .claude/exchange_log.jsonl
 .worktrees/
+.agents/
+skills-lock.json
