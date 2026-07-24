@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-    const skus: string[] = [];
+    const itemsMeta: Array<{ sku: string; qty: number }> = [];
 
     for (const it of raw) {
       const sku = typeof it.sku === "string" ? it.sku : "";
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       if (!Number.isFinite(unit) || unit <= 0) {
         return NextResponse.json({ error: `Preço inválido: ${sku}` }, { status: 400 });
       }
-      skus.push(sku);
+      itemsMeta.push({ sku, qty });
       line_items.push({
         quantity: qty,
         price_data: {
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       line_items,
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/checkout/cancel`,
-      metadata: { skus: skus.join(",") }
+      metadata: { items: JSON.stringify(itemsMeta) }
     });
 
     return NextResponse.json({ url: session.url });
