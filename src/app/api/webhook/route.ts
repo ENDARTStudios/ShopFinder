@@ -21,18 +21,13 @@ export async function POST(req: Request) {
     const s = event.data.object as Stripe.Checkout.Session;
     try {
       const existing = await prisma.order.findUnique({ where: { number: s.id } });
-      if (existing) {
-        console.info("[webhook] Order já existe", { number: s.id });
-        return NextResponse.json({ received: true });
-      }
+      if (existing) return NextResponse.json({ received: true });
 
       const email = s.customer_details?.email ?? "unknown@shopfinder.local";
       let customer = await prisma.customer.findFirst({ where: { email } });
       if (!customer) {
-        // data as any: campos obrigatórios do Customer desconhecidos aqui;
-        // se faltar algo, o Prisma lança em runtime e o catch registra o campo.
-        customer = await prisma.customer.create({
-          data: { email, name: s.customer_details?.name ?? email } as any
+        customer = await (prisma.customer as any).create({
+          data: { email, name: s.customer_details?.name ?? email }
         });
       }
 
@@ -40,8 +35,7 @@ export async function POST(req: Request) {
       if (!store) throw new Error("Nenhuma Store encontrada");
 
       const itemsMeta: Array<{ sku: string; qty: number }> = s.metadata?.items
-        ? JSON.parse(s.metadata.items)
-        : [];
+        ? JSON.parse(s.metadata.items) : [];
 
       const orderItems: any[] = [];
       for (const it of itemsMeta) {
@@ -49,7 +43,7 @@ export async function POST(req: Request) {
           where: { sku: it.sku, deletedAt: null },
           include: { offers: { where: { deletedAt: null }, orderBy: { priceMinorUnits: "asc" } } }
         });
-        if (!product) { console.warn("[webhook] Product não encontrado", { sku: it.sku }); continue; }
+        if (!product) continue;
         const cheapest = product.offers[0];
         const unit = cheapest ? Number(cheapest.priceMinorUnits) : Number(product.basePriceMinorUnits);
         const cur = (cheapest?.currency ?? product.basePriceCurrencyCode ?? "USD").toUpperCase();
@@ -59,13 +53,12 @@ export async function POST(req: Request) {
           lineTotalMinorUnits: BigInt(unit * it.qty)
         });
       }
-      if (orderItems.length === 0) throw new Error("Nenhum item válido (metadata.items vazio?)");
+      if (orderItems.length === 0) throw new Error("Nenhum item válido");
 
       const subtotal = orderItems.reduce((a, i) => a + Number(i.lineTotalMinorUnits), 0);
       const currency = (s.currency ?? "usd").toUpperCase();
-      const addr = (s.customer_details?.address ?? {}) as any;
+      const addr: any = s.customer_details?.address ?? {};
 
-      // Transação INTERATIVA (aceita create aninhado de items)
       await prisma.$transaction(async (tx) => {
         await tx.order.create({
           data: {
@@ -80,7 +73,6 @@ export async function POST(req: Request) {
           }
         });
       });
-
       console.info("[webhook] Order criado", { number: s.id, items: orderItems.length });
     } catch (e) {
       console.error("[webhook] Erro ao criar Order", e);
