@@ -17,6 +17,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "assinatura inválida" }, { status: 400 });
   }
 
+  console.info("[webhook] recebido", { type: event.type });
+
   if (event.type === "checkout.session.completed") {
     const s = event.data.object as Stripe.Checkout.Session;
     try {
@@ -30,13 +32,15 @@ export async function POST(req: Request) {
       // 2) Store (precisa existir — o seed criou uma)
       const store = await prisma.store.findFirst();
       if (!store) throw new Error("Nenhuma Store encontrada");
+      console.info("[webhook] store", { storeId: store.id });
 
       // 3) Customer: derive email, upsert com campos obrigatórios reais
       const email =
         s.customer_details?.email ?? `guest+${s.id.slice(0, 12)}@shopfinder.local`;
       const name = s.customer_details?.name ?? email;
 
-      let customer = await prisma.customer.findFirst({ where: { email } });
+      const existingCustomer = await prisma.customer.findFirst({ where: { email } });
+      let customer = existingCustomer;
       if (!customer) {
         customer = await prisma.customer.create({
           data: {
@@ -47,6 +51,7 @@ export async function POST(req: Request) {
           },
         });
       }
+      console.info("[webhook] customer", { email, criado: !existingCustomer });
 
       // 4) Parse metadata.items
       const itemsMeta: Array<{ sku: string; qty: number }> = s.metadata?.items
@@ -98,6 +103,8 @@ export async function POST(req: Request) {
           lineTotalMinorUnits: BigInt(unit * it.qty),
         });
       }
+
+      console.info("[webhook] orderItems montados", { count: orderItems.length, totalMeta: itemsMeta.length });
 
       if (orderItems.length === 0) {
         console.warn("[webhook] Nenhum item válido no metadata", { number: s.id });
