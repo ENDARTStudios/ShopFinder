@@ -31,6 +31,7 @@ import { ModeToggle } from "@/components/site/mode-toggle";
 import { LanguageSelector } from "@/components/site/language-selector";
 import { HeaderCompareLink } from "@/components/site/header-compare-link";
 import { CompareButton } from "@/components/site/compare-button";
+import { Price } from "@/components/site/price";
 import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
@@ -849,9 +850,11 @@ function ProductsSection({
 
                   <div className="flex items-end justify-between">
                     <div>
-                      <div className="text-xl font-bold">${product.price.toFixed(2)}</div>
-                      <div className="text-[10px] text-muted-foreground">
-                        ${product.priceRange.min.toFixed(2)} – ${product.priceRange.max.toFixed(2)}
+                      <Price amount={product.price} currency={product.currency} />
+                      <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Price amount={product.priceRange.min} currency={product.currency} variant="small" />
+                        <span>–</span>
+                        <Price amount={product.priceRange.max} currency={product.currency} variant="small" />
                       </div>
                     </div>
                     <CompareButton
@@ -878,7 +881,7 @@ function ProductsSection({
                               {offer.supplier.code}
                             </span>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">${offer.price.toFixed(2)}</span>
+                              <Price amount={offer.price} currency={offer.currency} variant="small" />
                               <span
                                 className={
                                   offer.inStock ? "text-emerald-500" : "text-muted-foreground"

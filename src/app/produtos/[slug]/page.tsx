@@ -35,6 +35,7 @@ import type { Metadata } from "next";
 import { CompatibleProducts } from "./compatible-products";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
+import { Price } from "@/components/site/price";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -201,10 +202,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             )}
             <div className="flex items-end gap-4">
               <div>
-                <div className="text-3xl font-bold">${minPrice.toFixed(2)}</div>
+                <Price amount={minPrice} currency="USD" variant="large" />
                 {maxPrice > minPrice && (
-                  <div className="text-sm text-muted-foreground">
-                    até ${maxPrice.toFixed(2)} em {product.offers.length} ofertas
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
+                    <span>até</span>
+                    <Price amount={maxPrice} currency="USD" variant="small" />
+                    <span>em {product.offers.length} ofertas</span>
                   </div>
                 )}
               </div>
@@ -382,7 +385,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                           </div>
                           <div className="flex items-end justify-between">
                             <div>
-                              <div className="text-xl font-bold">${price.toFixed(2)}</div>
+                              <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
                                   ? `${offer.inventory.toLocaleString()} em estoque`
