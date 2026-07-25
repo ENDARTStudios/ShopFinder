@@ -39,7 +39,9 @@ export async function POST(req: Request) {
         s.customer_details?.email ?? `guest+${s.id.slice(0, 12)}@shopfinder.local`;
       const name = s.customer_details?.name ?? email;
 
-      const existingCustomer = await prisma.customer.findFirst({ where: { email } });
+      const existingCustomer = await prisma.customer.findFirst({
+        where: { storeId: store.id, email },
+      });
       let customer = existingCustomer;
       if (!customer) {
         customer = await prisma.customer.create({
@@ -92,15 +94,17 @@ export async function POST(req: Request) {
           product.basePriceCurrencyCode ??
           "USD"
         ).toUpperCase();
+        const safeUnit = Math.trunc(unit);
+        const safeQty = Math.trunc(it.qty);
 
         orderItems.push({
           productId: product.id,
           sku: it.sku,
           title: product.title,
-          quantity: it.qty,
-          unitPriceMinorUnits: BigInt(unit),
+          quantity: safeQty,
+          unitPriceMinorUnits: BigInt(safeUnit),
           unitPriceCurrencyCode: currency,
-          lineTotalMinorUnits: BigInt(unit * it.qty),
+          lineTotalMinorUnits: BigInt(safeUnit * safeQty),
         });
       }
 
@@ -116,8 +120,17 @@ export async function POST(req: Request) {
         (acc, i) => acc + Number(i.lineTotalMinorUnits),
         0,
       );
+      const safeSubtotal = Math.trunc(subtotal);
       const currency = (s.currency ?? "usd").toUpperCase();
-      const addr = (s.customer_details?.address ?? {}) as Record<string, unknown>;
+      const rawAddr = s.customer_details?.address ?? {};
+      const addr = {
+        line1: rawAddr.line1 ?? "",
+        line2: rawAddr.line2 ?? "",
+        city: rawAddr.city ?? "",
+        state: rawAddr.state ?? "",
+        postal_code: rawAddr.postal_code ?? "",
+        country: rawAddr.country ?? "",
+      };
 
       await prisma.$transaction(async (tx) => {
         await tx.order.create({
@@ -126,10 +139,10 @@ export async function POST(req: Request) {
             number: s.id,
             customerId: customer!.id,
             currency,
-            subtotalMinorUnits: BigInt(subtotal),
+            subtotalMinorUnits: BigInt(safeSubtotal),
             shippingTotalMinorUnits: BigInt(s.total_details?.amount_shipping ?? 0),
             taxTotalMinorUnits: BigInt(s.total_details?.amount_tax ?? 0),
-            grandTotalMinorUnits: BigInt(s.amount_total ?? subtotal),
+            grandTotalMinorUnits: BigInt(s.amount_total ?? safeSubtotal),
             shippingAddress: addr,
             billingAddress: addr,
             status: "paid",
