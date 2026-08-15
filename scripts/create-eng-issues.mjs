@@ -99,7 +99,9 @@ const headers = {
 
 let existing = [];
 try {
-  existing = await (await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`, { headers })).json();
+  const res = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`, { headers });
+  console.log(`[debug] GET issues: ${res.status}`);
+  existing = await res.json();
 } catch {}
 
 for (const issue of issues) {
