@@ -56,20 +56,27 @@ export function FadeIn({
  */
 export function FadeInStagger({
   children,
-  className
+  className,
+  role
 }: {
   children: React.ReactNode;
   className?: string;
+  role?: React.AriaRole;
 }) {
   const reduceMotion = useReducedMotion();
 
   if (reduceMotion) {
-    return <div className={className}>{children}</div>;
+    return (
+      <div className={className} role={role}>
+        {children}
+      </div>
+    );
   }
 
   return (
     <motion.div
       className={className}
+      role={role}
       initial="hidden"
       animate="visible"
       variants={{
@@ -84,14 +91,17 @@ export function FadeInStagger({
 
 export function FadeInItem({
   children,
-  className
+  className,
+  role
 }: {
   children: React.ReactNode;
   className?: string;
+  role?: React.AriaRole;
 }) {
   return (
     <motion.div
       className={className}
+      role={role}
       variants={{
         hidden: { opacity: 0, y: 12 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: EASE_ENTER } }

@@ -8,25 +8,12 @@
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
-import { getServerAuthSession } from "@workspace/auth";
-
-function hasAdminRole(roles: string[] | undefined): boolean {
-  if (!roles) return false;
-  return roles.includes("admin") || roles.includes("operator");
-}
+import { requirePermissions } from "@/lib/admin-auth";
 
 export async function GET() {
-  const session = await getServerAuthSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const user = session.user as { roles?: string[] };
-  if (!hasAdminRole(user.roles)) {
-    return NextResponse.json(
-      { error: "Forbidden — requires admin or operator role" },
-      { status: 403 }
-    );
-  }
+  // Authorization: status do pipeline exige supplier.read (docs/eng/RBAC.md)
+  const guard = await requirePermissions("supplier.read");
+  if (!guard.ok) return guard.response;
 
   // Connector status — eBay via env vars, DigiKey/Amazon as not_configured placeholders
   const ebayAppId = process.env.EBAY_APP_ID ?? process.env.EBAY_CLIENT_ID;

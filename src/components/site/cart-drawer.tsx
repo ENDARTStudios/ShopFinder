@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetClose
 } from "@/components/ui/sheet";
+import { FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
 
 export function CartDrawer() {
   const t = useTranslations("cart");
@@ -54,12 +55,10 @@ export function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              <ul className="space-y-4">
+              <FadeInStagger className="space-y-4" role="list">
                 {items.map((item) => (
-                  <li
-                    key={item.sku}
-                    className="flex items-start gap-3 rounded-lg border border-border/60 p-3"
-                  >
+                  <FadeInItem key={item.sku} className="block" role="listitem">
+                    <div className="flex items-start gap-3 rounded-lg border border-border/60 p-3">
                     {/* Image placeholder */}
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-bold text-muted-foreground">
                       {item.imageLabel ?? item.title.slice(0, 2).toUpperCase()}
@@ -112,9 +111,10 @@ export function CartDrawer() {
                         <Price amount={item.price * item.qty} currency={item.currency} variant="small" />
                       </div>
                     </div>
-                  </li>
+                    </div>
+                  </FadeInItem>
                 ))}
-              </ul>
+              </FadeInStagger>
             </div>
 
             <div className="border-t border-border/60 px-4 pb-4 pt-4">

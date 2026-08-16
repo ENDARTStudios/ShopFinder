@@ -9,7 +9,7 @@ import type { AuthContext, RequestContext } from "../types";
 
 // ── Roles & Permissions ─────────────────────────────────────
 
-export type Role = "customer" | "admin" | "supplier" | "support";
+export type Role = "customer" | "admin" | "operator" | "supplier" | "support";
 
 export type Permission =
   | "catalog.read"
@@ -36,6 +36,19 @@ const ROLE_PERMISSIONS: Record<Role, ReadonlyArray<Permission>> = {
   customer: ["catalog.read", "customer.read.self", "order.read.self"],
   support: ["catalog.read", "customer.read", "order.read", "order.cancel", "payment.read"],
   supplier: ["catalog.read", "supplier.read", "order.read"],
+  // Operador de loja/integrações: tudo de operação, sem gestão de usuários/configs (RBAC.md)
+  operator: [
+    "catalog.read",
+    "catalog.write",
+    "catalog.delete",
+    "order.read",
+    "order.write",
+    "order.cancel",
+    "payment.read",
+    "supplier.read",
+    "supplier.write",
+    "supplier.connect"
+  ],
   admin: [
     "catalog.read",
     "catalog.write",

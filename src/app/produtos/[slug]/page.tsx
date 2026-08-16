@@ -37,12 +37,9 @@ import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price } from "@/components/site/price";
 import { FadeIn } from "@/components/motion/fade-in";
+import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 
 // ── Helpers ────────────────────────────────────────────────
-
-function minorUnitsToUSD(minor: bigint): number {
-  return Number(minor) / 100;
-}
 
 interface EvidenceEntry {
   sourceType: string;
@@ -151,9 +148,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const plainAttrs = product.attributes.filter((a) => a.source === null);
 
   // Calculate price range from offers
-  const prices = product.offers.map((o) => minorUnitsToUSD(o.priceMinorUnits));
-  const minPrice = prices.length > 0 ? Math.min(...prices) : minorUnitsToUSD(product.basePriceMinorUnits);
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : minorUnitsToUSD(product.basePriceMinorUnits);
+  const prices = product.offers.map((o) => minorUnitsToNumber(o.priceMinorUnits));
+  const { min: minPrice, max: maxPrice } = computePriceRange(
+    prices,
+    minorUnitsToNumber(product.basePriceMinorUnits)
+  );
   const totalStock = product.offers.reduce((sum, o) => sum + o.inventory, 0);
   const inStock = totalStock > 0;
 
@@ -165,27 +164,40 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-background">
-      {/* JSON-LD Product — docs/eng/SEO-AEO-AIO-GEO.md */}
+      {/* JSON-LD — docs/eng/SEO-AEO-AIO-GEO.md */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.title,
-            description: product.description.slice(0, 500),
-            sku: product.sku,
-            ...(manufacturerName ? { brand: { "@type": "Brand", name: manufacturerName } } : {}),
-            offers: {
-              "@type": "Offer",
-              priceCurrency: product.basePriceCurrencyCode || "USD",
-              price: minPrice.toFixed(2),
-              availability: inStock
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
-              url: `${process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""}/produtos/${product.slug}`
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.title,
+              description: product.description.slice(0, 500),
+              sku: product.sku,
+              ...(manufacturerName ? { brand: { "@type": "Brand", name: manufacturerName } } : {}),
+              offers: {
+                "@type": "Offer",
+                priceCurrency: product.basePriceCurrencyCode || "USD",
+                price: minPrice.toFixed(2),
+                availability: inStock
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+                url: `${process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""}/produtos/${product.slug}`
+              }
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Catálogo", item: `${process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""}/` },
+                ...(product.category
+                  ? [{ "@type": "ListItem", position: 2, name: product.category.name }]
+                  : []),
+                { "@type": "ListItem", position: product.category ? 3 : 2, name: product.title }
+              ]
             }
-          })
+          ])
         }}
       />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -393,7 +405,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 {product.offers.length > 0 ? (
                   <div className="space-y-3">
                     {product.offers.map((offer) => {
-                      const price = minorUnitsToUSD(offer.priceMinorUnits);
+                      const price = minorUnitsToNumber(offer.priceMinorUnits);
                       const supplierName = offer.supplier.name;
                       const isLowest = price === minPrice;
                       return (
