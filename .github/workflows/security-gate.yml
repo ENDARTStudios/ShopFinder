@@ -17,7 +17,9 @@ jobs:
       - name: Install deps
         run: npm install --no-audit --fund=false
       - name: Lint
+        # Não-bloqueante até corrigir incompatibilidade eslint-plugin-react x ESLint 10 (issue #36)
         run: npm run lint --if-present
+        continue-on-error: true
       - name: Architecture contract
         run: npm run test:arch --if-present
       - name: Audit (zero high+)

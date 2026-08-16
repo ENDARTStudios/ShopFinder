@@ -31,10 +31,10 @@ export async function middleware(req: NextRequest, event: unknown) {
   }
 
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
-  const response = (await authMiddleware(req, event)) as NextResponse | undefined;
-  const finalResponse = response ?? NextResponse.next();
-  finalResponse.headers.set("x-request-id", requestId);
-  return finalResponse;
+  const auth = authMiddleware as unknown as (req: NextRequest, event: unknown) => Promise<NextResponse>;
+  const response = (await auth(req, event)) ?? NextResponse.next();
+  response.headers.set("x-request-id", requestId);
+  return response;
 }
 
 export const config = {

@@ -36,6 +36,7 @@ import { CompatibleProducts } from "./compatible-products";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price } from "@/components/site/price";
+import { FadeIn } from "@/components/motion/fade-in";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -164,6 +165,29 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-background">
+      {/* JSON-LD Product — docs/eng/SEO-AEO-AIO-GEO.md */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.title,
+            description: product.description.slice(0, 500),
+            sku: product.sku,
+            ...(manufacturerName ? { brand: { "@type": "Brand", name: manufacturerName } } : {}),
+            offers: {
+              "@type": "Offer",
+              priceCurrency: product.basePriceCurrencyCode || "USD",
+              price: minPrice.toFixed(2),
+              availability: inStock
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+              url: `${process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""}/produtos/${product.slug}`
+            }
+          })
+        }}
+      />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Back link */}
         <Link
@@ -175,6 +199,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </Link>
 
         {/* Header */}
+        <FadeIn>
         <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-start">
           {/* Product image */}
           <div
@@ -235,6 +260,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             )}
           </div>
         </div>
+        </FadeIn>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left column: Specs + Evidence */}
