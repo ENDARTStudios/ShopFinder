@@ -201,6 +201,12 @@ export default function AdminDashboard() {
               Pipeline
             </Button>
           </Link>
+          <Link href="/admin/security">
+            <Button variant="outline" size="sm">
+              <ShieldCheck className="mr-1.5 h-4 w-4" />
+              Segurança
+            </Button>
+          </Link>
           <NotificationsBell />
         </div>
 
