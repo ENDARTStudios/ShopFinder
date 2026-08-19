@@ -52,18 +52,23 @@ export function FadeIn({
 
 /**
  * Stagger de grade — micro cascade 30ms/item, total < 400ms
- * (regra 1/3 do sistema de motion).
+ * (regra 1/3 do sistema de motion). Em `itemCount` grande o passo é
+ * reduzido para manter o total da cascata sob 400ms.
  */
 export function FadeInStagger({
   children,
   className,
-  role
+  role,
+  itemCount
 }: {
   children: React.ReactNode;
   className?: string;
   role?: React.AriaRole;
+  /** Nº de itens da grade — usado para limitar o stagger total. */
+  itemCount?: number;
 }) {
   const reduceMotion = useReducedMotion();
+  const stagger = itemCount && itemCount > 1 ? Math.min(0.03, 0.4 / itemCount) : 0.03;
 
   if (reduceMotion) {
     return (
@@ -81,7 +86,7 @@ export function FadeInStagger({
       animate="visible"
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: 0.03 } }
+        visible: { transition: { staggerChildren: stagger } }
       }}
     >
       {children}

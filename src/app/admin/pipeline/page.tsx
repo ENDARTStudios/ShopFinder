@@ -19,7 +19,6 @@ import {
   Database,
   RefreshCw,
   AlertTriangle,
-  Loader2,
   ArrowLeft,
   Calendar,
   TrendingUp
@@ -29,6 +28,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PipelineStatusSkeleton } from "@/components/site/admin-skeletons";
 
 interface ConnectorStatus {
   code: string;
@@ -172,9 +172,7 @@ export default function PipelineStatusPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <PipelineStatusSkeleton />
         ) : error ? (
           <div className="rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm text-red-600 dark:text-red-400">
             <AlertTriangle className="mr-1.5 inline h-4 w-4" />
@@ -196,15 +194,19 @@ export default function PipelineStatusPage() {
                           <Database className="h-4 w-4 text-emerald-500" />
                           {c.name}
                         </CardTitle>
-                        <Badge className={modeBadgeClass(c.mode)}>
-                          {modeLabel(c.mode)}
-                        </Badge>
+                        <Badge className={modeBadgeClass(c.mode)}>{modeLabel(c.mode)}</Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2 text-xs">
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Credentials</span>
-                        <span className={c.credentialsConfigured ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}>
+                        <span
+                          className={
+                            c.credentialsConfigured
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-amber-600 dark:text-amber-400"
+                          }
+                        >
                           {c.credentialsConfigured ? "Configured" : "Missing (sandbox mode)"}
                         </span>
                       </div>
@@ -220,7 +222,10 @@ export default function PipelineStatusPage() {
                         <span className="text-muted-foreground">Required env vars:</span>
                         <div className="flex flex-wrap gap-1">
                           {c.envVars.map((v) => (
-                            <code key={v} className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono">
+                            <code
+                              key={v}
+                              className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono"
+                            >
                               {v}
                             </code>
                           ))}
@@ -245,8 +250,12 @@ export default function PipelineStatusPage() {
                         <Activity className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Total runs</span>
-                        <span className="block text-lg font-bold">{data.stats.totalExecutions}</span>
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Total runs
+                        </span>
+                        <span className="block text-lg font-bold">
+                          {data.stats.totalExecutions}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -258,8 +267,12 @@ export default function PipelineStatusPage() {
                         <TrendingUp className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Success rate</span>
-                        <span className="block text-lg font-bold">{(data.stats.successRate * 100).toFixed(0)}%</span>
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Success rate
+                        </span>
+                        <span className="block text-lg font-bold">
+                          {(data.stats.successRate * 100).toFixed(0)}%
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -271,8 +284,12 @@ export default function PipelineStatusPage() {
                         <Zap className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Avg duration</span>
-                        <span className="block text-lg font-bold">{formatDuration(data.stats.avgDurationMs)}</span>
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Avg duration
+                        </span>
+                        <span className="block text-lg font-bold">
+                          {formatDuration(data.stats.avgDurationMs)}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -284,8 +301,12 @@ export default function PipelineStatusPage() {
                         <Clock className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Last run</span>
-                        <span className="block text-lg font-bold">{formatRelativeTime(data.stats.lastRunAt)}</span>
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Last run
+                        </span>
+                        <span className="block text-lg font-bold">
+                          {formatRelativeTime(data.stats.lastRunAt)}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -300,7 +321,11 @@ export default function PipelineStatusPage() {
               </h2>
               {data.executions.length === 0 ? (
                 <div className="rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
-                  No pipeline runs yet. Run <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">bun run scripts/run-pipeline.ts</code> to populate this list.
+                  No pipeline runs yet. Run{" "}
+                  <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                    bun run scripts/run-pipeline.ts
+                  </code>{" "}
+                  to populate this list.
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -315,7 +340,10 @@ export default function PipelineStatusPage() {
                           )}
                           <div>
                             <div className="flex items-center gap-2">
-                              <Badge variant="outline" className={`text-[10px] ${row.status === "succeeded" ? "text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "text-red-600 dark:text-red-400 border-red-500/30"}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] ${row.status === "succeeded" ? "text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "text-red-600 dark:text-red-400 border-red-500/30"}`}
+                              >
                                 {row.status}
                               </Badge>
                               {row.ebayMode && (
@@ -326,7 +354,8 @@ export default function PipelineStatusPage() {
                             </div>
                             <div className="mt-1 text-xs text-muted-foreground">
                               <Calendar className="mr-1 inline h-3 w-3" />
-                              {new Date(row.startedAt).toLocaleString()} · {formatRelativeTime(row.startedAt)}
+                              {new Date(row.startedAt).toLocaleString()} ·{" "}
+                              {formatRelativeTime(row.startedAt)}
                             </div>
                           </div>
                         </div>
@@ -334,7 +363,9 @@ export default function PipelineStatusPage() {
                           <div className="font-medium">{formatDuration(row.durationMs)}</div>
                           <div className="text-muted-foreground">
                             {row.itemsSucceeded}/{row.itemsProcessed} ok
-                            {row.itemsFailed > 0 && <span className="ml-1 text-red-500">· {row.itemsFailed} fail</span>}
+                            {row.itemsFailed > 0 && (
+                              <span className="ml-1 text-red-500">· {row.itemsFailed} fail</span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -361,28 +392,52 @@ export default function PipelineStatusPage() {
                     <table className="w-full border-collapse text-sm">
                       <thead>
                         <tr className="border-b border-border/60 bg-muted/20">
-                          <th className="p-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Stage</th>
-                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total ms</th>
-                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Avg ms</th>
-                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Runs</th>
-                          <th className="p-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Share</th>
+                          <th className="p-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Stage
+                          </th>
+                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Total ms
+                          </th>
+                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Avg ms
+                          </th>
+                          <th className="p-3 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Runs
+                          </th>
+                          <th className="p-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Share
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {(() => {
                           const totalMs = data.stageMetrics.reduce((s, m) => s + m.totalMs, 0) || 1;
                           return data.stageMetrics.map((m, i) => (
-                            <tr key={m.name} className={i % 2 === 0 ? "border-b border-border/40 bg-muted/5" : "border-b border-border/40"}>
+                            <tr
+                              key={m.name}
+                              className={
+                                i % 2 === 0
+                                  ? "border-b border-border/40 bg-muted/5"
+                                  : "border-b border-border/40"
+                              }
+                            >
                               <td className="p-3 font-mono text-xs">{m.name}</td>
-                              <td className="p-3 text-right text-xs font-medium">{m.totalMs.toLocaleString()}</td>
+                              <td className="p-3 text-right text-xs font-medium">
+                                {m.totalMs.toLocaleString()}
+                              </td>
                               <td className="p-3 text-right text-xs">{m.avgMs.toLocaleString()}</td>
                               <td className="p-3 text-right text-xs">{m.count}</td>
                               <td className="p-3">
                                 <div className="flex items-center gap-2">
                                   <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
-                                    <div className="h-full rounded-full bg-emerald-500" style={{ width: `${(m.totalMs / totalMs) * 100}%` }} />
+                                    <div
+                                      className="h-full rounded-full bg-emerald-500"
+                                      style={{ width: `${(m.totalMs / totalMs) * 100}%` }}
+                                    />
                                   </div>
-                                  <span className="text-[10px] text-muted-foreground">{((m.totalMs / totalMs) * 100).toFixed(1)}%</span>
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {((m.totalMs / totalMs) * 100).toFixed(1)}%
+                                  </span>
                                 </div>
                               </td>
                             </tr>

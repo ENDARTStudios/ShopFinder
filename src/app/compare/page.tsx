@@ -30,9 +30,9 @@ import {
   FileText,
   Store,
   CheckCircle2,
-  Loader2,
   TrendingUp
 } from "lucide-react";
+import { CompareTableSkeleton } from "@/components/site/compare-table-skeleton";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -166,9 +166,7 @@ function buildUnifiedRows(products: CompareProduct[]): UnifiedRow[] {
 
   return attrOrder.map(({ key, displayName }) => {
     const cells = products.map((p) => {
-      const enriched = (p.enrichedSpecs ?? []).find(
-        (es) => es.name.toLowerCase() === key
-      );
+      const enriched = (p.enrichedSpecs ?? []).find((es) => es.name.toLowerCase() === key);
       if (enriched) {
         return {
           productSlug: p.slug,
@@ -196,13 +194,7 @@ function buildUnifiedRows(products: CompareProduct[]): UnifiedRow[] {
 export default function ComparePageWrapper() {
   // `useSearchParams` requires a Suspense boundary during SSR/build.
   return (
-    <React.Suspense
-      fallback={
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      }
-    >
+    <React.Suspense fallback={<CompareTableSkeleton columns={2} />}>
       <ComparePage />
     </React.Suspense>
   );
@@ -238,20 +230,12 @@ function ComparePage() {
       return;
     }
     setLoading(true);
-    fetch(
-      `/api/catalog?path=products&slugs=${encodeURIComponent(items.join(","))}&limit=20`
-    )
+    fetch(`/api/catalog?path=products&slugs=${encodeURIComponent(items.join(","))}&limit=20`)
       .then((r) => r.json())
       .then((d: { products: CompareProduct[] }) => {
         // Preserve the user's selection order (not DB return order).
-        const bySlug = new Map<string, CompareProduct>(
-          (d.products ?? []).map((p) => [p.slug, p])
-        );
-        setProducts(
-          items
-            .map((slug) => bySlug.get(slug))
-            .filter(Boolean) as CompareProduct[]
-        );
+        const bySlug = new Map<string, CompareProduct>((d.products ?? []).map((p) => [p.slug, p]));
+        setProducts(items.map((slug) => bySlug.get(slug)).filter(Boolean) as CompareProduct[]);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -259,17 +243,13 @@ function ComparePage() {
 
   // Keep the URL in sync with the context so the link stays shareable.
   React.useEffect(() => {
-    const target =
-      items.length > 0 ? `/compare?slugs=${items.join(",")}` : "/compare";
+    const target = items.length > 0 ? `/compare?slugs=${items.join(",")}` : "/compare";
     if (urlSlugs !== (items.length > 0 ? items.join(",") : null)) {
       window.history.replaceState(null, "", target);
     }
   }, [items, urlSlugs]);
 
-  const unifiedRows = React.useMemo(
-    () => buildUnifiedRows(products),
-    [products]
-  );
+  const unifiedRows = React.useMemo(() => buildUnifiedRows(products), [products]);
 
   // ── Empty state ─────────────────────────────────────────
 
@@ -288,13 +268,9 @@ function ComparePage() {
             <Search className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
           </div>
           <p className="text-lg font-semibold">{t("empty")}</p>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            {t("emptyHint")}
-          </p>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">{t("emptyHint")}</p>
           <Link href="/" className="mt-5">
-            <Button className="bg-emerald-500 hover:bg-emerald-600">
-              {t("backToCatalog")}
-            </Button>
+            <Button className="bg-emerald-500 hover:bg-emerald-600">{t("backToCatalog")}</Button>
           </Link>
         </div>
       </div>
@@ -327,12 +303,7 @@ function ComparePage() {
               {t("maxReached")}
             </Badge>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAll}
-            disabled={items.length === 0}
-          >
+          <Button variant="ghost" size="sm" onClick={clearAll} disabled={items.length === 0}>
             <Trash2 className="mr-1.5 h-3.5 w-3.5" />
             {t("clearAll")}
           </Button>
@@ -340,9 +311,7 @@ function ComparePage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+        <CompareTableSkeleton columns={Math.max(items.length, 1)} />
       ) : (
         <>
           {/* Spec matrix */}
@@ -375,9 +344,7 @@ function ComparePage() {
                               {p.title}
                             </a>
                             <div className="flex items-center justify-between gap-1">
-                              <span className="text-[10px] text-muted-foreground">
-                                {p.brand}
-                              </span>
+                              <span className="text-[10px] text-muted-foreground">{p.brand}</span>
                               <button
                                 type="button"
                                 onClick={() => removeItem(p.slug)}
@@ -473,22 +440,19 @@ function ComparePage() {
                                   className={`text-[9px] ${getSourceColor(cell.source)}`}
                                 >
                                   {getSourceIcon(cell.source)}
-                                  <span className="ml-1">
-                                    {cell.sourceName ?? cell.source}
-                                  </span>
+                                  <span className="ml-1">{cell.sourceName ?? cell.source}</span>
                                 </Badge>
                               )}
-                              {cell.confidence !== null &&
-                                cell.confidence !== undefined && (
-                                  <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-                                    <div
-                                      className={`h-full rounded-full ${getConfidenceColor(cell.confidence)}`}
-                                      style={{
-                                        width: `${cell.confidence * 100}%`
-                                      }}
-                                    />
-                                  </div>
-                                )}
+                              {cell.confidence !== null && cell.confidence !== undefined && (
+                                <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+                                  <div
+                                    className={`h-full rounded-full ${getConfidenceColor(cell.confidence)}`}
+                                    style={{
+                                      width: `${cell.confidence * 100}%`
+                                    }}
+                                  />
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="text-xs text-muted-foreground/50">—</span>
@@ -519,10 +483,7 @@ function ComparePage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
-                <TrendingUp
-                  className="h-4 w-4 text-emerald-500"
-                  aria-hidden="true"
-                />
+                <TrendingUp className="h-4 w-4 text-emerald-500" aria-hidden="true" />
                 {t("offersTitle")}
               </CardTitle>
             </CardHeader>
@@ -534,10 +495,7 @@ function ComparePage() {
                       {t("offersTitle")}
                     </th>
                     {products.map((p) => (
-                      <th
-                        key={p.slug}
-                        className="min-w-56 p-3 text-left text-xs font-semibold"
-                      >
+                      <th key={p.slug} className="min-w-56 p-3 text-left text-xs font-semibold">
                         {p.brand}
                       </th>
                     ))}
@@ -551,8 +509,7 @@ function ComparePage() {
                       {t("offersBestPrice")}
                     </td>
                     {products.map((p) => {
-                      const best =
-                        p.priceRange.min > 0 ? p.priceRange.min : p.price;
+                      const best = p.priceRange.min > 0 ? p.priceRange.min : p.price;
                       const isBest =
                         products.length > 1 &&
                         best ===

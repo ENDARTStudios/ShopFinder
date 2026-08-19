@@ -187,5 +187,27 @@
     "subtotal": "Subtotal",
     "checkout": "Finalizar compra",
     "continueShopping": "Continuar comprando"
+  },
+  "faq": {
+    "title": "Perguntas frequentes",
+    "subtitle": "Como o ShopFinder encontra, valida e entrega as melhores ofertas.",
+    "items": [
+      {
+        "q": "Como o ShopFinder consegue preços melhores?",
+        "a": "Agregamos ofertas de fabricantes, distribuidores autorizados e marketplaces (eBay, AliExpress, Amazon, Newegg, DigiKey) num catálogo único. Ao comprar, o pedido é repassado automaticamente ao fornecedor com o melhor preço — você paga uma vez e o resto é invisível."
+      },
+      {
+        "q": "Em que moeda são exibidos os preços?",
+        "a": "Os preços são exibidos em reais (BRL) com cotação USD-BRL atualizada por hora, então o valor reflete o câmbio do momento sem surpresas no checkout."
+      },
+      {
+        "q": "O que significa a confiança de uma especificação?",
+        "a": "Cada especificação pode trazer a origem (fabricante, datasheet, distribuidor ou marketplace) e um nível de confiança. Atributos com origem rastreada e evidência têm confiança alta; estimativas de IA aparecem com confiança menor e passam por revisão."
+      },
+      {
+        "q": "Como funciona a compatibilidade entre produtos?",
+        "a": "O catálogo mantém um grafo de relações (ex.: CPU e placa-mãe com o mesmo socket). Na página de produto você vê o que é compatível antes de comprar, evitando peças que não trabalham juntas."
+      }
+    ]
   }
 }

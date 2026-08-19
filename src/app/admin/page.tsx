@@ -17,9 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive, Activity } from "lucide-react";
+import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive, Activity } from "lucide-react";
 import Link from "next/link";
 import { NotificationsBell } from "@/components/site/notifications-bell";
+import { AdminDashboardSkeleton } from "@/components/site/admin-skeletons";
 
 interface AdminProduct {
   id: string;
@@ -53,23 +54,39 @@ interface AdminSummary {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  published: { label: "Publicado", color: "bg-emerald-500/90 text-white", icon: <CheckCircle2 className="h-3 w-3" /> },
-  draft: { label: "Rascunho", color: "bg-slate-500/90 text-white", icon: <Clock className="h-3 w-3" /> },
-  review: { label: "Revisão", color: "bg-amber-500/90 text-white", icon: <AlertTriangle className="h-3 w-3" /> },
-  archived: { label: "Arquivado", color: "bg-red-500/90 text-white", icon: <Archive className="h-3 w-3" /> }
+  published: {
+    label: "Publicado",
+    color: "bg-emerald-500/90 text-white",
+    icon: <CheckCircle2 className="h-3 w-3" />
+  },
+  draft: {
+    label: "Rascunho",
+    color: "bg-slate-500/90 text-white",
+    icon: <Clock className="h-3 w-3" />
+  },
+  review: {
+    label: "Revisão",
+    color: "bg-amber-500/90 text-white",
+    icon: <AlertTriangle className="h-3 w-3" />
+  },
+  archived: {
+    label: "Arquivado",
+    color: "bg-red-500/90 text-white",
+    icon: <Archive className="h-3 w-3" />
+  }
 };
 
 function getConfidenceColor(conf: number): string {
   if (conf >= 0.95) return "text-emerald-500";
-  if (conf >= 0.80) return "text-blue-500";
-  if (conf >= 0.60) return "text-amber-500";
+  if (conf >= 0.8) return "text-blue-500";
+  if (conf >= 0.6) return "text-amber-500";
   return "text-red-500";
 }
 
 function getConfidenceLabel(conf: number): string {
   if (conf >= 0.95) return "Alta";
-  if (conf >= 0.80) return "Boa";
-  if (conf >= 0.60) return "Média";
+  if (conf >= 0.8) return "Boa";
+  if (conf >= 0.6) return "Média";
   return "Baixa";
 }
 
@@ -130,10 +147,8 @@ export default function AdminDashboard() {
 
       if (res.ok) {
         // Update local state
-        setProducts(prev =>
-          prev.map(p =>
-            p.id === productId ? { ...p, status: newStatus } : p
-          )
+        setProducts((prev) =>
+          prev.map((p) => (p.id === productId ? { ...p, status: newStatus } : p))
         );
         // Refresh summary
         fetchProducts();
@@ -145,11 +160,7 @@ export default function AdminDashboard() {
   };
 
   if (sessionStatus === "loading" || (loading && !error)) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <AdminDashboardSkeleton />;
   }
 
   if (error) {
@@ -180,7 +191,9 @@ export default function AdminDashboard() {
             </p>
           </div>
           <Link href="/">
-            <Button variant="ghost" size="sm">Ver site público</Button>
+            <Button variant="ghost" size="sm">
+              Ver site público
+            </Button>
           </Link>
           <Link href="/admin/pipeline">
             <Button variant="outline" size="sm">
@@ -230,8 +243,13 @@ export default function AdminDashboard() {
           <Button
             size="sm"
             variant={filterStatus === null && !filterLowConf ? "default" : "outline"}
-            onClick={() => { setFilterStatus(null); setFilterLowConf(false); }}
-            className={filterStatus === null && !filterLowConf ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+            onClick={() => {
+              setFilterStatus(null);
+              setFilterLowConf(false);
+            }}
+            className={
+              filterStatus === null && !filterLowConf ? "bg-emerald-500 hover:bg-emerald-600" : ""
+            }
           >
             Todos
           </Button>
@@ -240,7 +258,10 @@ export default function AdminDashboard() {
               key={key}
               size="sm"
               variant={filterStatus === key ? "default" : "outline"}
-              onClick={() => { setFilterStatus(key); setFilterLowConf(false); }}
+              onClick={() => {
+                setFilterStatus(key);
+                setFilterLowConf(false);
+              }}
               className={filterStatus === key ? "bg-emerald-500 hover:bg-emerald-600" : ""}
             >
               {cfg.label}
@@ -249,7 +270,10 @@ export default function AdminDashboard() {
           <Button
             size="sm"
             variant={filterLowConf ? "default" : "outline"}
-            onClick={() => { setFilterLowConf(!filterLowConf); setFilterStatus(null); }}
+            onClick={() => {
+              setFilterLowConf(!filterLowConf);
+              setFilterStatus(null);
+            }}
             className={filterLowConf ? "bg-amber-500 hover:bg-amber-600" : ""}
           >
             <AlertTriangle className="mr-1 h-3 w-3" />
@@ -299,7 +323,9 @@ export default function AdminDashboard() {
                           <td className="px-3 py-2 text-xs">{p.manufacturer ?? "—"}</td>
                           <td className="px-3 py-2 text-right">
                             {p.enrichedAttributeCount > 0 ? (
-                              <span className={`font-medium ${getConfidenceColor(p.avgConfidence)}`}>
+                              <span
+                                className={`font-medium ${getConfidenceColor(p.avgConfidence)}`}
+                              >
                                 {Math.round(p.avgConfidence * 100)}%
                               </span>
                             ) : (
@@ -307,11 +333,17 @@ export default function AdminDashboard() {
                             )}
                           </td>
                           <td className="px-3 py-2 text-right">
-                            <span className={p.enrichmentComplete ? "text-emerald-500" : "text-amber-500"}>
+                            <span
+                              className={
+                                p.enrichmentComplete ? "text-emerald-500" : "text-amber-500"
+                              }
+                            >
                               {p.enrichedAttributeCount}/{p.attributeCount}
                             </span>
                           </td>
-                          <td className="px-3 py-2 text-right font-medium">${p.price.toFixed(2)}</td>
+                          <td className="px-3 py-2 text-right font-medium">
+                            ${p.price.toFixed(2)}
+                          </td>
                           <td className="px-3 py-2 text-right">{p.offerCount}</td>
                           <td className="px-3 py-2">
                             <div className="flex gap-1">
