@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true
   },
   reactStrictMode: false,
+  // SDKs de observabilidade rodam externos ao bundle do servidor
+  // (docs/eng/OBSERVABILITY.md — instrumentation.ts os importa em runtime)
+  serverExternalPackages: [
+    "@opentelemetry/api",
+    "@opentelemetry/sdk-node",
+    "@opentelemetry/resources",
+    "@opentelemetry/semantic-conventions",
+    "@opentelemetry/auto-instrumentations-node",
+    "@opentelemetry/exporter-trace-otlp-http"
+  ],
   // Security headers — docs/eng/SECURITY.md (TLS Full (Strict) na edge)
   async headers() {
     return [

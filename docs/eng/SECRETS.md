@@ -18,7 +18,7 @@ Ver `.env.example` na raiz — mantido como fonte de verdade. Grupos:
 | Pagamento | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | server |
 | eBay | `EBAY_APP_ID`, `EBAY_CERT_ID`, `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_SANDBOX`, `EBAY_FORCE_REPLAY` | server |
 | AliExpress | `ALIEXPRESS_API_URL`, `ALIEXPRESS_APP_KEY`, `ALIEXPRESS_APP_SECRET`, `ALIEXPRESS_TRACKING_ID` | server |
-| Observabilidade | `SENTRY_DSN`, `LOG_LEVEL` | server |
+| Observabilidade | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_TRACES_SAMPLE_RATE`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, `LOG_LEVEL` | server (NEXT_PUBLIC_SENTRY_DSN é público por natureza) |
 | App pública | `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_NAME`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_DEFAULT_LOCALE`, `NEXT_PUBLIC_LOCALES` | client ok |
 | Testes | `TEST_BASE_URL` | CI apenas |
 

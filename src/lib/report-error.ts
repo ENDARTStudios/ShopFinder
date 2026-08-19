@@ -1,9 +1,12 @@
 /**
  * ShopFinder — Captura de erros (client & server)
  *
- * Sempre loga; forward para Sentry/Datadog quando SENTRY_DSN configurado
- * (docs/eng/OBSERVABILITY.md). Client-safe: sem imports de node.
+ * Sempre loga (JSON estruturado); forward para o adapter registrado
+ * (Sentry via instrumentation, ver src/instrumentation*.ts) quando
+ * SENTRY_DSN estiver configurado (docs/eng/OBSERVABILITY.md).
+ * Client-safe: sem imports de node.
  */
+import { forwardError } from "./error-forwarder";
 
 interface ErrorContext {
   route?: string;
@@ -29,10 +32,8 @@ export function reportError(error: unknown, context: ErrorContext = {}): void {
     console.error(JSON.stringify(entry));
   }
 
-  // Hook de forward (Sentry/Datadog/NewRelic via OpenTelemetry) —
-  // preenchido em runtime quando SENTRY_DSN existir.
   const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN;
-  if (dsn && typeof window === "undefined") {
-    // Server: integrar @sentry/node aqui (issue rastreada).
+  if (dsn) {
+    forwardError(error, { ...context, _serialized: serialized });
   }
 }
