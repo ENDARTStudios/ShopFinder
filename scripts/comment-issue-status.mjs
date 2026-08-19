@@ -1,18 +1,15 @@
 /**
- * Posta o comentário de progresso nas issues da fase 2.
+ * Posta o comentário de progresso nas issues da fase 4.
  * Uso: GITHUB_TOKEN=<token-com-escopo-issues> node scripts/comment-issue-status.mjs
  * (O PAT usado na criação das issues expirou antes do envio dos comentários.)
  */
 const REPO = "ENDARTStudios/ShopFinder";
 
 const comments = {
-  25: "Entregue no branch chore/eng-excellence (PR pendente): /api/health (liveness com uptime) e /api/health/ready (readiness com ping Postgres + Redis, 503 quando o banco falha). Falta: adapter Sentry no report-error.",
-  28: "Parcial no branch chore/eng-excellence: 9 testes unitários (bun:test) para rate-limit (fallback memória) e feature flags — npm test agora roda `bun test tests/unit`; test:integration separado. Falta: cobertura de domain/fx e Codecov.",
-  30: "Parcial no branch chore/eng-excellence: loading.tsx para /produtos/[slug], /compare e /admin (espelham layout final, CLS=0), ProductCardSkeleton/Grid e skeleton no lugar do spinner em CompatibleProducts. Pendente: landing/grid de busca e demais painéis admin.",
-  31: "Parcial no branch chore/eng-excellence: FadeIn/FadeInStagger/FadeInItem (framer-motion, easings do MOTION-SYSTEM.md, prefers-reduced-motion) aplicados no header do produto e no grid de compatíveis; press feedback active:scale-[0.97] no Button base. Pendente: drawer do carrinho, modais e landing.",
-  33: "Parcial no branch chore/eng-excellence: sitemap.ts/robots.ts (fase 1) + JSON-LD Product/Offer com preço e disponibilidade na página de produto. Pendente: BreadcrumbList, FAQPage, llms.txt, buildMetadata em todas as rotas.",
-  35: "Concluído no branch chore/eng-excellence: @workspace/config/flags com 6 flags + isFlagEnabled com overrides por store (testado em tests/unit/flags.test.ts).",
-  36: "Parcial no branch chore/eng-excellence: job unit-tests (bun) no ci.yml; security-gate com lint não-bloqueante — ESLint 10 quebra com eslint-plugin-react 7.37 (contextOrFilename.getFilename), precisa upgrade do plugin ou migração da config; erros TS pré-existentes continuam (ignoreBuildErrors)."
+  25: "Fase 4 no branch chore/eng-excellence: build de produção destravado — src/lib/redis.ts (usado pelo /api/health/ready) importava @upstash/redis (não é dependência do projeto) e ./logger (arquivo inexistente); reescrito no padrão REST/fetch do rate-limit.ts com degradação graciosa quando não configurado. Pendente da issue: adapter Sentry no report-error.",
+  30: "Fase 4 no branch chore/eng-excellence: spinners substituídos por skeletons que espelham o layout final (MOTION-SYSTEM §4) — landing (nichos, categorias, tiers de fabricantes, grid de produtos com bloco de imagem + linhas de texto + preço), dashboard admin (cards de resumo + tabela de produtos), pipeline (cards de status) e tabela compare (colunas com larguras estáveis, CLS=0). Rotas já cobertas por loading.tsx desde a fase 2.",
+  31: "Fase 4 no branch chore/eng-excellence: FadeIn/FadeInStagger/FadeInItem aplicados na landing — hero com stagger, grids de nichos/categorias/tiers de fabricantes e seção FAQ; o grid de produtos entra em bloco porque o stagger completo em dezenas de itens violaria o total <400ms do MOTION-SYSTEM. FadeInStagger agora aceita itemCount e limita a cascata a 400ms em grades grandes.",
+  33: "Fase 4 no branch chore/eng-excellence: @workspace/seo/schema populado com buildProductJsonLd/buildBreadcrumbJsonLd/buildFaqJsonLd + jsonLdScript (escape de </script> contra breakout), com 6 testes unitários; buildMetadata conectado em /, /compare, /produtos/[slug], /checkout (noindex) e /admin (noindex); seção FAQ visível na landing (i18n pt-BR/en) com FAQPage JSON-LD emitido no server component. Escopo da issue completo no branch."
 };
 
 const token = process.env.GITHUB_TOKEN;
