@@ -53,9 +53,18 @@ CREATE POLICY public_read_catalog ON "Product"
   USING ("status" = 'ACTIVE' AND "deletedAt" IS NULL);
 ```
 
-## Passos de adoção (issue rastreada)
+## Passos de adoção (issue #20)
 
-1. Migration `enable_rls` com `FORCE ROW LEVEL SECURITY` desligado (modo shadow: logar linhas que seriam bloqueadas).
-2. Setar `app.store_id` nas transações via Prisma client extension.
-3. Testes de integração: tentativa de leak cross-store deve retornar 0 linhas.
-4. Ativar `FORCE ROW LEVEL SECURITY` e remover políticas shadow.
+| Passo                                        | Estado                                                                                                                                                                        |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Migration `enable_rls` sem FORCE (shadow) | ✅ `prisma/migrations/20260819231500_enable_rls` — políticas em Store, User, Category, Product, Customer, Cart, CheckoutSession, Order (tabelas com `storeId` no schema real) |
+| 2. `app.store_id` por transação via Prisma   | ✅ `withTenantTransaction` em `@workspace/database/rls` (set_config is_local, parametrizado)                                                                                  |
+| 3. Teste de leak cross-store                 | ✅ `tests/integration/rls.test.ts` — casos de role sem bypass exigem `RLS_TEST_DATABASE_URL`; helper testado na DATABASE_URL normal                                           |
+| 4. FORCE + remoção do shadow                 | ⏳ Após teste com role de serviço em staging                                                                                                                                  |
+
+Notas de adaptação ao schema real:
+
+- `OrderItem`, `Integration`, `SyncJob`, `ProductOffer` e `SupplierCredential` **não têm** coluna `storeId` (escopo via relações) — política por JOIN é follow-up antes do FORCE.
+- `User.storeId` é nullable: política trata `IS NULL` como sempre visível.
+- `public_read_catalog` usa `status = 'published'` (valores reais do enum de string: draft | published | archived).
+- Papéis de serviço: em dev a conexão é owner (políticas não a afetam). Em produção, conectar como role `NOBYPASSRLS` (ex.: `shopfinder_app`) antes do passo 4.

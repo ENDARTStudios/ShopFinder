@@ -22,6 +22,9 @@
 export { prisma, type PrismaClient } from "./client";
 export type { Prisma } from "./client";
 
+// RLS — transações com contexto de tenant (docs/eng/RLS.md)
+export { withTenantTransaction, type TenantContext } from "./rls";
+
 export {
   PrismaUnitOfWork,
   PrismaRepositoryFactory,
