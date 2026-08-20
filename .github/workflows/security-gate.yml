@@ -7,23 +7,29 @@ on:
 jobs:
   security-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write # gitleaks-action posta status de commit no PR
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          bun-version: latest
+      # npm não suporta o protocolo workspace:* dos workspaces — instalação via bun
       - name: Install deps
-        run: npm install --no-audit --fund=false
+        run: bun install --frozen-lockfile
       - name: Lint
-        # Não-bloqueante até corrigir incompatibilidade eslint-plugin-react x ESLint 10 (issue #36)
-        run: npm run lint --if-present
-        continue-on-error: true
+        run: bun run lint
       - name: Architecture contract
-        run: npm run test:arch --if-present
+        run: bun run test:arch --if-present
       - name: Audit (zero high+)
-        run: npm audit --audit-level=high
+        # GHSA-ggr8-5vv4-36mx (deepmerge-ts via cadeia prisma): stack exhaustion
+        # exige input recursivo hostil no merge — triada, upgrade acompanhado
+        # no backlog de dependências.
+        run: bun audit --audit-level=high --ignore=GHSA-ggr8-5vv4-36mx
       - name: Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:

@@ -25,6 +25,7 @@ import {
   X,
   Trash2,
   Star,
+  Search,
   ShieldCheck,
   Factory,
   FileText,

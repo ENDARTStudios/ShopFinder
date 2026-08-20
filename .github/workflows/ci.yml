@@ -36,12 +36,9 @@ jobs:
       - name: Run integrity tests
         run: python3 -m unittest discover -s tests -p test_protocolo_integrity.py
   lint:
-    # (#36) ESLint 9 (peer-range do eslint-plugin-react 7.37 não suporta 10).
-    # Não-bloqueante: bug de linker do bun no Windows quebra o run local
-    # (minimatch@10 → brace-expansion@5); no runner Linux o run é completo.
-    # Falhas de regra passam a bloquear após a triagem do backlog.
+    # (#36) ESLint 9.27 — versão cujo @eslint/config-array usa minimatch@3,
+    # contornando o bug de link do bun com brace-expansion@5 (minimatch@10).
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Setup Bun
@@ -122,10 +119,11 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Sync database schema
         run: bunx prisma db push --skip-generate
-      - name: Seed reference data and catalog
-        run: |
-          bun run scripts/seed.ts
-          bun run scripts/seed-catalog.ts
+      - name: Seed catalog
+        # Apenas seed-catalog: ele cria store (id fixo), admin, países/moedas
+        # e produtos. seed.ts criaria um segundo store "default" e colidiria
+        # no unique de slug em banco novo.
+        run: bun run scripts/seed-catalog.ts
       - name: Start dev server
         run: |
           nohup bunx next dev -p 3000 > dev-server.log 2>&1 &
@@ -140,10 +138,10 @@ jobs:
         if: failure()
         run: cat dev-server.log
   knip:
-    # Dead-code — estágio "aviso" (#29): findings visíveis sem bloquear o PR.
-    # Após triagem das deps de scaffold, remover continue-on-error para bloquear.
+    # Dead-code (#29): teto de 150 issues (atual: ~120 — deps de scaffold
+    # shadcn/ui + exports previstos para módulos futuros). Triagem reduz o
+    # teto até virar bloqueio estrito (--max-issues 0).
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Setup Bun
@@ -153,9 +151,12 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Run Knip
-        run: bunx knip
+        run: bunx knip --max-issues 150
   security:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write # gitleaks-action posta status de commit no PR
     steps:
       - uses: actions/checkout@v4
       - name: Run gitleaks
@@ -197,10 +198,11 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Sync database schema
         run: bunx prisma db push --skip-generate
-      - name: Seed reference data and catalog
-        run: |
-          bun run scripts/seed.ts
-          bun run scripts/seed-catalog.ts
+      - name: Seed catalog
+        # Apenas seed-catalog: ele cria store (id fixo), admin, países/moedas
+        # e produtos. seed.ts criaria um segundo store "default" e colidiria
+        # no unique de slug em banco novo.
+        run: bun run scripts/seed-catalog.ts
       - name: Create E2E admin user
         run: bun run scripts/create-admin.ts --email "$E2E_ADMIN_EMAIL" --password "$E2E_ADMIN_PASSWORD"
       - name: Install Playwright browsers

@@ -165,7 +165,6 @@ export default function SecurityPage() {
               <div className="space-y-4">
                 <div className="flex flex-col items-center gap-3 rounded-xl border border-border/60 p-4">
                   {/* QR renderizado do otpauth URI — secret fica no server */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={setup.qrDataUrl}
                     alt="QR code para app autenticador"
