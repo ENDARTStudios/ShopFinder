@@ -16,19 +16,30 @@ Workflow alvo `.github/workflows/security-gate.yml`: job `security-audit` como `
 ## 2. WAF + Bot Fight Mode + Rate Limiting
 
 **Edge (Cloudflare na frente da Vercel):**
+
 - WAF managed rules (OWASP core) em modo block para tráfego non-prod; modo count → block após baseline de 2 semanas.
 - **Bot Fight Mode**: on (bloqueia bots definitivos; desafio JS para prováveis).
 - Exceção de rate-limit para `/api/webhook` (Stripe vem de IPs conhecidos + assinatura HMAC — dupla checagem por prefixo de IP `3.18.12.0/22` etc. ou apenas confiar na assinatura).
 
+**Checklist de ativação (issue #21 — dashboard Cloudflare, ação manual):**
+
+1. [ ] Adicionar o domínio ao Cloudflare e apontar os nameservers do registrar.
+2. [ ] SSL/TLS → modo **Full (Strict)** (nunca Flexible).
+3. [ ] Security → Bots → **Bot Fight Mode: On**.
+4. [ ] Security → WAF → Managed rules → **OWASP Core Rule Set** em _Count_ (baseline de 2 semanas) → depois _Block_.
+5. [ ] Rate limiting rules → criar regra global (ex.: 600 req/min/IP) e **excluir `/api/webhook`** (HMAC do Stripe já autentica; ver tabela abaixo).
+6. [ ] Caching: bypass de `/api/*` e do header `x-request-id`.
+7. [ ] DNS: proxy laranja ativo só para o domínio do app (Vercel por trás).
+
 **Rate limiting na aplicação** (`src/lib/rate-limit.ts`, Upstash Redis com fallback em memória):
 
-| Rota | Limite |
-|---|---|
+| Rota                           | Limite                             |
+| ------------------------------ | ---------------------------------- |
 | `/api/auth/*` (login/register) | 5/min por IP + lockout exponencial |
-| `/api/catalog`, busca | 60/min por IP |
-| `/api/checkout-session` | 10/min por IP |
-| `/api/webhook` | 300/min (idempotência protege) |
-| demais `/api/*` | 120/min |
+| `/api/catalog`, busca          | 60/min por IP                      |
+| `/api/checkout-session`        | 10/min por IP                      |
+| `/api/webhook`                 | 300/min (idempotência protege)     |
+| demais `/api/*`                | 120/min                            |
 
 Respostas `429` com `Retry-After`. Apenas `/login`, `/register` e checkout usam desafio (hCaptcha se abuso persistir).
 

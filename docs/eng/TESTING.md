@@ -2,13 +2,13 @@
 
 ## 1. Pirâmide
 
-| Camada | Ferramenta | Local | Roda em |
-|---|---|---|---|
-| Unit | `bun:test` (ou vitest) | `packages/*/src/**/*.test.ts` | CI, pre-push |
-| Integração | `bun:test` contra dev server | `tests/integration/*.test.ts` (já existem 6) | CI (job com service Postgres) |
-| E2E | Playwright | `tests/e2e/*.spec.ts` | CI (job dedicado) |
-| Arquitetura | script próprio | `scripts/architecture-test.mjs` | CI |
-| Segurança | gitleaks + CodeQL + npm audit | workflows existentes | CI |
+| Camada      | Ferramenta                    | Local                                        | Roda em                       |
+| ----------- | ----------------------------- | -------------------------------------------- | ----------------------------- |
+| Unit        | `bun:test` (ou vitest)        | `packages/*/src/**/*.test.ts`                | CI, pre-push                  |
+| Integração  | `bun:test` contra dev server  | `tests/integration/*.test.ts` (já existem 6) | CI (job com service Postgres) |
+| E2E         | Playwright                    | `tests/e2e/*.spec.ts`                        | CI (job dedicado)             |
+| Arquitetura | script próprio                | `scripts/architecture-test.mjs`              | CI                            |
+| Segurança   | gitleaks + CodeQL + npm audit | workflows existentes                         | CI                            |
 
 ## 2. Convenções
 
@@ -21,30 +21,26 @@
   4. Checkout Stripe em modo teste → webhook → pedido criado.
 - Screenshots + traces em falha (artefatos de CI).
 
-## 3. Config Playwright (alvo)
+## 3. Config Playwright
 
-```ts
-// playwright.config.ts
-import { defineConfig } from "@playwright/test";
-export default defineConfig({
-  testDir: "./tests/e2e",
-  use: { baseURL: process.env.TEST_BASE_URL ?? "http://localhost:3000", trace: "on-first-retry" },
-  webServer: { command: "bun run dev", url: "http://localhost:3000", reuseExistingServer: true },
-});
-```
+Implementada em `playwright.config.ts` (#27): jornadas em `tests/e2e`
+(catálogo→carrinho, compare, admin→pipeline, checkout Stripe gated por
+`E2E_CHECKOUT_ENABLED`). CI: job `e2e` com Postgres service + seed +
+`scripts/create-admin.ts`. Local: `bunx playwright test` (sobe o dev server).
 
 ## 4. Qualidade e lint de código
 
-| Ferramenta | Uso | Gate |
-|---|---|---|
-| ESLint + Prettier | já configurados (husky + lint-staged) | bloqueia |
-| Knip | dead code / exports não usados | aviso → bloqueio |
-| arch-test (`npm run test:arch`) | dependências entre camadas | bloqueia |
-| CodeQL | SAST semanal | bloqueia alerts high+ |
-| Stryker (mutation) | alvo: módulos `domain`/`fx` | métrica, não gate |
-| commitlint + changesets | já configurados | bloqueia |
+| Ferramenta                      | Uso                                                                                                                                             | Gate                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| ESLint + Prettier               | ESLint 9 (peer-range do eslint-plugin-react 7.37) + husky/lint-staged                                                                           | aviso no CI → bloqueio após triagem |
+| Knip                            | dead code / exports não usados (`bun run knip`)                                                                                                 | aviso → bloqueio                    |
+| arch-test (`npm run test:arch`) | dependências entre camadas                                                                                                                      | bloqueia                            |
+| CodeQL                          | SAST semanal                                                                                                                                    | bloqueia alerts high+               |
+| Stryker (mutation)              | `stryker.config.json` — muta `src/lib/{price,fx-core,totp}.ts` + `@workspace/domain`; rodar com `bunx stryker run` (métrica manual, fora do CI) | métrica, não gate                   |
+| commitlint + changesets         | já configurados                                                                                                                                 | bloqueia                            |
 
 ## 5. Cobertura (Codecov)
 
-- Instrumentação: `bun test --coverage` + Playwright `--coverage`; upload no CI.
-- Gate inicial: 60% global, subindo 5% por trimestre; 90% para `@workspace/domain` e `src/lib/fx.ts` (matemática de dinheiro).
+- Instrumentação: `npm run test:coverage` (bun test, saída `coverage/lcov.info`); upload no job `unit-tests` via codecov-action (requer secret `CODECOV_TOKEN`).
+- Gate inicial: 60% global, subindo 5% por trimestre; 90% para `@workspace/domain` e `src/lib/fx*.ts` (matemática de dinheiro).
+- Mutation testing (Stryker) complementa a cobertura nos módulos de domínio.
