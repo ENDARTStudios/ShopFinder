@@ -38,6 +38,7 @@ const ROLE_PERMISSIONS: Record<Role, ReadonlyArray<Permission>> = {
   supplier: ["catalog.read", "supplier.read", "order.read"],
   // Operador de loja/integrações: tudo de operação, sem gestão de usuários/configs (RBAC.md)
   operator: [
+    "admin.access", // superfície /admin/* (dashboard, pipeline, notificações)
     "catalog.read",
     "catalog.write",
     "catalog.delete",

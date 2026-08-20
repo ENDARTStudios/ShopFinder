@@ -19,7 +19,7 @@ import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 
 export async function GET(request: NextRequest) {
   // Authorization: negar por padrão (docs/eng/RBAC.md)
-  const guard = await requirePermissions("catalog.read");
+  const guard = await requirePermissions("admin.access");
   if (!guard.ok) return guard.response;
 
   const { searchParams } = new URL(request.url);
@@ -55,9 +55,10 @@ export async function GET(request: NextRequest) {
     const enrichedAttrs = p.attributes.filter((a) => a.source !== null);
     const totalAttrs = p.attributes.length;
     const enrichedCount = enrichedAttrs.length;
-    const avgConfidence = enrichedAttrs.length > 0
-      ? enrichedAttrs.reduce((sum, a) => sum + (a.confidence ?? 0), 0) / enrichedAttrs.length
-      : 0;
+    const avgConfidence =
+      enrichedAttrs.length > 0
+        ? enrichedAttrs.reduce((sum, a) => sum + (a.confidence ?? 0), 0) / enrichedAttrs.length
+        : 0;
 
     const prices = p.offers.map((o) => minorUnitsToNumber(o.priceMinorUnits));
     const { min: minPrice } = computePriceRange(prices, minorUnitsToNumber(p.basePriceMinorUnits));
@@ -96,9 +97,7 @@ export async function GET(request: NextRequest) {
   });
 
   // Filter by low confidence if requested
-  const filtered = lowConfidence
-    ? adminProducts.filter((p) => p.isLowConfidence)
-    : adminProducts;
+  const filtered = lowConfidence ? adminProducts.filter((p) => p.isLowConfidence) : adminProducts;
 
   return NextResponse.json({
     products: filtered,

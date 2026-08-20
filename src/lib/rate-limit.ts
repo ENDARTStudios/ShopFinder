@@ -13,7 +13,12 @@ export interface RateLimitRule {
 }
 
 export const RATE_LIMIT_RULES: Record<string, RateLimitRule> = {
-  "/api/auth": { limit: 5 },
+  // Limite apertado somente nas rotas de CREDENCIAL (tentativas de senha).
+  // Endpoints auxiliares de auth (csrf, session) caem no default — sem isso,
+  // fluxos legítimos que fazem GET /api/auth/csrf queimam o budget de 5/min
+  // (docs/eng/SECURITY.md §2).
+  "/api/auth/callback/credentials": { limit: 5 },
+  "/api/auth/register": { limit: 5 },
   "/api/catalog": { limit: 60 },
   "/api/checkout-session": { limit: 10 },
   "/api/webhook": { limit: 300 },
@@ -93,8 +98,6 @@ export async function checkRateLimit(
 
 export function getClientIp(headers: Headers): string {
   return (
-    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    headers.get("x-real-ip") ??
-    "unknown"
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? headers.get("x-real-ip") ?? "unknown"
   );
 }

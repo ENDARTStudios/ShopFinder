@@ -25,7 +25,7 @@ interface Notification {
 
 export async function GET() {
   // Authorization: notificações operacionais exigem catalog.read (docs/eng/RBAC.md)
-  const guard = await requirePermissions("catalog.read");
+  const guard = await requirePermissions("admin.access");
   if (!guard.ok) return guard.response;
 
   const notifications: Notification[] = [];
@@ -85,7 +85,7 @@ export async function GET() {
     where: {
       status: "published",
       deletedAt: null,
-      attributes: { some: { confidence: { lt: 0.70, not: null } } }
+      attributes: { some: { confidence: { lt: 0.7, not: null } } }
     },
     orderBy: { updatedAt: "desc" },
     take: 10,

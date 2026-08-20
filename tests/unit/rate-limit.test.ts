@@ -8,27 +8,34 @@ import { describe, expect, test, beforeEach } from "bun:test";
 delete process.env.UPSTASH_REDIS_REST_URL;
 delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
-const { checkRateLimit, getClientIp, RATE_LIMIT_RULES } = await import(
-  "../../src/lib/rate-limit"
-);
+const { checkRateLimit, getClientIp, RATE_LIMIT_RULES } = await import("../../src/lib/rate-limit");
 
 describe("rate-limit (memória)", () => {
-  test("bloqueia após exceder o limite de /api/auth (5/min)", async () => {
+  test("bloqueia após exceder o limite de login (5/min)", async () => {
     const key = `test-auth-${crypto.randomUUID()}`;
     for (let i = 0; i < 5; i++) {
-      const r = await checkRateLimit("/api/auth", key);
+      const r = await checkRateLimit("/api/auth/callback/credentials", key);
       expect(r.allowed).toBe(true);
     }
-    const sixth = await checkRateLimit("/api/auth", key);
+    const sixth = await checkRateLimit("/api/auth/callback/credentials", key);
     expect(sixth.allowed).toBe(false);
     expect(sixth.retryAfterSeconds).toBeGreaterThan(0);
   });
 
   test("identificadores diferentes têm buckets independentes", async () => {
-    const a = await checkRateLimit("/api/auth", `ip-a-${crypto.randomUUID()}`);
-    const b = await checkRateLimit("/api/auth", `ip-b-${crypto.randomUUID()}`);
+    const a = await checkRateLimit("/api/auth/callback/credentials", `ip-a-${crypto.randomUUID()}`);
+    const b = await checkRateLimit("/api/auth/callback/credentials", `ip-b-${crypto.randomUUID()}`);
     expect(a.allowed).toBe(true);
     expect(b.allowed).toBe(true);
+  });
+
+  test("endpoints auxiliares de auth (csrf) usam o default, não o de 5/min", async () => {
+    // csrf/session não queimam o budget de tentativas de senha (#36)
+    const key = `csrf-${crypto.randomUUID()}`;
+    for (let i = 0; i < 10; i++) {
+      const r = await checkRateLimit("/api/auth/csrf", key);
+      expect(r.allowed).toBe(true);
+    }
   });
 
   test("rota sem regra usa limite default (120/min)", async () => {

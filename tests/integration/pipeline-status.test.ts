@@ -14,17 +14,25 @@ import { describe, it, expect } from "bun:test";
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 
 // Helper: login as admin and return cookie header
+// Cache module-level: /api/auth tem rate limit 5/min por IP — logins
+// repetidos por teste estouram o limite no CI (suite completa).
+let cachedAdminCookies: string | null = null;
+
 async function adminCookies(): Promise<string> {
+  if (cachedAdminCookies) return cachedAdminCookies;
   function extractCookies(res: Response): string[] {
     const arr = (res.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.();
     return arr && arr.length > 0 ? arr : (res.headers.get("set-cookie") ?? "").split(", ");
   }
   function toCookieHeader(cookies: string[]): string {
-    return cookies.map((c) => c.split(";")[0]?.trim()).filter(Boolean).join("; ");
+    return cookies
+      .map((c) => c.split(";")[0]?.trim())
+      .filter(Boolean)
+      .join("; ");
   }
 
   const csrfRes = await fetch(`${BASE_URL}/api/auth/csrf`);
-  const csrfData = await csrfRes.json() as { csrfToken: string };
+  const csrfData = (await csrfRes.json()) as { csrfToken: string };
   const csrfCookies = toCookieHeader(extractCookies(csrfRes));
 
   const loginRes = await fetch(`${BASE_URL}/api/auth/callback/credentials`, {
@@ -39,7 +47,8 @@ async function adminCookies(): Promise<string> {
     redirect: "manual"
   });
   const sessionCookies = toCookieHeader(extractCookies(loginRes));
-  return `${csrfCookies}; ${sessionCookies}`;
+  cachedAdminCookies = `${csrfCookies}; ${sessionCookies}`;
+  return cachedAdminCookies;
 }
 
 describe("Pipeline Status API", () => {

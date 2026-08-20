@@ -52,8 +52,17 @@ export async function middleware(req: NextRequest, event: unknown) {
     return response;
   };
 
-  if (pathname.startsWith("/api/auth")) {
-    const result = await checkRateLimit("/api/auth", getClientIp(req.headers));
+  // Rate limit de credenciais: POSTs de login/registro (5/min). Os demais
+  // endpoints de auth (csrf/session) usam o default (120/min).
+  // Desativado fora de produção: a lógica é coberta por tests/unit e o
+  // limiter em memória tornaria as suítes de integração/E2E flaky
+  // (buckets acumulam por IP entre execuções no mesmo dev server).
+  if (
+    process.env.NODE_ENV === "production" &&
+    (pathname === "/api/auth/callback/credentials" || pathname === "/api/auth/register") &&
+    (req.method === "POST" || req.method === "PUT")
+  ) {
+    const result = await checkRateLimit(pathname, getClientIp(req.headers));
     if (!result.allowed) {
       return finalize(
         NextResponse.json(
