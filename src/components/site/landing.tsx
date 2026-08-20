@@ -48,6 +48,7 @@ import {
   TierGridSkeleton,
   LandingProductGridSkeleton
 } from "@/components/site/landing-skeletons";
+import { Hero3DMount } from "@/components/site/hero-3d-mount";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -289,6 +290,9 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
             "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.15), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(16,185,129,0.08), transparent 60%)"
         }}
       />
+      {/* Hero 3D (R3F) — lazy, gated por visibilidade + reduced-motion (#32).
+          O gradiente acima permanece como fallback/base estática. */}
+      <Hero3DMount />
       <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
         <FadeInStagger className="flex flex-col items-center text-center gap-8" itemCount={4}>
           <FadeInItem className="flex flex-col items-center gap-3">
