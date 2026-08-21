@@ -21,6 +21,11 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
+  // Cold compile do dev server (Turbopack) no runner é lento — a jornada
+  // inteira (navegação + primeira renderização de cada rota) passa dos 30s
+  // default do Playwright.
+  timeout: 150_000,
+  expect: { timeout: 15_000 },
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,
