@@ -9,13 +9,16 @@
  *   5. `stats` tem campos esperados.
  */
 /// <reference types="bun-types" />
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeAll } from "bun:test";
+import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "@workspace/auth";
 
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
+const prisma = new PrismaClient();
 
 // Helper: login as admin and return cookie header
-// Cache module-level: /api/auth tem rate limit 5/min por IP — logins
-// repetidos por teste estouram o limite no CI (suite completa).
+// Cache module-level apenas em sucesso: /api/auth tem rate limit de
+// tentativas por IP e logins repetidos por teste estouram o limite.
 let cachedAdminCookies: string | null = null;
 
 async function adminCookies(): Promise<string> {
@@ -47,11 +50,33 @@ async function adminCookies(): Promise<string> {
     redirect: "manual"
   });
   const sessionCookies = toCookieHeader(extractCookies(loginRes));
-  cachedAdminCookies = `${csrfCookies}; ${sessionCookies}`;
-  return cachedAdminCookies;
+  const cookies = `${csrfCookies}; ${sessionCookies}`;
+  // Só cacheia sessão válida — um login fracassado não pode envenenar
+  // os testes seguintes.
+  if (sessionCookies.includes("next-auth.session-token")) {
+    cachedAdminCookies = cookies;
+  }
+  return cookies;
 }
 
 describe("Pipeline Status API", () => {
+  // Ordem de execução de arquivos não é garantida entre versões do bun:
+  // o admin de teste é criado aqui, sem depender do admin-api.test.ts.
+  beforeAll(async () => {
+    const passwordHash = await hashPassword("testAdminPass123");
+    await prisma.user.upsert({
+      where: { email: "test-admin@shopfinder.test" },
+      update: { passwordHash, roles: JSON.stringify(["admin"]), status: "active" },
+      create: {
+        email: "test-admin@shopfinder.test",
+        passwordHash,
+        roles: JSON.stringify(["admin"]),
+        storeId: "cmrfu2kdb0000oybnlekztroj",
+        status: "active"
+      }
+    });
+  });
+
   it("should return 401 without authentication", async () => {
     const res = await fetch(`${BASE_URL}/api/admin/pipeline/status`);
     expect(res.status).toBe(401);

@@ -16,7 +16,12 @@ export function Hero3DMount() {
   const ref = React.useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = React.useState(false);
 
+  // Escape hatch para ambientes sem WebGL estável (runners E2E headless
+  // travam com swiftshader) — fallback estático permanece.
+  const disabled = process.env.NEXT_PUBLIC_DISABLE_3D === "1";
+
   React.useEffect(() => {
+    if (disabled) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const el = ref.current;
     if (!el) return;
@@ -32,7 +37,9 @@ export function Hero3DMount() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [disabled]);
+
+  if (disabled) return null;
 
   return (
     <div

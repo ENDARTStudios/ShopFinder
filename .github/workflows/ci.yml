@@ -108,6 +108,7 @@ jobs:
       NEXTAUTH_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_DISABLE_3D: "1"
       TEST_BASE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
@@ -153,16 +154,18 @@ jobs:
       - name: Run Knip
         run: bunx knip --max-issues 150
   security:
+    # Gitleaks via binário direto: a action oficial falha com 403 ao postar
+    # status de commit via GITHUB_TOKEN neste repo. O binário escaneia o
+    # histórico completo (fetch-depth 0) e o exit code controla o job.
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      statuses: write # gitleaks-action posta status de commit no PR
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz | tar xz -C /tmp
+          /tmp/gitleaks detect --source . --redact -v
   e2e:
     runs-on: ubuntu-latest
     services:
@@ -188,6 +191,8 @@ jobs:
       E2E_ADMIN_EMAIL: e2e-admin@shopfinder.test
       E2E_ADMIN_PASSWORD: e2eAdminPass123
       TEST_BASE_URL: http://localhost:3000
+      # Runners headless não têm WebGL estável — hero 3D cai no fallback estático
+      NEXT_PUBLIC_DISABLE_3D: "1"
     steps:
       - uses: actions/checkout@v4
       - name: Setup Bun

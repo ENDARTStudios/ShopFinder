@@ -15,7 +15,8 @@ test.skip(!ADMIN_EMAIL || !ADMIN_PASSWORD, "E2E_ADMIN_EMAIL/E2E_ADMIN_PASSWORD n
 
 test.describe("jornada: login admin → pipeline", () => {
   test("login leva ao dashboard e ao status do pipeline", async ({ page }) => {
-    await page.goto("/login");
+    // callbackUrl=/admin: o login padrão redireciona para a home
+    await page.goto(`/login?callbackUrl=${encodeURIComponent("/admin")}`);
 
     await page.locator("input[type='email']").fill(ADMIN_EMAIL!);
     await page.locator("input[type='password']").fill(ADMIN_PASSWORD!);
@@ -23,14 +24,14 @@ test.describe("jornada: login admin → pipeline", () => {
 
     // Dashboard do operador
     await expect(page.getByRole("heading", { name: /Dashboard do Operador/i })).toBeVisible({
-      timeout: 30_000
+      timeout: 60_000
     });
 
     // Pipeline status
     await page.getByRole("link", { name: "Pipeline" }).click();
     await expect(page.getByRole("heading", { name: /Pipeline Status/i })).toBeVisible({
-      timeout: 30_000
+      timeout: 60_000
     });
-    await expect(page.getByText("Connectors").first()).toBeVisible();
+    await expect(page.getByText("Connectors").first()).toBeVisible({ timeout: 30_000 });
   });
 });

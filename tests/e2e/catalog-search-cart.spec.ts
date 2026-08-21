@@ -3,7 +3,8 @@ import { test, expect } from "@playwright/test";
 /**
  * Jornada 1 — busca → produto → carrinho (#27)
  *
- * Fluxo: landing → busca no hero → resultados → página de produto →
+ * Fluxo: landing → busca no hero (termo extraído do primeiro card — o seed
+ * do CI não garante marcas específicas) → resultados → página de produto →
  * adicionar ao carrinho → drawer do carrinho com o item.
  */
 test.describe("jornada: busca → produto → carrinho", () => {
@@ -14,19 +15,29 @@ test.describe("jornada: busca → produto → carrinho", () => {
     const productsSection = page.locator("section#produtos");
     await expect(productsSection).toBeVisible();
     const firstCard = productsSection.locator("a[href^='/produtos/']").first();
-    await expect(firstCard).toBeVisible({ timeout: 30_000 });
+    await expect(firstCard).toBeVisible({ timeout: 60_000 });
+
+    // Termo de busca determinístico: título do primeiro produto
+    const firstTitle = (await firstCard.locator("h3").first().textContent())?.trim() ?? "";
+    const searchTerm = (firstTitle.split(/\s+/).find((w) => w.length >= 4) ?? firstTitle).slice(
+      0,
+      20
+    );
+    expect(searchTerm.length).toBeGreaterThan(0);
 
     // Busca pelo hero e submete
     const searchInput = page.getByPlaceholder("Pesquisar produtos, MPN, marcas...");
-    await searchInput.fill("Intel");
+    await searchInput.fill(searchTerm);
     await searchInput.press("Enter");
 
-    // Resultados filtrados continuam no grid
-    await expect(productsSection.locator("a[href^='/produtos/']").first()).toBeVisible();
+    // Resultados filtrados continuam no grid (dev server compila a rota no CI)
+    await expect(productsSection.locator("a[href^='/produtos/']").first()).toBeVisible({
+      timeout: 60_000
+    });
 
     // Abre a página do primeiro produto
     await productsSection.locator("a[href^='/produtos/']").first().click();
-    await expect(page.locator("h1")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("h1")).toBeVisible({ timeout: 60_000 });
     const productTitle = (await page.locator("h1").textContent())?.trim() ?? "";
     expect(productTitle.length).toBeGreaterThan(0);
 
