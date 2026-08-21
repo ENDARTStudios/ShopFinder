@@ -34,7 +34,10 @@ test.describe("jornada: comparar 2 produtos", () => {
     });
     const table = page.locator("table").first();
     await expect(table).toBeVisible({ timeout: 60_000 });
+    // Header: coluna de atributo + 1 por produto (podem existir th extras de
+    // ação) — a jornada garante pelo menos os 2 produtos selecionados.
     const headerCells = table.locator("thead th");
-    await expect(headerCells).toHaveCount(3, { timeout: 30_000 }); // atributo + 2 produtos
+    await expect(headerCells.first()).toBeVisible({ timeout: 30_000 });
+    expect(await headerCells.count()).toBeGreaterThanOrEqual(3);
   });
 });

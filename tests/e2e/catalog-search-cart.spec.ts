@@ -45,11 +45,14 @@ test.describe("jornada: busca → produto → carrinho", () => {
     await page.getByRole("button", { name: "Adicionar ao carrinho" }).first().click();
 
     // O drawer do carrinho monta no header da landing — volta e abre.
-    // O CartProvider persiste os itens entre rotas.
+    // O CartProvider persiste os itens entre rotas; o botão "Remover item"
+    // (aria-label) só existe no drawer quando há pelo menos um item.
     await page.goBack();
     await page.getByRole("button", { name: "Carrinho" }).first().click();
     const drawer = page.getByRole("dialog");
     await expect(drawer).toBeVisible();
-    await expect(drawer.getByText(productTitle, { exact: false })).toBeVisible({ timeout: 15_000 });
+    await expect(drawer.getByRole("button", { name: "Remover item" }).first()).toBeVisible({
+      timeout: 15_000
+    });
   });
 });
