@@ -12,9 +12,17 @@ test.describe("jornada: comparar 2 produtos", () => {
     const cards = page.locator("section#produtos a[href^='/produtos/']");
     await expect(cards.nth(1)).toBeVisible({ timeout: 60_000 });
 
-    // Adiciona os dois primeiros produtos ao comparador via botão no card
-    await cards.nth(0).getByRole("button", { name: "Comparar" }).click();
-    await cards.nth(1).getByRole("button", { name: "Comparar" }).click();
+    // Adiciona os dois primeiros produtos ao comparador via botão no card.
+    // Accessible name = aria-label "Adicionar à comparação" (minúsculo) —
+    // regex case-insensitive casa também o estado selecionado ("Remover...").
+    await cards
+      .nth(0)
+      .getByRole("button", { name: /compar/i })
+      .click();
+    await cards
+      .nth(1)
+      .getByRole("button", { name: /compar/i })
+      .click();
 
     // Vai para a página de comparação via link do header
     await page.getByRole("link", { name: "Comparar" }).first().click();

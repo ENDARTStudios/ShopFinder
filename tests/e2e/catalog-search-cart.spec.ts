@@ -37,17 +37,19 @@ test.describe("jornada: busca → produto → carrinho", () => {
 
     // Abre a página do primeiro produto
     await productsSection.locator("a[href^='/produtos/']").first().click();
-    await expect(page.locator("h1")).toBeVisible({ timeout: 60_000 });
-    const productTitle = (await page.locator("h1").textContent())?.trim() ?? "";
+    await expect(page.locator("h1").first()).toBeVisible({ timeout: 60_000 });
+    const productTitle = (await page.locator("h1").first().textContent())?.trim() ?? "";
     expect(productTitle.length).toBeGreaterThan(0);
 
     // Adiciona ao carrinho
     await page.getByRole("button", { name: "Adicionar ao carrinho" }).first().click();
 
-    // Abre o drawer do carrinho e verifica o item
+    // O drawer do carrinho monta no header da landing — volta e abre.
+    // O CartProvider persiste os itens entre rotas.
+    await page.goBack();
     await page.getByRole("button", { name: "Carrinho" }).first().click();
     const drawer = page.getByRole("dialog");
     await expect(drawer).toBeVisible();
-    await expect(drawer.getByText(productTitle, { exact: false })).toBeVisible();
+    await expect(drawer.getByText(productTitle, { exact: false })).toBeVisible({ timeout: 15_000 });
   });
 });
