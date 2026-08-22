@@ -4,7 +4,10 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Standalone é para self-host (Docker/local com `npm run build`). Na Vercel
+  // o builder faz o próprio bundling — com standalone o build do Next 16
+  // falha com ENOENT em .next/next-server.js.nft.json.
+  output: process.env.VERCEL ? undefined : "standalone",
   typescript: {
     ignoreBuildErrors: true
   },
