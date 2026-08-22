@@ -15,6 +15,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "vercel-build": "next build",
     "typecheck": "tsc --noEmit",
     "test": "bun test tests/unit",
     "test:coverage": "bun test tests/unit --coverage --coverage-reporter=lcov",
@@ -33,7 +34,6 @@
     "db:studio": "prisma studio",
     "prepare": "husky",
     "postinstall": "bun run scripts/select-prisma-provider.ts && prisma generate",
-    "vercel-build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "clean": "rm -rf .next .turbo node_modules/.cache **/dist **/.turbo",
     "test:integration": "bun test tests/integration"
   },
