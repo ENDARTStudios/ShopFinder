@@ -7,7 +7,11 @@
   "exports": {
     "./tsconfig.base.json": "./tsconfig.base.json",
     "./eslint.base.mjs": "./eslint.base.mjs",
-    "./prettier.config.mjs": "./prettier.config.mjs"
+    "./prettier.config.mjs": "./prettier.config.mjs",
+    "./flags": {
+      "types": "./src/flags.ts",
+      "import": "./src/flags.ts"
+    }
   },
   "files": [
     "tsconfig.base.json",

@@ -32,16 +32,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildMetadata } from "@workspace/seo/metadata";
+import {
+  buildProductJsonLd,
+  buildBreadcrumbJsonLd,
+  jsonLdScript,
+  siteUrl
+} from "@workspace/seo/schema";
 import { CompatibleProducts } from "./compatible-products";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price } from "@/components/site/price";
+import { FadeIn } from "@/components/motion/fade-in";
+import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 
 // ── Helpers ────────────────────────────────────────────────
-
-function minorUnitsToUSD(minor: bigint): number {
-  return Number(minor) / 100;
-}
 
 interface EvidenceEntry {
   sourceType: string;
@@ -64,41 +69,55 @@ function parseEvidence(jsonStr: string | null): EvidenceEntry[] {
 
 function getSourceIcon(sourceType: string) {
   switch (sourceType) {
-    case "manufacturer": return <Factory className="h-3.5 w-3.5" />;
-    case "datasheet": return <FileText className="h-3.5 w-3.5" />;
-    case "distributor": return <Store className="h-3.5 w-3.5" />;
-    case "marketplace": return <Store className="h-3.5 w-3.5" />;
-    default: return <ShieldCheck className="h-3.5 w-3.5" />;
+    case "manufacturer":
+      return <Factory className="h-3.5 w-3.5" />;
+    case "datasheet":
+      return <FileText className="h-3.5 w-3.5" />;
+    case "distributor":
+      return <Store className="h-3.5 w-3.5" />;
+    case "marketplace":
+      return <Store className="h-3.5 w-3.5" />;
+    default:
+      return <ShieldCheck className="h-3.5 w-3.5" />;
   }
 }
 
 function getSourceColor(sourceType: string): string {
   switch (sourceType) {
-    case "manufacturer": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
-    case "datasheet": return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
-    case "distributor": return "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/30";
-    case "marketplace": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
-    default: return "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30";
+    case "manufacturer":
+      return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
+    case "datasheet":
+      return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
+    case "distributor":
+      return "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/30";
+    case "marketplace":
+      return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+    default:
+      return "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30";
   }
 }
 
 function getConfidenceColor(confidence: number): string {
   if (confidence >= 0.95) return "text-emerald-500";
-  if (confidence >= 0.80) return "text-blue-500";
-  if (confidence >= 0.60) return "text-amber-500";
+  if (confidence >= 0.8) return "text-blue-500";
+  if (confidence >= 0.6) return "text-amber-500";
   return "text-red-500";
 }
 
 function getConfidenceLabel(confidence: number): string {
   if (confidence >= 0.95) return "Alta confiabilidade";
-  if (confidence >= 0.80) return "Boa confiabilidade";
-  if (confidence >= 0.60) return "Confiança média";
+  if (confidence >= 0.8) return "Boa confiabilidade";
+  if (confidence >= 0.6) return "Confiança média";
   return "Baixa confiabilidade";
 }
 
 // ── Metadata ───────────────────────────────────────────────
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const product = await prisma.product.findFirst({
     where: { slug, deletedAt: null, status: "published" },
@@ -106,13 +125,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 
   if (!product) {
-    return { title: "Produto não encontrado · ShopFinder" };
+    return { title: "Produto não encontrado" };
   }
 
-  return {
-    title: `${product.title} · ShopFinder`,
-    description: product.description.slice(0, 160)
-  };
+  return buildMetadata({
+    title: product.title,
+    description: product.description.slice(0, 160),
+    path: `/produtos/${slug}`
+  });
 }
 
 // ── Page ───────────────────────────────────────────────────
@@ -150,9 +170,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const plainAttrs = product.attributes.filter((a) => a.source === null);
 
   // Calculate price range from offers
-  const prices = product.offers.map((o) => minorUnitsToUSD(o.priceMinorUnits));
-  const minPrice = prices.length > 0 ? Math.min(...prices) : minorUnitsToUSD(product.basePriceMinorUnits);
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : minorUnitsToUSD(product.basePriceMinorUnits);
+  const prices = product.offers.map((o) => minorUnitsToNumber(o.priceMinorUnits));
+  const { min: minPrice, max: maxPrice } = computePriceRange(
+    prices,
+    minorUnitsToNumber(product.basePriceMinorUnits)
+  );
   const totalStock = product.offers.reduce((sum, o) => sum + o.inventory, 0);
   const inStock = totalStock > 0;
 
@@ -164,6 +186,31 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-background">
+      {/* JSON-LD — docs/eng/SEO-AEO-AIO-GEO.md */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLdScript([
+            buildProductJsonLd({
+              name: product.title,
+              description: product.description.slice(0, 500),
+              sku: product.sku,
+              brand: manufacturerName ?? undefined,
+              price: minPrice,
+              currencyCode: product.basePriceCurrencyCode || "USD",
+              inStock,
+              url: siteUrl(`/produtos/${product.slug}`)
+            }),
+            buildBreadcrumbJsonLd([
+              { name: "Catálogo", url: siteUrl("/") },
+              ...(product.category
+                ? [{ name: product.category.name, url: siteUrl(`/#categorias`) }]
+                : []),
+              { name: product.title }
+            ])
+          ])
+        }}
+      />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Back link */}
         <Link
@@ -175,66 +222,69 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </Link>
 
         {/* Header */}
-        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-start">
-          {/* Product image */}
-          <div
-            className="flex h-48 w-48 shrink-0 items-center justify-center rounded-2xl"
-            style={{ background: imageGradient }}
-          >
-            <span className="text-lg font-bold text-white/90">{imageLabel}</span>
-          </div>
-
-          {/* Title + meta */}
-          <div className="flex-1">
-            <div className="mb-2 flex items-center gap-2">
-              <Badge variant="outline">{product.category?.name ?? "Sem categoria"}</Badge>
-              {inStock ? (
-                <Badge className="bg-emerald-500/90 text-white">Em estoque</Badge>
-              ) : (
-                <Badge className="bg-amber-500/90 text-white">Esgotado</Badge>
-              )}
+        <FadeIn>
+          <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-start">
+            {/* Product image */}
+            <div
+              className="flex h-48 w-48 shrink-0 items-center justify-center rounded-2xl"
+              style={{ background: imageGradient }}
+            >
+              <span className="text-lg font-bold text-white/90">{imageLabel}</span>
             </div>
-            <h1 className="mb-2 text-3xl font-black tracking-tight">{product.title}</h1>
-            {manufacturerName && (
-              <p className="mb-3 text-sm text-muted-foreground">
-                Fabricante: <span className="font-medium text-foreground">{manufacturerName}</span>
-              </p>
-            )}
-            <div className="flex items-end gap-4">
-              <div>
-                <Price amount={minPrice} currency="USD" variant="large" />
-                {maxPrice > minPrice && (
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <span>até</span>
-                    <Price amount={maxPrice} currency="USD" variant="small" />
-                    <span>em {product.offers.length} ofertas</span>
-                  </div>
+
+            {/* Title + meta */}
+            <div className="flex-1">
+              <div className="mb-2 flex items-center gap-2">
+                <Badge variant="outline">{product.category?.name ?? "Sem categoria"}</Badge>
+                {inStock ? (
+                  <Badge className="bg-emerald-500/90 text-white">Em estoque</Badge>
+                ) : (
+                  <Badge className="bg-amber-500/90 text-white">Esgotado</Badge>
                 )}
               </div>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <TrendingUp className="h-4 w-4 text-emerald-500" />
-                {totalStock.toLocaleString()} unidades em estoque
+              <h1 className="mb-2 text-3xl font-black tracking-tight">{product.title}</h1>
+              {manufacturerName && (
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Fabricante:{" "}
+                  <span className="font-medium text-foreground">{manufacturerName}</span>
+                </p>
+              )}
+              <div className="flex items-end gap-4">
+                <div>
+                  <Price amount={minPrice} currency="USD" variant="large" />
+                  {maxPrice > minPrice && (
+                    <div className="text-sm text-muted-foreground flex items-center gap-1">
+                      <span>até</span>
+                      <Price amount={maxPrice} currency="USD" variant="small" />
+                      <span>em {product.offers.length} ofertas</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  {totalStock.toLocaleString()} unidades em estoque
+                </div>
               </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <AddToCartButton
+                  sku={product.sku}
+                  title={product.title}
+                  price={minPrice}
+                  currency={product.basePriceCurrencyCode || "USD"}
+                  imageLabel={imageLabel}
+                  size="default"
+                  className="bg-emerald-500 hover:bg-emerald-600"
+                />
+                <CompareButton slug={product.slug} size="default" navigateOnAdd />
+              </div>
+              {traceId && (
+                <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">
+                  Pipeline trace: {traceId}
+                </p>
+              )}
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <AddToCartButton
-                sku={product.sku}
-                title={product.title}
-                price={minPrice}
-                currency={product.basePriceCurrencyCode || "USD"}
-                imageLabel={imageLabel}
-                size="default"
-                className="bg-emerald-500 hover:bg-emerald-600"
-              />
-              <CompareButton slug={product.slug} size="default" navigateOnAdd />
-            </div>
-            {traceId && (
-              <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">
-                Pipeline trace: {traceId}
-              </p>
-            )}
           </div>
-        </div>
+        </FadeIn>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left column: Specs + Evidence */}
@@ -261,11 +311,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <div className="font-medium">{attr.value}</div>
                             </div>
                             <div className="flex flex-col items-end gap-1">
-                              <Badge variant="outline" className={`text-[10px] ${getSourceColor(attr.source ?? "")}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] ${getSourceColor(attr.source ?? "")}`}
+                              >
                                 {getSourceIcon(attr.source ?? "")}
                                 <span className="ml-1">{attr.sourceName}</span>
                               </Badge>
-                              <div className={`text-xs font-medium ${getConfidenceColor(confidence)}`}>
+                              <div
+                                className={`text-xs font-medium ${getConfidenceColor(confidence)}`}
+                              >
                                 {getConfidenceLabel(confidence)}
                               </div>
                             </div>
@@ -275,9 +330,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                           <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
                             <div
                               className={`h-full rounded-full ${
-                                confidence >= 0.95 ? "bg-emerald-500" :
-                                confidence >= 0.80 ? "bg-blue-500" :
-                                confidence >= 0.60 ? "bg-amber-500" : "bg-red-500"
+                                confidence >= 0.95
+                                  ? "bg-emerald-500"
+                                  : confidence >= 0.8
+                                    ? "bg-blue-500"
+                                    : confidence >= 0.6
+                                      ? "bg-amber-500"
+                                      : "bg-red-500"
                               }`}
                               style={{ width: `${confidence * 100}%` }}
                             />
@@ -292,8 +351,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               </summary>
                               <div className="mt-2 space-y-2">
                                 {evidence.map((ev, i) => (
-                                  <div key={i} className="flex items-start gap-2 rounded-md bg-muted/30 p-2 text-xs">
-                                    <Badge variant="outline" className={`shrink-0 text-[10px] ${getSourceColor(ev.sourceType)}`}>
+                                  <div
+                                    key={i}
+                                    className="flex items-start gap-2 rounded-md bg-muted/30 p-2 text-xs"
+                                  >
+                                    <Badge
+                                      variant="outline"
+                                      className={`shrink-0 text-[10px] ${getSourceColor(ev.sourceType)}`}
+                                    >
                                       {getSourceIcon(ev.sourceType)}
                                       <span className="ml-1">{ev.sourceName}</span>
                                     </Badge>
@@ -314,7 +379,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                                         {ev.url.length > 60 ? ev.url.slice(0, 60) + "..." : ev.url}
                                       </a>
                                       <div className="text-[10px] text-muted-foreground">
-                                        Obtido em: {new Date(ev.retrievedAt).toLocaleString("pt-BR")}
+                                        Obtido em:{" "}
+                                        {new Date(ev.retrievedAt).toLocaleString("pt-BR")}
                                       </div>
                                     </div>
                                   </div>
@@ -328,7 +394,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Dados enriquecidos em processamento. Este produto ainda não passou pelo pipeline de enriquecimento.
+                    Dados enriquecidos em processamento. Este produto ainda não passou pelo pipeline
+                    de enriquecimento.
                   </p>
                 )}
               </CardContent>
@@ -343,7 +410,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <CardContent>
                   <div className="grid grid-cols-2 gap-2">
                     {plainAttrs.map((attr) => (
-                      <div key={attr.id} className="flex justify-between rounded-md bg-muted/20 px-3 py-1.5 text-xs">
+                      <div
+                        key={attr.id}
+                        className="flex justify-between rounded-md bg-muted/20 px-3 py-1.5 text-xs"
+                      >
                         <span className="text-muted-foreground">{attr.name}</span>
                         <span className="font-medium">{attr.value}</span>
                       </div>
@@ -367,7 +437,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 {product.offers.length > 0 ? (
                   <div className="space-y-3">
                     {product.offers.map((offer) => {
-                      const price = minorUnitsToUSD(offer.priceMinorUnits);
+                      const price = minorUnitsToNumber(offer.priceMinorUnits);
                       const supplierName = offer.supplier.name;
                       const isLowest = price === minPrice;
                       return (
@@ -394,7 +464,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                             </div>
                             <div className="text-right text-[10px] text-muted-foreground">
                               <div>Envio: {offer.shipsFromCountry}</div>
-                              <div>{offer.fulfillmentDaysMin}-{offer.fulfillmentDaysMax} dias</div>
+                              <div>
+                                {offer.fulfillmentDaysMin}-{offer.fulfillmentDaysMax} dias
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -418,8 +490,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         Produto enriquecido pelo pipeline
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {enrichedAttrs.length} atributos validados com evidências de {manufacturerName ?? "fabricante"}.
-                        Cada especificação tem origem rastreada e nível de confiança.
+                        {enrichedAttrs.length} atributos validados com evidências de{" "}
+                        {manufacturerName ?? "fabricante"}. Cada especificação tem origem rastreada
+                        e nível de confiança.
                       </div>
                     </div>
                   </div>
@@ -443,15 +516,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
           {product.category?.description && (
             <div>
-              Nicho: {(() => {
-                try { return JSON.parse(product.category.description).nicheId ?? "—"; }
-                catch { return "—"; }
+              Nicho:{" "}
+              {(() => {
+                try {
+                  return JSON.parse(product.category.description).nicheId ?? "—";
+                } catch {
+                  return "—";
+                }
               })()}
             </div>
           )}
-          <div>
-            Atualizado: {product.updatedAt.toLocaleString("pt-BR")}
-          </div>
+          <div>Atualizado: {product.updatedAt.toLocaleString("pt-BR")}</div>
         </div>
       </div>
     </div>

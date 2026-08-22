@@ -173,5 +173,27 @@
     "headerAdd": "Add to comparison",
     "headerRemove": "Remove from comparison",
     "headerFull": "Compare list is full"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "How ShopFinder finds, validates and delivers the best offers.",
+    "items": [
+      {
+        "q": "How does ShopFinder get better prices?",
+        "a": "We aggregate offers from manufacturers, authorized distributors and marketplaces (eBay, AliExpress, Amazon, Newegg, DigiKey) into a single catalog. When you buy, the order is automatically forwarded to the supplier with the best price — you pay once and the rest is invisible."
+      },
+      {
+        "q": "What currency are prices shown in?",
+        "a": "Prices are shown in BRL with an hourly-updated USD-BRL rate, so the value reflects the current exchange rate with no checkout surprises."
+      },
+      {
+        "q": "What does specification confidence mean?",
+        "a": "Each specification can carry its source (manufacturer, datasheet, distributor or marketplace) and a confidence level. Attributes with traced origin and evidence have high confidence; AI estimates show lower confidence and go through review."
+      },
+      {
+        "q": "How does product compatibility work?",
+        "a": "The catalog keeps a graph of relations (e.g.: CPU and motherboard with the same socket). On the product page you can see what is compatible before buying, avoiding parts that do not work together."
+      }
+    ]
   }
 }

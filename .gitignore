@@ -29,3 +29,11 @@ coverage/
 .worktrees/
 .agents/
 skills-lock.json
+
+# Playwright
+playwright-report/
+test-results/
+
+# Stryker
+.stryker-tmp/
+reports/

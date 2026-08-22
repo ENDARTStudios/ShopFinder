@@ -1,0 +1,37 @@
+name: Security Gate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      # npm não suporta o protocolo workspace:* dos workspaces — instalação via bun
+      - name: Install deps
+        run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
+      - name: Architecture contract
+        run: npm run test:arch --if-present
+      - name: Audit (zero high+)
+        # GHSAs triadas (backlog de deps):
+        # - GHSA-ggr8-5vv4-36mx (deepmerge-ts via prisma): stack exhaustion
+        #   exige input recursivo hostil no merge.
+        # - GHSA-52cp-r559-cp3m / GHSA-5p4m-2wfm-xmqj (js-yaml 4.x via
+        #   mdxeditor/commitlint): CPU quadrática em YAML hostil — inputs são
+        #   configs próprias do repo, não user input.
+        run: bun audit --audit-level=high --ignore=GHSA-ggr8-5vv4-36mx --ignore=GHSA-52cp-r559-cp3m --ignore=GHSA-5p4m-2wfm-xmqj
+      - name: Gitleaks
+        # Binário direto (a action oficial falha com 403 no post de status)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz | tar xz -C /tmp
+          /tmp/gitleaks detect --source . --redact -v

@@ -19,14 +19,19 @@ import {
   Smartphone,
   Headphones,
   Watch,
-  Home,
-  Loader2
+  Home
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
 import { ModeToggle } from "@/components/site/mode-toggle";
 import { LanguageSelector } from "@/components/site/language-selector";
 import { HeaderCompareLink } from "@/components/site/header-compare-link";
@@ -36,6 +41,14 @@ import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
 import { FilterBar } from "@/components/site/filter-bar";
+import { FadeIn, FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
+import {
+  NicheGridSkeleton,
+  CategoryGridSkeleton,
+  TierGridSkeleton,
+  LandingProductGridSkeleton
+} from "@/components/site/landing-skeletons";
+import { Hero3DMount } from "@/components/site/hero-3d-mount";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -277,77 +290,84 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
             "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.15), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(16,185,129,0.08), transparent 60%)"
         }}
       />
+      {/* Hero 3D (R3F) — lazy, gated por visibilidade + reduced-motion (#32).
+          O gradiente acima permanece como fallback/base estática. */}
+      <Hero3DMount />
       <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-        <div className="flex flex-col items-center text-center gap-8">
-          <div className="flex flex-col items-center gap-3">
+        <FadeInStagger className="flex flex-col items-center text-center gap-8" itemCount={4}>
+          <FadeInItem className="flex flex-col items-center gap-3">
             <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
               {PROJECT_META.name}
             </h1>
-            <p className="text-lg font-medium text-emerald-500 tracking-wide">
-              {t("tagline")}
-            </p>
-          </div>
+            <p className="text-lg font-medium text-emerald-500 tracking-wide">{t("tagline")}</p>
+          </FadeInItem>
 
-          <p className="max-w-2xl text-xl text-muted-foreground sm:text-2xl">
-            {t("subtitle")}
-          </p>
+          <FadeInItem>
+            <p className="max-w-2xl text-xl text-muted-foreground sm:text-2xl">{t("subtitle")}</p>
+          </FadeInItem>
 
           {/* Search bar — queries the real API */}
-          <form onSubmit={handleSearch} className="w-full max-w-2xl" role="search">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-              <Input
-                type="text"
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="h-14 rounded-2xl border-2 pl-12 pr-32 text-base shadow-lg focus-visible:ring-emerald-500"
-              />
-              <Button
-                type="submit"
-                size="lg"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-500 hover:bg-emerald-600"
-                aria-label={t("searchButton")}
-              >
-                <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                {t("searchButton")}
-              </Button>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs text-muted-foreground">{t("popular")}</span>
-              {SEARCH_SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => {
-                    setQuery(s);
-                    onSearch(s);
-                    document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:bg-emerald-500/20"
+          <FadeInItem className="w-full max-w-2xl">
+            <form onSubmit={handleSearch} className="w-full" role="search">
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="text"
+                  placeholder={t("searchPlaceholder")}
+                  aria-label={t("searchPlaceholder")}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-14 rounded-2xl border-2 pl-12 pr-32 text-base shadow-lg focus-visible:ring-emerald-500"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-500 hover:bg-emerald-600"
+                  aria-label={t("searchButton")}
                 >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </form>
+                  <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                  {t("searchButton")}
+                </Button>
+              </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <span className="text-xs text-muted-foreground">{t("popular")}</span>
+                {SEARCH_SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => {
+                      setQuery(s);
+                      onSearch(s);
+                      document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </form>
+          </FadeInItem>
+
+          <FadeInItem className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <TrendingUp className="h-4 w-4 text-emerald-500" aria-hidden="true" />
               {t("statProducts")}
             </span>
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" aria-hidden="true" />{t("statNiches")}
+              <ShieldCheck className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+              {t("statNiches")}
             </span>
             <span className="flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-emerald-500" aria-hidden="true" />
               {t("statAi")}
             </span>
-          </div>
-        </div>
+          </FadeInItem>
+        </FadeInStagger>
       </div>
     </section>
   );
@@ -368,69 +388,71 @@ function NichesSection() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <NicheGridSkeleton />
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <FadeInStagger
+            className="grid grid-cols-1 gap-5 md:grid-cols-3"
+            itemCount={data?.niches.length}
+          >
             {(data?.niches ?? []).map((niche) => (
-              <a
-                key={niche.id}
-                href="#produtos"
-                className="group relative overflow-hidden rounded-2xl border border-border/60 p-6 transition-all hover:border-emerald-500/40 hover:shadow-xl"
-              >
-                <div
-                  className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl text-white"
-                  style={{ background: niche.gradient }}
+              <FadeInItem key={niche.id}>
+                <a
+                  href="#produtos"
+                  className="group relative block h-full overflow-hidden rounded-2xl border border-border/60 p-6 transition-all hover:border-emerald-500/40 hover:shadow-xl"
                 >
-                  {NICHE_ICONS[niche.icon]}
-                </div>
+                  <div
+                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl text-white"
+                    style={{ background: niche.gradient }}
+                  >
+                    {NICHE_ICONS[niche.icon]}
+                  </div>
 
-                <h3 className="mb-1 text-lg font-bold">{niche.name}</h3>
-                <p className="mb-4 text-sm text-muted-foreground">{niche.description}</p>
+                  <h3 className="mb-1 text-lg font-bold">{niche.name}</h3>
+                  <p className="mb-4 text-sm text-muted-foreground">{niche.description}</p>
 
-                <div className="mb-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
-                    {t("productCount", { count: niche.productCount.toLocaleString() })}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                    {t("supplierCount", { count: niche.supplierCount })}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {niche.topBrands.slice(0, 4).map((brand) => (
-                    <Badge key={brand} variant="secondary" className="text-[10px]">
-                      {brand}
-                    </Badge>
-                  ))}
-                  {niche.topBrands.length > 4 && (
-                    <Badge variant="outline" className="text-[10px]">
-                      +{niche.topBrands.length - 4}
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/40 pt-4">
-                  {niche.popularSearches.map((search) => (
-                    <span
-                      key={search}
-                      className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
-                    >
-                      {search}
+                  <div className="mb-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                      {t("productCount", { count: niche.productCount.toLocaleString() })}
                     </span>
-                  ))}
-                </div>
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                      {t("supplierCount", { count: niche.supplierCount })}
+                    </span>
+                  </div>
 
-                <div className="mt-4 flex items-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                  {t("explore")}
-                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </div>
-              </a>
+                  <div className="flex flex-wrap gap-1.5">
+                    {niche.topBrands.slice(0, 4).map((brand) => (
+                      <Badge key={brand} variant="secondary" className="text-[10px]">
+                        {brand}
+                      </Badge>
+                    ))}
+                    {niche.topBrands.length > 4 && (
+                      <Badge variant="outline" className="text-[10px]">
+                        +{niche.topBrands.length - 4}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/40 pt-4">
+                    {niche.popularSearches.map((search) => (
+                      <span
+                        key={search}
+                        className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                      >
+                        {search}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 flex items-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    {t("explore")}
+                    <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </a>
+              </FadeInItem>
             ))}
-          </div>
+          </FadeInStagger>
         )}
       </div>
     </section>
@@ -481,27 +503,29 @@ function CategoriesSection() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <CategoryGridSkeleton />
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <FadeInStagger
+            className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+            itemCount={filtered.length}
+          >
             {filtered.map((cat) => (
-              <a
-                key={cat.id}
-                href="#produtos"
-                className="group rounded-2xl border border-border/60 bg-card p-5 transition-all hover:border-emerald-500/40 hover:shadow-lg"
-              >
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
-                  {CATEGORY_ICONS[cat.slug] ?? <CircuitBoard className="h-6 w-6" />}
-                </div>
-                <h3 className="font-semibold">{cat.name}</h3>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {t("productCount", { count: cat.productCount.toLocaleString() })}
-                </p>
-              </a>
+              <FadeInItem key={cat.id}>
+                <a
+                  href="#produtos"
+                  className="group block h-full rounded-2xl border border-border/60 bg-card p-5 transition-all hover:border-emerald-500/40 hover:shadow-lg"
+                >
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
+                    {CATEGORY_ICONS[cat.slug] ?? <CircuitBoard className="h-6 w-6" />}
+                  </div>
+                  <h3 className="font-semibold">{cat.name}</h3>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {t("productCount", { count: cat.productCount.toLocaleString() })}
+                  </p>
+                </a>
+              </FadeInItem>
             ))}
-          </div>
+          </FadeInStagger>
         )}
       </div>
     </section>
@@ -622,52 +646,55 @@ function ManufacturersSection() {
         )}
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
+          <TierGridSkeleton />
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <FadeInStagger
+            className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4"
+            itemCount={tiers.length}
+          >
             {tiers.map((tier) => (
-              <div key={tier.tier} className="rounded-2xl border border-border/60 bg-card p-5">
-                <div className="mb-3 flex items-center justify-between">
-                  <span
-                    className={`flex h-10 w-10 items-center justify-center rounded-xl border text-lg font-black ${tierColorClasses[tier.tier] ?? tierColorClasses.D}`}
-                  >
-                    {tier.tier}
-                  </span>
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {t("authorityLabel", { range: tier.authorityRange })}
-                  </span>
-                </div>
+              <FadeInItem key={tier.tier} className="h-full">
+                <div className="h-full rounded-2xl border border-border/60 bg-card p-5">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl border text-lg font-black ${tierColorClasses[tier.tier] ?? tierColorClasses.D}`}
+                    >
+                      {tier.tier}
+                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {t("authorityLabel", { range: tier.authorityRange })}
+                    </span>
+                  </div>
 
-                <h3 className="mb-1 font-bold text-sm">{tier.label}</h3>
-                <div className="mb-3 text-xs text-muted-foreground">
-                  {t("manufacturersCount", { count: tier.manufacturers.length })}
-                </div>
+                  <h3 className="mb-1 font-bold text-sm">{tier.label}</h3>
+                  <div className="mb-3 text-xs text-muted-foreground">
+                    {t("manufacturersCount", { count: tier.manufacturers.length })}
+                  </div>
 
-                <div className="space-y-2">
-                  {tier.manufacturers.slice(0, 8).map((m) => (
-                    <div key={m.code} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <span>{countryFlag[m.countryName] ?? "🌍"}</span>
-                        <span className="font-medium">{m.name}</span>
+                  <div className="space-y-2">
+                    {tier.manufacturers.slice(0, 8).map((m) => (
+                      <div key={m.code} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span>{countryFlag[m.countryName] ?? "🌍"}</span>
+                          <span className="font-medium">{m.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <span className="text-emerald-500 font-medium">{m.authorityScore}</span>
+                          <span>/</span>
+                          <span className="text-blue-500 font-medium">{m.coverageScore}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <span className="text-emerald-500 font-medium">{m.authorityScore}</span>
-                        <span>/</span>
-                        <span className="text-blue-500 font-medium">{m.coverageScore}</span>
+                    ))}
+                    {tier.manufacturers.length > 8 && (
+                      <div className="text-center text-xs text-muted-foreground pt-1">
+                        {t("more", { count: tier.manufacturers.length - 8 })}
                       </div>
-                    </div>
-                  ))}
-                  {tier.manufacturers.length > 8 && (
-                    <div className="text-center text-xs text-muted-foreground pt-1">
-                      {t("more", { count: tier.manufacturers.length - 8 })}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              </FadeInItem>
             ))}
-          </div>
+          </FadeInStagger>
         )}
       </div>
     </section>
@@ -779,130 +806,188 @@ function ProductsSection({
 
           <div className="flex-1 min-w-0">
             {loading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <LandingProductGridSkeleton count={6} />
             ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <p className="text-lg font-medium text-muted-foreground">{t("noResults")}</p>
                 <p className="text-sm text-muted-foreground">{t("noResultsHint")}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <a
-                key={product.id}
-                href={`/produtos/${product.slug}`}
-                className="block"
-              >
-                <Card
-                  className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40"
-                >
-                  <div
-                    className="relative flex h-40 items-center justify-center"
-                    style={{ background: product.imageGradient }}
-                  >
-                    <span className="text-base font-bold text-white/90">{product.imageLabel}</span>
-                  {product.inStock ? (
-                    <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
-                      {t("inStock")}
-                    </Badge>
-                  ) : (
-                    <Badge className="absolute right-3 top-3 bg-amber-500/90 text-white">
-                      {t("outOfStock")}
-                    </Badge>
-                  )}
-                  <div
-                    className={`absolute left-3 top-3 h-2 w-2 rounded-full ${
-                      product.nicheId === "pc-hardware"
-                        ? "bg-emerald-400"
-                        : product.nicheId === "electronic-components"
-                          ? "bg-blue-400"
-                          : "bg-violet-400"
-                    }`}
-                  />
-                </div>
-
-                <CardContent className="p-4">
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {product.brand}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{product.category}</span>
-                  </div>
-                  <h3 className="mb-2 line-clamp-2 font-semibold leading-tight">{product.title}</h3>
-
-                  <div className="mb-3 flex flex-wrap gap-1">
-                    {product.specs.slice(0, 3).map((spec) => (
-                      <Badge key={spec.name} variant="outline" className="text-[10px] font-normal">
-                        {spec.value}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    <span className="font-medium text-foreground">{product.rating}</span>
-                    <span>({product.reviewCount.toLocaleString()})</span>
-                    <span className="mx-1">·</span>
-                    <span>{t("suppliers", { count: product.suppliers })}</span>
-                  </div>
-
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <Price amount={product.price} currency={product.currency} />
-                      <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <Price amount={product.priceRange.min} currency={product.currency} variant="small" />
-                        <span>–</span>
-                        <Price amount={product.priceRange.max} currency={product.currency} variant="small" />
-                      </div>
-                    </div>
-                    <CompareButton
-                      slug={product.slug}
-                      size="sm"
-                      variant="default"
-                      className="bg-emerald-500 hover:bg-emerald-600"
-                    />
-                  </div>
-
-                  {/* Offers detail */}
-                  {product.offers.length > 0 && (
-                    <div className="mt-3 border-t border-border/40 pt-3">
-                      <p className="mb-1.5 text-[10px] font-medium text-muted-foreground">
-                        Ofertas de {product.offers.length} fornecedores:
-                      </p>
-                      <div className="space-y-1">
-                        {product.offers.slice(0, 3).map((offer) => (
+              /* Entrada em bloco: grid pode ter dezenas de itens e o
+                 stagger completo violaria o total < 400ms (regra 1/3). */
+              <FadeIn>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {products.map((product) => (
+                    <a key={product.id} href={`/produtos/${product.slug}`} className="block">
+                      <Card className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40">
+                        <div
+                          className="relative flex h-40 items-center justify-center"
+                          style={{ background: product.imageGradient }}
+                        >
+                          <span className="text-base font-bold text-white/90">
+                            {product.imageLabel}
+                          </span>
+                          {product.inStock ? (
+                            <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
+                              {t("inStock")}
+                            </Badge>
+                          ) : (
+                            <Badge className="absolute right-3 top-3 bg-amber-500/90 text-white">
+                              {t("outOfStock")}
+                            </Badge>
+                          )}
                           <div
-                            key={offer.id}
-                            className="flex items-center justify-between text-[10px]"
-                          >
-                            <span className="text-muted-foreground capitalize">
-                              {offer.supplier.code}
+                            className={`absolute left-3 top-3 h-2 w-2 rounded-full ${
+                              product.nicheId === "pc-hardware"
+                                ? "bg-emerald-400"
+                                : product.nicheId === "electronic-components"
+                                  ? "bg-blue-400"
+                                  : "bg-violet-400"
+                            }`}
+                          />
+                        </div>
+
+                        <CardContent className="p-4">
+                          <div className="mb-1 flex items-center justify-between">
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {product.brand}
                             </span>
-                            <div className="flex items-center gap-2">
-                              <Price amount={offer.price} currency={offer.currency} variant="small" />
-                              <span
-                                className={
-                                  offer.inStock ? "text-emerald-500" : "text-muted-foreground"
-                                }
-                              >
-                                {offer.inStock ? `${offer.inventory} un.` : "sem estoque"}
-                              </span>
-                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {product.category}
+                            </span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-                </Card>
-              </a>
-            ))}
-          </div>
+                          <h3 className="mb-2 line-clamp-2 font-semibold leading-tight">
+                            {product.title}
+                          </h3>
+
+                          <div className="mb-3 flex flex-wrap gap-1">
+                            {product.specs.slice(0, 3).map((spec) => (
+                              <Badge
+                                key={spec.name}
+                                variant="outline"
+                                className="text-[10px] font-normal"
+                              >
+                                {spec.value}
+                              </Badge>
+                            ))}
+                          </div>
+
+                          <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                            <span className="font-medium text-foreground">{product.rating}</span>
+                            <span>({product.reviewCount.toLocaleString()})</span>
+                            <span className="mx-1">·</span>
+                            <span>{t("suppliers", { count: product.suppliers })}</span>
+                          </div>
+
+                          <div className="flex items-end justify-between">
+                            <div>
+                              <Price amount={product.price} currency={product.currency} />
+                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                <Price
+                                  amount={product.priceRange.min}
+                                  currency={product.currency}
+                                  variant="small"
+                                />
+                                <span>–</span>
+                                <Price
+                                  amount={product.priceRange.max}
+                                  currency={product.currency}
+                                  variant="small"
+                                />
+                              </div>
+                            </div>
+                            <CompareButton
+                              slug={product.slug}
+                              size="sm"
+                              variant="default"
+                              className="bg-emerald-500 hover:bg-emerald-600"
+                            />
+                          </div>
+
+                          {/* Offers detail */}
+                          {product.offers.length > 0 && (
+                            <div className="mt-3 border-t border-border/40 pt-3">
+                              <p className="mb-1.5 text-[10px] font-medium text-muted-foreground">
+                                Ofertas de {product.offers.length} fornecedores:
+                              </p>
+                              <div className="space-y-1">
+                                {product.offers.slice(0, 3).map((offer) => (
+                                  <div
+                                    key={offer.id}
+                                    className="flex items-center justify-between text-[10px]"
+                                  >
+                                    <span className="text-muted-foreground capitalize">
+                                      {offer.supplier.code}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <Price
+                                        amount={offer.price}
+                                        currency={offer.currency}
+                                        variant="small"
+                                      />
+                                      <span
+                                        className={
+                                          offer.inStock
+                                            ? "text-emerald-500"
+                                            : "text-muted-foreground"
+                                        }
+                                      >
+                                        {offer.inStock ? `${offer.inventory} un.` : "sem estoque"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </a>
+                  ))}
+                </div>
+              </FadeIn>
             )}
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ── FAQ section (FAQPage JSON-LD é emitido no page.tsx) ────
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+function FaqSection() {
+  const t = useTranslations("faq");
+  const items = t.raw("items") as FaqItem[];
+
+  return (
+    <section id="faq" className="border-b border-border/60">
+      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("title")}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{t("subtitle")}</p>
+        </div>
+
+        <FadeIn>
+          <Accordion type="single" collapsible className="w-full">
+            {items.map((item, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-semibold sm:text-base">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </FadeIn>
       </div>
     </section>
   );
@@ -977,6 +1062,7 @@ export function Landing() {
           filters={filters}
           onFiltersChange={setFilters}
         />
+        <FaqSection />
         <TrustSection />
       </main>
     </>

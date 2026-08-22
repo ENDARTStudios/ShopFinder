@@ -1,21 +1,17 @@
 # CodeQL — Static Analysis (SAST) for JavaScript/TypeScript
 #
-# Runs on every push to main and on every pull request. Also runs on a
-# weekly schedule to catch new advisories for code that hasn't changed.
-#
-# Free for public repositories (per GitHub CodeQL licensing).
+# REPO PRIVADO: o upload de resultados exige GitHub Advanced Security
+# (Settings → Code security → Advanced Security). Enquanto não estiver
+# habilitado, o workflow fica manual (workflow_dispatch) — o job falhava
+# em todo push com "Code scanning is not enabled for this repository".
+# Após habilitar GHAS, restaurar os triggers de push/PR/schedule abaixo.
 #
 # Reference: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
 
 name: "CodeQL"
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Run every Monday at 03:00 UTC — catches new CodeQL rules + advisories
+  workflow_dispatch:
     - cron: "0 3 * * 1"
   workflow_dispatch:
 
