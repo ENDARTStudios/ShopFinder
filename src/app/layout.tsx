@@ -36,7 +36,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = t("tagline");
 
   return {
-    metadataBase: new URL("https://shopfinder.local"),
+    // Base para URLs relativas de metadados (og:image, twitter:image) —
+    // o domínio real vem de NEXT_PUBLIC_SITE_URL; sem ele, URLs relativas
+    // ficam sem host (melhor que o placeholder shopfinder.local em produção).
+    metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+      : null,
     title: {
       default: `${BRAND_NAME} — ${tagline}`,
       template: `%s · ${BRAND_NAME}`
