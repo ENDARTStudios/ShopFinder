@@ -22,7 +22,7 @@ import type { RepositoryRegistry } from "@workspace/domain/shared";
 import { createProduct } from "@workspace/domain/catalog";
 import { createCustomer } from "@workspace/domain/customer";
 import { createCart } from "@workspace/domain/cart";
-import { asCustomerId, asProductId, asVariantId } from "@workspace/domain/shared";
+import { asCustomerId, asProductId, asUserId, asVariantId } from "@workspace/domain/shared";
 import type { ProductQueryService, CartQueryService } from "@workspace/domain/queries";
 import type {
   ProductDetailDTO,
@@ -153,7 +153,7 @@ export class RegisterUserHandler implements CommandHandler<
     const passwordHash = await hashPassword(payload.password);
 
     const savedUser = await userRepository.save({
-      id: `user_${Date.now()}`,
+      id: asUserId(`user_${Date.now()}`),
       email: payload.email.toLowerCase(),
       passwordHash,
       roles: payload.roles,
