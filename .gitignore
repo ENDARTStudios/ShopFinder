@@ -39,3 +39,6 @@ test-results/
 reports/
 .vercel
 .env.local
+
+# Next.js (gerado por next dev/build — docs v16: "Add it to .gitignore")
+next-env.d.ts
