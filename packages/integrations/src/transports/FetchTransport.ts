@@ -137,7 +137,7 @@ export class FetchTransport implements Transport {
 
   private async buildHeaders(
     req: TransportRequest,
-    body: string | undefined
+    body: BodyInit | undefined
   ): Promise<Record<string, string>> {
     const headers: Record<string, string> = {
       Accept: "application/json",
@@ -171,10 +171,7 @@ export class FetchTransport implements Transport {
   }
 
   private async getAccessToken(): Promise<string> {
-    if (
-      this.cachedToken &&
-      Date.now() < this.cachedToken.expiresAtMs - REFRESH_LEADWAY_MS
-    ) {
+    if (this.cachedToken && Date.now() < this.cachedToken.expiresAtMs - REFRESH_LEADWAY_MS) {
       return this.cachedToken.accessToken;
     }
 
