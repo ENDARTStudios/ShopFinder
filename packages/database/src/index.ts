@@ -62,6 +62,30 @@ export {
 
 export type { CacheRepository, NoopCacheRepository, CacheKeys } from "./cache";
 
+// Query services (read side) — consumidos pelo bootstrap/container
+export {
+  PrismaProductQueryService,
+  PrismaCategoryQueryService,
+  PrismaCustomerQueryService,
+  PrismaCartQueryService,
+  PrismaOrderQueryService,
+  PrismaSupplierQueryService
+} from "./queries";
+
+// Query/entity caches (Rec 9) — getEntityCache/getQueryCache usados no container
+export {
+  NoopEntityCache,
+  NoopQueryCache,
+  InMemoryEntityCache,
+  InMemoryQueryCache,
+  getEntityCache,
+  getQueryCache,
+  setEntityCache,
+  setQueryCache,
+  buildQuerySignature
+} from "./cache/query-cache";
+export type { EntityCache, QueryCache } from "./cache/query-cache";
+
 export type {
   TransactionClient,
   CursorPaginationInput,
