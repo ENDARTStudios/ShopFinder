@@ -3,7 +3,15 @@
   "compilerOptions": {
     "types": [
       "bun-types"
-    ]
+    ],
+    "paths": {
+      "@workspace/domain/discovery/*": [
+        "../domain/src/discovery/*"
+      ],
+      "@workspace/domain/discovery": [
+        "../domain/src/discovery/index.ts"
+      ]
+    }
   },
   "include": [
     "src/**/*"

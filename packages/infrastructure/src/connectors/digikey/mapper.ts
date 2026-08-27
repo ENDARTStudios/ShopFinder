@@ -17,7 +17,7 @@
  * These are mapped into attributes so they flow through the normalizer
  * and become available for AI evaluation, ranking, and catalog.
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 import type { ParsedDigiKeyProduct } from "./parser";
 

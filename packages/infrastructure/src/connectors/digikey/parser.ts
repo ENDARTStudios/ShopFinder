@@ -47,13 +47,24 @@ export interface ParsedDigiKeyPage {
 
 // ── Parser ─────────────────────────────────────────────────
 
+/** Shape of the DigiKey v4 Search response we actually consume. */
+interface RawDigiKeySearchResponse {
+  Products?: {
+    Products?: unknown[];
+    TotalCount?: number;
+    Count?: number;
+    Offset?: number;
+  };
+  message?: string;
+}
+
 export class DigiKeyParser {
   parse(response: HttpResponse): ParsedDigiKeyPage {
     if (response.status >= 400) {
       throw this.parseError(response);
     }
 
-    const json = this.safeParseJson(response.body);
+    const json = this.safeParseJson(response.body) as RawDigiKeySearchResponse | null;
 
     const productsRaw = json?.Products?.Products ?? [];
     const products: ParsedDigiKeyProduct[] = [];
