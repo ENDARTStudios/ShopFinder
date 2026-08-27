@@ -16,14 +16,23 @@
  * helper withTenantTransaction roda sempre (usa a DATABASE_URL normal).
  */
 /// <reference types="bun-types" />
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeAll } from "bun:test";
 import { PrismaClient } from "@prisma/client";
 
 const RLS_URL = process.env.RLS_TEST_DATABASE_URL;
 const appDb = new PrismaClient();
 
 describe("RLS — isolamento por tenant", () => {
-  it.skipIf(!RLS_URL)("role sem bypass fora do tenant vê 0 produtos", async () => {
+  beforeAll(async () => {
+    if (!RLS_URL) return;
+    // Grants de leitura para o role de verificação (idempotente, via owner)
+    await appDb.$executeRawUnsafe(`GRANT USAGE ON SCHEMA public TO rls_verify`);
+    await appDb.$executeRawUnsafe(`GRANT SELECT ON "Product" TO rls_verify`);
+    await appDb.$executeRawUnsafe(`GRANT SELECT ON "Customer" TO rls_verify`);
+    await appDb.$executeRawUnsafe(`GRANT SELECT ON "Store" TO rls_verify`);
+  });
+
+  it.skipIf(!RLS_URL)("fora do tenant: nada além do catálogo público vaza", async () => {
     const tenantDb = new PrismaClient({
       datasources: { db: { url: RLS_URL! } }
     });
@@ -34,12 +43,20 @@ describe("RLS — isolamento por tenant", () => {
     );
     await tenantDb.$executeRawUnsafe(`SELECT set_config('app.user_role', 'admin', false)`);
 
-    // Somente a política public_read_catalog (produto publicado) pode
-    // liberar linhas — nenhuma linha de OUTRO tenant pode vazar
-    const leaked = await tenantDb.$queryRaw<
-      Array<{ id: string; storeId: string }>
-    >`SELECT "id", "storeId" FROM "Product" WHERE "storeId" <> 'tenant-que-nao-existe' LIMIT 5`;
-    expect(leaked).toHaveLength(0); // leak cross-store = falha
+    // Desenho (RLS.md §5): a política public_read_catalog libera PRODUTOS
+    // PUBLICADOS para leitura anônima. O invariante de isolamento é: nenhum
+    // dado NÃO-público (draft/review/archived) e nenhum dado sensível de
+    // outra loja (Customer) pode vazar para quem está fora do tenant.
+    const nonPublic = await tenantDb.$queryRaw<
+      Array<{ status: string }>
+    >`SELECT "status" FROM "Product" WHERE "status" <> 'published' LIMIT 5`;
+    expect(nonPublic).toHaveLength(0); // leak de não-publicado = falha
+
+    // Customers de outro tenant são PII — sempre 0 para fora do tenant
+    const leakedCustomers = await tenantDb.$queryRaw<
+      Array<{ id: string }>
+    >`SELECT "id" FROM "Customer" LIMIT 5`;
+    expect(leakedCustomers).toHaveLength(0);
 
     await tenantDb.$disconnect();
   });
