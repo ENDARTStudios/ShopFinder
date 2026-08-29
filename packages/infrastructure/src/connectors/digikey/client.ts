@@ -109,19 +109,30 @@ export class DigiKeyClient {
 
   /** GET na API com Bearer + X-DIGIKEY-Client-Id (+ locale padrão US/en/USD). */
   async get(path: string): Promise<ApiResponse> {
+    return this.request("GET", path);
+  }
+
+  private async request(
+    method: "GET" | "POST",
+    path: string,
+    body?: unknown
+  ): Promise<ApiResponse> {
     const auth = await this.authenticate();
     if (!auth.ok) {
       return { ok: false, status: auth.status, json: null, rawBody: auth.errorBody ?? "" };
     }
 
     const response = await fetch(`${this.baseUrl}${path}`, {
+      method,
       headers: {
         Authorization: `Bearer ${this.token!.accessToken}`,
         "X-DIGIKEY-Client-Id": this.clientId,
         "X-DIGIKEY-Locale-Site": "US",
         "X-DIGIKEY-Locale-Language": "en",
-        "X-DIGIKEY-Locale-Currency": "USD"
-      }
+        "X-DIGIKEY-Locale-Currency": "USD",
+        ...(body !== undefined ? { "Content-Type": "application/json" } : {})
+      },
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {})
     });
     const rawBody = await response.text();
     let json: unknown = null;
@@ -135,9 +146,12 @@ export class DigiKeyClient {
 
   /**
    * ProductInformation V4 — busca por keyword.
-   * Na v4 o keyword é parâmetro de PATH: GET /products/v4/search/{keywords}.
+   *
+   * Produção/sandbox exigem POST /products/v4/search com body JSON
+   * { keywords, limit } (o formato GET /search/{keywords} responde 404
+   * "Invalid resource path" — validado em T024/T025).
    */
   async searchProducts(keywords: string, limit = 5): Promise<ApiResponse> {
-    return this.get(`/products/v4/search/${encodeURIComponent(keywords)}?limit=${limit}`);
+    return this.request("POST", "/products/v4/search", { keywords, limit });
   }
 }
