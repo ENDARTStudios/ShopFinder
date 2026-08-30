@@ -127,8 +127,10 @@ export async function generateMetadata({
     select: { title: true, description: true }
   });
 
+  // Defesa em profundidade: o gate primário do 404 real (pré-flush do
+  // streaming shell) vive no layout.tsx deste segmento (T032).
   if (!product) {
-    return { title: "Produto não encontrado" };
+    notFound();
   }
 
   return buildMetadata({
