@@ -18,7 +18,8 @@ export interface CspOptions {
 const BASE_CONNECT_SRC = [
   "'self'",
   "https://api.stripe.com",
-  "https://economia.awesomeapi.com.br" // cotação USD-BRL ao vivo (fx.ts)
+  "https://economia.awesomeapi.com.br", // cotação USD-BRL ao vivo (fx.ts)
+  "https://commons.wikimedia.org" // fotos reais dos produtos (product-image.tsx)
 ];
 
 export function buildCsp({ nonce, isDev, extraConnectSrc = [] }: CspOptions): string {

@@ -5,10 +5,12 @@ import * as React from "react";
 /**
  * ProductImage — foto real via Wikimedia Commons com fallback honesto.
  *
- * - Busca a primeira imagem do termo (marca + título) na Commons API
- *   (sem key, CORS via origin=*), thumb de 640px, timeout de 3s.
+ * - Busca a primeira IMAGEM (namespace File, gsrnamespace=6) do termo
+ *   (marca + título) na Commons API (sem key, CORS via origin=*), thumb
+ *   de 640px, timeout de 3s.
  * - Cache em sessionStorage: "sf:img:<query>" — hit com URL reutiliza;
- *   string vazia é cache negativo (miss/erro) → fallback imediato.
+ *   cache negativo (string vazia) apenas para 200-sem-imagem (miss real).
+ *   Erro de rede/CSP/timeout NÃO cacheia — retry no próximo load.
  * - Qualquer erro/vazio/timeout renderiza o gradiente + label atual,
  *   sem layout quebrado e sem foto de outro produto.
  * - <img> com width/height fixos (zero CLS), lazy e no-referrer.
@@ -21,6 +23,9 @@ function buildApiUrl(query: string): string {
   return (
     "https://commons.wikimedia.org/w/api.php?action=query&generator=search" +
     `&gsrsearch=${encodeURIComponent(query)}` +
+    // namespace 6 = File — sem isso a busca retorna páginas de artigo,
+    // que vêm SEM imageinfo/thumburl (validado em T030)
+    "&gsrnamespace=6" +
     "&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*"
   );
 }
@@ -88,11 +93,13 @@ export function ProductImage({ query, gradient, label, className = "" }: Product
           )?.query?.pages ?? {};
         const first = Object.values(pages)[0];
         const thumburl = first?.imageinfo?.[0]?.thumburl ?? null;
+        // Cache negativo SOMENTE para 200-sem-imagem (miss real do catálogo
+        // da Commons) — evita refetch spam sem eternizar falhas transitórias.
         writeCache(query, thumburl);
         if (alive) setState({ query, src: thumburl, resolved: true });
       })
       .catch(() => {
-        writeCache(query, null);
+        // Erro de rede/CSP/timeout: NÃO cacheia — tenta de novo no próximo load.
         if (alive) setState({ query, src: null, resolved: true });
       })
       .finally(() => clearTimeout(timer));

@@ -195,5 +195,17 @@
         "a": "The catalog keeps a graph of relations (e.g.: CPU and motherboard with the same socket). On the product page you can see what is compatible before buying, avoiding parts that do not work together."
       }
     ]
+  },
+  "cart": {
+    "title": "Cart",
+    "close": "Close",
+    "empty": "Your cart is empty",
+    "viewProducts": "View products",
+    "removeItem": "Remove item",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout",
+    "continueShopping": "Continue shopping"
   }
 }
