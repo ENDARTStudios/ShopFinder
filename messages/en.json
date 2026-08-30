@@ -211,5 +211,13 @@
     "subtotal": "Subtotal",
     "checkout": "Checkout",
     "continueShopping": "Continue shopping"
+  },
+  "orders": {
+    "title": "My orders",
+    "empty": "You haven't placed any orders yet.",
+    "emptyCta": "View products",
+    "items": "items",
+    "itemsOne": "item",
+    "verItens": "View items"
   }
 }

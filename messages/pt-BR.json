@@ -213,5 +213,13 @@
         "a": "O catálogo mantém um grafo de relações (ex.: CPU e placa-mãe com o mesmo socket). Na página de produto você vê o que é compatível antes de comprar, evitando peças que não trabalham juntas."
       }
     ]
+  },
+  "orders": {
+    "title": "Meus pedidos",
+    "empty": "Você ainda não fez nenhum pedido.",
+    "emptyCta": "Ver produtos",
+    "items": "itens",
+    "itemsOne": "item",
+    "verItens": "Ver itens"
   }
 }
