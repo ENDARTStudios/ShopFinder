@@ -219,5 +219,21 @@
     "items": "items",
     "itemsOne": "item",
     "verItens": "View items"
+  },
+  "account": {
+    "title": "My account",
+    "profile": "Profile",
+    "memberSince": "Member since",
+    "orders": "My orders",
+    "ordersDesc": "History and status of your purchases",
+    "settings": "Settings",
+    "settingsDesc": "Language, currency and notifications",
+    "language": "Language",
+    "currency": "Currency",
+    "notifications": "Notifications",
+    "emailNotifications": "Email notifications",
+    "pushNotifications": "Push notifications",
+    "save": "Save",
+    "saved": "Settings saved"
   }
 }

@@ -221,5 +221,21 @@
     "items": "itens",
     "itemsOne": "item",
     "verItens": "Ver itens"
+  },
+  "account": {
+    "title": "Minha conta",
+    "profile": "Perfil",
+    "memberSince": "Membro desde",
+    "orders": "Meus pedidos",
+    "ordersDesc": "Histórico e status das suas compras",
+    "settings": "Configurações",
+    "settingsDesc": "Idioma, moeda e notificações",
+    "language": "Idioma",
+    "currency": "Moeda",
+    "notifications": "Notificações",
+    "emailNotifications": "Notificações por email",
+    "pushNotifications": "Notificações push",
+    "save": "Salvar",
+    "saved": "Configurações salvas"
   }
 }
