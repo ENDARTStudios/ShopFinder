@@ -235,5 +235,46 @@
     "pushNotifications": "Push notifications",
     "save": "Save",
     "saved": "Settings saved"
+  },
+  "about": {
+    "title": "About ShopFinder",
+    "missionTitle": "Our mission",
+    "mission": "Make smart comparison between suppliers simple: real prices in BRL, real stock and honest delivery estimates — so you buy from the best supplier without opening ten tabs.",
+    "howTitle": "How it works",
+    "step1": "Search: find hardware and electronics across integrated suppliers.",
+    "step2": "Compare: specs, prices and stock side by side, converted to BRL.",
+    "step3": "Buy: complete checkout and the order goes to the best supplier.",
+    "nichesTitle": "Covered niches",
+    "niches": "PC & gaming hardware, electronic components and consumer electronics."
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "draft": "DRAFT — review before public launch.",
+    "roleTitle": "ShopFinder's role",
+    "role": "ShopFinder is a comparison and intermediation platform. We do not process payments or ship products: offers come from third-party suppliers and payment is processed by Stripe.",
+    "useTitle": "Acceptable use",
+    "use": "Do not misuse the platform, attempt to break its security, scrape content at scale or place fraudulent orders.",
+    "ipTitle": "Intellectual property",
+    "ip": "Brand, design and code belong to END ART Studios. Supplier names and trademarks belong to their owners.",
+    "changesTitle": "Changes",
+    "changes": "These terms may be updated; relevant changes will be published on this page."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "draft": "DRAFT — review before public launch.",
+    "collectTitle": "Data we collect",
+    "collect": "Account email, orders placed and technical data necessary to operate the platform.",
+    "cookiesTitle": "Cookies and local storage",
+    "cookies": "We use local storage for cart (sf:cart), language, currency and display preferences (sf:locale, sf:currency, sf:notifications).",
+    "thirdPartiesTitle": "Third parties",
+    "thirdParties": "Payments are processed by Stripe. Orders are fulfilled by integrated suppliers, who receive only what is needed to ship.",
+    "rightsTitle": "Your rights",
+    "rights": "You can request access to and deletion of your data at our support contact."
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "Questions, issues or feedback? Talk to us:",
+    "responseTitle": "Response time",
+    "response": "Within 2 business days."
   }
 }

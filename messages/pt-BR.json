@@ -237,5 +237,46 @@
     "pushNotifications": "Notificações push",
     "save": "Salvar",
     "saved": "Configurações salvas"
+  },
+  "about": {
+    "title": "Sobre o ShopFinder",
+    "missionTitle": "Nossa missão",
+    "mission": "Tornar simples a comparação inteligente entre fornecedores: preço real em BRL, estoque real e prazo honesto — para você comprar do melhor fornecedor sem abrir dez abas.",
+    "howTitle": "Como funciona",
+    "step1": "Busque: encontre hardware e eletrônicos entre os fornecedores integrados.",
+    "step2": "Compare: especificações, preços e estoque lado a lado, convertidos para BRL.",
+    "step3": "Compre: finalize o checkout e o pedido vai para o melhor fornecedor.",
+    "nichesTitle": "Nichos cobertos",
+    "niches": "Hardware de PC e gamer, componentes eletrônicos e eletrônicos de consumo."
+  },
+  "terms": {
+    "title": "Termos de Uso",
+    "draft": "RASCUNHO — revisar antes do lançamento público.",
+    "roleTitle": "Papel do ShopFinder",
+    "role": "O ShopFinder é uma plataforma de comparação e intermediação. Não processamos pagamentos nem entregamos produtos: as ofertas vêm de fornecedores terceiros e o pagamento é processado pelo Stripe.",
+    "useTitle": "Uso aceitável",
+    "use": "Não utilize a plataforma de forma abusiva, tente violar sua segurança, extraia conteúdo em escala ou faça pedidos fraudulentos.",
+    "ipTitle": "Propriedade intelectual",
+    "ip": "Marca, design e código pertencem à END ART Studios. Nomes e marcas de fornecedores pertencem aos seus donos.",
+    "changesTitle": "Alterações",
+    "changes": "Estes termos podem ser atualizados; mudanças relevantes serão publicadas nesta página."
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "draft": "RASCUNHO — revisar antes do lançamento público.",
+    "collectTitle": "Dados que coletamos",
+    "collect": "Email da conta, pedidos realizados e dados técnicos necessários para operar a plataforma.",
+    "cookiesTitle": "Cookies e armazenamento local",
+    "cookies": "Usamos armazenamento local para carrinho (sf:cart), idioma, moeda e preferências de exibição (sf:locale, sf:currency, sf:notifications).",
+    "thirdPartiesTitle": "Terceiros",
+    "thirdParties": "Pagamentos são processados pelo Stripe. Pedidos são atendidos pelos fornecedores integrados, que recebem apenas o necessário para a entrega.",
+    "rightsTitle": "Seus direitos",
+    "rights": "Você pode solicitar acesso e exclusão dos seus dados pelo contato de suporte."
+  },
+  "contact": {
+    "title": "Contato",
+    "intro": "Dúvidas, problemas ou feedback? Fale com a gente:",
+    "responseTitle": "Prazo de resposta",
+    "response": "Até 2 dias úteis."
   }
 }
