@@ -21,11 +21,13 @@ export default function SuccessPage() {
   const [loading, setLoading] = React.useState(true);
   const [sessionId, setSessionId] = React.useState<string | null>(null);
 
-  // T042: compra concluída → esvazia o carrinho (estado + localStorage sf:cart)
-  const { clear } = useCart();
+  // T042: compra concluída → esvazia o carrinho (estado + localStorage sf:cart).
+  // Só após a hidratação do provider — senão o restore do localStorage
+  // sobrescreve o clear (efeito de hidratação roda depois do do filho).
+  const { clear, hydrated } = useCart();
   React.useEffect(() => {
-    clear();
-  }, [clear]);
+    if (hydrated) clear();
+  }, [hydrated, clear]);
 
   React.useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("session_id");

@@ -23,6 +23,8 @@ interface CartContextValue {
   itemCount: number;
   subtotal: number;
   isCartOpen: boolean;
+  /** false até o estado ser restaurado do localStorage — clear() antes disso é perdido pela hidratação. */
+  hydrated: boolean;
   addItem: (item: Omit<CartItem, "qty">) => void;
   removeItem: (sku: string) => void;
   setQty: (sku: string, qty: number) => void;
@@ -123,9 +125,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return {
         ...prev,
-        items: prev.items.map((i) =>
-          i.sku === sku ? { ...i, qty: Math.min(qty, 99) } : i
-        )
+        items: prev.items.map((i) => (i.sku === sku ? { ...i, qty: Math.min(qty, 99) } : i))
       };
     });
   }, []);
@@ -149,6 +149,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         itemCount,
         subtotal,
         isCartOpen: state.isCartOpen,
+        hydrated,
         addItem,
         removeItem,
         setQty,
