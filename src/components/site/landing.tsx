@@ -38,6 +38,7 @@ import { HeaderCompareLink } from "@/components/site/header-compare-link";
 import { CompareButton } from "@/components/site/compare-button";
 import { Price, PriceRange } from "@/components/site/price";
 import { ProductImage } from "@/components/site/product-image";
+import { supplierDisplayName } from "@/lib/spec-labels";
 import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
