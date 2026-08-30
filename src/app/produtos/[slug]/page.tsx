@@ -42,7 +42,8 @@ import {
 import { CompatibleProducts } from "./compatible-products";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
-import { Price } from "@/components/site/price";
+import { Price, PriceRange } from "@/components/site/price";
+import { ProductImage } from "@/components/site/product-image";
 import { FadeIn } from "@/components/motion/fade-in";
 import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 
@@ -183,6 +184,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const traceMatch = product.description.match(/Trace:\s*(\S+)/);
   const manufacturerName = manufacturerMatch?.[1] ?? null;
   const traceId = traceMatch?.[1] ?? null;
+  const imageQuery = manufacturerName ? `${manufacturerName} ${product.title}` : product.title;
 
   return (
     <div className="min-h-screen bg-background">
@@ -225,11 +227,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <FadeIn>
           <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-start">
             {/* Product image */}
-            <div
-              className="flex h-48 w-48 shrink-0 items-center justify-center rounded-2xl"
-              style={{ background: imageGradient }}
-            >
-              <span className="text-lg font-bold text-white/90">{imageLabel}</span>
+            <div className="relative h-48 w-48 shrink-0 overflow-hidden rounded-2xl">
+              <ProductImage
+                query={imageQuery}
+                gradient={imageGradient}
+                label={imageLabel}
+                className="absolute inset-0"
+              />
             </div>
 
             {/* Title + meta */}
@@ -251,14 +255,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               )}
               <div className="flex items-end gap-4">
                 <div>
-                  <Price amount={minPrice} currency="USD" variant="large" />
-                  {maxPrice > minPrice && (
-                    <div className="text-sm text-muted-foreground flex items-center gap-1">
-                      <span>até</span>
-                      <Price amount={maxPrice} currency="USD" variant="small" />
-                      <span>em {product.offers.length} ofertas</span>
-                    </div>
-                  )}
+                  <PriceRange min={minPrice} max={maxPrice} currency="USD" size="large" />
+                  <span className="text-xs text-muted-foreground">
+                    em {product.offers.length} {product.offers.length === 1 ? "oferta" : "ofertas"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />

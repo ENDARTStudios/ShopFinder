@@ -36,7 +36,8 @@ import { ModeToggle } from "@/components/site/mode-toggle";
 import { LanguageSelector } from "@/components/site/language-selector";
 import { HeaderCompareLink } from "@/components/site/header-compare-link";
 import { CompareButton } from "@/components/site/compare-button";
-import { Price } from "@/components/site/price";
+import { Price, PriceRange } from "@/components/site/price";
+import { ProductImage } from "@/components/site/product-image";
 import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
@@ -820,13 +821,13 @@ function ProductsSection({
                   {products.map((product) => (
                     <a key={product.id} href={`/produtos/${product.slug}`} className="block">
                       <Card className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40">
-                        <div
-                          className="relative flex h-40 items-center justify-center"
-                          style={{ background: product.imageGradient }}
-                        >
-                          <span className="text-base font-bold text-white/90">
-                            {product.imageLabel}
-                          </span>
+                        <div className="relative flex h-40 items-center justify-center">
+                          <ProductImage
+                            query={`${product.brand} ${product.title}`.trim()}
+                            gradient={product.imageGradient}
+                            label={product.imageLabel}
+                            className="absolute inset-0"
+                          />
                           {product.inStock ? (
                             <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
                               {t("inStock")}
@@ -883,19 +884,11 @@ function ProductsSection({
                           <div className="flex items-end justify-between">
                             <div>
                               <Price amount={product.price} currency={product.currency} />
-                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                <Price
-                                  amount={product.priceRange.min}
-                                  currency={product.currency}
-                                  variant="small"
-                                />
-                                <span>–</span>
-                                <Price
-                                  amount={product.priceRange.max}
-                                  currency={product.currency}
-                                  variant="small"
-                                />
-                              </div>
+                              <PriceRange
+                                min={product.priceRange.min}
+                                max={product.priceRange.max}
+                                currency={product.currency}
+                              />
                             </div>
                             <CompareButton
                               slug={product.slug}
