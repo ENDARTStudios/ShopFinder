@@ -250,27 +250,204 @@
   },
   "terms": {
     "title": "Terms of Use",
-    "draft": "DRAFT — review before public launch.",
-    "roleTitle": "ShopFinder's role",
-    "role": "ShopFinder is a comparison and intermediation platform. We do not process payments or ship products: offers come from third-party suppliers and payment is processed by Stripe.",
-    "useTitle": "Acceptable use",
-    "use": "Do not misuse the platform, attempt to break its security, scrape content at scale or place fraudulent orders.",
-    "ipTitle": "Intellectual property",
-    "ip": "Brand, design and code belong to END ART Studios. Supplier names and trademarks belong to their owners.",
-    "changesTitle": "Changes",
-    "changes": "These terms may be updated; relevant changes will be published on this page."
+    "updated": "Last updated: August 31, 2026 · Version 1.0",
+    "toc": "On this page",
+    "sections": [
+      {
+        "id": "identificacao",
+        "title": "1. Company identification",
+        "body": "ShopFinder is a shopping comparison and intermediation service operated by the legal entity and at the address identified in the company information section below. Official support channel: support email, with a response time of up to 2 business days."
+      },
+      {
+        "id": "definicoes",
+        "title": "2. Definitions and platform role",
+        "body": "ShopFinder is a price comparison and purchase intermediation platform. We are not the seller of the products: offers come from integrated third-party suppliers, and the contract of sale is formed between you and the supplier. Payments are processed by Stripe and shipping is the supplier's responsibility."
+      },
+      {
+        "id": "cadastro",
+        "title": "3. Eligibility and account",
+        "body": "Registration is available to individuals aged 18 or over. You agree to provide true, complete and up-to-date information, to keep your credentials secure (password and, when enabled, your 2FA code) and to notify us of unauthorized use of your account. By completing registration you declare that you have read and accepted these Terms and the Privacy Policy — electronic acceptance with full validity. The accepted version and date are recorded in your account."
+      },
+      {
+        "id": "ofertas",
+        "title": "4. Offers, pricing and disclaimers",
+        "body": "Before completing a purchase you have access to clear information for each offer: price (with live BRL conversion), technical specifications, stock, supplier and applicable costs. Prices shown in BRL use live exchange-rate conversion and may vary. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, PRODUCTS AND OFFERINGS ARE PROVIDED \"AS IS\" AND \"AS AVAILABLE\", AND THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. SOME STATES DO NOT ALLOW LIMITATIONS ON IMPLIED WARRANTIES, SO THESE LIMITATIONS MAY NOT APPLY TO YOU."
+      },
+      {
+        "id": "arrependimento",
+        "title": "5. Cancellation and withdrawal",
+        "body": "Cancellation and refund conditions are those of the supplier responsible for your order, shown on the offer page. Where consumer protection law grants you a withdrawal right (for example, 7 days from delivery), you may exercise it by emailing our support channel with your order number; we will coordinate the refund and return logistics with the supplier."
+      },
+      {
+        "id": "pagamentos",
+        "title": "6. Payments and security",
+        "body": "Payments are processed by Stripe. We do not store card data. We apply technical and organizational measures to protect data and transactions."
+      },
+      {
+        "id": "sac",
+        "title": "7. Customer support",
+        "body": "Our support channel is the email indicated in section 1, with a response time of up to 2 business days. Complaints about delivery or product quality may also be directed to the responsible supplier."
+      },
+      {
+        "id": "pi",
+        "title": "8. Intellectual property",
+        "body": "The ShopFinder brand, design and code belong to the platform operator. Supplier and manufacturer names and trademarks belong to their respective owners."
+      },
+      {
+        "id": "responsabilidade",
+        "title": "9. Responsibilities",
+        "body": "We are responsible for correctly displaying offer information and for the platform's operation, without prejudice to rights granted by applicable law. Because sales contracts are formed between you and the supplier, claims about delivery or product quality must be addressed to the supplier; we will facilitate contact and refunds when applicable. You agree to indemnify ShopFinder against claims arising from your violation of these Terms or misuse of the platform."
+      },
+      {
+        "id": "suspensao",
+        "title": "10. Suspension and termination",
+        "body": "We may suspend or terminate accounts used in violation of these Terms, with prior notice where possible. You may close your account at any time through the support channel."
+      },
+      {
+        "id": "alteracoes",
+        "title": "11. Changes to these Terms",
+        "body": "We may update these Terms; the current version and effective date appear at the top of this page. Material changes will be announced on the site in advance; continued use after notice constitutes acceptance of the new version."
+      },
+      {
+        "id": "foro",
+        "title": "12. Governing law and disputes",
+        "body": "These Terms are governed by the laws of the State of Delaware, USA, without regard to conflict-of-law rules. Disputes shall be resolved in the courts of that state, except where the consumer protection laws of your place of residence grant you a different forum. If any provision is found unenforceable, the remaining provisions remain in force (severability)."
+      }
+    ]
   },
   "privacy": {
     "title": "Privacy Policy",
-    "draft": "DRAFT — review before public launch.",
-    "collectTitle": "Data we collect",
-    "collect": "Account email, orders placed and technical data necessary to operate the platform.",
-    "cookiesTitle": "Cookies and local storage",
-    "cookies": "We use local storage for cart (sf:cart), language, currency and display preferences (sf:locale, sf:currency, sf:notifications).",
-    "thirdPartiesTitle": "Third parties",
-    "thirdParties": "Payments are processed by Stripe. Orders are fulfilled by integrated suppliers, who receive only what is needed to ship.",
-    "rightsTitle": "Your rights",
-    "rights": "You can request access to and deletion of your data at our support contact."
+    "updated": "Last updated: August 31, 2026 · Version 1.0",
+    "toc": "On this page",
+    "sections": [
+      {
+        "id": "controlador",
+        "title": "1. Controller and contact (DPO)",
+        "body": "The controller of your personal data is the ShopFinder platform operator. Our Data Protection Officer (DPO) can be reached at the support email indicated in the Contact section."
+      },
+      {
+        "id": "dados",
+        "title": "2. Categories of personal information we collect",
+        "body": "We collect only what is necessary to operate the platform, by category:",
+        "table": {
+          "headers": [
+            "Category",
+            "Data",
+            "Examples"
+          ],
+          "rows": [
+            [
+              "Account (identifiers)",
+              "email, password (hash), terms acceptance date",
+              "registration/login"
+            ],
+            [
+              "Orders (commercial information)",
+              "items, quantities, amounts, status, shipping address you provide",
+              "checkout"
+            ],
+            [
+              "Technical (internet activity)",
+              "access logs required to operate and secure the platform",
+              "server logs"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "cookies",
+        "title": "3. Cookies and local storage",
+        "body": "We use local storage (localStorage) and strictly functional cookies. We do not use advertising or third-party tracking cookies.",
+        "table": {
+          "headers": [
+            "Key",
+            "Type",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "sf:cart",
+              "local storage (essential)",
+              "keep your cart items"
+            ],
+            [
+              "sf:locale",
+              "local storage + locale cookie (preference)",
+              "interface language"
+            ],
+            [
+              "sf:currency",
+              "local storage (preference)",
+              "display currency"
+            ],
+            [
+              "sf:notifications",
+              "local storage (preference)",
+              "notification preferences"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "finalidades",
+        "title": "4. How we use information and legal bases",
+        "body": "We use your data as described below. You may withdraw consent at any time through the support channel, without affecting prior processing.",
+        "table": {
+          "headers": [
+            "Purpose",
+            "Legal basis"
+          ],
+          "rows": [
+            [
+              "Create and maintain your account",
+              "Contract performance / consent"
+            ],
+            [
+              "Process and record orders",
+              "Contract performance"
+            ],
+            [
+              "Display BRL prices and language preferences",
+              "Consent / legitimate interest"
+            ],
+            [
+              "Security, fraud prevention and legal compliance",
+              "Legal obligation / legitimate interest"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "compartilhamento",
+        "title": "5. Sharing and international transfer",
+        "body": "We do not sell your personal information. We share data only with: Stripe (payments), integrated suppliers (only what is needed to fulfill your order) and authorities when legally required. Processing may occur outside Brazil; when it does, we follow art. 33 of the LGPD with standard contractual clauses and appropriate safeguards."
+      },
+      {
+        "id": "retencao",
+        "title": "6. Retention",
+        "body": "We keep account data while the account is active and order records for as long as necessary to meet legal obligations and defend legal claims, deleted afterwards."
+      },
+      {
+        "id": "direitos",
+        "title": "7. Your rights",
+        "body": "Depending on your jurisdiction you have the right to know, access, correct, delete and port your personal information, and to opt out of its sale or sharing — we do not sell it; you also have the right to non-discrimination for exercising these rights. To submit a request, email our Data Protection Officer — we respond within 15 days (LGPD) or 45 days (CCPA/CPRA) as applicable. The platform does not respond to Do Not Track browser signals; we do not track you across third-party sites."
+      },
+      {
+        "id": "seguranca",
+        "title": "8. Security",
+        "body": "We apply technical (hashed passwords, TLS, access control, audit logs) and organizational measures to protect your data against unauthorized access and accidental loss."
+      },
+      {
+        "id": "criancas",
+        "title": "9. Children",
+        "body": "The platform is not directed to children (under 13 under COPPA; under 18 for account creation under these Terms) and we do not knowingly collect their personal information."
+      },
+      {
+        "id": "alteracoes",
+        "title": "10. Changes to this policy",
+        "body": "The current version and effective date appear at the top of this page. Material changes will be announced on the site."
+      }
+    ]
   },
   "contact": {
     "title": "Contact",

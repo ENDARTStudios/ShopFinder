@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { PROJECT_META } from "@/components/site/data";
+import { company } from "@/config/company";
 
 export function SiteFooter() {
   const t = useTranslations("hero");
@@ -64,7 +65,7 @@ export function SiteFooter() {
             <span className="mx-1">-</span>
             <span>V{PROJECT_META.version.toUpperCase()}</span>
           </div>
-          <div className="text-xs text-muted-foreground">{tFooter("rights")}</div>
+          <div className="text-xs text-muted-foreground">Copyright © {new Date().getFullYear()} {company.legalName}</div>
         </div>
       </div>
     </footer>

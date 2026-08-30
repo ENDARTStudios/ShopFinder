@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { InstitutionalHeader } from "@/components/site/institutional-header";
 
 export const metadata: Metadata = {
   title: "Sobre — ShopFinder"
@@ -11,7 +12,9 @@ export default async function SobrePage() {
   const steps = [t("step1"), t("step2"), t("step3")];
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <div className="min-h-screen">
+      <InstitutionalHeader />
+      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <h1 className="mb-6 text-3xl font-black tracking-tight">{t("title")}</h1>
 
       <h2 className="mb-2 text-lg font-bold">{t("missionTitle")}</h2>
@@ -31,6 +34,7 @@ export default async function SobrePage() {
 
       <h2 className="mb-2 text-lg font-bold">{t("nichesTitle")}</h2>
       <p className="text-sm leading-relaxed text-muted-foreground">{t("niches")}</p>
+      </div>
     </div>
   );
 }
