@@ -189,7 +189,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const traceMatch = product.description.match(/Trace:\s*(\S+)/);
   const manufacturerName = manufacturerMatch?.[1] ?? null;
   const traceId = traceMatch?.[1] ?? null;
-  const imageQuery = manufacturerName ? `${manufacturerName} ${product.title}` : product.title;
+  const imageQuery =
+    manufacturerName && !product.title.toLowerCase().startsWith(manufacturerName.toLowerCase())
+      ? `${manufacturerName} ${product.title}`
+      : product.title;
 
   return (
     <div className="min-h-screen bg-background">

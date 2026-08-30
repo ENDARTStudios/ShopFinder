@@ -112,7 +112,6 @@
     "inStock": "Em estoque",
     "outOfStock": "Esgotado",
     "manufacturer": "Fabricante:",
-    "upTo": "até ${max} em {count} ofertas",
     "unitsInStock": "{count} unidades em estoque",
     "pipelineTrace": "Pipeline trace:",
     "enrichedSpecs": "Especificações com Autoridade",

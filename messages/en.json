@@ -67,7 +67,9 @@
     "noStock": "no stock",
     "units": "{count} units",
     "compare": "Compare",
-    "from": "from"
+    "from": "from",
+    "addToCart": "Add to cart",
+    "buy": "Buy"
   },
   "filter": {
     "title": "Filters",
@@ -110,7 +112,6 @@
     "inStock": "In stock",
     "outOfStock": "Out of stock",
     "manufacturer": "Manufacturer:",
-    "upTo": "up to ${max} across {count} offers",
     "unitsInStock": "{count} units in stock",
     "pipelineTrace": "Pipeline trace:",
     "enrichedSpecs": "Specifications with Authority",

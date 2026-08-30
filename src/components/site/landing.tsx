@@ -820,7 +820,11 @@ function ProductsSection({
                       <Card className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40">
                         <div className="relative flex h-40 items-center justify-center">
                           <ProductImage
-                            query={`${product.brand} ${product.title}`.trim()}
+                            query={
+                              product.title.toLowerCase().startsWith(product.brand.toLowerCase())
+                                ? product.title
+                                : `${product.brand} ${product.title}`.trim()
+                            }
                             gradient={product.imageGradient}
                             label={product.imageLabel}
                             className="absolute inset-0"
