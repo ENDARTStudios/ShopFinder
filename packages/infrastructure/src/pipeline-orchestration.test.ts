@@ -53,7 +53,7 @@ const amazonRecordings: RecordedInteraction[] = [
 ];
 
 async function getPrismaClient(): Promise<any> {
-  const mod = await import("../src/generated/prisma-client/default.js");
+  const mod = await import("@prisma/client");
   return new mod.PrismaClient({ datasources: { db: { url: "file:./pipeline_test.db" } } });
 }
 

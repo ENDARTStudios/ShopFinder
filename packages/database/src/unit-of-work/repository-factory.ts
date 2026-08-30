@@ -14,6 +14,7 @@ import { PrismaCategoryRepository } from "../repositories/category-repository";
 import { PrismaVariantRepository } from "../repositories/variant-repository";
 import { PrismaInventoryRepository } from "../repositories/inventory-repository";
 import { PrismaCustomerRepository } from "../repositories/customer-repository";
+import { PrismaUserRepository } from "../repositories/user-repository";
 import { PrismaCartRepository } from "../repositories/cart-repository";
 import { PrismaCheckoutSessionRepository } from "../repositories/checkout-session-repository";
 import { PrismaOrderRepository } from "../repositories/order-repository";
@@ -36,6 +37,7 @@ export class PrismaRepositoryFactory implements RepositoryFactory {
       variantRepository: new PrismaVariantRepository(tx, collector),
       inventoryRepository: new PrismaInventoryRepository(tx, collector),
       customerRepository: new PrismaCustomerRepository(tx, collector),
+      userRepository: new PrismaUserRepository(tx, collector),
       cartRepository: new PrismaCartRepository(tx, collector),
       checkoutSessionRepository: new PrismaCheckoutSessionRepository(tx, collector),
       orderRepository: new PrismaOrderRepository(tx, collector),

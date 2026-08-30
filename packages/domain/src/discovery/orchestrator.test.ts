@@ -36,9 +36,6 @@ function makeBudget(overrides?: Partial<DiscoveryBudget>): DiscoveryBudget {
     maxApiCalls: 1000,
     maxProductsDiscovered: 10000,
     maxCost: { amount: 10000, currency: "USD" },
-    perSourceLimits: [],
-    perRegionLimits: [],
-    perCategoryLimits: [],
     currentUsage: {
       apiCallsUsed: 0,
       productsDiscovered: 0,
@@ -56,12 +53,14 @@ function makePlan(overrides?: Partial<ImmutableDiscoveryPlan>): ImmutableDiscove
   return {
     id: "plan_test_001",
     name: "trending_aliexpress_electronics_US",
-    sources: [{
-      sourceId: "src_aliexpress",
-      sourceType: "api_official",
-      providerCode: "aliexpress",
-      capabilities: ["discovery"]
-    }],
+    sources: [
+      {
+        sourceId: "src_aliexpress",
+        sourceType: "api_official",
+        providerCode: "aliexpress",
+        capabilities: ["discovery"]
+      }
+    ],
     categories: ["electronics"],
     regions: ["US"],
     languages: ["en"],
@@ -81,16 +80,18 @@ function makePlan(overrides?: Partial<ImmutableDiscoveryPlan>): ImmutableDiscove
     estimatedProducts: 500,
     estimatedDuration: 50,
     status: "draft",
-    signals: [{
-      id: "sig_1",
-      type: "trend",
-      strength: "high",
-      value: 85,
-      source: "ai",
-      scope: { providerCode: "aliexpress", category: "electronics", region: "US" },
-      description: "Test signal",
-      generatedAt: new Date()
-    } as DiscoverySignal],
+    signals: [
+      {
+        id: "sig_1",
+        type: "trend",
+        strength: "high",
+        value: 85,
+        source: "ai",
+        scope: { providerCode: "aliexpress", category: "electronics", region: "US" },
+        description: "Test signal",
+        generatedAt: new Date()
+      } as DiscoverySignal
+    ],
     justification: {
       primaryReason: "High trend score",
       contributingFactors: ["High trend score"],
@@ -116,8 +117,12 @@ function makeDeps(overrides?: Partial<OrchestratorDependencies>): OrchestratorDe
       updateStatus: async () => {}
     } as DiscoveryPlanRepository,
     jobRepository: {
-      save: async (job) => { savedJobs.push(job); },
-      saveBatch: async (jobs) => { savedJobs.push(...jobs); },
+      save: async (job) => {
+        savedJobs.push(job);
+      },
+      saveBatch: async (jobs) => {
+        savedJobs.push(...jobs);
+      },
       findById: async () => null,
       findByPlanId: async () => [],
       updateStatus: async () => {}
@@ -128,7 +133,9 @@ function makeDeps(overrides?: Partial<OrchestratorDependencies>): OrchestratorDe
     } as CheckpointRepository,
     executionRegistry: {
       isExecuted: async (hash) => executedHashes.has(hash),
-      markExecuted: async (hash) => { executedHashes.add(hash); },
+      markExecuted: async (hash) => {
+        executedHashes.add(hash);
+      },
       getExecutionId: async () => null
     } as ExecutionRegistry,
     budgetReservation: {
@@ -137,10 +144,18 @@ function makeDeps(overrides?: Partial<OrchestratorDependencies>): OrchestratorDe
       getReserved: async () => null
     } as BudgetReservationService,
     eventPublisher: {
-      publishPlanScheduled: async (_id, _jobs) => { publishedEvents.push("plan_scheduled"); },
-      publishJobCreated: async () => { publishedEvents.push("job_created"); },
-      publishPlanExpired: async () => { publishedEvents.push("plan_expired"); },
-      publishBudgetRejected: async () => { publishedEvents.push("budget_rejected"); }
+      publishPlanScheduled: async (_id, _jobs) => {
+        publishedEvents.push("plan_scheduled");
+      },
+      publishJobCreated: async () => {
+        publishedEvents.push("job_created");
+      },
+      publishPlanExpired: async () => {
+        publishedEvents.push("plan_expired");
+      },
+      publishBudgetRejected: async () => {
+        publishedEvents.push("budget_rejected");
+      }
     } as OrchestratorEventPublisher,
     config: DefaultOrchestratorConfig,
     ...overrides
@@ -161,13 +176,23 @@ describe("DiscoveryOrchestrator", () => {
     it("should accept a valid plan", () => {
       const plan = makePlan();
       const budget = makeBudget();
-      const result = validatePlan(plan, budget, new Set(["ai_discovery"]), DefaultOrchestratorConfig);
+      const result = validatePlan(
+        plan,
+        budget,
+        new Set(["ai_discovery"]),
+        DefaultOrchestratorConfig
+      );
       expect(result.valid).toBe(true);
     });
 
     it("should reject expired plan", () => {
       const plan = makePlan({ createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) }); // 2h ago
-      const result = validatePlan(plan, makeBudget(), new Set(["ai_discovery"]), DefaultOrchestratorConfig);
+      const result = validatePlan(
+        plan,
+        makeBudget(),
+        new Set(["ai_discovery"]),
+        DefaultOrchestratorConfig
+      );
       expect(result.valid).toBe(false);
       expect(result.reason).toContain("expired");
     });
@@ -180,16 +205,44 @@ describe("DiscoveryOrchestrator", () => {
     });
 
     it("should reject when budget insufficient", () => {
-      const plan = makePlan({ budget: { totalApiCalls: 500, perSource: {}, perRegion: {}, perCategory: {}, maxCost: undefined } });
-      const budget = makeBudget({ maxApiCalls: 100, currentUsage: { apiCallsUsed: 50, productsDiscovered: 0, costIncurred: zeroMoney, perSourceUsage: {}, perRegionUsage: {}, perCategoryUsage: {} } });
-      const result = validatePlan(plan, budget, new Set(["ai_discovery"]), DefaultOrchestratorConfig);
+      const plan = makePlan({
+        budget: {
+          totalApiCalls: 500,
+          perSource: {},
+          perRegion: {},
+          perCategory: {},
+          maxCost: undefined
+        }
+      });
+      const budget = makeBudget({
+        maxApiCalls: 100,
+        currentUsage: {
+          apiCallsUsed: 50,
+          productsDiscovered: 0,
+          costIncurred: zeroMoney,
+          perSourceUsage: {},
+          perRegionUsage: {},
+          perCategoryUsage: {}
+        }
+      });
+      const result = validatePlan(
+        plan,
+        budget,
+        new Set(["ai_discovery"]),
+        DefaultOrchestratorConfig
+      );
       expect(result.valid).toBe(false);
       expect(result.reason).toContain("Insufficient budget");
     });
 
     it("should reject plan with no sources", () => {
       const plan = makePlan({ sources: [] });
-      const result = validatePlan(plan, makeBudget(), new Set(["ai_discovery"]), DefaultOrchestratorConfig);
+      const result = validatePlan(
+        plan,
+        makeBudget(),
+        new Set(["ai_discovery"]),
+        DefaultOrchestratorConfig
+      );
       expect(result.valid).toBe(false);
       expect(result.reason).toContain("no sources");
     });
@@ -199,8 +252,18 @@ describe("DiscoveryOrchestrator", () => {
     it("should create one job per source × region", () => {
       const plan = makePlan({
         sources: [
-          { sourceId: "src_a", sourceType: "api", providerCode: "aliexpress", capabilities: ["discovery"] },
-          { sourceId: "src_b", sourceType: "api", providerCode: "temu", capabilities: ["discovery"] }
+          {
+            sourceId: "src_a",
+            sourceType: "api",
+            providerCode: "aliexpress",
+            capabilities: ["discovery"]
+          },
+          {
+            sourceId: "src_b",
+            sourceType: "api",
+            providerCode: "temu",
+            capabilities: ["discovery"]
+          }
         ],
         regions: ["US", "BR"],
         budget: {
@@ -218,12 +281,17 @@ describe("DiscoveryOrchestrator", () => {
     it("should respect maxJobsPerPlan", () => {
       const plan = makePlan({
         sources: Array.from({ length: 20 }, (_, i) => ({
-          sourceId: `src_${i}`, sourceType: "api", providerCode: `provider_${i}`, capabilities: ["discovery"]
+          sourceId: `src_${i}`,
+          sourceType: "api",
+          providerCode: `provider_${i}`,
+          capabilities: ["discovery"]
         })),
         regions: ["US"],
         budget: {
           totalApiCalls: 2000,
-          perSource: Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`provider_${i}`, 100])),
+          perSource: Object.fromEntries(
+            Array.from({ length: 20 }, (_, i) => [`provider_${i}`, 100])
+          ),
           perRegion: { US: 2000 },
           perCategory: {},
           maxCost: undefined
@@ -266,7 +334,9 @@ describe("DiscoveryOrchestrator", () => {
       const deps = makeDeps({
         executionRegistry: {
           isExecuted: async (hash) => executedHashes.has(hash),
-          markExecuted: async (hash) => { executedHashes.add(hash); },
+          markExecuted: async (hash) => {
+            executedHashes.add(hash);
+          },
           getExecutionId: async () => "exec_1"
         } as ExecutionRegistry
       });
@@ -292,7 +362,11 @@ describe("DiscoveryOrchestrator", () => {
     it("should reject when budget reservation fails", async () => {
       const deps = makeDeps({
         budgetReservation: {
-          reserve: async () => ({ reserved: false, allocation: {} as never, reason: "Daily limit reached" }),
+          reserve: async () => ({
+            reserved: false,
+            allocation: {} as never,
+            reason: "Daily limit reached"
+          }),
           release: async () => {},
           getReserved: async () => null
         } as BudgetReservationService
