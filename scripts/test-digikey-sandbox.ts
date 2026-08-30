@@ -11,6 +11,8 @@
 import { DigiKeyClient } from "../packages/infrastructure/src/connectors/digikey/client";
 
 async function main(): Promise<void> {
+  const keywords = process.argv[2] ?? "500";
+  const limit = Number(process.argv[3] ?? 5);
   const client = new DigiKeyClient();
 
   const token = await client.authenticate();
@@ -20,20 +22,28 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const search = await client.searchProducts("500", 5);
+  const search = await client.searchProducts(keywords, limit);
   console.log(`search HTTP status: ${search.status}`);
   if (!search.ok) {
     console.log(search.rawBody);
     process.exit(1);
   }
 
-  const products =
-    (search.json as { Products?: Array<Record<string, unknown>> } | null)?.Products ?? [];
-  console.log(`total de produtos: ${products.length}`);
+  const payload = search.json as {
+    Products?: Array<Record<string, unknown>>;
+    ProductsCount?: number;
+  } | null;
+  const products = payload?.Products ?? [];
+  console.log(`total de produtos: ${payload?.ProductsCount ?? products.length}`);
 
-  const partNumbers = products
-    .slice(0, 2)
-    .map((p) => String(p.ProductNumber ?? p.productNumber ?? "(sem ProductNumber)"));
+  // V4: o número DigiKey vive em ProductVariations[].DigiKeyProductNumber;
+  // BaseProductNumber é { Id, Name } (part number normalizado do fabricante).
+  const partNumbers = products.slice(0, 2).map((p) => {
+    const variations = p.ProductVariations as Array<Record<string, unknown>> | undefined;
+    const digiKeyPart = variations?.[0]?.DigiKeyProductNumber;
+    const base = p.BaseProductNumber as { Name?: string } | undefined;
+    return String(digiKeyPart ?? base?.Name ?? "(sem part number)");
+  });
   console.log(`part numbers de exemplo: ${partNumbers.join(" | ")}`);
 }
 

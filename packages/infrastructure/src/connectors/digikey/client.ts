@@ -145,13 +145,35 @@ export class DigiKeyClient {
   }
 
   /**
-   * ProductInformation V4 — busca por keyword.
+   * ProductInformation V4 — rotas conforme o Swagger oficial
+   * (host api.digikey.com, basePath /products/v4).
    *
-   * Produção/sandbox exigem POST /products/v4/search com body JSON
-   * { keywords, limit } (o formato GET /search/{keywords} responde 404
-   * "Invalid resource path" — validado em T024/T025).
+   * - KeywordSearch:  POST /products/v4/search/keyword
+   *   body KeywordRequest { Keywords, Limit, Offset, FilterOptionsRequest, SortOptions }
+   * - ProductDetails: GET /products/v4/search/{productNumber}/productdetails
+   * - ProductPricing: GET /products/v4/search/{productNumber}/pricing
    */
+
+  /** KeywordSearch — POST /products/v4/search/keyword. */
+  async keywordSearch(keywords: string, limit = 5): Promise<ApiResponse> {
+    return this.request("POST", "/products/v4/search/keyword", {
+      Keywords: keywords,
+      Limit: limit
+    });
+  }
+
+  /** Alias semântico usado pelo smoke test. */
   async searchProducts(keywords: string, limit = 5): Promise<ApiResponse> {
-    return this.request("POST", "/products/v4/search", { keywords, limit });
+    return this.keywordSearch(keywords, limit);
+  }
+
+  /** ProductDetails — GET /products/v4/search/{productNumber}/productdetails. */
+  async getProductDetails(productNumber: string): Promise<ApiResponse> {
+    return this.get(`/products/v4/search/${encodeURIComponent(productNumber)}/productdetails`);
+  }
+
+  /** ProductPricing — GET /products/v4/search/{productNumber}/pricing. */
+  async getProductPricing(productNumber: string): Promise<ApiResponse> {
+    return this.get(`/products/v4/search/${encodeURIComponent(productNumber)}/pricing`);
   }
 }
