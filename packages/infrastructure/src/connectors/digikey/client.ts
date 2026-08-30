@@ -60,6 +60,11 @@ export class DigiKeyClient {
     return this.clientId.length > 0 && this.clientSecret.length > 0;
   }
 
+  /** Host base do ambiente (sandbox-api.digikey.com | api.digikey.com). */
+  get apiBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   /**
    * Obtém (ou renova) o access_token via POST /v1/oauth2/token
    * (grant_type=client_credentials). Retorna somente o status HTTP.
@@ -110,6 +115,35 @@ export class DigiKeyClient {
   /** GET na API com Bearer + X-DIGIKEY-Client-Id (+ locale padrão US/en/USD). */
   async get(path: string): Promise<ApiResponse> {
     return this.request("GET", path);
+  }
+
+  /**
+   * Executa qualquer chamada autenticada — ponto de extensão para adapters
+   * (ex.: transport do Connector SDK) sem expor o token.
+   */
+  async execute(method: "GET" | "POST", path: string, body?: unknown): Promise<ApiResponse> {
+    return this.request(method, path, body);
+  }
+
+  /**
+   * Headers de autenticação prontos para transports externos. O access_token
+   * permanece encapsulado — apenas os headers finais são retornados.
+   */
+  async getAuthHeaders(): Promise<Record<string, string>> {
+    const auth = await this.authenticate();
+    if (!auth.ok) {
+      throw {
+        code: "AUTH",
+        message: `DigiKey auth failed: ${auth.status}`,
+        retriable: auth.status === 429,
+        statusCode: auth.status,
+        cause: auth.errorBody
+      };
+    }
+    return {
+      Authorization: `Bearer ${this.token!.accessToken}`,
+      "X-DIGIKEY-Client-Id": this.clientId
+    };
   }
 
   private async request(

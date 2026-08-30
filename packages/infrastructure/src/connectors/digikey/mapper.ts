@@ -44,19 +44,19 @@ export class DigiKeyProductMapper {
       inventory: product.quantityAvailable ?? 0,
       shippingFromCountry: "US",
       estimatedDeliveryDays: { min: 1, max: 5 },
-      discoveredAt: new Date(),
+      discoveredAt: new Date()
     };
   }
 
   mapAll(products: ReadonlyArray<ParsedDigiKeyProduct>): NormalizedDiscoveredProduct[] {
-    return products.map(p => this.map(p));
+    return products.map((p) => this.map(p));
   }
 
   private mapPrice(product: ParsedDigiKeyProduct): Money {
     if (product.unitPrice) {
       return {
         amount: Math.round(product.unitPrice * 100),
-        currency: (product.currency ?? "USD").toUpperCase(),
+        currency: (product.currency ?? "USD").toUpperCase()
       };
     }
     return { amount: 0, currency: "USD" };
@@ -85,7 +85,8 @@ export class DigiKeyProductMapper {
 
     // Commercial
     if (product.minimumOrderQuantity) attrs["MOQ"] = String(product.minimumOrderQuantity);
-    if (product.quantityAvailable !== undefined) attrs["Quantity Available"] = String(product.quantityAvailable);
+    if (product.quantityAvailable !== undefined)
+      attrs["Quantity Available"] = String(product.quantityAvailable);
 
     // Datasheet
     if (product.primaryDatasheetUrl) attrs["Datasheet URL"] = product.primaryDatasheetUrl;
