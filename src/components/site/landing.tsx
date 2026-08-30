@@ -38,6 +38,7 @@ import { HeaderCompareLink } from "@/components/site/header-compare-link";
 import { CompareButton } from "@/components/site/compare-button";
 import { Price, PriceRange } from "@/components/site/price";
 import { ProductImage } from "@/components/site/product-image";
+import { UserMenu } from "@/components/site/user-menu";
 import { supplierDisplayName } from "@/lib/spec-labels";
 import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
@@ -51,7 +52,6 @@ import {
   LandingProductGridSkeleton
 } from "@/components/site/landing-skeletons";
 import { Hero3DMount } from "@/components/site/hero-3d-mount";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 // ── Types matching the API response ────────────────────────
@@ -257,11 +257,7 @@ function SiteHeader() {
           <LanguageSelector />
           <HeaderCompareLink />
           <CartButton />
-          <Link href="/login" className="hidden sm:inline-flex">
-            <Button variant="ghost" size="sm">
-              {t("login")}
-            </Button>
-          </Link>
+          <UserMenu />
           <ModeToggle />
         </div>
       </div>

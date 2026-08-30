@@ -5,7 +5,10 @@
     "manufacturers": "Fabricantes",
     "products": "Produtos",
     "howItWorks": "Como funciona",
-    "login": "Entrar"
+    "login": "Entrar",
+    "account": "Minha conta",
+    "orders": "Meus pedidos",
+    "signOut": "Sair"
   },
   "hero": {
     "tagline": "compra inteligente",

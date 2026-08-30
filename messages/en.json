@@ -5,7 +5,10 @@
     "manufacturers": "Manufacturers",
     "products": "Products",
     "howItWorks": "How it works",
-    "login": "Sign in"
+    "login": "Sign in",
+    "account": "My account",
+    "orders": "My orders",
+    "signOut": "Sign out"
   },
   "hero": {
     "tagline": "smart shopping",
