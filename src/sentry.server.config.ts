@@ -13,12 +13,10 @@ if (dsn) {
   Sentry.init({
     dsn,
     environment: process.env.NODE_ENV,
-    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
-    // contexto de tenant disponível como tag em todos os eventos
-    initialValue: {
-      tags: { service: "shopfinder-web" }
-    }
+    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1)
   });
+  // contexto de tenant disponível como tag em todos os eventos
+  Sentry.setTags({ service: "shopfinder-web" });
 
   const forwarder: ErrorForwarder = (error, context) => {
     Sentry.withScope((scope) => {

@@ -139,7 +139,12 @@ const DEFAULT_LABELS = {
   apply: "Aplicar filtros"
 };
 
-function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }: FilterBarBodyProps) {
+function FilterBarBody({
+  products,
+  filters,
+  onChange,
+  labels = DEFAULT_LABELS
+}: FilterBarBodyProps) {
   const t = { ...DEFAULT_LABELS, ...labels };
   const allManufacturers = useManufacturerOptions(products);
   const allAttributes = useAttributeOptions(products);
@@ -152,12 +157,8 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
   // Numeric inputs keep their own string state so the user can type freely
   // (e.g. clearing the field, partial decimals) without the parent state
   // snapping back to NaN.
-  const [minStr, setMinStr] = React.useState<string>(
-    filters.priceMin?.toString() ?? ""
-  );
-  const [maxStr, setMaxStr] = React.useState<string>(
-    filters.priceMax?.toString() ?? ""
-  );
+  const [minStr, setMinStr] = React.useState<string>(filters.priceMin?.toString() ?? "");
+  const [maxStr, setMaxStr] = React.useState<string>(filters.priceMax?.toString() ?? "");
 
   React.useEffect(() => {
     setMinStr(filters.priceMin?.toString() ?? "");
@@ -220,11 +221,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
     Object.values(filters.attributes).filter((v) => v && v.trim() !== "").length;
 
   return (
-    <div
-      className="flex h-full flex-col gap-5"
-      role="region"
-      aria-label={t.title}
-    >
+    <div className="flex h-full flex-col gap-5" role="region" aria-label={t.title}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -273,9 +270,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
             onClick={() => setShowAllManufacturers((v) => !v)}
             className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
           >
-            {showAllManufacturers
-              ? t.showLess
-              : `${t.showAll} (${allManufacturers.length})`}
+            {showAllManufacturers ? t.showLess : `${t.showAll} (${allManufacturers.length})`}
           </button>
         )}
       </div>
@@ -299,7 +294,9 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
             onBlur={commitPrice}
             className="h-9 text-sm"
           />
-          <span className="text-xs text-muted-foreground" aria-hidden="true">—</span>
+          <span className="text-xs text-muted-foreground" aria-hidden="true">
+            —
+          </span>
           <Input
             type="number"
             inputMode="decimal"
@@ -327,10 +324,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
         <div className="space-y-2">
           {Object.entries(filters.attributes).map(([attrId, value]) => (
             <div key={attrId} className="flex items-center gap-1.5">
-              <Select
-                value={attrId}
-                onValueChange={(newId) => updateAttributeRow(attrId, newId)}
-              >
+              <Select value={attrId} onValueChange={(newId) => updateAttributeRow(attrId, newId)}>
                 <SelectTrigger className="h-9 flex-1 text-xs">
                   <SelectValue />
                 </SelectTrigger>

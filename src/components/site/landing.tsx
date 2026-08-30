@@ -76,7 +76,7 @@ interface ApiCategory {
   productCount: number;
 }
 
-interface ApiProduct {
+export interface ApiProduct {
   id: string;
   sku: string;
   slug: string;
