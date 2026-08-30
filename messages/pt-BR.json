@@ -65,7 +65,8 @@
     "units": "{count} un.",
     "compare": "Comparar",
     "addToCart": "Adicionar ao carrinho",
-    "buy": "Comprar"
+    "buy": "Comprar",
+    "from": "a partir de"
   },
   "filter": {
     "title": "Filtros",

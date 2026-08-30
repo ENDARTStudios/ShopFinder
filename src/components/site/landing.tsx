@@ -883,7 +883,10 @@ function ProductsSection({
 
                           <div className="flex items-end justify-between">
                             <div>
-                              <Price amount={product.price} currency={product.currency} />
+                              <span className="block text-[10px] text-muted-foreground">
+                                {t("from")}
+                              </span>
+                              <Price amount={product.priceRange.min} currency={product.currency} />
                               <PriceRange
                                 min={product.priceRange.min}
                                 max={product.priceRange.max}
@@ -910,8 +913,8 @@ function ProductsSection({
                                     key={offer.id}
                                     className="flex items-center justify-between text-[10px]"
                                   >
-                                    <span className="text-muted-foreground capitalize">
-                                      {offer.supplier.code}
+                                    <span className="text-muted-foreground">
+                                      {supplierDisplayName(offer.supplier.code)}
                                     </span>
                                     <div className="flex items-center gap-2">
                                       <Price

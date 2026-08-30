@@ -63,7 +63,8 @@
     "offersFrom": "Offers from {count} suppliers:",
     "noStock": "no stock",
     "units": "{count} units",
-    "compare": "Compare"
+    "compare": "Compare",
+    "from": "from"
   },
   "filter": {
     "title": "Filters",

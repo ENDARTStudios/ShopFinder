@@ -46,6 +46,8 @@ import { Price, PriceRange } from "@/components/site/price";
 import { ProductImage } from "@/components/site/product-image";
 import { FadeIn } from "@/components/motion/fade-in";
 import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
+import { formatInventoryCount, humanizeSpecName, supplierDisplayName } from "@/lib/spec-labels";
+import { getLocale } from "next-intl/server";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -140,6 +142,7 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const locale = await getLocale();
 
   const product = await prisma.product.findFirst({
     where: { slug, deletedAt: null, status: "published" },
@@ -262,7 +265,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  {totalStock.toLocaleString()} unidades em estoque
+                  {formatInventoryCount(totalStock, locale)} unidades em estoque
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -307,7 +310,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         <div key={attr.id} className="rounded-lg border border-border/40 p-3">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1">
-                              <div className="text-xs text-muted-foreground">{attr.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {humanizeSpecName(attr.name, locale)}
+                              </div>
                               <div className="font-medium">{attr.value}</div>
                             </div>
                             <div className="flex flex-col items-end gap-1">
@@ -414,7 +419,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         key={attr.id}
                         className="flex justify-between rounded-md bg-muted/20 px-3 py-1.5 text-xs"
                       >
-                        <span className="text-muted-foreground">{attr.name}</span>
+                        <span className="text-muted-foreground">
+                          {humanizeSpecName(attr.name, locale)}
+                        </span>
                         <span className="font-medium">{attr.value}</span>
                       </div>
                     ))}
@@ -438,7 +445,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   <div className="space-y-3">
                     {product.offers.map((offer) => {
                       const price = minorUnitsToNumber(offer.priceMinorUnits);
-                      const supplierName = offer.supplier.name;
+                      const supplierName = supplierDisplayName(offer.supplier.name);
                       const isLowest = price === minPrice;
                       return (
                         <div
@@ -458,7 +465,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
-                                  ? `${offer.inventory.toLocaleString()} em estoque`
+                                  ? `${formatInventoryCount(offer.inventory, locale)} em estoque`
                                   : "Sem estoque"}
                               </div>
                             </div>

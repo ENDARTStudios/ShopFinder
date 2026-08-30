@@ -23,15 +23,46 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t border-border/60 bg-muted/20">
-      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-2 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-        <div className="text-xs text-muted-foreground">
-          <span className="font-bold text-foreground">{PROJECT_META.name}</span>
-          <span className="mx-1">-</span>
-          <span>{t("tagline")}</span>
-          <span className="mx-1">-</span>
-          <span>V{PROJECT_META.version.toUpperCase()}</span>
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        {/* Navegação: nichos (âncoras da vitrine) + páginas futuras */}
+        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <a href="#nichos" className="hover:text-foreground transition-colors">
+            Nichos
+          </a>
+          <a href="#categorias" className="hover:text-foreground transition-colors">
+            Categorias
+          </a>
+          <a href="#fabricantes" className="hover:text-foreground transition-colors">
+            Fabricantes
+          </a>
+          <a href="#produtos" className="hover:text-foreground transition-colors">
+            Produtos
+          </a>
+          <span aria-hidden className="text-border">
+            |
+          </span>
+          {/* Rotas futuras — âncoras enquanto as páginas não existem */}
+          <a href="#sobre" className="hover:text-foreground transition-colors">
+            Sobre
+          </a>
+          <a href="#contato" className="hover:text-foreground transition-colors">
+            Contato
+          </a>
+          <a href="#termos" className="hover:text-foreground transition-colors">
+            Termos
+          </a>
         </div>
-        <div className="text-xs text-muted-foreground">{tFooter("rights")}</div>
+
+        <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+          <div className="text-xs text-muted-foreground">
+            <span className="font-bold text-foreground">{PROJECT_META.name}</span>
+            <span className="mx-1">-</span>
+            <span>{t("tagline")}</span>
+            <span className="mx-1">-</span>
+            <span>V{PROJECT_META.version.toUpperCase()}</span>
+          </div>
+          <div className="text-xs text-muted-foreground">{tFooter("rights")}</div>
+        </div>
       </div>
     </footer>
   );
