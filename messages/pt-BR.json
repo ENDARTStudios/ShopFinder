@@ -458,7 +458,7 @@
   },
   "cookies": {
     "title": "Política de Cookies",
-    "updated": "Última atualização: 31 de agosto de 2026 · Versão 1.0",
+    "updated": "Última atualização: 1 de setembro de 2026 · Versão 1.1",
     "whatTitle": "O que são cookies?",
     "what": "Cookies são pequenos arquivos gravados pelo seu navegador para manter informações entre visitas. Também usamos armazenamento local (localStorage), que funciona de forma parecida, mas não é enviado aos servidores. O ShopFinder usa SOMENTE armazenamento essencial e de preferência: sem cookies de analytics, publicidade ou rastreamento de terceiros.",
     "tableTitle": "Cookies e armazenamentos que utilizamos",
@@ -467,6 +467,62 @@
     "colDuration": "Duração",
     "colPurpose": "Finalidade",
     "colType": "Tipo",
+    "rows": {
+      "cart": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistente (até limpar os dados do site)",
+        "purpose": "Manter os itens do carrinho entre visitas",
+        "type": "Essencial"
+      },
+      "locale": {
+        "provider": "ShopFinder (localStorage + cookie)",
+        "duration": "Persistente (1 ano no cookie)",
+        "purpose": "Idioma da interface",
+        "type": "Preferência"
+      },
+      "currency": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistente (até limpar os dados do site)",
+        "purpose": "Moeda de exibição dos preços",
+        "type": "Preferência"
+      },
+      "notifications": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistente (até limpar os dados do site)",
+        "purpose": "Preferências de notificação",
+        "type": "Preferência"
+      },
+      "compare": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistente (até limpar os dados do site)",
+        "purpose": "Lista de comparação de produtos",
+        "type": "Preferência"
+      },
+      "fx": {
+        "provider": "ShopFinder (sessionStorage)",
+        "duration": "Sessão (até fechar o navegador)",
+        "purpose": "Cotação de câmbio USD-BRL usada nos preços",
+        "type": "Preferência"
+      },
+      "img": {
+        "provider": "ShopFinder (sessionStorage)",
+        "duration": "Sessão (até fechar o navegador)",
+        "purpose": "Cache de URLs de imagens de produtos (desempenho)",
+        "type": "Preferência"
+      },
+      "session": {
+        "provider": "ShopFinder / NextAuth (cookie)",
+        "duration": "30 dias (sessão de login)",
+        "purpose": "Manter você autenticado com segurança",
+        "type": "Essencial"
+      },
+      "csrf": {
+        "provider": "ShopFinder / NextAuth (cookie)",
+        "duration": "Sessão",
+        "purpose": "Proteção contra ataques CSRF no login",
+        "type": "Essencial"
+      }
+    },
     "noneTitle": "Analytics e marketing",
     "none": "Não utilizamos cookies de analytics ou marketing de nenhuma espécie.",
     "manageTitle": "Como gerenciar cookies",
@@ -475,7 +531,8 @@
     "firefox": "Firefox: Configurações → Privacidade e Segurança → Cookies e dados do site",
     "safari": "Safari: Preferências → Privacidade → Gerenciar dados de site",
     "edge": "Edge: Configurações → Cookies e permissões de site → Gerenciar e excluir cookies",
-    "bannerNote": "Como usamos apenas armazenamento essencial e de preferência, não exibimos banner de consentimento; ao continuar navegando, você concorda com o uso descrito nesta página.",
+    "bannerNote": "Como usamos apenas armazenamento essencial e de preferência — sem cookies de analytics, publicidade ou marketing —, não exibimos banner de consentimento.",
+    "preferencesNote": "Se você desativar ou limpar cookies e dados de site no navegador, algumas preferências (idioma, moeda, carrinho, lista de comparação) podem não persistir entre as visitas.",
     "privacyLink": "Veja também a nossa Política de Privacidade."
   }
 }

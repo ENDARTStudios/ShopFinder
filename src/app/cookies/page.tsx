@@ -7,55 +7,18 @@ export const metadata: Metadata = {
   title: "Política de Cookies — ShopFinder"
 };
 
-const COOKIE_ROWS: Array<{
-  name: string;
-  provider: string;
-  duration: string;
-  purpose: string;
-  type: string;
-}> = [
-  {
-    name: "sf:cart",
-    provider: "ShopFinder (localStorage)",
-    duration: "Persistente (até limpar os dados do site)",
-    purpose: "Manter os itens do carrinho entre visitas",
-    type: "Essencial"
-  },
-  {
-    name: "sf:locale + cookie locale",
-    provider: "ShopFinder (localStorage + cookie)",
-    duration: "Persistente (1 ano no cookie)",
-    purpose: "Idioma da interface",
-    type: "Preferência"
-  },
-  {
-    name: "sf:currency",
-    provider: "ShopFinder (localStorage)",
-    duration: "Persistente (até limpar os dados do site)",
-    purpose: "Moeda de exibição dos preços",
-    type: "Preferência"
-  },
-  {
-    name: "sf:notifications",
-    provider: "ShopFinder (localStorage)",
-    duration: "Persistente (até limpar os dados do site)",
-    purpose: "Preferências de notificação",
-    type: "Preferência"
-  },
-  {
-    name: "next-auth.session-token",
-    provider: "ShopFinder / NextAuth (cookie)",
-    duration: "30 dias (sessão de login)",
-    purpose: "Manter você autenticado com segurança",
-    type: "Essencial"
-  },
-  {
-    name: "next-auth.csrf-token",
-    provider: "ShopFinder / NextAuth (cookie)",
-    duration: "Sessão",
-    purpose: "Proteção contra ataques CSRF no login",
-    type: "Essencial"
-  }
+// Nomes técnicos das chaves de storage (locale-neutros); os textos descritivos
+// (fornecedor/duração/finalidade/tipo) vêm de messages/*.json (cookies.rows.*).
+const COOKIE_ROWS: Array<{ name: string; key: string }> = [
+  { name: "sf:cart", key: "cart" },
+  { name: "sf:locale + cookie locale", key: "locale" },
+  { name: "sf:currency", key: "currency" },
+  { name: "sf:notifications", key: "notifications" },
+  { name: "shopfinder:compare", key: "compare" },
+  { name: "sf:fx", key: "fx" },
+  { name: "sf:img:*", key: "img" },
+  { name: "next-auth.session-token", key: "session" },
+  { name: "next-auth.csrf-token", key: "csrf" }
 ];
 
 export default async function CookiesPage() {
@@ -99,15 +62,17 @@ export default async function CookiesPage() {
                 <tr key={row.name} className="align-top">
                   <td className="border-b border-border/30 px-2 py-1.5 font-mono">{row.name}</td>
                   <td className="border-b border-border/30 px-2 py-1.5 text-muted-foreground">
-                    {row.provider}
+                    {t(`rows.${row.key}.provider`)}
                   </td>
                   <td className="border-b border-border/30 px-2 py-1.5 text-muted-foreground">
-                    {row.duration}
+                    {t(`rows.${row.key}.duration`)}
                   </td>
                   <td className="border-b border-border/30 px-2 py-1.5 text-muted-foreground">
-                    {row.purpose}
+                    {t(`rows.${row.key}.purpose`)}
                   </td>
-                  <td className="border-b border-border/30 px-2 py-1.5">{row.type}</td>
+                  <td className="border-b border-border/30 px-2 py-1.5">
+                    {t(`rows.${row.key}.type`)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -131,6 +96,9 @@ export default async function CookiesPage() {
         </ul>
 
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{t("bannerNote")}</p>
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+          {t("preferencesNote")}
+        </p>
 
         <Link href="/privacidade" className="text-sm text-emerald-500 hover:underline">
           {t("privacyLink")}

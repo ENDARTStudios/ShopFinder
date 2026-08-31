@@ -462,7 +462,7 @@
   },
   "cookies": {
     "title": "Cookie Policy",
-    "updated": "Last updated: August 31, 2026 · Version 1.0",
+    "updated": "Last updated: September 1, 2026 · Version 1.1",
     "whatTitle": "What are cookies?",
     "what": "Cookies are small files stored by your browser to keep information between visits. We also use local storage (localStorage), which works similarly but is not sent to servers. ShopFinder uses ONLY essential and preference storage: no analytics, advertising or third-party tracking cookies.",
     "tableTitle": "Cookies and storage we use",
@@ -471,6 +471,62 @@
     "colDuration": "Duration",
     "colPurpose": "Purpose",
     "colType": "Type",
+    "rows": {
+      "cart": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistent (until site data is cleared)",
+        "purpose": "Keep cart items between visits",
+        "type": "Essential"
+      },
+      "locale": {
+        "provider": "ShopFinder (localStorage + cookie)",
+        "duration": "Persistent (1 year for the cookie)",
+        "purpose": "Interface language",
+        "type": "Preference"
+      },
+      "currency": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistent (until site data is cleared)",
+        "purpose": "Currency used to display prices",
+        "type": "Preference"
+      },
+      "notifications": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistent (until site data is cleared)",
+        "purpose": "Notification preferences",
+        "type": "Preference"
+      },
+      "compare": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistent (until site data is cleared)",
+        "purpose": "Product comparison list",
+        "type": "Preference"
+      },
+      "fx": {
+        "provider": "ShopFinder (sessionStorage)",
+        "duration": "Session (until the browser is closed)",
+        "purpose": "USD-BRL exchange rate used in prices",
+        "type": "Preference"
+      },
+      "img": {
+        "provider": "ShopFinder (sessionStorage)",
+        "duration": "Session (until the browser is closed)",
+        "purpose": "Product image URL cache (performance)",
+        "type": "Preference"
+      },
+      "session": {
+        "provider": "ShopFinder / NextAuth (cookie)",
+        "duration": "30 days (login session)",
+        "purpose": "Keep you securely signed in",
+        "type": "Essential"
+      },
+      "csrf": {
+        "provider": "ShopFinder / NextAuth (cookie)",
+        "duration": "Session",
+        "purpose": "Protection against CSRF attacks on sign-in",
+        "type": "Essential"
+      }
+    },
     "noneTitle": "Analytics and marketing",
     "none": "We do not use analytics or marketing cookies of any kind.",
     "manageTitle": "How to manage cookies",
@@ -479,7 +535,8 @@
     "firefox": "Firefox: Settings → Privacy & Security → Cookies and Site Data",
     "safari": "Safari: Preferences → Privacy → Manage Website Data",
     "edge": "Edge: Settings → Cookies and site permissions → Manage and delete cookies",
-    "bannerNote": "Because we only use essential and preference storage, no consent banner is shown; by continuing to browse you agree to the use described on this page.",
+    "bannerNote": "Because we use only essential and preference storage — no analytics, advertising or marketing cookies —, no consent banner is shown.",
+    "preferencesNote": "If you disable or clear cookies and site data in your browser, some preferences (language, currency, cart, comparison list) may not persist between visits.",
     "privacyLink": "See also our Privacy Policy."
   }
 }
