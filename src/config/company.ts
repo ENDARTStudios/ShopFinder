@@ -12,10 +12,12 @@ export const company = {
   legalName: "END ART Studios",
   /** Canal oficial de suporte e contato do encarregado (DPO) */
   email: "endart.studios@gmail.com",
-  /** Preencher pelo Operador quando o CNPJ for emitido */
-  cnpj: "CNPJ-EM-REGISTRO",
-  /** Preencher pelo Operador quando o endereço fiscal for definido */
-  address: "ENDEREÇO-EM-REGISTRO",
+  /** CNPJ oficial da operadora */
+  cnpj: "45.370.930/0001-75",
+  /** Endereço da operadora */
+  address: "Osasco/SP - Brasil",
+  /** Canal oficial no Telegram */
+  telegram: "t.me/ShopFinder2026",
   /** País da sede (para seção de direito aplicável em EN) */
   country: "Brasil"
 } as const;
