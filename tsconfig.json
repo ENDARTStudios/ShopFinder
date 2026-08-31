@@ -1,7 +1,6 @@
 {
   "extends": "./packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "noEmit": true,
@@ -69,10 +68,13 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "scripts/**/*.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", "dist", "build", "examples", "skills"]
+  "exclude": ["node_modules", ".next", "dist", "build", "examples", "skills", "packages"]
 }
