@@ -219,7 +219,14 @@
     "emptyCta": "Ver produtos",
     "items": "itens",
     "itemsOne": "item",
-    "verItens": "Ver itens"
+    "verItens": "Ver itens",
+    "withdrawAction": "Solicitar arrependimento",
+    "withdrawRequesting": "Solicitando…",
+    "withdrawRequested": "Arrependimento solicitado",
+    "withdrawProtocol": "Protocolo",
+    "withdrawExpired": "Prazo de arrependimento expirado",
+    "withdrawError": "Erro ao solicitar.",
+    "withdrawRetry": "Tente novamente"
   },
   "account": {
     "title": "Minha conta",

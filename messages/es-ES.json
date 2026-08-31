@@ -219,7 +219,14 @@
     "emptyCta": "Ver productos",
     "items": "artículos",
     "itemsOne": "artículo",
-    "verItens": "Ver artículos"
+    "verItens": "Ver artículos",
+    "withdrawAction": "Solicitar desistimiento",
+    "withdrawRequesting": "Solicitando…",
+    "withdrawRequested": "Desistimiento solicitado",
+    "withdrawProtocol": "Protocolo",
+    "withdrawExpired": "Plazo de desistimiento expirado",
+    "withdrawError": "Error al solicitar.",
+    "withdrawRetry": "Intentar de nuevo"
   },
   "account": {
     "title": "Mi cuenta",

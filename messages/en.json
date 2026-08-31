@@ -219,7 +219,14 @@
     "emptyCta": "View products",
     "items": "items",
     "itemsOne": "item",
-    "verItens": "View items"
+    "verItens": "View items",
+    "withdrawAction": "Request withdrawal",
+    "withdrawRequesting": "Requesting…",
+    "withdrawRequested": "Withdrawal requested",
+    "withdrawProtocol": "Protocol",
+    "withdrawExpired": "Withdrawal period expired",
+    "withdrawError": "Error requesting.",
+    "withdrawRetry": "Try again"
   },
   "account": {
     "title": "My account",

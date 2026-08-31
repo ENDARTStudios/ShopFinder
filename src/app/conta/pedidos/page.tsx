@@ -8,6 +8,7 @@ import { prisma } from "@workspace/database/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Price } from "@/components/site/price";
+import { WithdrawalRequest } from "@/components/account/withdrawal-request";
 
 export const metadata: Metadata = {
   title: "Meus pedidos — ShopFinder"
@@ -113,6 +114,18 @@ export default async function MeusPedidosPage() {
                   ))}
                 </ul>
               </details>
+
+              {/* T061 — arrependimento (art. 49 CDC): o componente decide o
+                  estado (botão / solicitado com protocolo / prazo expirado). */}
+              <WithdrawalRequest
+                orderId={order.id}
+                status={order.status}
+                createdAt={order.createdAt.toISOString()}
+                cancellationRequestedAt={
+                  order.cancellationRequestedAt?.toISOString() ?? null
+                }
+                cancellationProtocol={order.cancellationProtocol ?? null}
+              />
             </CardContent>
           </Card>
         ))}

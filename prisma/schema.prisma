@@ -448,6 +448,9 @@ model Order {
   shippedAt                DateTime?
   deliveredAt              DateTime?
   cancelledAt              DateTime?
+  cancellationRequestedAt  DateTime?
+  cancellationProtocol     String?
+  cancellationStatus       String? // requested | processed | refunded
   version                  Int      @default(1)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
