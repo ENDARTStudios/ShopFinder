@@ -1,0 +1,488 @@
+{
+  "nav": {
+    "niches": "Nichos",
+    "categories": "Categorías",
+    "manufacturers": "Fabricantes",
+    "products": "Productos",
+    "howItWorks": "Cómo funciona",
+    "login": "Entrar",
+    "account": "Mi cuenta",
+    "orders": "Mis pedidos",
+    "signOut": "Cerrar sesión"
+  },
+  "hero": {
+    "tagline": "compra inteligente",
+    "subtitle": "Encuentra cualquier producto entre miles de proveedores. Desde componentes electrónicos hasta smartphones — compara precios, especificaciones y stock en tiempo real.",
+    "searchPlaceholder": "Buscar productos, MPN, marcas...",
+    "searchButton": "Buscar",
+    "popular": "Populares:",
+    "statProducts": "36,000+ productos",
+    "statNiches": "3 nichos · 7 proveedores",
+    "statAi": "Con IA"
+  },
+  "niches": {
+    "title": "Elige tu nicho",
+    "subtitle": "ShopFinder cubre tres grandes áreas de productos con fuentes especializadas",
+    "productCount": "{count} productos",
+    "supplierCount": "{count} proveedores",
+    "explore": "Explorar nicho"
+  },
+  "categories": {
+    "title": "Categorías",
+    "subtitle": "Explora por tipo de producto",
+    "tabs": {
+      "all": "Todas",
+      "pcHardware": "Hardware PC",
+      "components": "Componentes",
+      "consumer": "Consumo"
+    },
+    "productCount": "{count} productos"
+  },
+  "manufacturers": {
+    "title": "{count} fabricantes",
+    "titleLoading": "Fabricantes",
+    "subtitle": "Dos ejes: Autoridad (confianza) y Cobertura (completitud de datos). Agrupados por marca.",
+    "manufacturersCount": "{count} fabricantes",
+    "authorityLabel": "Autoridad {range}",
+    "more": "+{count} más"
+  },
+  "products": {
+    "titleFeatured": "Productos destacados",
+    "titleResults": "Resultados para \"{query}\"",
+    "loading": "Cargando...",
+    "indexing": "Indexando...",
+    "resultsCount": "{count} productos encontrados",
+    "noResults": "No se encontraron productos",
+    "noResultsHint": "Prueba otra búsqueda o elimina algunos filtros",
+    "tabs": {
+      "all": "Todos",
+      "pcHardware": "Hardware PC",
+      "components": "Componentes",
+      "consumer": "Consumo"
+    },
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "suppliers": "{count} prov.",
+    "offersFrom": "Ofertas de {count} proveedores:",
+    "noStock": "sin stock",
+    "units": "{count} un.",
+    "compare": "Comparar",
+    "from": "desde",
+    "addToCart": "Añadir al carrito",
+    "buy": "Comprar"
+  },
+  "filter": {
+    "title": "Filtros",
+    "active": "activos",
+    "manufacturer": "Marca",
+    "price": "Precio",
+    "min": "Mín",
+    "max": "Máx",
+    "priceHint": "Considera el rango de ofertas cuando está disponible",
+    "specs": "Especificaciones",
+    "valuePlaceholder": "Valor",
+    "addAttribute": "Añadir filtro",
+    "removeAttribute": "Eliminar filtro",
+    "clear": "Limpiar filtros",
+    "showAll": "Mostrar todo",
+    "showLess": "Mostrar menos",
+    "apply": "Aplicar filtros"
+  },
+  "trust": {
+    "badge": "Impulsado por Catalog Intelligence",
+    "title": "Cada producto pasa por 15 etapas de validación",
+    "description": "Las ofertas de marketplaces, distribuidores y fabricantes se consolidan y se verifican antes de llegar a ti.",
+    "statPipeline": "etapas del pipeline",
+    "statConnectors": "conectores activos",
+    "statTests": "tests automatizados",
+    "statViolations": "violaciones de arquitectura",
+    "sources": "Fuentes: Marketplace · Distribuidor · Retailer · Fabricante"
+  },
+  "footer": {
+    "rights": "Copyright © 2026 END ART"
+  },
+  "language": {
+    "label": "Idioma",
+    "pt": "PT",
+    "en": "EN"
+  },
+  "detail": {
+    "backToCatalog": "Volver al catálogo",
+    "noCategory": "Sin categoría",
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "manufacturer": "Fabricante:",
+    "unitsInStock": "{count} unidades en stock",
+    "pipelineTrace": "Trazado del pipeline:",
+    "enrichedSpecs": "Especificaciones con autoridad",
+    "additionalSpecs": "Especificaciones adicionales",
+    "noEnrichment": "Los datos de enriquecimiento aún se están procesando. Este producto todavía no pasó por el pipeline.",
+    "confidenceHigh": "Confianza alta",
+    "confidenceGood": "Confianza buena",
+    "confidenceMedium": "Confianza media",
+    "confidenceLow": "Confianza baja",
+    "evidenceSources": "{count} fuente(s) de evidencia",
+    "retrievedAt": "Consultado el:",
+    "supplierOffers": "Ofertas de proveedores",
+    "bestPrice": "Mejor precio",
+    "inStockCount": "{count} en stock",
+    "outOfStockCount": "Agotado",
+    "noOffers": "No hay ofertas disponibles.",
+    "shipsFrom": "Envío desde:",
+    "fulfillmentDays": "{min}-{max} días",
+    "enrichedBadge": "Producto enriquecido por el pipeline",
+    "enrichedDescription": "{count} atributos validados con evidencia de {manufacturer}. Cada especificación incluye fuente y fecha de consulta.",
+    "sku": "SKU:",
+    "niche": "Nicho:",
+    "updatedAt": "Actualizado:",
+    "compatibleTitle": "Productos compatibles",
+    "compatibleSubtitle": "Via knowledge graph — coincidencia por socket, chipset y atributos canónicos",
+    "compatibleLoading": "Cargando productos compatibles...",
+    "compatibleEmpty": "No se encontraron productos compatibles",
+    "compatibleError": "Error al cargar productos compatibles",
+    "notFound": "Producto no encontrado · ShopFinder",
+    "noManufacturer": "fabricante"
+  },
+  "admin": {
+    "title": "Panel del operador",
+    "subtitle": "Curaduría, publicación y monitoreo de productos",
+    "pipeline": "Estado del pipeline",
+    "pipelineSubtitle": "Conectores, ejecuciones recientes y modo de ingesta de datos"
+  },
+  "compare": {
+    "title": "Comparar productos",
+    "subtitle": "Hasta 4 productos lado a lado — especificaciones, precios y fuentes.",
+    "empty": "No hay productos seleccionados para comparar.",
+    "emptyHint": "Añade productos haciendo clic en el botón \"Comparar\" de las tarjetas de búsqueda.",
+    "backToCatalog": "Volver al catálogo",
+    "addMore": "Añadir producto",
+    "addMoreHint": "Busca por título o MPN para añadir a la comparación.",
+    "addMorePlaceholder": "Buscar producto...",
+    "noResults": "No se encontraron productos para \"{query}\"",
+    "remove": "Quitar",
+    "clearAll": "Limpar todo",
+    "maxReached": "Se alcanzó el máximo de 4 productos",
+    "specsTitle": "Especificaciones",
+    "specsHint": "Filas unificadas de todos los productos. Las celdas vacías muestran —",
+    "offersTitle": "Ofertas",
+    "offersBestPrice": "Mejor precio",
+    "offersRange": "Rango de precio",
+    "offersSuppliers": "Proveedores",
+    "offersStock": "Stock total",
+    "manufacturer": "Fabricante",
+    "category": "Categoría",
+    "rating": "Calificación",
+    "rowAttribute": "Atributo",
+    "products": "productos",
+    "headerCompare": "Comparar",
+    "headerAdd": "Añadir a la comparación",
+    "headerRemove": "Quitar de la comparación",
+    "headerFull": "Lista de comparación llena"
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Cómo ShopFinder encuentra, valida y entrega las mejores ofertas.",
+    "items": [
+      {
+        "q": "¿Cómo consigue ShopFinder mejores precios?",
+        "a": "Agregamos ofertas de fabricantes, distribuidores autorizados y marketplaces, normalizamos las especificaciones y mostramos siempre la mejor oferta disponible."
+      },
+      {
+        "q": "¿En qué moneda se muestran los precios?",
+        "a": "Los precios se muestran en BRL con una tasa USD-BRL actualizada cada hora, así el valor refleja lo que pagarás."
+      },
+      {
+        "q": "¿Qué significa la confianza de una especificación?",
+        "a": "Cada especificación puede traer su fuente (fabricante, datasheet, distribuidor) y un puntaje de confianza basado en esa evidencia."
+      },
+      {
+        "q": "¿Cómo funciona la compatibilidad de productos?",
+        "a": "El catálogo mantiene un grafo de relaciones (ej.: CPU y placa madre con el mismo socket) para sugerir combinaciones compatibles."
+      }
+    ]
+  },
+  "cart": {
+    "title": "Carrito",
+    "close": "Cerrar",
+    "empty": "Tu carrito está vacío",
+    "viewProducts": "Ver productos",
+    "removeItem": "Quitar artículo",
+    "decreaseQty": "Disminuir cantidad",
+    "increaseQty": "Aumentar cantidad",
+    "subtotal": "Subtotal",
+    "checkout": "Finalizar compra",
+    "continueShopping": "Seguir comprando"
+  },
+  "orders": {
+    "title": "Mis pedidos",
+    "empty": "Todavía no hiciste ningún pedido.",
+    "emptyCta": "Ver productos",
+    "items": "artículos",
+    "itemsOne": "artículo",
+    "verItens": "Ver artículos"
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "profile": "Perfil",
+    "memberSince": "Miembro desde",
+    "orders": "Mis pedidos",
+    "ordersDesc": "Historial y estado de tus compras",
+    "settings": "Configuraciones",
+    "settingsDesc": "Idioma, moneda y notificaciones",
+    "language": "Idioma",
+    "currency": "Moneda",
+    "notifications": "Notificaciones",
+    "emailNotifications": "Notificaciones por email",
+    "pushNotifications": "Notificaciones push",
+    "save": "Guardar",
+    "saved": "Configuraciones guardadas"
+  },
+  "about": {
+    "title": "Acerca de ShopFinder",
+    "missionTitle": "Nuestra misión",
+    "mission": "Hacer simple la comparación inteligente entre proveedores: precio real en BRL, stock real y plazos honestos — para que compres con el mejor proveedor sin abrir diez pestañas.",
+    "howTitle": "Cómo funciona",
+    "step1": "Busca: encuentra hardware y electrónica entre los proveedores integrados.",
+    "step2": "Compara: especificaciones, precios y stock lado a lado, convertidos a BRL.",
+    "step3": "Compra: finaliza el checkout y el pedido va para el mejor proveedor.",
+    "nichesTitle": "Nichos cubiertos",
+    "niches": "Hardware de PC y gaming, componentes electrónicos y electrónica de consumo."
+  },
+  "terms": {
+    "title": "Términos de Uso",
+    "updated": "Última actualización: 31 de agosto de 2026 · Versión 1.0",
+    "toc": "En esta página",
+    "sections": [
+      {
+        "id": "identificacao",
+        "title": "1. Identificación del proveedor",
+        "body": "ShopFinder es el servicio de comparación e intermediación de compras operado por la razón social y en la dirección identificadas en la sección de datos de la empresa abajo. Canal oficial de atención: email de soporte, con plazo de respuesta de hasta 2 días hábiles."
+      },
+      {
+        "id": "definicoes",
+        "title": "2. Definiciones y papel de la plataforma",
+        "body": "ShopFinder es una plataforma de comparación de precios e intermediación de compras. No somos el vendedor de los productos: las ofertas son de proveedores terceros integrados, y el contrato de compraventa se forma entre tú y el proveedor. El pago es procesado por Stripe (procesador de pagos) y la entrega es responsabilidad del proveedor."
+      },
+      {
+        "id": "marketplace",
+        "title": "3. Papel de marketplace y responsabilidad sobre terceros",
+        "body": "Por ser un comparador/intermediario, ShopFinder no fabrica, no almacena y no envía los productos. La calidad, la garantía de fábrica, la entrega y la posventa son obligaciones del proveedor responsable de la oferta. Nuestro papel es verificar proveedores antes de la integración (documentación y reputación), monitorear reclamos y facilitar el contacto y el reembolso. Nada en estos Términos elimina o reduce derechos previstos en la legislación de defensa del consumidor — incluida la responsabilidad solidaria cuando corresponda."
+      },
+      {
+        "id": "cadastro",
+        "title": "4. Elegibilidad y cuenta",
+        "body": "El registro está disponible para personas mayores de 18 años. Te comprometes a proveer información verdadera, completa y actualizada, a mantener la seguridad de tus credenciales (contraseña y, cuando esté habilitado, el código 2FA) y a notificarnos el uso no autorizado de tu cuenta. Al completar el registro, declaras haber leído y aceptado estos Términos y la Política de Privacidad — aceptación electrónica con plena validez. La versión aceptada y la fecha quedan registradas en tu cuenta."
+      },
+      {
+        "id": "publicidade",
+        "title": "5. Ofertas, publicidad e información",
+        "body": "Las ofertas mostradas son responsabilidad del proveedor que las publicó. ShopFinder verifica y normaliza especificaciones pero no garantiza precio, stock ni disponibilidad en tiempo real — confirma la información en la página de la oferta antes de completar la compra. Los precios en BRL usan conversión de cambio en vivo y pueden variar."
+      },
+      {
+        "id": "pagamentos",
+        "title": "6. Pagos y seguridad",
+        "body": "Los pagos son procesados por Stripe. No almacenamos datos de tarjeta. Aplicamos medidas técnicas y organizacionales para proteger los datos y las transacciones."
+      },
+      {
+        "id": "reembolsos",
+        "title": "7. Reembolsos, cancelaciones y desistimiento",
+        "body": "El reembolso es procesado por el proveedor responsable de la oferta. Para cancelar o desistir (donde la legislación de defensa del consumidor otorga el derecho de desistimiento — por ejemplo, 7 días desde la entrega, sin justificativa y sin costos), contacta al proveedor con tu número de pedido y copianos para mediar el caso. Si el proveedor no responde, intermediaremos el contacto y el reembolso. El monto devuelto incluye el envío cuando corresponde."
+      },
+      {
+        "id": "sac",
+        "title": "8. Atención al cliente",
+        "body": "Nuestro canal de atención es el email indicado en la sección 1, con plazo de respuesta de hasta 2 días hábiles. Los reclamos por entrega o calidad del producto también pueden dirigirse al proveedor responsable."
+      },
+      {
+        "id": "ia",
+        "title": "9. Uso de inteligencia artificial",
+        "body": "ShopFinder usa herramientas de IA para organizar, resumir y recomendar productos del catálogo (búsqueda, comparación y reseñas), con base en datos de productos y especificaciones — no en datos personales sensibles. Las salidas de IA son sugerencias automatizadas y no constituyen garantía ni asesoramiento. No tomamos decisiones automatizadas con efecto jurídico sobre ti; la revisión humana puede solicitarse por el canal de atención."
+      },
+      {
+        "id": "pi-dmca",
+        "title": "10. Propiedad intelectual, DMCA y takedown",
+        "body": "La marca, el diseño y el código de ShopFinder pertenecen al operador de la plataforma; nombres y marcas de proveedores y fabricantes pertenecen a sus titulares. Los titulares de derechos de autor pueden notificar infracciones por el email de soporte, informando: identificación de la obra, URL del contenido presuntamente infractor, datos de contacto y declaración de buena fe. Los contenidos que infrinjan derechos se retiran en plazo razonable, y el responsable puede presentar una contranotificación."
+      },
+      {
+        "id": "fornecedores",
+        "title": "11. Términos para proveedores",
+        "body": "Los proveedores se integran a la plataforma aceptando sus propios términos. Son obligaciones del proveedor: veracidad de especificaciones, precios, stock y plazos; cumplimiento de entrega y garantía; atención a reclamos. ShopFinder puede suspender o remover proveedores en caso de fraude, reclamos recurrentes o incumplimiento. El modelo actual no cobra comisión sobre ventas."
+      },
+      {
+        "id": "responsabilidade",
+        "title": "12. Responsabilidades y limitación",
+        "body": "Somos responsables por la correcta exhibición de la información de las ofertas y por el funcionamiento de la plataforma, sin perjuicio de los derechos que la ley asegura al consumidor. Afirmas indemnizar y mantener indemne a ShopFinder frente a reclamos derivados de tu violación de estos Términos o del mal uso de la plataforma."
+      },
+      {
+        "id": "suspensao",
+        "title": "13. Suspensión y cierre",
+        "body": "Podemos suspender o cerrar cuentas usadas en violación de estos Términos, con aviso previo cuando sea posible. Puedes cerrar tu cuenta en cualquier momento por el canal de atención."
+      },
+      {
+        "id": "arbitragem",
+        "title": "14. Resolución de disputas y arbitraje",
+        "body": "Las disputas se resuelven preferentemente por el canal de atención y, cuando sea necesario, por los canales de protección al consumidor aplicables a tu domicilio."
+      },
+      {
+        "id": "alteracoes",
+        "title": "15. Cambios en estos Términos",
+        "body": "Podemos actualizar estos Términos; la versión vigente y la fecha de efectividad aparecen al inicio de esta página. Los cambios relevantes se anunciarán en el sitio con antelación; el uso continuado tras el aviso implica la aceptación de la nueva versión."
+      },
+      {
+        "id": "foro",
+        "title": "16. Ley aplicable y foro",
+        "body": "Aplica la legislación brasileña (CDC, Marco Civil de Internet y demás normas aplicables). El foro para resolver conflictos es el del domicilio del consumidor."
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "updated": "Última actualización: 31 de agosto de 2026 · Versión 1.0",
+    "toc": "En esta página",
+    "sections": [
+      {
+        "id": "controlador",
+        "title": "1. Responsable y contacto del encargado (DPO)",
+        "body": "El responsable de tus datos personales es el operador de la plataforma ShopFinder. El encargado (DPO) puede ser contactado por el email de soporte indicado en la sección Contacto."
+      },
+      {
+        "id": "dados",
+        "title": "2. Datos que recopilamos",
+        "body": "Recopilamos solo lo necesario para operar la plataforma, por categoría:",
+        "table": {
+          "headers": ["Categoría", "Datos", "Ejemplos"],
+          "rows": [
+            [
+              "Cuenta",
+              "email, contraseña (hash), fecha de aceptación de los términos",
+              "registro/login"
+            ],
+            [
+              "Pedidos",
+              "artículos, cantidades, valores, estado, dirección de entrega informada",
+              "checkout"
+            ],
+            [
+              "Técnicos",
+              "registros de acceso necesarios para operar y asegurar la plataforma",
+              "logs del servidor"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "finalidades",
+        "title": "3. Cómo usamos la información y bases legales",
+        "body": "Usamos tus datos como se describe abajo. Puedes revocar el consentimiento en cualquier momento por el canal de atención, sin afectar los tratamientos anteriores.",
+        "table": {
+          "headers": ["Finalidad", "Base legal"],
+          "rows": [
+            ["Crear y mantener tu cuenta", "Ejecución de contrato / consentimiento"],
+            ["Procesar y registrar pedidos", "Ejecución de contrato"],
+            [
+              "Mostrar precios en BRL y preferencias de idioma",
+              "Consentimiento / interés legítimo"
+            ],
+            [
+              "Seguridad, prevención de fraude y cumplimiento de obligaciones legales",
+              "Obligación legal / interés legítimo"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "cookies",
+        "title": "4. Cookies y almacenamiento local",
+        "body": "Usamos almacenamiento local (localStorage) y cookies estrictamente funcionales. No usamos cookies de publicidad ni rastreo de terceros. La lista completa, con duración y proveedores, está en nuestra Política de Cookies (/cookies).",
+        "table": {
+          "headers": ["Clave", "Tipo", "Finalidad"],
+          "rows": [
+            ["sf:cart", "localStorage (esencial)", "mantener los artículos del carrito"],
+            ["sf:locale", "localStorage + cookie locale (preferencia)", "idioma de la interfaz"],
+            ["sf:currency", "localStorage (preferencia)", "moneda de exhibición"],
+            ["sf:notifications", "localStorage (preferencia)", "preferencias de notificación"]
+          ]
+        }
+      },
+      {
+        "id": "compartilhamento",
+        "title": "5. Compartición de datos",
+        "body": "Compartimos datos solo con: Stripe (pagos), proveedores integrados (solo lo necesario para entregar tu pedido) y autoridades cuando exista obligación legal."
+      },
+      {
+        "id": "transferencia",
+        "title": "6. Transferencia internacional de datos",
+        "body": "El procesamiento puede ocurrir fuera de Brasil, por los siguientes proveedores: Stripe, Inc. (EE.UU. — pagos), proveedores de nube y edge para hosting (Vercel Inc. — EE.UU.), Neon (base de datos) y OpenAI (evaluación de catálogo con IA, sin datos personales sensibles). En estos casos seguimos la legislación aplicable, con cláusulas contractuales estándar, garantías de conformidad (como PCI-DSS y certificaciones de Stripe) y transferencia limitada a lo necesario."
+      },
+      {
+        "id": "retencao",
+        "title": "7. Retención",
+        "body": "Mantenemos los datos de la cuenta mientras esté activa y los registros de pedidos por el plazo necesario para cumplir obligaciones legales y defender reclamos, eliminados después de ese período."
+      },
+      {
+        "id": "seguranca",
+        "title": "8. Seguridad",
+        "body": "Aplicamos medidas técnicas (contraseñas con hash, TLS, control de acceso, logs de auditoría) y organizacionales para proteger tus datos contra acceso no autorizado y pérdidas accidentales."
+      },
+      {
+        "id": "incidentes",
+        "title": "9. Incidentes de seguridad",
+        "body": "En caso de un incidente de seguridad que pueda generar riesgo relevante para ti, notificaremos a la autoridad de protección de datos y a los titulares afectados en plazo razonable, describiendo la naturaleza del incidente, los datos afectados, los riesgos y las medidas de mitigación. El canal para comunicar incidentes es el email de soporte."
+      },
+      {
+        "id": "ia",
+        "title": "10. Uso de inteligencia artificial",
+        "body": "Usamos IA para enriquecer, resumir y recomendar productos del catálogo (búsqueda, comparación y reseñas), usando datos de productos y especificaciones — no datos personales sensibles. No tomamos decisiones automatizadas con efecto jurídico sobre ti; la revisión humana está garantizada por el canal de atención."
+      },
+      {
+        "id": "direitos",
+        "title": "11. Tus derechos",
+        "body": "Según tu jurisdicción tienes derecho a conocer, acceder, corregir, eliminar y portar tu información personal, y a oponerte a su venta o compartición — no la vendemos; también tienes derecho a no ser discriminado por ejercer estos derechos. Para ejercerlos, escribe al encargado — respondemos en 15 días (LGPD) o 45 días (CCPA/CPRA) según corresponda. La plataforma no responde a señales Do Not Track del navegador; no te rastreamos por sitios de terceros."
+      },
+      {
+        "id": "criancas",
+        "title": "12. Niños",
+        "body": "La plataforma no está dirigida a niños (menores de 13 según COPPA; menores de 18 para la creación de cuenta según estos Términos) y no recopilamos intencionalmente su información personal."
+      },
+      {
+        "id": "alteracoes",
+        "title": "13. Cambios en esta política",
+        "body": "La versión vigente y la fecha de actualización aparecen al inicio de esta página. Los cambios relevantes se anunciarán en el sitio."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contacto",
+    "intro": "¿Dudas, problemas o feedback? Hable con nosotros:",
+    "responseTitle": "Tiempo de respuesta",
+    "response": "Hasta 2 días hábiles."
+  },
+  "cookies": {
+    "title": "Política de Cookies",
+    "updated": "Última actualización: 31 de agosto de 2026 · Versión 1.0",
+    "whatTitle": "¿Qué son las cookies?",
+    "what": "Las cookies son pequeños archivos grabados por tu navegador para mantener información entre visitas. También usamos almacenamiento local (localStorage), que funciona de forma parecida pero no se envía a los servidores. ShopFinder usa SOLO almacenamiento esencial y de preferencia: sin cookies de analítica, publicidad ni rastreo de terceros.",
+    "tableTitle": "Cookies y almacenamientos que utilizamos",
+    "colName": "Nombre",
+    "colProvider": "Proveedor",
+    "colDuration": "Duración",
+    "colPurpose": "Finalidad",
+    "colType": "Tipo",
+    "noneTitle": "Analítica y marketing",
+    "none": "No usamos cookies de analítica ni marketing de ninguna clase.",
+    "manageTitle": "Cómo gestionar las cookies",
+    "manageIntro": "Puedes limpiar cookies y datos del sitio en cualquier momento en la configuración de tu navegador:",
+    "chrome": "Chrome: Configuración → Privacidad y seguridad → Borrar datos de navegación / Configuración del sitio",
+    "firefox": "Firefox: Configuración → Privacidad y seguridad → Cookies y datos del sitio",
+    "safari": "Safari: Preferencias → Privacidad → Gestionar datos de sitios web",
+    "edge": "Edge: Configuración → Cookies y permisos del sitio → Administrar y eliminar cookies",
+    "bannerNote": "Como usamos solo almacenamiento esencial y de preferencia, no mostramos banner de consentimiento; al continuar navegando, aceptas el uso descrito en esta página.",
+    "privacyLink": "Consulta también nuestra Política de Privacidad."
+  },
+  "register": {
+    "acceptPrefix": "He leído y acepto los",
+    "terms": "Términos de Uso",
+    "acceptAnd": "y la",
+    "privacy": "Política de Privacidad"
+  }
+}
