@@ -66,7 +66,7 @@ export function SiteFooter() {
             <span>V{PROJECT_META.version.toUpperCase()}</span>
           </div>
           <div className="text-xs text-muted-foreground">
-            Copyright (c) {new Date().getFullYear()} {company.legalName}
+            Copyright © {new Date().getFullYear()} {company.legalName}
           </div>
         </div>
       </div>
