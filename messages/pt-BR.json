@@ -264,19 +264,19 @@
         "body": "O ShopFinder é uma plataforma de comparação de preços e intermediação de compras. Não somos o vendedor dos produtos: as ofertas são de fornecedores terceiros integrados, e o contrato de compra e venda se forma entre você e o fornecedor. O pagamento é processado pelo Stripe (processador de pagamentos) e a entrega é de responsabilidade do fornecedor."
       },
       {
+        "id": "marketplace",
+        "title": "3. Papel de marketplace e responsabilidade sobre terceiros",
+        "body": "Por ser um comparador/intermediador, o ShopFinder não fabrica, não estoca e não envia os produtos. A qualidade, a garantia de fábrica, a entrega e o suporte pós-venda são obrigações do fornecedor responsável pela oferta. Nosso papel é verificar fornecedores antes da integração (documentação e reputação), monitorar reclamações e facilitar o contato e o ressarcimento. Nada nestes Termos afasta ou reduz direitos previstos no CDC — inclusive a responsabilidade solidária/subsidiária quando caracterizada (art. 25)."
+      },
+      {
         "id": "cadastro",
-        "title": "3. Cadastro e conta",
+        "title": "4. Cadastro e conta",
         "body": "O cadastro é permitido a maiores de 18 anos. Você se compromete a fornecer dados verdadeiros, completos e atualizados, a manter a segurança das suas credenciais (senha e, quando habilitado, código 2FA) e a nos notificar sobre uso não autorizado da sua conta. Ao concluir o cadastro, você declara ter lido e aceito estes Termos e a Política de Privacidade — aceite eletrônico com plena validade, nos termos do art. 10 da Lei nº 12.965/2014 (Marco Civil da Internet). A versão aceita e a data ficam registradas no seu cadastro."
       },
       {
-        "id": "ofertas",
-        "title": "4. Ofertas e compra",
-        "body": "Antes da finalização da compra, você tem acesso a informações claras de cada oferta: preço (em BRL, com conversão ao vivo), especificações técnicas, estoque, fornecedor e custos aplicáveis — nos termos do art. 31 do CDC e do art. 2º do Decreto nº 7.962/2013. Após o pagamento, o status do pedido fica disponível na sua área de usuário."
-      },
-      {
-        "id": "arrependimento",
-        "title": "5. Direito de arrependimento (art. 49 do CDC)",
-        "body": "Você pode desistir da compra no prazo de 7 (sete) dias a contar do recebimento do produto, sem justificativa e sem custos. Para exercer: envie email para o nosso canal de atendimento informando o número do pedido. Devolveremos o valor pago, inclusive frete, e o fornecedor assume a logística de retorno."
+        "id": "publicidade",
+        "title": "5. Ofertas, publicidade e informação (arts. 30 e 31 do CDC)",
+        "body": "As ofertas exibidas são de responsabilidade do fornecedor que as cadastrou. O ShopFinder verifica e normaliza especificações, mas não garante preço, estoque ou disponibilidade em tempo real — confirme as informações na página da oferta antes de finalizar a compra. Preços em BRL usam conversão de câmbio ao vivo, que pode variar."
       },
       {
         "id": "pagamentos",
@@ -284,33 +284,53 @@
         "body": "Pagamentos são processados pelo Stripe. Não armazenamos dados de cartão. Empregamos medidas técnicas e organizacionais para proteger os dados e as transações."
       },
       {
+        "id": "reembolsos",
+        "title": "7. Reembolsos, cancelamentos e direito de arrependimento",
+        "body": "O reembolso é processado pelo fornecedor responsável pela oferta. Para cancelar ou desistir (art. 49 do CDC — 7 dias a contar do recebimento, sem justificativa e sem custos), contate o fornecedor e informe o número do pedido; coloque o ShopFinder em cópia para que mediamos o caso. Se o fornecedor não responder, intermediaremos o contato e o ressarcimento. O valor devolvido inclui frete, quando aplicável."
+      },
+      {
         "id": "sac",
-        "title": "7. Atendimento ao consumidor (SAC)",
+        "title": "8. Atendimento ao consumidor (SAC)",
         "body": "Nosso canal de atendimento é o email de suporte indicado na seção 1, com prazo de resposta de até 2 dias úteis. Reclamações sobre entrega ou qualidade do produto também podem ser direcionadas ao fornecedor responsável."
       },
       {
-        "id": "pi",
-        "title": "8. Propriedade intelectual",
-        "body": "Marca, design e código do ShopFinder pertencem à operadora da plataforma. Marcas e nomes de fornecedores e fabricantes pertencem aos seus respectivos titulares."
+        "id": "ia",
+        "title": "9. Uso de inteligência artificial",
+        "body": "O ShopFinder utiliza ferramentas de IA para organizar, resumir e recomendar produtos do catálogo (busca, comparação e avaliações), com base em dados de produtos e especificações — não em dados sensíveis. As saídas de IA são sugestões automatizadas e não constituem garantia ou aconselhamento. Não tomamos decisões automatizadas com efeito jurídico sobre você; a revisão humana pode ser solicitada pelo SAC."
+      },
+      {
+        "id": "pi-dmca",
+        "title": "10. Propriedade intelectual, DMCA e takedown",
+        "body": "Marca, design e código do ShopFinder pertencem à operadora da plataforma; marcas de fornecedores e fabricantes pertencem aos seus titulares. Titulares de direitos autorais podem notificar violações por email de suporte, informando: identificação da obra, URL do conteúdo alegadamente infrator, seus dados de contato e declaração de boa-fé. Conteúdos que infrinjam direitos são removidos em prazo razoável, e o responsável pode apresentar contranotificação."
+      },
+      {
+        "id": "fornecedores",
+        "title": "11. Termos para fornecedores",
+        "body": "Fornecedores integram-se à plataforma mediante aceite de termos próprios. São obrigações do fornecedor: veracidade de especificações, preços, estoque e prazos; cumprimento de entrega e garantia; atendimento a reclamações. O ShopFinder pode suspender ou remover fornecedores em caso de fraude, reclamações recorrentes ou descumprimento. O modelo atual não cobra comissão sobre vendas."
       },
       {
         "id": "responsabilidade",
-        "title": "9. Responsabilidades",
+        "title": "12. Responsabilidades e limitação",
         "body": "Respondemos pela correta exibição das informações de ofertas e pelo funcionamento da plataforma, sem prejuízo dos direitos que a lei assegura ao consumidor — nada nestes Termos afasta ou reduz direitos previstos no CDC (art. 25). Eventuais falhas de entrega ou do produto são responsabilidades do fornecedor, e facilitaremos o contato e o ressarcimento."
       },
       {
         "id": "suspensao",
-        "title": "10. Suspensão e encerramento",
+        "title": "13. Suspensão e encerramento",
         "body": "Podemos suspender ou encerrar contas usadas em violação a estes Termos, com aviso prévio quando possível. Você pode encerrar a conta a qualquer momento pelo canal de atendimento."
       },
       {
+        "id": "arbitragem",
+        "title": "14. Resolução de disputas e arbitragem",
+        "body": "Disputas são resolvidas preferencialmente pelo SAC e, quando necessário, pelos canais do art. 101 do CDC. Consumidores com domicílio no Brasil NÃO são obrigados a submeter disputas à arbitragem (art. 4º, § 1º, da Lei nº 9.307/96). Para contas de uso comercial nos EUA, disputas podem ser submetidas à arbitragem vinculante sob as regras da AAA (American Arbitration Association), com renúncia a ações coletivas onde permitido — sem prejuízo dos direitos indisponíveis do consumidor."
+      },
+      {
         "id": "alteracoes",
-        "title": "11. Alterações destes Termos",
+        "title": "15. Alterações destes Termos",
         "body": "Podemos atualizar estes Termos; a versão e a data de vigência constam no topo desta página. Alterações relevantes serão comunicadas no site com antecedência; o uso continuado após o aviso implica aceite da nova versão."
       },
       {
         "id": "foro",
-        "title": "12. Lei aplicável e foro",
+        "title": "16. Lei aplicável e foro",
         "body": "Aplica-se a legislação brasileira (CDC, Marco Civil da Internet e demais normas aplicáveis). O foro para dirimir conflitos é o do domicílio do consumidor (art. 101 do CDC)."
       }
     ]
@@ -347,22 +367,8 @@
         }
       },
       {
-        "id": "cookies",
-        "title": "3. Cookies e armazenamento local",
-        "body": "Usamos armazenamento local (localStorage) e cookies estritamente funcionais. Não usamos cookies de publicidade ou rastreamento de terceiros.",
-        "table": {
-          "headers": ["Chave", "Tipo", "Finalidade"],
-          "rows": [
-            ["sf:cart", "localStorage (essencial)", "manter os itens do carrinho"],
-            ["sf:locale", "localStorage + cookie locale (preferência)", "idioma da interface"],
-            ["sf:currency", "localStorage (preferência)", "moeda de exibição"],
-            ["sf:notifications", "localStorage (preferência)", "preferências de notificação"]
-          ]
-        }
-      },
-      {
         "id": "finalidades",
-        "title": "4. Finalidades e bases legais (art. 7º da LGPD)",
+        "title": "3. Finalidades e bases legais (art. 7º da LGPD)",
         "body": "Tratamos seus dados conforme a tabela abaixo. Você pode revogar o consentimento a qualquer tempo pelo canal de atendimento, sem afetar os tratamentos anteriores.",
         "table": {
           "headers": ["Finalidade", "Base legal"],
@@ -378,19 +384,33 @@
         }
       },
       {
+        "id": "cookies",
+        "title": "4. Cookies e armazenamento local",
+        "body": "Usamos armazenamento local (localStorage) e cookies estritamente funcionais. Não usamos cookies de publicidade ou rastreamento de terceiros. A lista completa, com duração e fornecedores, está na nossa Política de Cookies (/cookies).",
+        "table": {
+          "headers": ["Chave", "Tipo", "Finalidade"],
+          "rows": [
+            ["sf:cart", "localStorage (essencial)", "manter os itens do carrinho"],
+            ["sf:locale", "localStorage + cookie locale (preferência)", "idioma da interface"],
+            ["sf:currency", "localStorage (preferência)", "moeda de exibição"],
+            ["sf:notifications", "localStorage (preferência)", "preferências de notificação"]
+          ]
+        }
+      },
+      {
         "id": "compartilhamento",
-        "title": "5. Compartilhamento e transferência internacional",
-        "body": "Compartilhamos dados apenas com: Stripe (pagamentos), fornecedores integrados (apenas o necessário para entrega do pedido) e autoridades quando houver obrigação legal. O processamento pode ocorrer fora do Brasil; quando isso ocorrer, seguimos o art. 33 da LGPD com cláusulas-padrão contratuais e garantias adequadas."
+        "title": "5. Compartilhamento de dados",
+        "body": "Compartilhamos dados apenas com: Stripe (pagamentos), fornecedores integrados (apenas o necessário para entrega do pedido) e autoridades quando houver obrigação legal."
+      },
+      {
+        "id": "transferencia",
+        "title": "6. Transferência internacional de dados (art. 33 da LGPD)",
+        "body": "O processamento pode ocorrer fora do Brasil, pelos seguintes prestadores: Stripe, Inc. (EUA — pagamentos), provedores de nuvem e edge para hospedagem (Vercel Inc. — EUA), Neon (banco de dados) e OpenAI (avaliação de catálogo com IA, sem dados pessoais sensíveis). Nessas hipóteses, seguimos o art. 33 da LGPD, com cláusulas-padrão contratuais, garantias de conformidade (ex.: certificações e PCI-DSS do Stripe) e transferência limitada ao necessário."
       },
       {
         "id": "retencao",
-        "title": "6. Retenção",
+        "title": "7. Retenção",
         "body": "Mantemos os dados da conta enquanto ela estiver ativa e os registros de pedidos pelo prazo necessário para cumprimento de obrigações legais e defesa em processos, eliminados após esse período."
-      },
-      {
-        "id": "direitos",
-        "title": "7. Seus direitos (art. 18 da LGPD)",
-        "body": "Você pode solicitar: confirmação de tratamento; acesso aos dados; correção; anonimização, bloqueio ou eliminação de dados desnecessários; portabilidade; informação sobre compartilhamento; e revisão de decisões automatizadas. Para exercer, envie email ao encarregado — respondemos em até 15 dias."
       },
       {
         "id": "seguranca",
@@ -398,13 +418,28 @@
         "body": "Adotamos medidas técnicas (senhas com hash, TLS, controle de acesso, registros de auditoria) e organizacionais para proteger seus dados contra acesso não autorizado e perdas acidentais."
       },
       {
+        "id": "incidentes",
+        "title": "9. Incidentes de segurança (art. 48 da LGPD)",
+        "body": "Em caso de incidente de segurança que possa gerar risco relevante a você, notificaremos a ANPD e os titulares afetados em prazo razoável, descrevendo a natureza do incidente, os dados afetados, os riscos e as medidas de mitigação. O canal para comunicar incidentes é o email de suporte."
+      },
+      {
+        "id": "ia",
+        "title": "10. Uso de inteligência artificial",
+        "body": "Utilizamos IA para enriquecer, resumir e recomendar produtos do catálogo (busca, comparação e avaliações), usando dados de produtos e especificações — não dados pessoais sensíveis. Não realizamos decisões automatizadas com efeito jurídico sobre você; é garantida a revisão humana pelo SAC."
+      },
+      {
+        "id": "direitos",
+        "title": "11. Seus direitos (art. 18 da LGPD)",
+        "body": "Você pode solicitar: confirmação de tratamento; acesso aos dados; correção; anonimização, bloqueio ou eliminação de dados desnecessários; portabilidade; informação sobre compartilhamento; e revisão de decisões automatizadas. Para exercer, envie email ao encarregado — respondemos em até 15 dias."
+      },
+      {
         "id": "criancas",
-        "title": "9. Crianças e adolescentes",
+        "title": "12. Crianças e adolescentes",
         "body": "A plataforma não é direcionada a menores de 18 anos e não coletamos intencionalmente dados de crianças e adolescentes."
       },
       {
         "id": "alteracoes",
-        "title": "10. Alterações desta política",
+        "title": "13. Alterações desta política",
         "body": "A versão vigente e a data de atualização constam no topo desta página. Mudanças relevantes serão comunicadas no site."
       }
     ]
@@ -420,5 +455,27 @@
     "terms": "Termos de Uso",
     "acceptAnd": "e a",
     "privacy": "Política de Privacidade"
+  },
+  "cookies": {
+    "title": "Política de Cookies",
+    "updated": "Última atualização: 31 de agosto de 2026 · Versão 1.0",
+    "whatTitle": "O que são cookies?",
+    "what": "Cookies são pequenos arquivos gravados pelo seu navegador para manter informações entre visitas. Também usamos armazenamento local (localStorage), que funciona de forma parecida, mas não é enviado aos servidores. O ShopFinder usa SOMENTE armazenamento essencial e de preferência: sem cookies de analytics, publicidade ou rastreamento de terceiros.",
+    "tableTitle": "Cookies e armazenamentos que utilizamos",
+    "colName": "Nome",
+    "colProvider": "Fornecedor",
+    "colDuration": "Duração",
+    "colPurpose": "Finalidade",
+    "colType": "Tipo",
+    "noneTitle": "Analytics e marketing",
+    "none": "Não utilizamos cookies de analytics ou marketing de nenhuma espécie.",
+    "manageTitle": "Como gerenciar cookies",
+    "manageIntro": "Você pode limpar cookies e dados de site a qualquer momento nas configurações do seu navegador:",
+    "chrome": "Chrome: Configurações → Privacidade e segurança → Limpar dados de navegação / Configurações do site",
+    "firefox": "Firefox: Configurações → Privacidade e Segurança → Cookies e dados do site",
+    "safari": "Safari: Preferências → Privacidade → Gerenciar dados de site",
+    "edge": "Edge: Configurações → Cookies e permissões de site → Gerenciar e excluir cookies",
+    "bannerNote": "Como usamos apenas armazenamento essencial e de preferência, não exibimos banner de consentimento; ao continuar navegando, você concorda com o uso descrito nesta página.",
+    "privacyLink": "Veja também a nossa Política de Privacidade."
   }
 }

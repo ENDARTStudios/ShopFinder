@@ -55,6 +55,9 @@ export function SiteFooter() {
           <Link href="/privacidade" className="hover:text-foreground transition-colors">
             Privacidade
           </Link>
+          <Link href="/cookies" className="hover:text-foreground transition-colors">
+            Cookies
+          </Link>
         </div>
 
         <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
