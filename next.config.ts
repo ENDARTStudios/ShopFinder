@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // falha com ENOENT em .next/next-server.js.nft.json.
   output: process.env.VERCEL ? undefined : "standalone",
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: false
   },
   reactStrictMode: false,
   // SDKs de observabilidade rodam externos ao bundle do servidor
