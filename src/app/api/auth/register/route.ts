@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
 import { hashPassword } from "@workspace/auth";
 import { z } from "zod";
+import { CURRENT_TERMS_VERSION } from "@/config/legal";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
         storeId: "cmrfu2kdb0000oybnlekztroj",
         status: "active",
         termsAcceptedAt: new Date(),
-        termsVersion: "1.0"
+        termsVersion: CURRENT_TERMS_VERSION
       }
     });
 
