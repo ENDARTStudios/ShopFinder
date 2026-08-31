@@ -330,11 +330,7 @@
         "title": "2. Categories of personal information we collect",
         "body": "We collect only what is necessary to operate the platform, by category:",
         "table": {
-          "headers": [
-            "Category",
-            "Data",
-            "Examples"
-          ],
+          "headers": ["Category", "Data", "Examples"],
           "rows": [
             [
               "Account (identifiers)",
@@ -359,32 +355,12 @@
         "title": "3. Cookies and local storage",
         "body": "We use local storage (localStorage) and strictly functional cookies. We do not use advertising or third-party tracking cookies.",
         "table": {
-          "headers": [
-            "Key",
-            "Type",
-            "Purpose"
-          ],
+          "headers": ["Key", "Type", "Purpose"],
           "rows": [
-            [
-              "sf:cart",
-              "local storage (essential)",
-              "keep your cart items"
-            ],
-            [
-              "sf:locale",
-              "local storage + locale cookie (preference)",
-              "interface language"
-            ],
-            [
-              "sf:currency",
-              "local storage (preference)",
-              "display currency"
-            ],
-            [
-              "sf:notifications",
-              "local storage (preference)",
-              "notification preferences"
-            ]
+            ["sf:cart", "local storage (essential)", "keep your cart items"],
+            ["sf:locale", "local storage + locale cookie (preference)", "interface language"],
+            ["sf:currency", "local storage (preference)", "display currency"],
+            ["sf:notifications", "local storage (preference)", "notification preferences"]
           ]
         }
       },
@@ -393,23 +369,11 @@
         "title": "4. How we use information and legal bases",
         "body": "We use your data as described below. You may withdraw consent at any time through the support channel, without affecting prior processing.",
         "table": {
-          "headers": [
-            "Purpose",
-            "Legal basis"
-          ],
+          "headers": ["Purpose", "Legal basis"],
           "rows": [
-            [
-              "Create and maintain your account",
-              "Contract performance / consent"
-            ],
-            [
-              "Process and record orders",
-              "Contract performance"
-            ],
-            [
-              "Display BRL prices and language preferences",
-              "Consent / legitimate interest"
-            ],
+            ["Create and maintain your account", "Contract performance / consent"],
+            ["Process and record orders", "Contract performance"],
+            ["Display BRL prices and language preferences", "Consent / legitimate interest"],
             [
               "Security, fraud prevention and legal compliance",
               "Legal obligation / legitimate interest"
@@ -454,5 +418,11 @@
     "intro": "Questions, issues or feedback? Talk to us:",
     "responseTitle": "Response time",
     "response": "Within 2 business days."
+  },
+  "register": {
+    "acceptPrefix": "I have read and accept the",
+    "terms": "Terms of Use",
+    "acceptAnd": "and the",
+    "privacy": "Privacy Policy"
   }
 }

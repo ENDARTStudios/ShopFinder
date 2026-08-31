@@ -9,7 +9,8 @@ import { z } from "zod";
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  name: z.string().optional()
+  name: z.string().optional(),
+  termsAccepted: z.literal(true)
 });
 
 export async function POST(request: NextRequest) {
@@ -24,7 +25,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email, password } = parsed.data;
+    const { email, password, termsAccepted } = parsed.data;
+
+    if (!termsAccepted) {
+      return NextResponse.json({ error: "Terms acceptance is required" }, { status: 400 });
+    }
 
     // Check if user already exists
     const existing = await prisma.user.findFirst({
@@ -32,36 +37,35 @@ export async function POST(request: NextRequest) {
     });
 
     if (existing) {
-      return NextResponse.json(
-        { error: "Email already registered" },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
     // Hash password
     const passwordHash = await hashPassword(password);
 
-    // Create user
+    // Create user — grava o aceite dos termos (T051)
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
         passwordHash,
         roles: JSON.stringify(["customer"]),
         storeId: "cmrfu2kdb0000oybnlekztroj",
-        status: "active"
+        status: "active",
+        termsAcceptedAt: new Date(),
+        termsVersion: "1.0"
       }
     });
 
-    return NextResponse.json({
-      id: user.id,
-      email: user.email,
-      message: "User registered successfully"
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        id: user.id,
+        email: user.email,
+        message: "User registered successfully"
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Registration error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

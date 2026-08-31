@@ -330,17 +330,9 @@
         "title": "2. Dados que coletamos",
         "body": "Coletamos apenas o necessário para operar a plataforma, por categoria:",
         "table": {
-          "headers": [
-            "Categoria",
-            "Dados",
-            "Exemplos"
-          ],
+          "headers": ["Categoria", "Dados", "Exemplos"],
           "rows": [
-            [
-              "Conta",
-              "email, senha (hash), data de aceite dos termos",
-              "cadastro/login"
-            ],
+            ["Conta", "email, senha (hash), data de aceite dos termos", "cadastro/login"],
             [
               "Pedidos",
               "itens, quantidades, valores, status, endereço de entrega informado",
@@ -359,32 +351,12 @@
         "title": "3. Cookies e armazenamento local",
         "body": "Usamos armazenamento local (localStorage) e cookies estritamente funcionais. Não usamos cookies de publicidade ou rastreamento de terceiros.",
         "table": {
-          "headers": [
-            "Chave",
-            "Tipo",
-            "Finalidade"
-          ],
+          "headers": ["Chave", "Tipo", "Finalidade"],
           "rows": [
-            [
-              "sf:cart",
-              "localStorage (essencial)",
-              "manter os itens do carrinho"
-            ],
-            [
-              "sf:locale",
-              "localStorage + cookie locale (preferência)",
-              "idioma da interface"
-            ],
-            [
-              "sf:currency",
-              "localStorage (preferência)",
-              "moeda de exibição"
-            ],
-            [
-              "sf:notifications",
-              "localStorage (preferência)",
-              "preferências de notificação"
-            ]
+            ["sf:cart", "localStorage (essencial)", "manter os itens do carrinho"],
+            ["sf:locale", "localStorage + cookie locale (preferência)", "idioma da interface"],
+            ["sf:currency", "localStorage (preferência)", "moeda de exibição"],
+            ["sf:notifications", "localStorage (preferência)", "preferências de notificação"]
           ]
         }
       },
@@ -393,23 +365,11 @@
         "title": "4. Finalidades e bases legais (art. 7º da LGPD)",
         "body": "Tratamos seus dados conforme a tabela abaixo. Você pode revogar o consentimento a qualquer tempo pelo canal de atendimento, sem afetar os tratamentos anteriores.",
         "table": {
-          "headers": [
-            "Finalidade",
-            "Base legal"
-          ],
+          "headers": ["Finalidade", "Base legal"],
           "rows": [
-            [
-              "Criar e manter sua conta",
-              "Execução de contrato / consentimento"
-            ],
-            [
-              "Processar e registrar pedidos",
-              "Execução de contrato"
-            ],
-            [
-              "Exibir preços em BRL e preferências de idioma",
-              "Consentimento / legítimo interesse"
-            ],
+            ["Criar e manter sua conta", "Execução de contrato / consentimento"],
+            ["Processar e registrar pedidos", "Execução de contrato"],
+            ["Exibir preços em BRL e preferências de idioma", "Consentimento / legítimo interesse"],
             [
               "Segurança, prevenção a fraudes e cumprimento de obrigações legais",
               "Obrigação legal / legítimo interesse"
@@ -454,5 +414,11 @@
     "intro": "Dúvidas, problemas ou feedback? Fale com a gente:",
     "responseTitle": "Prazo de resposta",
     "response": "Até 2 dias úteis."
+  },
+  "register": {
+    "acceptPrefix": "Li e aceito os",
+    "terms": "Termos de Uso",
+    "acceptAnd": "e a",
+    "privacy": "Política de Privacidade"
   }
 }
