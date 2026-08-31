@@ -6,7 +6,7 @@ import { InstitutionalHeader } from "@/components/site/institutional-header";
 interface LegalSection {
   id: string;
   title: string;
-  body: string;
+  body: string | string[];
   table?: { headers: string[]; rows: string[][] };
 }
 
@@ -25,6 +25,9 @@ export default async function PrivacidadePage() {
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
         <h1 className="mb-2 text-3xl font-black tracking-tight">{t("title")}</h1>
         <p className="mb-6 text-xs text-muted-foreground">{t("updated")}</p>
+        <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+          {t("intro")}
+        </p>
 
         <nav aria-label={t("toc")} className="mb-8 rounded-lg border border-border/60 bg-muted/20 p-4">
           <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -45,7 +48,20 @@ export default async function PrivacidadePage() {
           {sections.map((s) => (
             <section key={s.id} id={s.id} className="scroll-mt-20">
               <h2 className="mb-1 text-base font-bold">{s.title}</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              {Array.isArray(s.body) ? (
+                <div className="space-y-2">
+                  {s.body.map((paragraph, i) => (
+                    <p
+                      key={i}
+                      className="text-sm leading-relaxed text-muted-foreground"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              )}
 
               {s.table && (
                 <div className="mt-3 overflow-x-auto">

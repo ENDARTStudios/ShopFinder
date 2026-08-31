@@ -250,197 +250,632 @@
   },
   "terms": {
     "title": "Termos de Uso",
-    "updated": "Última atualização: 31 de agosto de 2026 · Versão 1.0",
-    "toc": "Nesta página",
+    "toc": "Sumário",
+    "updated": "Última atualização: 1 de setembro de 2026 · Versão 2.0",
     "sections": [
       {
         "id": "identificacao",
-        "title": "1. Identificação do fornecedor",
-        "body": "ShopFinder é o serviço de comparação e intermediação de compras operado pela razão social e no endereço identificados na seção de dados da empresa abaixo. Canal oficial de atendimento: email de suporte, com prazo de resposta de até 2 dias úteis."
+        "title": "1. Aceitação e identificação",
+        "body": [
+          "Estes Termos de Uso regulam o acesso e a utilização da plataforma ShopFinder, incluindo seu site, catálogo, busca, comparação de produtos, carrinho, conta, atendimento e, quando expressamente indicado na interface, intermediação de pedidos.",
+          "A ShopFinder é operada pela END ART Studios, inscrita no CNPJ sob nº 45.370.930/0001-75, com endereço em Osasco, São Paulo - Brasil. O atendimento geral ocorre pelo e-mail endart.studios@gmail.com. O canal de privacidade é endart.studios@gmail.com.",
+          "Ao navegar, criar uma conta ou utilizar determinada funcionalidade, você declara que leu estes Termos e a Política de Privacidade (/privacidade). Quando a lei ou a funcionalidade exigir aceite, este ocorrerá por meio de ação positiva, destacada e específica. A versão aceita, a data, a hora e o identificador técnico da operação poderão ser registrados para comprovação, segurança e cumprimento legal.",
+          "Se você não concordar com estes Termos, não utilize as funcionalidades contratuais da ShopFinder. A recusa a condições opcionais não impedirá o acesso às funcionalidades que não dependam delas."
+        ]
       },
       {
         "id": "definicoes",
-        "title": "2. Definições e papel da plataforma",
-        "body": "O ShopFinder é uma plataforma de comparação de preços e intermediação de compras. Não somos o vendedor dos produtos: as ofertas são de fornecedores terceiros integrados, e o contrato de compra e venda se forma entre você e o fornecedor. O pagamento é processado pelo Stripe (processador de pagamentos) e a entrega é de responsabilidade do fornecedor."
+        "title": "2. Definições",
+        "body": "Para estes Termos: ShopFinder significa a plataforma operada pela END ART Studios. Usuário é a pessoa que acessa ou utiliza a plataforma. Consumidor é a pessoa física ou jurídica que adquire ou utiliza produto ou serviço como destinatária final, nos termos da legislação aplicável. Fornecedor é o fabricante, importador, distribuidor, lojista, marketplace ou outro terceiro responsável pela oferta. Oferta é a apresentação de produto, preço, estoque, prazo, frete, condições e demais informações. Pedido é a solicitação de contratação registrada no fluxo da plataforma. Checkout é o fluxo eletrônico de confirmação e pagamento, quando disponibilizado pela ShopFinder."
       },
       {
-        "id": "marketplace",
-        "title": "3. Papel de marketplace e responsabilidade sobre terceiros",
-        "body": "Por ser um comparador/intermediador, o ShopFinder não fabrica, não estoca e não envia os produtos. A qualidade, a garantia de fábrica, a entrega e o suporte pós-venda são obrigações do fornecedor responsável pela oferta. Nosso papel é verificar fornecedores antes da integração (documentação e reputação), monitorar reclamações e facilitar o contato e o ressarcimento. Nada nestes Termos afasta ou reduz direitos previstos no CDC — inclusive a responsabilidade solidária/subsidiária quando caracterizada (art. 25)."
+        "id": "natureza-papel",
+        "title": "3. Natureza e papel da ShopFinder",
+        "body": [
+          "A ShopFinder oferece catálogo, busca, organização, comparação e recomendação de produtos de fornecedores terceiros. Em determinadas ofertas, a plataforma poderá também facilitar ou intermediar o pedido, o pagamento, o encaminhamento à entrega e o atendimento. A tela da oferta deverá indicar se a contratação ocorre diretamente com o fornecedor, por redirecionamento externo, ou por fluxo intermediado pela ShopFinder.",
+          "A identificação contratual como comparadora ou intermediadora não elimina deveres legais decorrentes da atuação efetivamente exercida. A END ART Studios responderá pelos serviços próprios que prestar — incluindo funcionamento, segurança, exibição, processamento de informações, atendimento e intermediação — na medida da legislação aplicável. O fornecedor permanecerá responsável pelo produto, pela exatidão das informações que fornecer, pela entrega, garantia, vícios, assistência e pós-venda, sem prejuízo de eventual responsabilidade solidária prevista no Código de Defesa do Consumidor.",
+          "A ShopFinder não deve ser considerada fabricante, importadora, proprietária, armazenadora ou transportadora do produto, salvo indicação expressa na oferta ou atuação de fato em sentido diverso. As marcas e nomes exibidos pertencem aos seus respectivos titulares."
+        ]
       },
       {
-        "id": "cadastro",
-        "title": "4. Cadastro e conta",
-        "body": "O cadastro é permitido a maiores de 18 anos. Você se compromete a fornecer dados verdadeiros, completos e atualizados, a manter a segurança das suas credenciais (senha e, quando habilitado, código 2FA) e a nos notificar sobre uso não autorizado da sua conta. Ao concluir o cadastro, você declara ter lido e aceito estes Termos e a Política de Privacidade — aceite eletrônico com plena validade, nos termos do art. 10 da Lei nº 12.965/2014 (Marco Civil da Internet). A versão aceita e a data ficam registradas no seu cadastro."
+        "id": "acesso-conta",
+        "title": "4. Acesso, conta e segurança",
+        "body": [
+          "A navegação no catálogo pode ser aberta ao público. A criação de conta, a contratação e o uso comercial poderão exigir informações adicionais e observância das regras de capacidade civil. A ShopFinder não direciona funcionalidades de compra a crianças e poderá exigir confirmação de idade, identidade ou autorização quando legalmente necessário.",
+          "Você deve fornecer dados verdadeiros, completos e atualizados, manter suas credenciais em sigilo, utilizar senha exclusiva e informar imediatamente qualquer suspeita de uso indevido. Você não pode compartilhar a conta, tentar acessar conta alheia, contornar controles de segurança, praticar fraude, inserir código malicioso ou utilizar a plataforma para finalidade ilícita.",
+          "A END ART Studios poderá solicitar verificação proporcional de identidade, limitar tentativas, aplicar autenticação adicional e suspender temporariamente uma conta para proteger o usuário, fornecedores, pagamentos ou a plataforma. Sempre que possível e compatível com segurança, a empresa informará o motivo e permitirá esclarecimento ou recurso."
+        ]
       },
       {
-        "id": "publicidade",
-        "title": "5. Ofertas, publicidade e informação (arts. 30 e 31 do CDC)",
-        "body": "As ofertas exibidas são de responsabilidade do fornecedor que as cadastrou. O ShopFinder verifica e normaliza especificações, mas não garante preço, estoque ou disponibilidade em tempo real — confirme as informações na página da oferta antes de finalizar a compra. Preços em BRL usam conversão de câmbio ao vivo, que pode variar."
+        "id": "catalogo-ofertas",
+        "title": "5. Catálogo, ofertas e informações",
+        "body": [
+          "A ShopFinder busca apresentar informações claras, corretas, precisas e atualizadas em língua portuguesa. A oferta deverá identificar, quando aplicável, o fornecedor, o produto, características essenciais, origem, garantia, disponibilidade, prazo, modalidade de entrega, frete, tributos conhecidos, restrições, moeda, preço total e data/hora da última atualização.",
+          "Preços e disponibilidade podem variar. O preço em BRL será a referência principal para consumidores no Brasil. Se for exibido valor em USD ou outra moeda, ele será claramente identificado como referência. A tela deverá informar o câmbio utilizado, o momento da conversão e eventuais tarifas, impostos, custos de importação, frete ou encargos não incluídos.",
+          "A ShopFinder não poderá utilizar a expressão “em tempo real”, “preço real”, “estoque garantido” ou equivalente sem possuir mecanismo compatível e indicação de timestamp. Mesmo quando a informação vier de fornecedor terceiro, a END ART Studios adotará medidas razoáveis de atualização, monitoramento e correção. O usuário deve confirmar o valor final, o fornecedor e as condições do contrato antes de concluir a compra.",
+          "Se a oferta, publicidade ou informação suficientemente precisa for veiculada pela ShopFinder e integrar a relação de consumo, serão preservados os direitos previstos no CDC, inclusive a possibilidade de exigir cumprimento da oferta, aceitar produto equivalente ou rescindir a contratação com restituição e perdas e danos quando cabíveis."
+        ]
+      },
+      {
+        "id": "ranking-scores",
+        "title": "6. Ranking, recomendações e scores",
+        "body": [
+          "A ShopFinder pode ordenar resultados usando relevância, preço, disponibilidade, compatibilidade, qualidade dos dados, atualização, preferências e outros critérios. A plataforma poderá utilizar scores editoriais, como Authority e Coverage, para indicar confiança ou completude dos dados.",
+          "Esses scores são indicadores informativos, não certificações, garantias de qualidade, endosso do fabricante ou promessa de desempenho. A página correspondente deverá informar metodologia geral, fontes, data de atualização, limitações, possibilidade de erro e eventual influência de remuneração, publicidade ou destaque comercial. Conteúdo patrocinado será identificado de maneira imediata.",
+          "O usuário pode contestar informação, compatibilidade, classificação ou recomendação pelo canal de atendimento. A ShopFinder analisará a solicitação, corrigirá dados comprovadamente incorretos quando possível e, quando houver decisão automatizada que afete interesses do titular, oferecerá revisão humana e informações nos limites da LGPD e dos segredos comerciais legítimos."
+        ]
+      },
+      {
+        "id": "pedido-checkout",
+        "title": "7. Pedido, checkout e formação do contrato",
+        "body": [
+          "A oferta identificará quem é o fornecedor e onde o contrato será formado. Quando o checkout ocorrer em ambiente de terceiro, o usuário será redirecionado e deverá consultar os termos e a política do terceiro. Quando o checkout ocorrer na ShopFinder, a plataforma exibirá resumo do pedido antes da confirmação, permitindo revisar e corrigir erros.",
+          "O clique final deve informar de forma ostensiva que há obrigação de pagamento, quando essa for a consequência. A confirmação do pedido não significa necessariamente aceitação definitiva se a oferta depender de validação legal, antifraude, estoque ou pagamento; qualquer condição dessa natureza deve aparecer antes da contratação e ser aplicada de boa-fé, sem afastar direitos do consumidor.",
+          "Após a contratação, o consumidor receberá confirmação imediata e cópia ou acesso persistente ao contrato, pedido, oferta, preço, fornecedor, condições de entrega, pagamento, cancelamento e atendimento. Registros serão conservados pelo período necessário à relação, às obrigações legais, à segurança e à defesa de direitos."
+        ]
       },
       {
         "id": "pagamentos",
-        "title": "6. Pagamentos e segurança",
-        "body": "Pagamentos são processados pelo Stripe. Não armazenamos dados de cartão. Empregamos medidas técnicas e organizacionais para proteger os dados e as transações."
+        "title": "8. Pagamentos",
+        "body": [
+          "Quando disponibilizado pela ShopFinder, o pagamento será processado por Stripe ou pelo processador indicado na tela. O processador poderá tratar dados de pagamento, fraude, autenticação, chargeback e estorno conforme seus próprios termos e políticas, além das instruções contratuais recebidas.",
+          "A ShopFinder não solicitará senha bancária nem o código completo do cartão por e-mail. A empresa não armazenará o número completo do cartão salvo se a arquitetura técnica e a conformidade aplicável autorizarem expressamente essa operação. O usuário deve confirmar o domínio e a tela de pagamento antes de inserir dados.",
+          "A aprovação do pagamento não elimina obrigações de entrega, garantia, cancelamento ou arrependimento. Em caso de falha, fraude, cobrança indevida ou estorno, a ShopFinder cooperará com o consumidor, o fornecedor e o processador, preservando as medidas cabíveis."
+        ]
       },
       {
-        "id": "reembolsos",
-        "title": "7. Reembolsos, cancelamentos e direito de arrependimento",
-        "body": "O reembolso é processado pelo fornecedor responsável pela oferta. Para cancelar ou desistir (art. 49 do CDC — 7 dias a contar do recebimento, sem justificativa e sem custos), contate o fornecedor e informe o número do pedido; coloque o ShopFinder em cópia para que mediamos o caso. Se o fornecedor não responder, intermediaremos o contato e o ressarcimento. O valor devolvido inclui frete, quando aplicável."
+        "id": "entrega-garantia",
+        "title": "9. Entrega, garantia, vícios e pós-venda",
+        "body": [
+          "O fornecedor indicado na oferta é responsável por preparar, despachar e entregar o produto conforme a oferta, bem como por garantia, vícios, defeitos, assistência técnica, peças e informações de segurança, salvo se a ShopFinder assumir expressamente alguma dessas funções.",
+          "Prazos, custos, transportadora, rastreamento, riscos de transporte e restrições territoriais devem ser informados antes da contratação. A falta de estoque, atraso ou divergência não autoriza a empresa a simplesmente cancelar direitos do consumidor. A END ART Studios facilitará o contato, registrará a reclamação e, quando participar do fluxo de pedido ou pagamento, cooperará com solução e ressarcimento.",
+          "A garantia legal e os direitos de reclamação previstos no CDC não são afastados por estes Termos. A garantia contratual, se oferecida, é complementar à legal e deverá ser apresentada por escrito pelo responsável."
+        ]
       },
       {
-        "id": "sac",
-        "title": "8. Atendimento ao consumidor (SAC)",
-        "body": "Nosso canal de atendimento é o email de suporte indicado na seção 1, com prazo de resposta de até 2 dias úteis. Reclamações sobre entrega ou qualidade do produto também podem ser direcionadas ao fornecedor responsável."
+        "id": "cancelamento-arrependimento",
+        "title": "10. Cancelamento e direito de arrependimento",
+        "body": [
+          "O consumidor pode desistir da contratação realizada fora do estabelecimento comercial no prazo legal de sete dias, contado conforme o art. 49 do CDC, sem necessidade de justificar a decisão e sem custos indevidos. O exercício deve ser possível pela mesma ferramenta utilizada para a contratação ou por canal eletrônico equivalente, sem exigir que o consumidor primeiro localize ou contate o fornecedor.",
+          "Para solicitar cancelamento, utilize o botão ou formulário disponível no pedido em /conta/pedidos ou envie mensagem para endart.studios@gmail.com, informando, se possível, número do pedido e contato. A ausência de alguma informação não impedirá o exercício do direito quando a ShopFinder puder identificar a contratação.",
+          "A ShopFinder fornecerá confirmação de recebimento e protocolo. A solicitação será encaminhada imediatamente ao fornecedor e ao processador de pagamento, quando aplicável, para impedir o lançamento ou providenciar o estorno. Os valores devidos serão devolvidos de imediato, na forma legal aplicável, incluindo frete quando cabível. Contratos acessórios serão rescindidos sem ônus indevido.",
+          "Direitos de cancelamento por atraso, vício, defeito, descumprimento ou cobrança indevida não se limitam ao prazo de arrependimento. Reclamações devem ser recebidas pela ShopFinder e encaminhadas sem obrigar o consumidor a repetir indefinidamente os fatos a terceiros."
+        ]
       },
       {
-        "id": "ia",
-        "title": "9. Uso de inteligência artificial",
-        "body": "O ShopFinder utiliza ferramentas de IA para organizar, resumir e recomendar produtos do catálogo (busca, comparação e avaliações), com base em dados de produtos e especificações — não em dados sensíveis. As saídas de IA são sugestões automatizadas e não constituem garantia ou aconselhamento. Não tomamos decisões automatizadas com efeito jurídico sobre você; a revisão humana pode ser solicitada pelo SAC."
+        "id": "atendimento",
+        "title": "11. Atendimento ao consumidor",
+        "body": [
+          "O canal geral é endart.studios@gmail.com, com prazo operacional de confirmação de recebimento em até 2 dias úteis e resposta conforme o prazo legal ou regulatório aplicável. A ShopFinder deverá disponibilizar canal eletrônico eficaz para dúvidas, informações, reclamações, suspensão e cancelamento.",
+          "Para pedidos intermediados, o atendimento deve permitir consulta do status, identificação do fornecedor, pagamento, entrega, estorno, reclamação e documentos. O prazo de resposta da ShopFinder não reduz prazos legais do fornecedor nem direitos do consumidor. O consumidor poderá utilizar órgãos administrativos, Procon, consumidor.gov.br, Poder Judiciário ou outros meios previstos em lei."
+        ]
       },
       {
-        "id": "pi-dmca",
-        "title": "10. Propriedade intelectual, DMCA e takedown",
-        "body": "Marca, design e código do ShopFinder pertencem à operadora da plataforma; marcas de fornecedores e fabricantes pertencem aos seus titulares. Titulares de direitos autorais podem notificar violações por email de suporte, informando: identificação da obra, URL do conteúdo alegadamente infrator, seus dados de contato e declaração de boa-fé. Conteúdos que infrinjam direitos são removidos em prazo razoável, e o responsável pode apresentar contranotificação."
+        "id": "fornecedores-terceiros",
+        "title": "12. Fornecedores e conteúdo de terceiros",
+        "body": [
+          "Fornecedores somente poderão integrar a plataforma mediante aceite de contrato próprio e fornecimento de informações de identificação, contato, catálogo e conformidade. O contrato deverá obrigá-los a manter preços, estoque, especificações, prazos, origem e garantias corretos; atender consumidores; processar arrependimentos e estornos; cooperar com incidentes; respeitar marcas e direitos autorais; e observar a legislação aplicável.",
+          "A ShopFinder poderá suspender ou remover oferta ou fornecedor diante de fraude, falsidade, risco à segurança, reclamações recorrentes, descumprimento, violação de direitos ou determinação legal. A medida poderá ser imediata quando necessária para proteção de usuários ou da plataforma. A suspensão contratual do fornecedor não elimina direitos do consumidor nem impede apuração de responsabilidades.",
+          "O fornecedor concede à ShopFinder licença limitada, não exclusiva, mundial e gratuita, durante a integração, para hospedar, reproduzir, adaptar tecnicamente, traduzir, resumir e exibir os materiais necessários à oferta. O fornecedor declara possuir autorização para fornecer o conteúdo e indenizará a END ART Studios por reclamações decorrentes de violação que lhe seja imputável, sem prejudicar direitos de terceiros ou consumidores."
+        ]
       },
       {
-        "id": "fornecedores",
-        "title": "11. Termos para fornecedores",
-        "body": "Fornecedores integram-se à plataforma mediante aceite de termos próprios. São obrigações do fornecedor: veracidade de especificações, preços, estoque e prazos; cumprimento de entrega e garantia; atendimento a reclamações. O ShopFinder pode suspender ou remover fornecedores em caso de fraude, reclamações recorrentes ou descumprimento. O modelo atual não cobra comissão sobre vendas."
+        "id": "ia-automacao",
+        "title": "13. Inteligência artificial e automação",
+        "body": [
+          "A ShopFinder pode usar software, regras, modelos estatísticos e inteligência artificial para organizar catálogo, normalizar especificações, resumir informações, detectar incompatibilidades, prevenir fraude e recomendar produtos. Essas ferramentas podem conter erros, usar dados de fontes diferentes e não substituem a verificação do usuário, do fornecedor ou de profissional qualificado.",
+          "Nenhuma recomendação é garantia de compatibilidade, segurança, desempenho, autenticidade, procedência ou adequação a uma finalidade específica. O usuário deve conferir manuais, requisitos, voltagem, dimensões, garantia, certificações e informações oficiais antes de comprar ou instalar produto.",
+          "A END ART Studios não realizará decisão exclusivamente automatizada para impor obrigação jurídica, negar acesso essencial ou definir crédito, salvo se houver fundamento legal e transparência adequados. Quando o tratamento automatizado afetar os interesses do titular, ele poderá solicitar informações sobre critérios e procedimentos e revisão humana, observados segredos comerciais e industriais legítimos."
+        ]
       },
       {
-        "id": "responsabilidade",
-        "title": "12. Responsabilidades e limitação",
-        "body": "Respondemos pela correta exibição das informações de ofertas e pelo funcionamento da plataforma, sem prejuízo dos direitos que a lei assegura ao consumidor — nada nestes Termos afasta ou reduz direitos previstos no CDC (art. 25). Eventuais falhas de entrega ou do produto são responsabilidades do fornecedor, e facilitaremos o contato e o ressarcimento."
+        "id": "privacidade-dados",
+        "title": "14. Privacidade e proteção de dados",
+        "body": [
+          "O tratamento de dados pessoais segue a Política de Privacidade (/privacidade), que integra estes Termos. A END ART Studios tratará dados conforme finalidades, bases legais, princípios de necessidade, segurança, transparência e prevenção, e compartilhará somente o necessário com processadores de pagamento, fornecedores, hospedagem, banco de dados, suporte, IA, autoridades e outros destinatários informados.",
+          "Cookies, localStorage, sessionStorage e tecnologias semelhantes são tratados conforme a Política de Cookies (/cookies). O usuário não deve enviar dados sensíveis desnecessários, credenciais, segredos ou dados de terceiros sem autorização."
+        ]
       },
       {
-        "id": "suspensao",
-        "title": "13. Suspensão e encerramento",
-        "body": "Podemos suspender ou encerrar contas usadas em violação a estes Termos, com aviso prévio quando possível. Você pode encerrar a conta a qualquer momento pelo canal de atendimento."
+        "id": "propriedade-intelectual",
+        "title": "15. Propriedade intelectual",
+        "body": [
+          "A marca ShopFinder, o nome, o design, o código, os textos próprios, a organização do catálogo, a interface, os bancos de dados e demais elementos desenvolvidos pela END ART Studios são protegidos pela legislação aplicável. Estes Termos não transferem propriedade ao usuário.",
+          "O usuário recebe licença limitada, pessoal, revogável e não exclusiva para utilizar a plataforma de acordo com estes Termos. É proibido copiar, modificar, distribuir, vender, fazer engenharia reversa, extrair dados em escala, usar robôs não autorizados, remover avisos ou explorar comercialmente elementos da ShopFinder, salvo autorização escrita ou hipótese legal inderrogável.",
+          "Marcas, logotipos, fotografias, manuais, especificações e conteúdos de fornecedores ou fabricantes pertencem aos respectivos titulares. Sua exibição não significa licença ampla, patrocínio, autenticidade ou endosso."
+        ]
       },
       {
-        "id": "arbitragem",
-        "title": "14. Resolução de disputas e arbitragem",
-        "body": "Disputas são resolvidas preferencialmente pelo SAC e, quando necessário, pelos canais do art. 101 do CDC. Consumidores com domicílio no Brasil NÃO são obrigados a submeter disputas à arbitragem (art. 4º, § 1º, da Lei nº 9.307/96). Para contas de uso comercial nos EUA, disputas podem ser submetidas à arbitragem vinculante sob as regras da AAA (American Arbitration Association), com renúncia a ações coletivas onde permitido — sem prejuízo dos direitos indisponíveis do consumidor."
+        "id": "direitos-autorais",
+        "title": "16. Notificações de direitos autorais e remoção",
+        "body": [
+          "O titular ou representante autorizado que alegar violação deve enviar comunicação para endart.studios@gmail.com, contendo identificação da obra, URL ou localização do conteúdo, descrição da violação, dados de contato, declaração de boa-fé, declaração de titularidade ou autorização e assinatura física ou eletrônica.",
+          "A ShopFinder analisará a notificação, poderá solicitar informações adicionais, preservar evidências, suspender temporariamente o material e comunicar o responsável para apresentar esclarecimento ou contranotificação. Remoções ocorrerão em prazo razoável e proporcional, sem reconhecimento automático de responsabilidade. A expressão “DMCA” somente deverá ser usada se a END ART Studios mantiver procedimento e agente designado para a legislação dos Estados Unidos; no Brasil, aplicar-se-á a legislação brasileira e os procedimentos compatíveis."
+        ]
+      },
+      {
+        "id": "disponibilidade-seguranca",
+        "title": "17. Disponibilidade, manutenção e segurança",
+        "body": [
+          "A ShopFinder busca manter a plataforma disponível e segura, mas não garante operação ininterrupta, ausência absoluta de erros, disponibilidade permanente de fornecedor ou atualização instantânea de todas as ofertas. Poderão ocorrer manutenção, indisponibilidade de terceiros, falhas de rede, ataques, caso fortuito ou força maior.",
+          "A END ART Studios adotará medidas razoáveis de segurança e responderá conforme a lei por falhas próprias. O usuário não deve tentar violar controles, explorar vulnerabilidades ou sobrecarregar a plataforma. Vulnerabilidades podem ser comunicadas ao canal de suporte, sem incluir dados pessoais ou código malicioso."
+        ]
+      },
+      {
+        "id": "limitacao-responsabilidade",
+        "title": "18. Limitação de responsabilidade",
+        "body": [
+          "Nada nestes Termos exclui ou limita responsabilidade que não possa ser excluída pela legislação, incluindo direitos do consumidor, responsabilidade por ato próprio, dolo, culpa quando aplicável, segurança, proteção de dados, propriedade intelectual e obrigações decorrentes da oferta.",
+          "Na medida permitida pela lei, a END ART Studios não responde por ato exclusivo de fornecedor, fabricante, transportador, processador de pagamento, marketplace externo ou outro terceiro fora de seu controle, desde que não tenha contribuído para o dano por ação ou omissão própria e tenha cumprido seus deveres legais de informação, seleção, monitoramento e atendimento.",
+          "Nenhuma limitação será interpretada como transferência ao consumidor de obrigação legal da ShopFinder, exigência de renúncia, impedimento de ação judicial, exclusão do direito de arrependimento ou afastamento de responsabilidade solidária quando caracterizada."
+        ]
+      },
+      {
+        "id": "suspensao-encerramento",
+        "title": "19. Suspensão e encerramento",
+        "body": [
+          "A END ART Studios poderá suspender ou encerrar conta ou acesso quando houver violação destes Termos, fraude, risco de segurança, obrigação legal, abuso, inadimplemento ou uso incompatível com a plataforma. Sempre que possível, haverá aviso e oportunidade proporcional de esclarecimento; medidas urgentes poderão ocorrer imediatamente.",
+          "O usuário pode encerrar a conta pelo canal de atendimento. O encerramento não cancela automaticamente pedidos, garantias, reclamações, estornos, direitos de arrependimento já exercidos, obrigações legais, registros necessários ou cláusulas que por sua natureza devam sobreviver."
+        ]
+      },
+      {
+        "id": "disputas",
+        "title": "20. Disputas e atendimento prévio",
+        "body": [
+          "A ShopFinder incentiva solução rápida pelo atendimento, sem impedir o consumidor de procurar Procon, consumidor.gov.br, autoridade competente, mediação, arbitragem voluntária ou Poder Judiciário. Nenhum consumidor será obrigado por estes Termos a utilizar arbitragem, renunciar a ação coletiva, desistir de direito legal ou ajuizar ação fora do foro permitido pela legislação.",
+          "Para consumidores no Brasil, preservam-se o foro do domicílio do consumidor e demais regras protetivas aplicáveis. Qualquer cláusula de eleição de foro será interpretada de modo a não dificultar o acesso à Justiça.",
+          "Contas empresariais de fornecedores ou usuários que atuem exclusivamente para fins comerciais poderão ter contrato B2B separado, com cláusula de mediação ou arbitragem negociada em instrumento próprio. Essa cláusula não se aplica a compras pessoais, consumidores, usuários vulneráveis ou relações de consumo. A validade de arbitragem e eventual limitação de ações coletivas nos Estados Unidos dependerá da lei aplicável, da jurisdição e dos requisitos de consentimento, não sendo incorporada automaticamente por estes Termos públicos."
+        ]
       },
       {
         "id": "alteracoes",
-        "title": "15. Alterações destes Termos",
-        "body": "Podemos atualizar estes Termos; a versão e a data de vigência constam no topo desta página. Alterações relevantes serão comunicadas no site com antecedência; o uso continuado após o aviso implica aceite da nova versão."
+        "title": "21. Alterações destes Termos",
+        "body": [
+          "A END ART Studios pode atualizar estes Termos para refletir mudanças legais, técnicas, operacionais ou de segurança. A versão vigente, a data de atualização e o histórico razoável serão disponibilizados nesta página.",
+          "Alterações materiais serão comunicadas por meio adequado, com resumo das mudanças e antecedência razoável. Quando exigido por lei ou quando a alteração alterar substancialmente uma contratação, será solicitado novo aceite. O uso continuado não poderá modificar retroativamente pedidos concluídos, direitos já exercidos ou obrigações legais."
+        ]
       },
       {
-        "id": "foro",
-        "title": "16. Lei aplicável e foro",
-        "body": "Aplica-se a legislação brasileira (CDC, Marco Civil da Internet e demais normas aplicáveis). O foro para dirimir conflitos é o do domicílio do consumidor (art. 101 do CDC)."
+        "id": "lei-aplicavel",
+        "title": "22. Lei aplicável e prevalência legal",
+        "body": [
+          "Estes Termos são regidos pela legislação brasileira naquilo que envolver a operação no Brasil, especialmente o Código de Defesa do Consumidor, o Marco Civil da Internet, a Lei Geral de Proteção de Dados, o Decreto nº 7.962/2013 e normas aplicáveis. Usuários estrangeiros poderão ter direitos obrigatórios adicionais conforme sua localização e a atividade efetivamente direcionada a eles.",
+          "Se qualquer disposição for considerada inválida, as demais permanecerão vigentes e a disposição será ajustada ao máximo permitido pela lei, sem prejudicar direitos inderrogáveis. Em caso de conflito entre estes Termos, uma oferta específica, contrato de fornecedor, Política de Privacidade ou norma obrigatória, prevalecerá a disposição mais específica e, em relações de consumo, a proteção legal aplicável."
+        ]
+      },
+      {
+        "id": "contato",
+        "title": "23. Contato",
+        "body": [
+          "END ART Studios",
+          "CNPJ: 45.370.930/0001-75",
+          "Endereço: Osasco, São Paulo - Brasil",
+          "Atendimento: endart.studios@gmail.com",
+          "Cancelamento/arrependimento: botão no pedido em /conta/pedidos ou endart.studios@gmail.com",
+          "Privacidade/encarregado: endart.studios@gmail.com",
+          "Prazo operacional de resposta: 2 dias úteis, sem limitar prazos legais."
+        ]
+      },
+      {
+        "id": "referencias-normativas",
+        "title": "Referências normativas",
+        "body": [
+          "Lei nº 8.078/1990 — Código de Defesa do Consumidor: https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+          "Decreto nº 7.962/2013 — comércio eletrônico: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
+          "Lei nº 13.709/2018 — Lei Geral de Proteção de Dados: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+          "Lei nº 12.965/2014 — Marco Civil da Internet: https://www.planalto.gov.br/ccivil_03/leis/l12965.htm",
+          "ANPD — Transferência Internacional de Dados e Resolução CD/ANPD nº 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
+          "Regulamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+        ]
       }
     ]
   },
   "privacy": {
     "title": "Política de Privacidade",
-    "updated": "Última atualização: 31 de agosto de 2026 · Versão 1.0",
-    "toc": "Nesta página",
+    "toc": "Sumário",
+    "updated": "Última atualização: 1 de setembro de 2026 · Versão 2.0",
+    "intro": "Esta Política explica como a END ART Studios, responsável pela plataforma ShopFinder, coleta, utiliza, armazena, compartilha e protege dados pessoais. Ela deve ser lida conjuntamente com os Termos de Uso (/termos) e com a Política de Cookies (/cookies), quando disponíveis.",
     "sections": [
       {
-        "id": "controlador",
-        "title": "1. Controlador e contato do encarregado (DPO)",
-        "body": "O controlador dos seus dados pessoais é a operadora da plataforma ShopFinder. O encarregado (DPO) pode ser contactado pelo email de suporte indicado na seção Contato."
-      },
-      {
-        "id": "dados",
-        "title": "2. Dados que coletamos",
-        "body": "Coletamos apenas o necessário para operar a plataforma, por categoria:",
+        "id": "quem-somos",
+        "title": "1. Quem somos e como falar conosco",
+        "body": [
+          "A END ART Studios é a controladora dos dados pessoais tratados para operar e administrar a ShopFinder, salvo quando esta Política indicar que determinado terceiro atua como controlador independente. A ShopFinder é uma plataforma de comparação de produtos e, em determinadas funcionalidades expressamente indicadas na interface, de intermediação de pedidos entre usuários e fornecedores terceiros.",
+          "Para dúvidas, solicitações ou reclamações relativas à proteção de dados, utilize o canal abaixo:",
+          "A identidade e as informações de contato do encarregado devem permanecer públicas, claras e atualizadas. Se a ANPD reconhecer hipótese de dispensa aplicável à empresa, a END ART Studios manterá, ainda assim, canal adequado para titulares e informará essa condição nesta Política."
+        ],
         "table": {
-          "headers": ["Categoria", "Dados", "Exemplos"],
+          "headers": [
+            "Canal",
+            "Informação"
+          ],
           "rows": [
-            ["Conta", "email, senha (hash), data de aceite dos termos", "cadastro/login"],
             [
-              "Pedidos",
-              "itens, quantidades, valores, status, endereço de entrega informado",
-              "checkout"
+              "Controlador",
+              "END ART Studios — CNPJ nº 45.370.930/0001-75"
             ],
             [
-              "Técnicos",
-              "registros de acesso necessários à operação e segurança",
-              "logs do servidor"
-            ]
-          ]
-        }
-      },
-      {
-        "id": "finalidades",
-        "title": "3. Finalidades e bases legais (art. 7º da LGPD)",
-        "body": "Tratamos seus dados conforme a tabela abaixo. Você pode revogar o consentimento a qualquer tempo pelo canal de atendimento, sem afetar os tratamentos anteriores.",
-        "table": {
-          "headers": ["Finalidade", "Base legal"],
-          "rows": [
-            ["Criar e manter sua conta", "Execução de contrato / consentimento"],
-            ["Processar e registrar pedidos", "Execução de contrato"],
-            ["Exibir preços em BRL e preferências de idioma", "Consentimento / legítimo interesse"],
+              "Endereço",
+              "Osasco, São Paulo - Brasil"
+            ],
             [
-              "Segurança, prevenção a fraudes e cumprimento de obrigações legais",
-              "Obrigação legal / legítimo interesse"
+              "Encarregado pelo tratamento de dados pessoais",
+              "END ART Studios"
+            ],
+            [
+              "Canal do encarregado",
+              "endart.studios@gmail.com"
+            ],
+            [
+              "Atendimento geral",
+              "endart.studios@gmail.com"
+            ],
+            [
+              "Prazo operacional de resposta",
+              "Confirmação de recebimento em até 2 dias úteis e resposta conforme o prazo legal ou regulatório aplicável"
             ]
           ]
         }
       },
       {
-        "id": "cookies",
-        "title": "4. Cookies e armazenamento local",
-        "body": "Usamos armazenamento local (localStorage) e cookies estritamente funcionais. Não usamos cookies de publicidade ou rastreamento de terceiros. A lista completa, com duração e fornecedores, está na nossa Política de Cookies (/cookies).",
+        "id": "abrangencia-definicoes",
+        "title": "2. Abrangência e definições",
+        "body": [
+          "Esta Política aplica-se aos dados pessoais tratados por meio do site, das páginas, da conta, do carrinho, da comparação de produtos, do atendimento, do checkout, das comunicações e das integrações da ShopFinder.",
+          "Para esta Política, dado pessoal é qualquer informação relacionada a pessoa natural identificada ou identificável; titular é a pessoa a quem o dado se refere; controlador é quem decide sobre o tratamento; operador é quem trata dados em nome do controlador; tratamento inclui coleta, acesso, uso, armazenamento, compartilhamento, transferência, eliminação e demais operações; e encarregado é o canal de comunicação entre a END ART Studios, os titulares e a Autoridade Nacional de Proteção de Dados — ANPD."
+        ]
+      },
+      {
+        "id": "dados-tratados",
+        "title": "3. Dados pessoais que podemos tratar",
+        "body": [
+          "Tratamos somente dados adequados, pertinentes e necessários às finalidades informadas. As categorias podem variar conforme a funcionalidade utilizada.",
+          "A END ART Studios não solicita dados pessoais sensíveis para a utilização ordinária da ShopFinder. O titular não deve enviar dados sensíveis ao suporte salvo quando indispensável e expressamente solicitado. Se dados sensíveis forem recebidos indevidamente, serão avaliados, protegidos e eliminados ou tratados somente na hipótese legal aplicável.",
+          "A senha é armazenada somente em forma protegida, nunca em texto aberto. Dados completos de cartão devem ser tratados pelo processador de pagamentos, conforme o fluxo efetivamente contratado. A empresa não deve declarar que não armazena dados de cartão sem confirmar a arquitetura técnica vigente."
+        ],
         "table": {
-          "headers": ["Chave", "Tipo", "Finalidade"],
+          "headers": [
+            "Categoria",
+            "Exemplos",
+            "Origem"
+          ],
           "rows": [
-            ["sf:cart", "localStorage (essencial)", "manter os itens do carrinho"],
-            ["sf:locale", "localStorage + cookie locale (preferência)", "idioma da interface"],
-            ["sf:currency", "localStorage (preferência)", "moeda de exibição"],
-            ["sf:notifications", "localStorage (preferência)", "preferências de notificação"]
+            [
+              "Cadastro e autenticação",
+              "Nome, e-mail, senha protegida por função criptográfica, identificadores da conta, data e versão do aceite",
+              "Informados pelo titular ou gerados pelo sistema"
+            ],
+            [
+              "Conta e preferências",
+              "Idioma, moeda de exibição, notificações, produtos comparados e itens do carrinho",
+              "Informados pelo titular ou registrados pela interação"
+            ],
+            [
+              "Busca e navegação",
+              "Termos pesquisados, filtros, páginas acessadas, cliques, data e hora e respostas a recomendações",
+              "Gerados durante o uso, conforme a configuração do navegador"
+            ],
+            [
+              "Pedido e contratação",
+              "Itens, quantidades, preço, moeda, câmbio utilizado, frete, status, identificador do pedido e fornecedor escolhido",
+              "Titular, ShopFinder e fornecedor"
+            ],
+            [
+              "Entrega e atendimento",
+              "Nome, endereço de entrega, telefone, dados de contato, protocolo, mensagens e informações necessárias à solução da solicitação",
+              "Titular, fornecedor e atendimento"
+            ],
+            [
+              "Pagamento",
+              "Identificador da transação, status, método, informações antifraude e token ou referência fornecida pelo processador",
+              "Stripe e titular; a ShopFinder não deve armazenar o número completo do cartão"
+            ],
+            [
+              "Dados técnicos e de segurança",
+              "Endereço IP, data e hora, navegador, sistema, dispositivo, identificadores de sessão, logs, eventos de segurança e registros de autenticação",
+              "Dispositivo, navegador e servidores"
+            ],
+            [
+              "Cookies e armazenamento local",
+              "Chaves e identificadores descritos na Política de Cookies, incluindo carrinho, preferências e comparação",
+              "Navegador ou dispositivo"
+            ],
+            [
+              "Comunicações",
+              "Mensagens enviadas ao suporte, solicitações de direitos, avaliações e denúncias",
+              "Titular ou terceiro autorizado"
+            ],
+            [
+              "Dados de fornecedores",
+              "Dados de contato profissional, conta comercial, catálogo e registros de conformidade",
+              "Fornecedor ou fontes públicas/profissionais"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "finalidades-bases",
+        "title": "4. Finalidades e bases legais",
+        "body": [
+          "Cada tratamento deve estar ligado a uma finalidade determinada. A tabela abaixo descreve as bases jurídicas principais, sem impedir a aplicação de outra hipótese legal válida quando os fatos concretos assim exigirem.",
+          "A END ART Studios documentará, quando utilizar legítimo interesse, a finalidade, a necessidade, a expectativa razoável do titular, os impactos e as salvaguardas. O titular pode solicitar informações sobre essa avaliação, observados segredos comerciais e industriais legítimos.",
+          "Quando o tratamento depender de consentimento, ele será solicitado de forma livre, informada, específica, destacada e revogável. A recusa não impedirá o uso de funcionalidades que não dependam daquela finalidade opcional. A revogação não torna ilícitos os tratamentos realizados anteriormente e não elimina dados que devam ser conservados por obrigação legal ou defesa de direitos."
+        ],
+        "table": {
+          "headers": [
+            "Finalidade",
+            "Dados normalmente envolvidos",
+            "Base legal principal"
+          ],
+          "rows": [
+            [
+              "Criar, autenticar e manter a conta",
+              "Cadastro, autenticação e segurança",
+              "Execução de contrato ou procedimentos preliminares solicitados pelo titular"
+            ],
+            [
+              "Operar catálogo, busca, filtros, comparação e carrinho",
+              "Preferências, busca, comparação e carrinho",
+              "Execução de funcionalidade solicitada e legítimo interesse, conforme avaliação documentada"
+            ],
+            [
+              "Processar pedido, pagamento, entrega, cancelamento e pós-venda",
+              "Pedido, contato, endereço, pagamento e fornecedor",
+              "Execução de contrato; obrigação legal quando aplicável"
+            ],
+            [
+              "Exibir preço, moeda, câmbio, disponibilidade e prazo",
+              "Dados do produto, preferência de moeda, fonte e timestamp",
+              "Execução da funcionalidade solicitada e legítimo interesse; consentimento somente quando necessário"
+            ],
+            [
+              "Prevenir fraude, abuso, invasão e uso ilícito",
+              "Dados técnicos, logs, conta, pedido e sinais de segurança",
+              "Legítimo interesse, obrigação legal e exercício regular de direitos"
+            ],
+            [
+              "Cumprir obrigações legais e regulatórias",
+              "Pedidos, documentos, registros e comunicações",
+              "Cumprimento de obrigação legal ou regulatória"
+            ],
+            [
+              "Responder ao suporte e aos direitos dos titulares",
+              "Dados da conta, contato, protocolo e solicitação",
+              "Cumprimento de obrigação legal ou exercício regular de direitos; execução de contrato quando aplicável"
+            ],
+            [
+              "Enviar comunicações operacionais",
+              "E-mail, conta, pedido e preferências",
+              "Execução de contrato ou legítimo interesse, conforme a comunicação"
+            ],
+            [
+              "Enviar comunicações promocionais opcionais",
+              "E-mail, preferências e histórico de interação",
+              "Consentimento, quando exigido; o titular pode cancelar a qualquer momento"
+            ],
+            [
+              "Melhorar produtos, segurança e qualidade",
+              "Dados técnicos e dados agregados ou anonimizados",
+              "Legítimo interesse, com minimização e salvaguardas"
+            ],
+            [
+              "Produzir métricas e relatórios",
+              "Dados agregados, pseudonimizados ou técnicos",
+              "Legítimo interesse; anonimização quando possível"
+            ],
+            [
+              "Organizar catálogo e gerar recomendações por IA",
+              "Dados de produtos, especificações, busca e preferências não sensíveis",
+              "Execução da funcionalidade e legítimo interesse; consentimento quando exigido"
+            ],
+            [
+              "Defender direitos em processos",
+              "Registros, pedidos, comunicações e evidências",
+              "Exercício regular de direitos em processo judicial, administrativo ou arbitral"
+            ]
           ]
         }
       },
       {
         "id": "compartilhamento",
         "title": "5. Compartilhamento de dados",
-        "body": "Compartilhamos dados apenas com: Stripe (pagamentos), fornecedores integrados (apenas o necessário para entrega do pedido) e autoridades quando houver obrigação legal."
+        "body": [
+          "A END ART Studios compartilha dados somente quando necessário, proporcional e compatível com a finalidade informada. Os destinatários e a função de cada um devem ser mantidos atualizados no inventário interno.",
+          "Não vendemos dados pessoais. Não compartilhamos dados para publicidade comportamental de terceiros sem base legal, transparência e, quando necessário, consentimento. O compartilhamento com fornecedor deve limitar-se aos dados necessários à oferta, pedido, entrega, garantia e atendimento, com obrigações contratuais de segurança, confidencialidade, direitos dos titulares e incidentes."
+        ],
+        "table": {
+          "headers": [
+            "Destinatário",
+            "Finalidade",
+            "Papel possível"
+          ],
+          "rows": [
+            [
+              "Stripe ou processador efetivamente contratado",
+              "Pagamento, prevenção a fraude, estorno e conciliação",
+              "Operador ou controlador independente, conforme o serviço"
+            ],
+            [
+              "Fornecedor responsável pela oferta",
+              "Processar pedido, entrega, atendimento, garantia e cancelamento",
+              "Controlador independente ou operador conforme a operação"
+            ],
+            [
+              "Vercel e provedores de hospedagem/edge",
+              "Hospedagem, segurança e disponibilidade",
+              "Operador"
+            ],
+            [
+              "Neon ou provedor de banco de dados",
+              "Armazenamento e consulta de dados",
+              "Operador"
+            ],
+            [
+              "Provedores de e-mail, suporte e observabilidade",
+              "Comunicação, atendimento, logs e segurança",
+              "Operador"
+            ],
+            [
+              "Provedores de IA",
+              "Organização de catálogo e recomendações, sem dados pessoais quando tecnicamente possível",
+              "Operador ou controlador conforme contrato"
+            ],
+            [
+              "Autoridades públicas, judiciais e administrativas",
+              "Cumprir ordem ou obrigação legal",
+              "Destinatário legal"
+            ],
+            [
+              "Consultores, auditores e assessores",
+              "Segurança, contabilidade, jurídico e defesa de direitos",
+              "Operador ou destinatário autorizado"
+            ]
+          ]
+        }
       },
       {
-        "id": "transferencia",
-        "title": "6. Transferência internacional de dados (art. 33 da LGPD)",
-        "body": "O processamento pode ocorrer fora do Brasil, pelos seguintes prestadores: Stripe, Inc. (EUA — pagamentos), provedores de nuvem e edge para hospedagem (Vercel Inc. — EUA), Neon (banco de dados) e OpenAI (avaliação de catálogo com IA, sem dados pessoais sensíveis). Nessas hipóteses, seguimos o art. 33 da LGPD, com cláusulas-padrão contratuais, garantias de conformidade (ex.: certificações e PCI-DSS do Stripe) e transferência limitada ao necessário."
+        "id": "transferencias",
+        "title": "6. Transferências internacionais",
+        "body": [
+          "Alguns prestadores podem tratar dados fora do Brasil, inclusive nos Estados Unidos ou em outros países, conforme a infraestrutura contratada. A transferência internacional somente será realizada quando houver hipótese legal e mecanismo válido segundo a LGPD e a regulamentação da ANPD, incluindo decisão de adequação, cláusulas-padrão contratuais, cláusulas equivalentes, cláusulas específicas, normas corporativas globais ou outra hipótese legal aplicável.",
+          "Antes de transferir dados, a END ART Studios deve manter registro do destinatário, país ou região, categorias de dados, finalidade, papel do destinatário, suboperadores, mecanismo jurídico, salvaguardas e procedimento para exercício de direitos. A existência de certificação de segurança ou conformidade setorial, como PCI-DSS, não é apresentada isoladamente como fundamento da transferência internacional.",
+          "Os prestadores atualmente previstos são: Stripe, Inc. — Estados Unidos; Vercel, Inc. — Estados Unidos; Neon, Inc. — Estados Unidos; OpenAI — Estados Unidos; e demais prestadores listados no inventário atualizado. A lista deve ser corrigida antes da publicação se qualquer prestador, entidade, país ou fluxo estiver diferente da operação real.",
+          "Quando o provedor de IA receber dados, a END ART Studios aplicará minimização, instruções contratuais, controles de retenção, restrição de treinamento e segregação. Dados pessoais de usuários não serão utilizados para treinar modelos de terceiros sem base legal, transparência e controles adequados."
+        ]
+      },
+      {
+        "id": "cookies-armazenamento",
+        "title": "7. Cookies, armazenamento local e tecnologias semelhantes",
+        "body": [
+          "A ShopFinder pode utilizar cookies, localStorage, sessionStorage e tecnologias semelhantes. O tratamento efetivo deve ser descrito na Política de Cookies (/cookies), com nome, fornecedor, finalidade, duração, categoria e mecanismo de desativação.",
+          "Armazenamentos estritamente necessários à funcionalidade solicitada pelo titular, à segurança, à autenticação ou à transmissão de comunicação podem ser utilizados sem consentimento quando a lei permitir. Preferências e quaisquer tecnologias de análise, publicidade, personalização não necessária ou rastreamento somente serão ativadas com a base legal adequada e, quando necessário, após consentimento.",
+          "Quando houver consentimento, o titular terá opções equivalentes para aceitar, rejeitar e gerenciar categorias, além de acesso permanente ao painel de preferências. A continuidade da navegação não será utilizada como consentimento presumido para finalidades que exigem manifestação positiva. O titular poderá revogar ou alterar escolhas com facilidade."
+        ]
       },
       {
         "id": "retencao",
-        "title": "7. Retenção",
-        "body": "Mantemos os dados da conta enquanto ela estiver ativa e os registros de pedidos pelo prazo necessário para cumprimento de obrigações legais e defesa em processos, eliminados após esse período."
+        "title": "8. Retenção e eliminação",
+        "body": [
+          "Os dados serão conservados pelo tempo necessário à finalidade, à relação contratual, à segurança, ao atendimento de direitos e às obrigações legais. A tabela abaixo é uma estrutura de governança e deve ser preenchida e ajustada conforme a operação e as leis aplicáveis.",
+          "Após o término do prazo, os dados serão eliminados, anonimizados ou bloqueados, salvo preservação necessária por obrigação legal, exercício regular de direitos, prevenção à fraude ou outra hipótese legal. A eliminação da conta não necessariamente elimina registros que a END ART Studios seja obrigada a conservar."
+        ],
+        "table": {
+          "headers": [
+            "Registro",
+            "Critério de retenção"
+          ],
+          "rows": [
+            [
+              "Conta",
+              "Durante a atividade da conta e por até 180 dias após encerramento para segurança, auditoria e defesa, salvo pedido ou obrigação que imponha tratamento diverso"
+            ],
+            [
+              "Pedido e pagamento",
+              "Pelo prazo necessário a obrigações fiscais, contábeis, consumeristas, prevenção a fraude e defesa de direitos"
+            ],
+            [
+              "Logs de acesso e segurança",
+              "Pelo período exigido pelo Marco Civil da Internet, pela LGPD e pela segurança, limitado ao necessário"
+            ],
+            [
+              "Solicitações de titulares",
+              "Pelo prazo necessário a comprovar atendimento e cumprir obrigações legais"
+            ],
+            [
+              "Consentimentos e preferências",
+              "Enquanto válidos e pelo prazo necessário à demonstração da escolha e defesa de direitos"
+            ],
+            [
+              "Atendimento e reclamações",
+              "Pelo prazo necessário à solução, qualidade, auditoria e defesa de direitos"
+            ],
+            [
+              "Dados agregados/anonimizados",
+              "Enquanto úteis, desde que não permitam reidentificação por meios razoáveis"
+            ]
+          ]
+        }
       },
       {
         "id": "seguranca",
-        "title": "8. Segurança (art. 46 da LGPD)",
-        "body": "Adotamos medidas técnicas (senhas com hash, TLS, controle de acesso, registros de auditoria) e organizacionais para proteger seus dados contra acesso não autorizado e perdas acidentais."
+        "title": "9. Segurança e confidencialidade",
+        "body": [
+          "A END ART Studios adota medidas técnicas e administrativas proporcionais ao risco, incluindo criptografia em trânsito quando aplicável, proteção de credenciais, controle de acesso por necessidade, registros de auditoria, gestão de vulnerabilidades, cópias de segurança, segregação de ambientes, gestão de fornecedores e treinamento.",
+          "Nenhuma transmissão ou armazenamento é absolutamente seguro. A empresa revisa suas medidas de segurança considerando a natureza dos dados, a finalidade, o estado da tecnologia e os riscos identificados. A obrigação de segurança permanece após o término do tratamento na medida exigida pela lei e pelos contratos.",
+          "O titular deve manter suas credenciais confidenciais, utilizar dispositivo seguro e comunicar imediatamente suspeita de acesso indevido. A END ART Studios nunca solicitará senha completa por e-mail."
+        ]
       },
       {
         "id": "incidentes",
-        "title": "9. Incidentes de segurança (art. 48 da LGPD)",
-        "body": "Em caso de incidente de segurança que possa gerar risco relevante a você, notificaremos a ANPD e os titulares afetados em prazo razoável, descrevendo a natureza do incidente, os dados afetados, os riscos e as medidas de mitigação. O canal para comunicar incidentes é o email de suporte."
+        "title": "10. Incidentes de segurança",
+        "body": [
+          "A END ART Studios mantém procedimento para identificar, conter, investigar, remediar e documentar incidentes. Operadores e fornecedores devem comunicar prontamente qualquer evento à END ART Studios e cooperar com a avaliação.",
+          "Quando o incidente puder acarretar risco ou dano relevante aos titulares, a END ART Studios comunicará a ANPD e os titulares afetados no prazo e na forma previstos na LGPD e na regulamentação vigente, incluindo a Resolução CD/ANPD nº 15/2024. A comunicação indicará, quando aplicável, a natureza dos dados, titulares envolvidos, riscos, medidas de proteção, medidas de mitigação e canal de contato. A comunicação à ANPD não substitui a comunicação aos titulares quando esta for exigida."
+        ]
       },
       {
-        "id": "ia",
-        "title": "10. Uso de inteligência artificial",
-        "body": "Utilizamos IA para enriquecer, resumir e recomendar produtos do catálogo (busca, comparação e avaliações), usando dados de produtos e especificações — não dados pessoais sensíveis. Não realizamos decisões automatizadas com efeito jurídico sobre você; é garantida a revisão humana pelo SAC."
+        "id": "ia-decisoes",
+        "title": "11. Inteligência artificial, recomendações e decisões automatizadas",
+        "body": [
+          "A ShopFinder pode utilizar regras automatizadas, modelos estatísticos e ferramentas de inteligência artificial para normalizar informações, resumir especificações, identificar compatibilidade, organizar o catálogo e recomendar ou ordenar produtos.",
+          "As saídas podem conter erros. Recomendações, scores de Authority, Coverage, compatibilidade ou confiança não constituem certificação, garantia de qualidade, endosso de fabricante, aconselhamento profissional ou promessa de desempenho. A página correspondente deve informar metodologia geral, fontes, data de atualização, limitações e eventual destaque patrocinado.",
+          "A END ART Studios não utiliza IA para decidir sozinha sobre direitos civis, crédito, contratação obrigatória ou acesso essencial do titular. Se houver tratamento automatizado que afete os interesses do titular, este poderá solicitar informações sobre critérios e procedimentos e revisão humana, observados os segredos comerciais e industriais e os limites legais.",
+          "A END ART Studios não utilizará dados pessoais sensíveis para recomendações ordinárias. Dados pessoais enviados ao provedor de IA serão minimizados, pseudonimizados ou excluídos quando possível, tratados conforme contrato e não usados para treinamento de terceiros sem fundamento válido."
+        ]
       },
       {
         "id": "direitos",
-        "title": "11. Seus direitos (art. 18 da LGPD)",
-        "body": "Você pode solicitar: confirmação de tratamento; acesso aos dados; correção; anonimização, bloqueio ou eliminação de dados desnecessários; portabilidade; informação sobre compartilhamento; e revisão de decisões automatizadas. Para exercer, envie email ao encarregado — respondemos em até 15 dias."
+        "title": "12. Direitos dos titulares",
+        "body": [
+          "Nos termos da LGPD, o titular pode solicitar, conforme aplicável: confirmação da existência de tratamento; acesso aos dados; correção de dados incompletos, inexatos ou desatualizados; anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade; portabilidade, observada a regulamentação; eliminação de dados tratados com consentimento, ressalvadas as exceções legais; informação sobre entidades com as quais houve compartilhamento; informação sobre a possibilidade de não fornecer consentimento e suas consequências; revogação do consentimento; oposição a tratamento realizado em determinadas hipóteses; revisão de decisões automatizadas; e peticionamento perante a ANPD.",
+          "O pedido deve ser enviado ao canal do encarregado. Para proteger a conta, a END ART Studios poderá solicitar comprovação proporcional de identidade ou autoridade, sem exigir dados excessivos. Pedidos serão respondidos nos prazos legais e regulatórios aplicáveis; a empresa poderá informar, de modo fundamentado, impossibilidade legal, técnica ou operacional, sem restringir direitos indevidamente.",
+          "Se o titular entender que a resposta foi insuficiente, poderá solicitar reavaliação pelo encarregado e utilizar os canais da ANPD ou do Poder Judiciário, sem prejuízo dos direitos do consumidor."
+        ]
       },
       {
         "id": "criancas",
-        "title": "12. Crianças e adolescentes",
-        "body": "A plataforma não é direcionada a menores de 18 anos e não coletamos intencionalmente dados de crianças e adolescentes."
+        "title": "13. Crianças e adolescentes",
+        "body": [
+          "A ShopFinder possui catálogo acessível ao público, mas não é direcionada a crianças. A criação de conta, contratação e coleta de dados devem observar capacidade civil, melhor interesse, legislação aplicável e medidas de proteção compatíveis com a idade.",
+          "A END ART Studios não solicita intencionalmente dados de crianças para finalidades incompatíveis com a LGPD. Se identificar coleta indevida, adotará medidas razoáveis para verificar o ocorrido, eliminar ou proteger os dados e contatar responsável quando apropriado. Pais, responsáveis ou adolescentes podem utilizar o canal do encarregado para comunicar dúvidas ou solicitar providências."
+        ]
+      },
+      {
+        "id": "terceiros-links",
+        "title": "14. Serviços de terceiros e links externos",
+        "body": "A ShopFinder pode conter links ou integrações com fornecedores, marketplaces, fabricantes, processadores de pagamento e outros sites. Ao sair da ShopFinder, o tratamento passa a seguir as políticas e os termos do terceiro. A existência de link não significa endosso, garantia ou controle da END ART Studios sobre o conteúdo ou as práticas do terceiro."
       },
       {
         "id": "alteracoes",
-        "title": "13. Alterações desta política",
-        "body": "A versão vigente e a data de atualização constam no topo desta página. Mudanças relevantes serão comunicadas no site."
+        "title": "15. Alterações desta Política",
+        "body": [
+          "Esta Política pode ser atualizada para refletir alterações legais, técnicas, operacionais ou de segurança. A versão vigente, a data de atualização e um histórico razoável de versões serão disponibilizados nesta página.",
+          "Alterações materiais serão comunicadas por meio adequado e, quando exigido, dependerão de novo consentimento ou aceite. Alterações não reduzirão retroativamente direitos relativos a tratamentos já realizados nem modificarão contratos de compra concluídos, salvo fundamento legal válido."
+        ]
+      },
+      {
+        "id": "lei-contato",
+        "title": "16. Lei aplicável e contato",
+        "body": [
+          "Esta Política será interpretada conforme a legislação brasileira aplicável, especialmente a Lei nº 13.709/2018 — LGPD, o Marco Civil da Internet, o Código de Defesa do Consumidor e normas da ANPD. Direitos inderrogáveis de titulares e consumidores prevalecem sobre qualquer disposição incompatível.",
+          "Dúvidas e solicitações: endart.studios@gmail.com",
+          "Atendimento geral: endart.studios@gmail.com",
+          "END ART Studios — CNPJ nº 45.370.930/0001-75",
+          "Endereço: Osasco, São Paulo - Brasil"
+        ]
+      },
+      {
+        "id": "referencias-normativas",
+        "title": "Referências normativas",
+        "body": [
+          "Lei nº 13.709/2018 — LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+          "Lei nº 8.078/1990 — Código de Defesa do Consumidor: https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+          "Decreto nº 7.962/2013 — comércio eletrônico: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
+          "ANPD — Transferência Internacional de Dados e Resolução CD/ANPD nº 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
+          "ANPD — Guia orientativo Cookies e Proteção de Dados Pessoais: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
+          "Regulamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "ANPD — Comunicação de Incidente de Segurança: https://www.gov.br/anpd/pt-br/assuntos/comunicacao-de-incidentes-de-seguranca-cis"
+        ]
       }
     ]
   },

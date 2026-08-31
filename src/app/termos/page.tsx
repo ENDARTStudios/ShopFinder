@@ -6,7 +6,7 @@ import { InstitutionalHeader } from "@/components/site/institutional-header";
 interface LegalSection {
   id: string;
   title: string;
-  body: string;
+  body: string | string[];
   table?: { headers: string[]; rows: string[][] };
 }
 
@@ -45,7 +45,20 @@ export default async function TermosPage() {
           {sections.map((s) => (
             <section key={s.id} id={s.id} className="scroll-mt-20">
               <h2 className="mb-1 text-base font-bold">{s.title}</h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              {Array.isArray(s.body) ? (
+                <div className="space-y-2">
+                  {s.body.map((paragraph, i) => (
+                    <p
+                      key={i}
+                      className="text-sm leading-relaxed text-muted-foreground"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              )}
 
               {s.id === "identificacao" && (
                 <div className="mt-3 grid grid-cols-1 gap-1 rounded-lg border border-border/40 bg-muted/20 p-3 text-xs sm:grid-cols-2">

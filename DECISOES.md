@@ -112,3 +112,20 @@ Diagnóstico (T036-T040): o `STRIPE_SECRET_KEY` de produção apontava para a co
 ### DECISAO-T041-001 — Entrega automática do Stripe confirmada (fecha a saga do Order)
 
 Após habilitar `checkout.session.completed` no endpoint ShopFinder (causa raiz do gap: o endpoint só assinava eventos de billing/`payment_intent.*`), o pagamento teste `4242…` (sessão `cs_test_a1R2AB9q…`, US$ 21,99) foi processado e a Order **persistiu sozinha** via entrega automática do Stripe — sem replay manual (`check-orders.ts`: 3 orders `paid`, nova em 19:36 UTC de 30/08/2026). A loja vende, cobra na conta certa, registra sozinha e mostra o pedido ao cliente. Evidência: probe de roteamento (T038) + entrega automática (T041). Origem: Doer (execução) / Thinker (diagnóstico) / Operador (config do dashboard).
+
+### DECISAO-T059-001 — Publicação do pacote jurídico v2.0 (pt/en/es)
+
+Em 01/09/2026 foi publicado o pacote jurídico v2.0 (Parecer + Achados + minutas Termos v2.0 com 23 seções e Privacidade v2.0 com 16 seções), revisado pelo Thinker e autorizado pelo Operador. Fontes commitadas em `docs/legal/termos-de-uso-v2.md` e `docs/legal/politica-de-privacidade-v2.md` (verbatim); conteúdo publicado vive em `messages/*.json` (`terms.sections` 24 itens / `privacy.sections` 17 itens, incl. "Referências normativas"), com renderização multiparágrafo (`body: string | string[]`) e intro na Privacidade. /cookies v1.1 sem consentimento tácito e com tabela completa de storage (commit 55775b3). Paridade i18n 609 chaves × 3 locales.
+
+Tabela de placeholders (decisões do Thinker):
+
+| Placeholder | Valor |
+|---|---|
+| `[DIA] de [MÊS] de 2026` | 1 de setembro de 2026 (EN: September 1, 2026 · ES: 1 de septiembre de 2026) |
+| Versão | 2.0 |
+| `[X] dias úteis` (confirmação) | 2 (coerente com o SAC já publicado) |
+| `[preencher endereço completo]` | Osasco, São Paulo - Brasil (PENDÊNCIA OPERADOR: complementar rua/número) |
+| `[e-mail do encarregado]` / canal privacidade | endart.studios@gmail.com |
+| `[canal de cancelamento]` | botão no pedido em /conta/pedidos ou endart.studios@gmail.com (botão vem na T061) |
+
+Preenchimentos adicionais feitos pelo Doer (coerentes com dados públicos, a ratificar): `[canal jurídico]` = endart.studios@gmail.com (único canal existente); `[entidade e país]` (§6 Privacidade) = Stripe, Inc. / Vercel, Inc. / Neon, Inc. / OpenAI — Estados Unidos; `[prazo]` (retenção de conta pós-encerramento) = até 180 dias (estrutura de governança, ajustável). PENDÊNCIA: `termsVersion: "1.0"` hardcoded em `src/app/api/auth/register/route.ts` — aceites pós-publicação seguem gravando "1.0" até decisão do Thinker (rota fora do escopo do T059). Origem: Thinker (minutas + tabela) / Doer (publicação e preenchimentos residuais) / Operador (endereço completo).
