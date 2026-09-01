@@ -977,5 +977,20 @@
     "bannerNote": "Como usamos apenas armazenamento essencial e de preferência — sem cookies de analytics, publicidade ou marketing —, não exibimos banner de consentimento.",
     "preferencesNote": "Se você desativar ou limpar cookies e dados de site no navegador, algumas preferências (idioma, moeda, carrinho, lista de comparação) podem não persistir entre as visitas.",
     "privacyLink": "Veja também a nossa Política de Privacidade."
+  },
+  "scores": {
+    "sectionTitle": "Metodologia dos indicadores e IA",
+    "disclosureTitle": "Como calculamos estes indicadores",
+    "authorityDef": "Authority (0–100) mede a confiabilidade da origem de cada informação do catálogo.",
+    "authorityFactors": "Política default-authority-v1 — média ponderada de 4 fatores: tipo de fonte (40% — fabricante 100, datasheet 95, distribuidor 80, varejista 70, marketplace 60), confiança da evidência (30%), frescor (15% — decai ao longo de 30 dias) e qualidade do conector (15% — API oficial 100, espelho 80, scraper 70, parceiro 60).",
+    "priceAuthority": "Preço e estoque têm autoridade baixa como declaração de fabricante (10 e 5 de 100): esses dados vêm das ofertas dos fornecedores, não do fabricante.",
+    "coverageDef": "Coverage (0–100) mede a completude dos dados de cada fabricante no catálogo, por segmento de produto.",
+    "tiers": "Fabricantes são agrupados em tiers pela Authority: A ≥ 98, B 92–97, C 82–91, D < 82.",
+    "sourcesLine": "Fontes: catálogo próprio e fornecedores integrados — perfis de fabricante, ofertas e evidências com URL e data de coleta.",
+    "updatedLine": "Os indicadores são atualizados junto com o catálogo; cada página de produto exibe \"Atualizado em\" com o momento dos dados.",
+    "aiLine": "Onde entra a IA: normalização de especificações, enriquecimento de dados e matching de produtos compatíveis via knowledge graph. As saídas podem conter erros e não substituem a verificação do usuário ou do fornecedor.",
+    "limitations": "Limitações: os indicadores podem conter erros; não são certificação, garantia de qualidade, endosso do fabricante ou recomendação oficial.",
+    "notSponsored": "Ranking não patrocinado: nenhuma remuneração, publicidade ou destaque pago altera a pontuação.",
+    "contest": "Quer contestar uma informação ou pontuação? Fale com a gente pelo /contato ou endart.studios@gmail.com."
   }
 }

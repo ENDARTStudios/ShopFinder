@@ -44,6 +44,7 @@ import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
 import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
 import { FilterBar } from "@/components/site/filter-bar";
+import { ScoresDisclosure } from "@/components/site/scores-disclosure";
 import { FadeIn, FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
 import {
   NicheGridSkeleton,
@@ -694,6 +695,11 @@ function ManufacturersSection() {
             ))}
           </FadeInStagger>
         )}
+
+        {/* T062 — disclosure da metodologia (fático, do código) */}
+        <div className="mt-8">
+          <ScoresDisclosure />
+        </div>
       </div>
     </section>
   );

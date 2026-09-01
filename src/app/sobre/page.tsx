@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { InstitutionalHeader } from "@/components/site/institutional-header";
+import { ScoresDisclosure } from "@/components/site/scores-disclosure";
 
 export const metadata: Metadata = {
   title: "Sobre — ShopFinder"
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 
 export default async function SobrePage() {
   const t = await getTranslations("about");
+  const tScores = await getTranslations("scores");
 
   const steps = [t("step1"), t("step2"), t("step3")];
 
@@ -34,6 +36,11 @@ export default async function SobrePage() {
 
       <h2 className="mb-2 text-lg font-bold">{t("nichesTitle")}</h2>
       <p className="text-sm leading-relaxed text-muted-foreground">{t("niches")}</p>
+
+      {/* T062 — transparência de IA/scores (mesmo conteúdo do disclosure da
+          landing #fabricantes, aberto por padrão aqui) */}
+      <h2 className="mb-2 mt-8 text-lg font-bold">{tScores("sectionTitle")}</h2>
+      <ScoresDisclosure defaultOpen />
       </div>
     </div>
   );

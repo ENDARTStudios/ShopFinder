@@ -977,5 +977,20 @@
     "bannerNote": "Because we use only essential and preference storage — no analytics, advertising or marketing cookies —, no consent banner is shown.",
     "preferencesNote": "If you disable or clear cookies and site data in your browser, some preferences (language, currency, cart, comparison list) may not persist between visits.",
     "privacyLink": "See also our Privacy Policy."
+  },
+  "scores": {
+    "sectionTitle": "Indicator and AI methodology",
+    "disclosureTitle": "How we calculate these indicators",
+    "authorityDef": "Authority (0–100) measures how trustworthy the origin of each piece of catalog information is.",
+    "authorityFactors": "Policy default-authority-v1 — weighted average of 4 factors: source type (40% — manufacturer 100, datasheet 95, distributor 80, retailer 70, marketplace 60), evidence confidence (30%), freshness (15% — decays over 30 days) and connector quality (15% — official API 100, mirror 80, scraper 70, partner 60).",
+    "priceAuthority": "Price and stock carry low authority as a manufacturer statement (10 and 5 out of 100): that data comes from supplier offers, not from the manufacturer.",
+    "coverageDef": "Coverage (0–100) measures how complete each manufacturer's data is in the catalog, per product segment.",
+    "tiers": "Manufacturers are grouped into tiers by Authority: A ≥ 98, B 92–97, C 82–91, D < 82.",
+    "sourcesLine": "Sources: our own catalog and integrated suppliers — manufacturer profiles, offers and evidence with URL and collection date.",
+    "updatedLine": "Indicators are updated along with the catalog; each product page shows \"Updated at\" with the data timestamp.",
+    "aiLine": "Where AI comes in: specification normalization, data enrichment and compatible-product matching via the knowledge graph. Outputs may contain errors and do not replace verification by the user or the supplier.",
+    "limitations": "Limitations: the indicators may contain errors; they are not a certification, quality guarantee, manufacturer endorsement or official recommendation.",
+    "notSponsored": "Unsponsored ranking: no payment, advertising or paid placement affects the score.",
+    "contest": "Want to contest information or a score? Reach us via /contato or endart.studios@gmail.com."
   }
 }

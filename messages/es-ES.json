@@ -977,5 +977,20 @@
     "terms": "Términos de Uso",
     "acceptAnd": "y la",
     "privacy": "Política de Privacidad"
+  },
+  "scores": {
+    "sectionTitle": "Metodología de los indicadores y la IA",
+    "disclosureTitle": "Cómo calculamos estos indicadores",
+    "authorityDef": "Authority (0–100) mide la confiabilidad del origen de cada información del catálogo.",
+    "authorityFactors": "Política default-authority-v1 — promedio ponderado de 4 factores: tipo de fuente (40% — fabricante 100, datasheet 95, distribuidor 80, minorista 70, marketplace 60), confianza de la evidencia (30%), frescura (15% — decae a lo largo de 30 días) y calidad del conector (15% — API oficial 100, espejo 80, scraper 70, socio 60).",
+    "priceAuthority": "El precio y el stock tienen autoridad baja como declaración del fabricante (10 y 5 de 100): esos datos provienen de las ofertas de los proveedores, no del fabricante.",
+    "coverageDef": "Coverage (0–100) mide la completitud de los datos de cada fabricante en el catálogo, por segmento de producto.",
+    "tiers": "Los fabricantes se agrupan en tiers por Authority: A ≥ 98, B 92–97, C 82–91, D < 82.",
+    "sourcesLine": "Fuentes: catálogo propio y proveedores integrados — perfiles de fabricante, ofertas y evidencias con URL y fecha de recogida.",
+    "updatedLine": "Los indicadores se actualizan junto con el catálogo; cada página de producto muestra \"Actualizado el\" con el momento de los datos.",
+    "aiLine": "Dónde entra la IA: normalización de especificaciones, enriquecimiento de datos y matching de productos compatibles vía knowledge graph. Las salidas pueden contener errores y no sustituyen la verificación del usuario o del proveedor.",
+    "limitations": "Limitaciones: los indicadores pueden contener errores; no son certificación, garantía de calidad, respaldo del fabricante ni recomendación oficial.",
+    "notSponsored": "Ranking no patrocinado: ninguna remuneración, publicidad ni destacado pagado altera la puntuación.",
+    "contest": "¿Quieres impugnar una información o puntuación? Háblanos por /contato o endart.studios@gmail.com."
   }
 }
