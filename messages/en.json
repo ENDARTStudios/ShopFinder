@@ -12,11 +12,11 @@
   },
   "hero": {
     "tagline": "smart shopping",
-    "subtitle": "Find any product across thousands of suppliers. From electronic components to smartphones — compare prices, specs and stock in real time.",
+    "subtitle": "Find any product across thousands of suppliers. From electronic components to smartphones — compare prices, specs and availability as of the last indicated update; confirm the final price and the supplier before you buy.",
     "searchPlaceholder": "Search products, MPN, brands...",
     "searchButton": "Search",
     "popular": "Popular:",
-    "statProducts": "36,000+ products",
+    "statProducts": "Search across integrated suppliers",
     "statNiches": "3 niches · 7 suppliers",
     "statAi": "Powered by AI"
   },
@@ -78,7 +78,7 @@
     "price": "Price",
     "min": "Min",
     "max": "Max",
-    "priceHint": "Considers the offer range when available",
+    "priceHint": "Values in BRL (reference); the search converts at the current exchange rate.",
     "specs": "Specifications",
     "valuePlaceholder": "Value",
     "addAttribute": "Add filter",
@@ -90,13 +90,12 @@
   },
   "trust": {
     "badge": "Powered by Catalog Intelligence",
-    "title": "Every product goes through 15 validation stages",
+    "title": "Layered validation before products reach the catalog",
     "description": "Offers from marketplaces, distributors and manufacturers are consolidated, enriched with official data and validated by AI before reaching the catalog.",
-    "statPipeline": "pipeline stages",
-    "statConnectors": "active connectors",
-    "statTests": "automated tests",
-    "statViolations": "architectural violations",
-    "sources": "Sources: Marketplace · Distributor · Retailer · Manufacturer"
+    "statPipeline": "offer validation",
+    "statConnectors": "connected suppliers",
+    "sources": "Sources: Marketplace · Distributor · Retailer · Manufacturer",
+    "statPipelineValue": "layered"
   },
   "footer": {
     "rights": "Copyright © 2026 END ART"
@@ -134,14 +133,16 @@
     "enrichedDescription": "{count} attributes validated with evidence from {manufacturer}. Each specification has tracked origin and confidence level.",
     "sku": "SKU:",
     "niche": "Niche:",
-    "updatedAt": "Updated:",
+    "updatedAt": "Updated at: {when}",
     "compatibleTitle": "Compatible Products",
     "compatibleSubtitle": "Via knowledge graph — matching by socket, chipset and canonical attributes",
     "compatibleLoading": "Loading compatible products...",
     "compatibleEmpty": "No compatible products found",
     "compatibleError": "Error loading compatible products",
     "notFound": "Product not found · ShopFinder",
-    "noManufacturer": "manufacturer"
+    "noManufacturer": "manufacturer",
+    "fxNote": "Currency: USD · BRL conversion using the {when} exchange rate (US$ 1 = R$ {rate})",
+    "shippingNote": "Shipping and taxes not included; confirm the final price and the supplier before purchasing."
   },
   "admin": {
     "title": "Operator Dashboard",
@@ -247,7 +248,7 @@
   "about": {
     "title": "About ShopFinder",
     "missionTitle": "Our mission",
-    "mission": "Make smart comparison between suppliers simple: real prices in BRL, real stock and honest delivery estimates — so you buy from the best supplier without opening ten tabs.",
+    "mission": "Make smart comparison between suppliers simple: prices in BRL and availability as of the last indicated update, with honest delivery estimates — so you buy from the best supplier without opening ten tabs.",
     "howTitle": "How it works",
     "step1": "Search: find hardware and electronics across integrated suppliers.",
     "step2": "Compare: specs, prices and stock side by side, converted to BRL.",

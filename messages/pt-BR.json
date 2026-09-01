@@ -12,11 +12,11 @@
   },
   "hero": {
     "tagline": "compra inteligente",
-    "subtitle": "Encontre qualquer produto entre milhares de fornecedores. Do componente eletrônico ao smartphone — compare preços, specs e estoque em tempo real.",
+    "subtitle": "Encontre qualquer produto entre milhares de fornecedores. Do componente eletrônico ao smartphone — compare preços, specs e disponibilidade conforme a última atualização indicada; confirme o valor final e o fornecedor antes de contratar.",
     "searchPlaceholder": "Pesquisar produtos, MPN, marcas...",
     "searchButton": "Buscar",
     "popular": "Populares:",
-    "statProducts": "36.000+ produtos",
+    "statProducts": "Busca integrada a fornecedores",
     "statNiches": "3 nichos · 7 fornecedores",
     "statAi": "Powered by AI"
   },
@@ -78,7 +78,7 @@
     "price": "Preço",
     "min": "Min",
     "max": "Max",
-    "priceHint": "Considera a faixa de ofertas quando disponível",
+    "priceHint": "Valores em BRL (referência); a busca converte pelo câmbio do momento.",
     "specs": "Especificações",
     "valuePlaceholder": "Valor",
     "addAttribute": "Adicionar filtro",
@@ -90,13 +90,12 @@
   },
   "trust": {
     "badge": "Powered by Catalog Intelligence",
-    "title": "Cada produto passa por 15 estágios de validação",
+    "title": "Validação em camadas antes de chegar ao catálogo",
     "description": "Ofertas de marketplaces, distribuidores e fabricantes são consolidadas, enriquecidas com dados oficiais e validadas por IA antes de chegarem ao catálogo.",
-    "statPipeline": "estágios de pipeline",
-    "statConnectors": "conectores ativos",
-    "statTests": "testes automatizados",
-    "statViolations": "violações arquiteturais",
-    "sources": "Fontes: Marketplace · Distributor · Retailer · Manufacturer"
+    "statPipeline": "validação de ofertas",
+    "statConnectors": "fornecedores conectados",
+    "sources": "Fontes: Marketplace · Distributor · Retailer · Manufacturer",
+    "statPipelineValue": "em camadas"
   },
   "footer": {
     "rights": "Copyright © 2026 END ART"
@@ -134,14 +133,16 @@
     "enrichedDescription": "{count} atributos validados com evidências de {manufacturer}. Cada especificação tem origem rastreada e nível de confiança.",
     "sku": "SKU:",
     "niche": "Nicho:",
-    "updatedAt": "Atualizado:",
+    "updatedAt": "Atualizado em: {when}",
     "compatibleTitle": "Produtos Compatíveis",
     "compatibleSubtitle": "Via knowledge graph — matching por soquete, chipset e atributos canônicos",
     "compatibleLoading": "Carregando produtos compatíveis...",
     "compatibleEmpty": "Nenhum produto compatível encontrado",
     "compatibleError": "Erro ao carregar produtos compatíveis",
     "notFound": "Produto não encontrado · ShopFinder",
-    "noManufacturer": "fabricante"
+    "noManufacturer": "fabricante",
+    "fxNote": "Moeda: USD · conversão para BRL pelo câmbio de {when} (US$ 1 = R$ {rate})",
+    "shippingNote": "Frete e tributos não incluídos; confirme o valor final e o fornecedor antes de contratar."
   },
   "admin": {
     "title": "Dashboard do Operador",
@@ -247,7 +248,7 @@
   "about": {
     "title": "Sobre o ShopFinder",
     "missionTitle": "Nossa missão",
-    "mission": "Tornar simples a comparação inteligente entre fornecedores: preço real em BRL, estoque real e prazo honesto — para você comprar do melhor fornecedor sem abrir dez abas.",
+    "mission": "Tornar simples a comparação inteligente entre fornecedores: preços em BRL e disponibilidade conforme a última atualização indicada, com prazo honesto — para você comprar do melhor fornecedor sem abrir dez abas.",
     "howTitle": "Como funciona",
     "step1": "Busque: encontre hardware e eletrônicos entre os fornecedores integrados.",
     "step2": "Compare: especificações, preços e estoque lado a lado, convertidos para BRL.",

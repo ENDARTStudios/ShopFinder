@@ -45,9 +45,10 @@ import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
 import { ProductImage } from "@/components/site/product-image";
 import { FadeIn } from "@/components/motion/fade-in";
+import { FxNote } from "@/components/site/fx-note";
 import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 import { formatInventoryCount, humanizeSpecName, supplierDisplayName } from "@/lib/spec-labels";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -145,6 +146,7 @@ export async function generateMetadata({
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const locale = await getLocale();
+  const tDetail = await getTranslations("detail");
 
   const product = await prisma.product.findFirst({
     where: { slug, deletedAt: null, status: "published" },
@@ -183,6 +185,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   );
   const totalStock = product.offers.reduce((sum, o) => sum + o.inventory, 0);
   const inStock = totalStock > 0;
+
+  // T063 — transparência: momento da última atualização dos dados exibidos.
+  const updatedAtFmt = new Intl.DateTimeFormat(locale, {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(product.updatedAt);
 
   // Extract manufacturer from description (pipeline format: "Manufacturer: Intel Corporation")
   const manufacturerMatch = product.description.match(/Manufacturer:\s*(.+?)\./);
@@ -487,6 +495,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">Nenhuma oferta disponível.</p>
+                )}
+
+                {/* T063 — transparência da oferta: fonte por oferta (nome do
+                    fornecedor em cada card), momento do câmbio usado na conversão
+                    para BRL e timestamp da última atualização dos dados. */}
+                {product.offers.length > 0 && (
+                  <div className="mt-4 space-y-1 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+                    <FxNote />
+                    <p>{tDetail("shippingNote")}</p>
+                    <p>{tDetail("updatedAt", { when: updatedAtFmt })}</p>
+                  </div>
                 )}
               </CardContent>
             </Card>

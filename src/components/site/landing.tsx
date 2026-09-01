@@ -994,11 +994,11 @@ function FaqSection() {
 
 function TrustSection() {
   const t = useTranslations("trust");
+  // T063 — apenas claims verificáveis: 7 fornecedores (contagem no catálogo);
+  // validação descrita sem número absoluto (pipeline ainda não quantificável).
   const stats = [
-    { label: t("statPipeline"), value: "15" },
     { label: t("statConnectors"), value: "7" },
-    { label: t("statTests"), value: "646" },
-    { label: t("statViolations"), value: "0" }
+    { label: t("statPipeline"), value: t("statPipelineValue") }
   ];
 
   return (
@@ -1019,7 +1019,7 @@ function TrustSection() {
             <p className="max-w-2xl text-muted-foreground">{t("description")}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+          <div className="flex flex-wrap items-center justify-center gap-10">
             {stats.map((stat) => (
               <div key={stat.label} className="flex flex-col items-center gap-1">
                 <span className="text-3xl font-black text-emerald-500">{stat.value}</span>

@@ -9,13 +9,13 @@ import {
   type FxCacheEntry
 } from "./fx-core";
 
-function getCachedRate(): number | null {
+function getCachedEntry(): FxCacheEntry | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(FX_CACHE_KEY);
     if (!raw) return null;
     const entry: unknown = JSON.parse(raw);
-    if (isCacheEntryValid(entry)) return entry.rate;
+    if (isCacheEntryValid(entry)) return entry;
     return null;
   } catch {
     return null;
@@ -45,24 +45,28 @@ async function fetchUsdBrlRate(): Promise<number> {
   }
 }
 
-export function useFxRate(): { rate: number; ready: boolean } {
+export function useFxRate(): { rate: number; ready: boolean; ts: number | null } {
   const [rate, setRate] = React.useState<number>(FX_FALLBACK_RATE);
   const [ready, setReady] = React.useState(false);
+  const [ts, setTs] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    const cached = getCachedRate();
+    const cached = getCachedEntry();
     if (cached !== null) {
-      setRate(cached);
+      setRate(cached.rate);
+      setTs(cached.ts);
       setReady(true);
       return;
     }
     fetchUsdBrlRate().then((r) => {
+      const now = Date.now();
       setCachedRate(r);
       setRate(r);
+      setTs(now);
       setReady(true);
     });
   }, []);
 
   // SSR: retorna fallback imediatamente (sem fetch no servidor)
-  return { rate, ready };
+  return { rate, ready, ts };
 }
