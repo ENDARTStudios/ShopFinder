@@ -257,9 +257,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <div className="mb-2 flex items-center gap-2">
                 <Badge variant="outline">{product.category?.name ?? "Sem categoria"}</Badge>
                 {inStock ? (
-                  <Badge className="bg-emerald-500/90 text-white">Em estoque</Badge>
+                  <Badge className="bg-emerald-500/90 text-white">{tDetail("inStock")}</Badge>
                 ) : (
-                  <Badge className="bg-amber-500/90 text-white">Esgotado</Badge>
+                  <Badge className="bg-amber-500/90 text-white">{tDetail("outOfStock")}</Badge>
                 )}
               </div>
               <h1 className="mb-2 text-3xl font-black tracking-tight">{product.title}</h1>
@@ -273,12 +273,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <div>
                   <PriceRange min={minPrice} max={maxPrice} currency="USD" size="large" />
                   <span className="text-xs text-muted-foreground">
-                    em {product.offers.length} {product.offers.length === 1 ? "oferta" : "ofertas"}
+                    {tDetail("offersCount", { count: product.offers.length })}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  {formatInventoryCount(totalStock, locale)} unidades em estoque
+                  {tDetail("stockCount", { count: formatInventoryCount(totalStock, locale) })}
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -450,7 +450,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-sm">
                   <Store className="h-4 w-4" />
-                  Ofertas de Fornecedores
+                  {tDetail("offersTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -469,7 +469,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                             <span className="font-medium text-sm">{supplierName}</span>
                             {isLowest && (
                               <Badge className="bg-emerald-500/90 text-white text-[10px]">
-                                Melhor preço
+                                {tDetail("bestPrice")}
                               </Badge>
                             )}
                           </div>
@@ -478,14 +478,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
-                                  ? `${formatInventoryCount(offer.inventory, locale)} em estoque`
-                                  : "Sem estoque"}
+                                  ? tDetail("offerStock", {
+                                      count: formatInventoryCount(offer.inventory, locale)
+                                    })
+                                  : tDetail("noStock")}
                               </div>
                             </div>
                             <div className="text-right text-[10px] text-muted-foreground">
-                              <div>Envio: {offer.shipsFromCountry}</div>
+                              <div>{tDetail("shippingFrom", { country: offer.shipsFromCountry })}</div>
                               <div>
-                                {offer.fulfillmentDaysMin}-{offer.fulfillmentDaysMax} dias
+                                {tDetail("fulfillmentDays", {
+                                  min: offer.fulfillmentDaysMin,
+                                  max: offer.fulfillmentDaysMax
+                                })}
                               </div>
                             </div>
                           </div>
@@ -494,7 +499,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Nenhuma oferta disponível.</p>
+                  <p className="text-sm text-muted-foreground">{tDetail("noOffers")}</p>
                 )}
 
                 {/* T063 — transparência da oferta: fonte por oferta (nome do

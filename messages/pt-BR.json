@@ -142,7 +142,13 @@
     "notFound": "Produto não encontrado · ShopFinder",
     "noManufacturer": "fabricante",
     "fxNote": "Moeda: USD · conversão para BRL pelo câmbio de {when} (US$ 1 = R$ {rate})",
-    "shippingNote": "Frete e tributos não incluídos; confirme o valor final e o fornecedor antes de contratar."
+    "shippingNote": "Frete e tributos não incluídos; confirme o valor final e o fornecedor antes de contratar.",
+    "offersTitle": "Ofertas de Fornecedores",
+    "offersCount": "em {count, plural, one {# oferta} other {# ofertas}}",
+    "stockCount": "{count} unidades em estoque",
+    "offerStock": "{count} em estoque",
+    "noStock": "Sem estoque",
+    "shippingFrom": "Envio: {country}"
   },
   "admin": {
     "title": "Dashboard do Operador",
@@ -964,6 +970,12 @@
         "duration": "Sessão",
         "purpose": "Proteção contra ataques CSRF no login",
         "type": "Essencial"
+      },
+      "notificationsRead": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistente (até limpar os dados do site)",
+        "purpose": "Estado de leitura do sino de notificações",
+        "type": "Preferência"
       }
     },
     "noneTitle": "Analytics e marketing",

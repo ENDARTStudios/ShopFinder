@@ -15,6 +15,7 @@ const COOKIE_ROWS: Array<{ name: string; key: string }> = [
   { name: "sf:currency", key: "currency" },
   { name: "sf:notifications", key: "notifications" },
   { name: "shopfinder:compare", key: "compare" },
+  { name: "shopfinder:read-notifications", key: "notificationsRead" },
   { name: "sf:fx", key: "fx" },
   { name: "sf:img:*", key: "img" },
   { name: "next-auth.session-token", key: "session" },

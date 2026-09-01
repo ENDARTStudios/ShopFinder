@@ -142,7 +142,13 @@
     "notFound": "Product not found · ShopFinder",
     "noManufacturer": "manufacturer",
     "fxNote": "Currency: USD · BRL conversion using the {when} exchange rate (US$ 1 = R$ {rate})",
-    "shippingNote": "Shipping and taxes not included; confirm the final price and the supplier before purchasing."
+    "shippingNote": "Shipping and taxes not included; confirm the final price and the supplier before purchasing.",
+    "offersTitle": "Supplier offers",
+    "offersCount": "in {count, plural, one {# offer} other {# offers}}",
+    "stockCount": "{count} units in stock",
+    "offerStock": "{count} in stock",
+    "noStock": "Out of stock",
+    "shippingFrom": "Shipping: {country}"
   },
   "admin": {
     "title": "Operator Dashboard",
@@ -964,6 +970,12 @@
         "duration": "Session",
         "purpose": "Protection against CSRF attacks on sign-in",
         "type": "Essential"
+      },
+      "notificationsRead": {
+        "provider": "ShopFinder (localStorage)",
+        "duration": "Persistent (until site data is cleared)",
+        "purpose": "Notification bell read state",
+        "type": "Preference"
       }
     },
     "noneTitle": "Analytics and marketing",
