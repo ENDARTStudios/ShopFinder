@@ -10,6 +10,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Network, ArrowRight } from "lucide-react";
@@ -32,6 +33,7 @@ interface KnowledgeResponse {
 }
 
 export function CompatibleProducts({ slug }: { slug: string }) {
+  const t = useTranslations("detail");
   const [data, setData] = React.useState<KnowledgeResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -65,9 +67,9 @@ export function CompatibleProducts({ slug }: { slug: string }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Network className="h-5 w-5 text-emerald-500" />
-            Produtos Compatíveis
+            {t("compatibleTitle")}
             <Badge variant="outline" className="ml-1 text-xs">
-              {data.totalRelations} relação(ões)
+              {t("relationsCount", { count: data.totalRelations })}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -77,7 +79,7 @@ export function CompatibleProducts({ slug }: { slug: string }) {
               <Badge className="bg-emerald-500/90 text-white">
                 Tier {data.manufacturer.tier}
               </Badge>
-              <span className="text-muted-foreground">Fabricante:</span>
+              <span className="text-muted-foreground">{t("manufacturer")}</span>
               <span className="font-medium">{data.manufacturer.name}</span>
               <span className="text-xs text-muted-foreground">
                 Authority: {data.manufacturer.authorityScore}
@@ -101,7 +103,9 @@ export function CompatibleProducts({ slug }: { slug: string }) {
                         </Badge>
                       )}
                       <span className="text-xs text-muted-foreground">
-                        {cp.relationType === "compatible_with" ? "Compatível" : "Mesmo fabricante"}
+                        {cp.relationType === "compatible_with"
+                          ? t("relationCompatible")
+                          : t("relationSameManufacturer")}
                       </span>
                     </div>
                     <div className="mt-1 text-sm font-bold text-emerald-500">

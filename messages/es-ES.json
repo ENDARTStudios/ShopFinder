@@ -143,12 +143,10 @@
     "noManufacturer": "fabricante",
     "fxNote": "Moneda: USD · conversión a BRL por el cambio de {when} (US$ 1 = R$ {rate})",
     "shippingNote": "Envío e impuestos no incluidos; confirma el valor final y el proveedor antes de contratar.",
-    "offersTitle": "Ofertas de proveedores",
     "offersCount": "en {count, plural, one {# oferta} other {# ofertas}}",
-    "stockCount": "{count} unidades en stock",
-    "offerStock": "{count} en stock",
-    "noStock": "Sin stock",
-    "shippingFrom": "Envío: {country}"
+    "relationCompatible": "Compatible",
+    "relationSameManufacturer": "Mismo fabricante",
+    "relationsCount": "{count, plural, one {# relación} other {# relaciones}}"
   },
   "admin": {
     "title": "Panel del operador",

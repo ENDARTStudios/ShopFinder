@@ -143,12 +143,10 @@
     "noManufacturer": "manufacturer",
     "fxNote": "Currency: USD · BRL conversion using the {when} exchange rate (US$ 1 = R$ {rate})",
     "shippingNote": "Shipping and taxes not included; confirm the final price and the supplier before purchasing.",
-    "offersTitle": "Supplier offers",
     "offersCount": "in {count, plural, one {# offer} other {# offers}}",
-    "stockCount": "{count} units in stock",
-    "offerStock": "{count} in stock",
-    "noStock": "Out of stock",
-    "shippingFrom": "Shipping: {country}"
+    "relationCompatible": "Compatible",
+    "relationSameManufacturer": "Same manufacturer",
+    "relationsCount": "{count, plural, one {# relation} other {# relations}}"
   },
   "admin": {
     "title": "Operator Dashboard",

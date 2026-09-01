@@ -108,11 +108,11 @@ function getConfidenceColor(confidence: number): string {
   return "text-red-500";
 }
 
-function getConfidenceLabel(confidence: number): string {
-  if (confidence >= 0.95) return "Alta confiabilidade";
-  if (confidence >= 0.8) return "Boa confiabilidade";
-  if (confidence >= 0.6) return "Confiança média";
-  return "Baixa confiabilidade";
+function getConfidenceLabelKey(confidence: number): string {
+  if (confidence >= 0.95) return "confidenceHigh";
+  if (confidence >= 0.8) return "confidenceGood";
+  if (confidence >= 0.6) return "confidenceMedium";
+  return "confidenceLow";
 }
 
 // ── Metadata ───────────────────────────────────────────────
@@ -236,7 +236,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar ao catálogo
+          {tDetail("backToCatalog")}
         </Link>
 
         {/* Header */}
@@ -255,7 +255,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Title + meta */}
             <div className="flex-1">
               <div className="mb-2 flex items-center gap-2">
-                <Badge variant="outline">{product.category?.name ?? "Sem categoria"}</Badge>
+                <Badge variant="outline">{product.category?.name ?? tDetail("noCategory")}</Badge>
                 {inStock ? (
                   <Badge className="bg-emerald-500/90 text-white">{tDetail("inStock")}</Badge>
                 ) : (
@@ -265,7 +265,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <h1 className="mb-2 text-3xl font-black tracking-tight">{product.title}</h1>
               {manufacturerName && (
                 <p className="mb-3 text-sm text-muted-foreground">
-                  Fabricante:{" "}
+                  {tDetail("manufacturer")}{" "}
                   <span className="font-medium text-foreground">{manufacturerName}</span>
                 </p>
               )}
@@ -295,7 +295,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
               {traceId && (
                 <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">
-                  Pipeline trace: {traceId}
+                  {tDetail("pipelineTrace")} {traceId}
                 </p>
               )}
             </div>
@@ -310,7 +310,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-emerald-500" />
-                  Especificações com Autoridade
+                  {tDetail("enrichedSpecs")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -339,7 +339,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <div
                                 className={`text-xs font-medium ${getConfidenceColor(confidence)}`}
                               >
-                                {getConfidenceLabel(confidence)}
+                                {tDetail(getConfidenceLabelKey(confidence))}
                               </div>
                             </div>
                           </div>
@@ -365,7 +365,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                             <details className="mt-2">
                               <summary className="flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
                                 <ChevronDown className="h-3 w-3" />
-                                {evidence.length} fonte(s) de evidência
+                                {tDetail("evidenceSources", { count: evidence.length })}
                               </summary>
                               <div className="mt-2 space-y-2">
                                 {evidence.map((ev, i) => (
@@ -397,8 +397,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                                         {ev.url.length > 60 ? ev.url.slice(0, 60) + "..." : ev.url}
                                       </a>
                                       <div className="text-[10px] text-muted-foreground">
-                                        Obtido em:{" "}
-                                        {new Date(ev.retrievedAt).toLocaleString("pt-BR")}
+                                        {tDetail("retrievedAt")}{" "}
+                                        {new Date(ev.retrievedAt).toLocaleString(locale)}
                                       </div>
                                     </div>
                                   </div>
@@ -411,10 +411,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Dados enriquecidos em processamento. Este produto ainda não passou pelo pipeline
-                    de enriquecimento.
-                  </p>
+                  <p className="text-sm text-muted-foreground">{tDetail("noEnrichment")}</p>
                 )}
               </CardContent>
             </Card>
@@ -423,7 +420,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {plainAttrs.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Especificações adicionais</CardTitle>
+                  <CardTitle className="text-sm">{tDetail("additionalSpecs")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-2">
@@ -450,7 +447,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-sm">
                   <Store className="h-4 w-4" />
-                  {tDetail("offersTitle")}
+                  {tDetail("supplierOffers")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -478,14 +475,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
-                                  ? tDetail("offerStock", {
+                                  ? tDetail("inStockCount", {
                                       count: formatInventoryCount(offer.inventory, locale)
                                     })
-                                  : tDetail("noStock")}
+                                  : tDetail("outOfStockCount")}
                               </div>
                             </div>
                             <div className="text-right text-[10px] text-muted-foreground">
-                              <div>{tDetail("shippingFrom", { country: offer.shipsFromCountry })}</div>
+                              <div>{tDetail("shipsFrom")} {offer.shipsFromCountry}</div>
                               <div>
                                 {tDetail("fulfillmentDays", {
                                   min: offer.fulfillmentDaysMin,
@@ -523,12 +520,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
                       <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                        Produto enriquecido pelo pipeline
+                        {tDetail("enrichedBadge")}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {enrichedAttrs.length} atributos validados com evidências de{" "}
-                        {manufacturerName ?? "fabricante"}. Cada especificação tem origem rastreada
-                        e nível de confiança.
+                        {tDetail("enrichedDescription", {
+                          count: enrichedAttrs.length,
+                          manufacturer: manufacturerName ?? tDetail("noManufacturer")
+                        })}
                       </div>
                     </div>
                   </div>
@@ -548,11 +546,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         {/* Footer info */}
         <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
           <div>
-            SKU: <span className="font-mono">{product.sku}</span>
+            {tDetail("sku")} <span className="font-mono">{product.sku}</span>
           </div>
           {product.category?.description && (
             <div>
-              Nicho:{" "}
+              {tDetail("niche")}{" "}
               {(() => {
                 try {
                   return JSON.parse(product.category.description).nicheId ?? "—";
@@ -562,7 +560,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               })()}
             </div>
           )}
-          <div>Atualizado: {product.updatedAt.toLocaleString("pt-BR")}</div>
+          <div>{tDetail("updatedAt", { when: updatedAtFmt })}</div>
         </div>
       </div>
     </div>
