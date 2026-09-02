@@ -263,209 +263,281 @@
   "terms": {
     "title": "Términos de Uso",
     "toc": "Índice",
-    "updated": "Última actualización: 1 de septiembre de 2026 · Versión 2.0",
+    "updated": "Última actualización: 2 de septiembre de 2026 · Versión 2.0",
     "sections": [
       {
         "id": "identificacao",
-        "title": "1. Aceptación e identificación",
+        "title": "1. Presentación e identificación del operador",
         "body": [
-          "Estos Términos de Uso regulan el acceso y la utilización de la plataforma ShopFinder, incluyendo su sitio web, catálogo, búsqueda, comparación de productos, carrito, cuenta, atención al cliente y, cuando se indique expresamente en la interfaz, la intermediación de pedidos.",
-          "ShopFinder es operada por END ART Studios, inscrita en el CNPJ bajo el nº 45.370.930/0001-75, con domicilio en Osasco, São Paulo - Brasil. La atención general se realiza por el correo electrónico endart.studios@gmail.com. El canal de privacidad es endart.studios@gmail.com.",
-          "Al navegar, crear una cuenta o utilizar determinada funcionalidad, declaras que has leído estos Términos y la Política de Privacidad (/privacidade). Cuando la ley o la funcionalidad exijan aceptación, esta se producirá mediante una acción positiva, destacada y específica. La versión aceptada, la fecha, la hora y el identificador técnico de la operación podrán registrarse para prueba, seguridad y cumplimiento legal.",
-          "Si no estás de acuerdo con estos Términos, no utilices las funcionalidades contractuales de ShopFinder. La negativa a condiciones opcionales no impedirá el acceso a las funcionalidades que no dependan de ellas."
+          "Estos Términos de Uso regulan el acceso y la utilización de la plataforma ShopFinder, incluyendo el sitio, catálogo, búsqueda, filtros, comparación de productos, recomendaciones, carrito, cuenta, atención y demás funcionalidades disponibilizadas por la plataforma.",
+          "ShopFinder es operada por END ART Studios — CNPJ 45.370.930/0001-75, localización informada: Osasco, São Paulo — Brasil. Correo oficial: endart.studios@gmail.com. Sitio: https://shop-finder-taupe.vercel.app/",
+          "Para los fines de estos Términos, END ART Studios, ShopFinder, nosotros y nuestra plataforma se refieren al operador arriba identificado.",
+          "END ART Studios no posee dirección física de atención al público. Para comunicaciones, solicitudes, reclamaciones, cancelaciones y demás asuntos relacionados con ShopFinder, el canal oficial es el correo endart.studios@gmail.com. La indicación de \"Osasco, São Paulo — Brasil\" corresponde a la localización informada del operador y no representa una dirección postal para recepción presencial de documentos o mercancías."
+        ]
+      },
+      {
+        "id": "aceitacao",
+        "title": "2. Aceptación de los Términos",
+        "body": [
+          "Al acceder a ShopFinder, crear una cuenta, utilizar el catálogo, añadir productos al carrito, solicitar una recomendación o utilizar cualquier funcionalidad que dependa de aceptación, declaras que has leído estos Términos y la Política de Privacidad.",
+          "Cuando un flujo exija consentimiento o aceptación contractual, la aceptación se solicitará mediante una acción positiva, destacada y específica, sin casillas marcadas previamente. La versión aceptada, la fecha, la hora y los registros técnicos necesarios podrán conservarse para prueba, seguridad y cumplimiento de obligaciones legales.",
+          "Si no estás de acuerdo con estos Términos, no deberás crear cuenta ni utilizar las funcionalidades contractuales de la plataforma. La negativa a una finalidad opcional, como la comunicación promocional, no impedirá el uso de las funcionalidades que no dependan de ella."
         ]
       },
       {
         "id": "definicoes",
-        "title": "2. Definiciones",
-        "body": "Para estos Términos: ShopFinder significa la plataforma operada por END ART Studios. Usuario es la persona que accede o utiliza la plataforma. Consumidor es la persona física o jurídica que adquiere o utiliza producto o servicio como destinataria final, conforme a la legislación aplicable. Proveedor es el fabricante, importador, distribuidor, comerciante, marketplace u otro tercero responsable de la oferta. Oferta es la presentación de producto, precio, stock, plazo, envío, condiciones y demás información. Pedido es la solicitud de contratación registrada en el flujo de la plataforma. Checkout es el flujo electrónico de confirmación y pago, cuando ShopFinder lo pone a disposición."
-      },
-      {
-        "id": "natureza-papel",
-        "title": "3. Naturaleza y papel de ShopFinder",
+        "title": "3. Definiciones",
         "body": [
-          "ShopFinder ofrece catálogo, búsqueda, organización, comparación y recomendación de productos de proveedores terceros. En determinadas ofertas, la plataforma también podrá facilitar o intermediar el pedido, el pago, el envío a la entrega y la atención. La pantalla de la oferta deberá indicar si la contratación se realiza directamente con el proveedor, mediante redirección externa o por un flujo intermediado por ShopFinder.",
-          "La identificación contractual como comparadora o intermediaria no elimina los deberes legales derivados de la actuación efectivamente ejercida. END ART Studios responderá por los servicios propios que preste —incluyendo funcionamiento, seguridad, exhibición, procesamiento de información, atención e intermediación— en la medida de la legislación aplicable. El proveedor permanecerá responsable por el producto, por la exactitud de la información que suministre, por la entrega, garantía, vicios, asistencia y posventa, sin perjuicio de la eventual responsabilidad solidaria prevista en el Código de Defensa del Consumidor (CDC) brasileño.",
-          "No debe considerarse que ShopFinder es fabricante, importadora, propietaria, almacenista o transportista del producto, salvo indicación expresa en la oferta o actuación de hecho en sentido diverso. Las marcas y nombres exhibidos pertenecen a sus respectivos titulares."
+          "Para estos Términos, se aplican las siguientes definiciones:",
+          "ShopFinder: plataforma digital operada por END ART Studios para organización, búsqueda, comparación y, cuando se indique expresamente, intermediación de ofertas y pedidos.",
+          "Usuario: cualquier persona que acceda o utilice ShopFinder.",
+          "Consumidor: persona física o jurídica que adquiere o utiliza producto o servicio como destinataria final, conforme a la legislación aplicable.",
+          "Proveedor: fabricante, importador, distribuidor, comerciante, marketplace, revendedor u otro tercero responsable de una oferta o producto.",
+          "Oferta: presentación de producto o servicio, incluyendo características, precio, moneda, tipo de cambio, disponibilidad, envío, plazo, garantía, restricciones e identificación del proveedor.",
+          "Pedido: solicitud de contratación registrada por el usuario por medio del checkout o enviada al proveedor.",
+          "Checkout: flujo electrónico de revisión, confirmación y, cuando corresponda, pago de un pedido.",
+          "Contenido ShopFinder: código, interfaz, marca, textos, layout, bases organizadas, clasificaciones, scores, metodología, modelos, documentación, elementos visuales y demás materiales pertenecientes o licenciados a END ART Studios.",
+          "Contenido de terceros: informaciones, imágenes, marcas, descripciones, manuales, especificaciones, precios y materiales suministrados por fabricantes, proveedores, distribuidores, marketplaces u otras fuentes."
         ]
       },
       {
-        "id": "acesso-conta",
-        "title": "4. Acceso, cuenta y seguridad",
+        "id": "natureza-papel",
+        "title": "4. Naturaleza y papel de ShopFinder",
         "body": [
-          "La navegación por el catálogo puede estar abierta al público. La creación de cuenta, la contratación y el uso comercial podrán exigir información adicional y observancia de las reglas de capacidad civil. ShopFinder no dirige funcionalidades de compra a niños y podrá exigir confirmación de edad, identidad o autorización cuando legalmente sea necesario.",
-          "Debes suministrar datos veraces, completos y actualizados, mantener tus credenciales en secreto, utilizar una contraseña exclusiva e informar de inmediato cualquier sospecha de uso indebido. No puedes compartir la cuenta, intentar acceder a cuentas ajenas, eludir controles de seguridad, practicar fraude, insertar código malicioso ni utilizar la plataforma con fines ilícitos.",
-          "END ART Studios podrá solicitar verificación proporcional de identidad, limitar intentos, aplicar autenticación adicional y suspender temporalmente una cuenta para proteger al usuario, a los proveedores, a los pagos o a la plataforma. Siempre que sea posible y compatible con la seguridad, la empresa informará el motivo y permitirá aclaraciones o recurso."
+          "ShopFinder ofrece herramientas para localizar, organizar, comparar y presentar informaciones sobre productos de proveedores terceros. Algunas funcionalidades también pueden facilitar o intermediar el pedido, el pago, el envío a la entrega, la cancelación o la atención.",
+          "La página de cada oferta deberá indicar, conforme corresponda, si la compra se concluirá directamente con el proveedor, por redirección a entorno externo o por un flujo intermediado por ShopFinder. El proveedor responsable del producto deberá identificarse antes de la conclusión de la contratación.",
+          "END ART Studios no es fabricante, importadora, propietaria, almacenista ni transportista de los productos de terceros, salvo cuando la propia oferta indique expresamente actuación diversa. La empresa responde por los servicios que efectivamente preste, incluyendo funcionamiento de la plataforma, seguridad, exhibición de las informaciones, procesamiento técnico, atención e intermediación, dentro de los límites de la legislación aplicable.",
+          "La identificación de ShopFinder como comparadora o intermediaria no aleja derechos del consumidor ni impide la responsabilización de END ART Studios cuando su propia conducta, omisión, oferta, fallo de servicio o participación en la cadena de consumo así lo determine. Las responsabilidades internas entre END ART Studios y los proveedores no podrán usarse para reducir derechos legalmente asegurados al consumidor."
+        ]
+      },
+      {
+        "id": "cadastro-conta",
+        "title": "5. Registro, cuenta y seguridad",
+        "body": [
+          "La navegación por el catálogo puede disponibilizarse al público. La creación de cuenta, la contratación y determinadas funciones podrán depender de informaciones adicionales, verificación de identidad, confirmación de edad u otros controles proporcionales de seguridad.",
+          "El usuario debe suministrar informaciones verdaderas, completas y actualizadas, mantener sus credenciales en secreto, utilizar una contraseña exclusiva y comunicar de inmediato cualquier acceso no autorizado. El usuario no podrá compartir su cuenta, acceder a cuentas de terceros, crear identidad falsa, fraudar informaciones, introducir código malicioso, eludir controles ni utilizar la plataforma con finalidad ilícita.",
+          "END ART Studios podrá limitar intentos, exigir autenticación adicional, bloquear sesiones, suspender temporalmente o cerrar una cuenta cuando haya indicio razonable de fraude, intrusión, abuso, riesgo de seguridad, violación de estos Términos u obligación legal. Siempre que sea posible y compatible con la seguridad, informaremos el motivo y permitiremos aclaración o revisión.",
+          "El cierre de la cuenta no extingue pedidos, garantías, reclamaciones, solicitudes de cancelación, obligaciones legales, registros necesarios, derechos de titulares ni cláusulas que deban sobrevivir por su naturaleza."
         ]
       },
       {
         "id": "catalogo-ofertas",
-        "title": "5. Catálogo, ofertas e información",
+        "title": "6. Catálogo, ofertas y transparencia",
         "body": [
-          "ShopFinder busca presentar información clara, correcta, precisa y actualizada en lengua portuguesa. La oferta deberá identificar, cuando corresponda, al proveedor, el producto, características esenciales, origen, garantía, disponibilidad, plazo, modalidad de entrega, envío, tributos conocidos, restricciones, moneda, precio total y fecha/hora de la última actualización.",
-          "Los precios y la disponibilidad pueden variar. El precio en BRL será la referencia principal para los consumidores en Brasil. Si se muestra un valor en USD u otra moneda, se identificará claramente como referencia. La pantalla deberá informar el tipo de cambio utilizado, el momento de la conversión y eventuales tarifas, impuestos, costes de importación, envío o cargos no incluidos.",
-          "ShopFinder no podrá utilizar la expresión «en tiempo real», «precio real», «stock garantizado» o equivalente sin poseer un mecanismo compatible e indicación de timestamp. Incluso cuando la información provenga de un proveedor tercero, END ART Studios adoptará medidas razonables de actualización, monitoreo y corrección. El usuario debe confirmar el valor final, el proveedor y las condiciones del contrato antes de concluir la compra.",
-          "Si la oferta, publicidad o información suficientemente precisa difundida por ShopFinder se integra en la relación de consumo, se preservarán los derechos previstos en el CDC, inclusive la posibilidad de exigir el cumplimiento de la oferta, aceptar producto equivalente o rescindir la contratación con restitución y daños y perjuicios cuando corresponda."
+          "ShopFinder buscará presentar informaciones claras, correctas, precisas, ostensivas y actualizadas en lengua portuguesa. La oferta deberá mostrar, cuando corresponda, el proveedor, las características esenciales del producto, origen, estado, garantía, disponibilidad, precio, moneda, tipo de cambio, envío, tributos conocidos, plazo de entrega, restricciones, forma de pago y fecha u hora de la última actualización.",
+          "END ART Studios no deberá presentar como «en tiempo real», «precio real», «stock garantizado», «plazo garantizado» o expresión equivalente cualquier información que no sea actualizada por un mecanismo compatible. La existencia de actualización automática no impide que el precio, el stock o el plazo cambien posteriormente por acto del proveedor, fallo de integración, tipo de cambio o indisponibilidad de terceros.",
+          "El precio destinado a consumidores en Brasil se presentará prioritariamente en reales brasileños — BRL. Valores en USD u otra moneda se identificarán claramente como referencia. Cuando haya conversión, la interfaz informará el tipo de cambio utilizado, la fecha y hora de la conversión, eventual tarifa o spread conocido, envío, tributos, costes de importación y demás cargos no incluidos.",
+          "El usuario deberá conferir el precio final, el proveedor, la disponibilidad, el plazo, el envío, la garantía y las restricciones antes de la confirmación. Esa conferencia no aleja la responsabilidad legal por oferta o información incorrecta divulgada por ShopFinder o por el proveedor.",
+          "Si una oferta suficientemente precisa se difunde y se integra en una relación de consumo, se preservarán los derechos previstos en el Código de Defensa del Consumidor, inclusive las alternativas legalmente disponibles en caso de rechazo o incumplimiento de la oferta."
         ]
       },
       {
         "id": "ranking-scores",
-        "title": "6. Ranking, recomendaciones y scores",
+        "title": "7. Ranking, recomendaciones y puntuaciones",
         "body": [
-          "ShopFinder puede ordenar resultados usando relevancia, precio, disponibilidad, compatibilidad, calidad de los datos, actualización, preferencias y otros criterios. La plataforma podrá utilizar scores editoriales, como Authority y Coverage, para indicar confianza o completitud de los datos.",
-          "Estos scores son indicadores informativos, no certificaciones, garantías de calidad, respaldo del fabricante ni promesa de desempeño. La página correspondiente deberá informar la metodología general, las fuentes, la fecha de actualización, las limitaciones, la posibilidad de error y la eventual influencia de remuneración, publicidad o destacado comercial. El contenido patrocinado se identificará de manera inmediata.",
-          "El usuario puede impugnar información, compatibilidad, clasificación o recomendación por el canal de atención. ShopFinder analizará la solicitud, corregirá datos comprobadamente incorrectos cuando sea posible y, cuando haya decisión automatizada que afecte los intereses del titular, ofrecerá revisión humana e información dentro de los límites de la LGPD y de los secretos comerciales legítimos."
+          "ShopFinder puede ordenar resultados considerando relevancia, precio, disponibilidad, actualización, compatibilidad, completitud de los datos, preferencias del usuario u otros criterios informados en la interfaz.",
+          "La plataforma puede utilizar indicadores como Authority, Coverage, confianza de especificaciones o compatibilidad. Estos indicadores son herramientas informativas y no representan certificación, auditoría independiente, garantía de calidad, autenticidad, seguridad, procedencia, respaldo del fabricante ni promesa de desempeño.",
+          "La metodología resumida, las fuentes, la fecha de actualización, las limitaciones y la eventual influencia de publicidad, remuneración o destacado comercial deberán informarse de modo accesible. Cualquier contenido patrocinado, preferencia comercial o resultado pagado deberá identificarse de inmediato como publicidad, patrocinio o destacado comercial.",
+          "El usuario puede impugnar una clasificación, especificación, compatibilidad o recomendación por el correo endart.studios@gmail.com. END ART Studios analizará la solicitud, corregirá informaciones comprobadamente incorrectas cuando sea posible y ofrecerá revisión humana cuando haya decisión automatizada que afecte los intereses del titular, observados los secretos comerciales e industriales legítimos."
         ]
       },
       {
         "id": "pedido-checkout",
-        "title": "7. Pedido, checkout y formación del contrato",
+        "title": "8. Pedido, checkout y formación de la contratación",
         "body": [
-          "La oferta identificará quién es el proveedor y dónde se formará el contrato. Cuando el checkout ocurra en entorno de un tercero, el usuario será redirigido y deberá consultar los términos y la política del tercero. Cuando el checkout ocurra en ShopFinder, la plataforma mostrará un resumen del pedido antes de la confirmación, permitiendo revisar y corregir errores.",
-          "El clic final debe informar de manera ostensiva que existe obligación de pago, cuando esa sea la consecuencia. La confirmación del pedido no significa necesariamente aceptación definitiva si la oferta depende de validación legal, antifraude, stock o pago; cualquier condición de esa naturaleza debe aparecer antes de la contratación y aplicarse de buena fe, sin alejar los derechos del consumidor.",
-          "Tras la contratación, el consumidor recibirá confirmación inmediata y copia o acceso persistente al contrato, pedido, oferta, precio, proveedor, condiciones de entrega, pago, cancelación y atención. Los registros se conservarán por el período necesario para la relación, las obligaciones legales, la seguridad y la defensa de derechos."
+          "La oferta informará quién es el proveedor y dónde se concluirá la contratación. Si el checkout ocurre en un entorno externo, el usuario será redirigido y deberá consultar los términos, la política de privacidad y las condiciones del tercero.",
+          "Si el checkout ocurre en ShopFinder, la plataforma presentará un resumen del pedido antes de la confirmación, permitiendo que el usuario revise y corrija errores. El botón final deberá informar de manera ostensiva cuando su accionamiento genere obligación de pago.",
+          "La aprobación del pago no podrá usarse para ocultar condición esencial de la oferta. Si la contratación depende de validación de stock, antifraude, pago o requisito legal, esa condición deberá presentarse antes de la confirmación y aplicarse de forma objetiva, transparente y compatible con la buena fe y con los derechos del consumidor.",
+          "Tras la contratación, el consumidor recibirá confirmación y acceso al pedido o contrato en un medio que permita conservación y reproducción, conteniendo, conforme corresponda, proveedor, producto, cantidad, precio, moneda, tipo de cambio, envío, plazo, pago, cancelación, garantía y atención."
         ]
       },
       {
         "id": "pagamentos",
-        "title": "8. Pagos",
+        "title": "9. Pagos",
         "body": [
-          "Cuando ShopFinder lo ponga a disposición, el pago será procesado por Stripe o por el procesador indicado en la pantalla. El procesador podrá tratar datos de pago, fraude, autenticación, chargeback y reembolso conforme a sus propios términos y políticas, además de las instrucciones contractuales recibidas.",
-          "ShopFinder no solicitará contraseñas bancarias ni el código completo de la tarjeta por correo electrónico. La empresa no almacenará el número completo de la tarjeta salvo que la arquitectura técnica y el cumplimiento aplicable autoricen expresamente esa operación. El usuario debe confirmar el dominio y la pantalla de pago antes de introducir datos.",
-          "La aprobación del pago no elimina las obligaciones de entrega, garantía, cancelación o arrepentimiento. En caso de fallo, fraude, cobro indebido o reembolso, ShopFinder cooperará con el consumidor, el proveedor y el procesador, preservando las medidas que correspondan."
+          "Cuando ShopFinder disponibilice pago propio, el procesamiento será realizado por Stripe o por el procesador indicado en la pantalla. El procesador podrá tratar datos de pago, autenticación, prevención de fraude, chargeback, conciliación y reembolso conforme a sus propios términos y a las instrucciones aplicables.",
+          "END ART Studios no solicitará contraseñas bancarias, códigos de autenticación ni el número completo de tarjeta por correo electrónico. La empresa no almacenará el número completo de la tarjeta, salvo si la arquitectura técnica efectivamente utilizada permite esa operación y se observan los requisitos legales y de seguridad aplicables.",
+          "La aprobación de la transacción no elimina derechos relativos a entrega, vicio, defecto, garantía, cobro indebido, cancelación o arrepentimiento. En caso de fallo, fraude o reembolso, ShopFinder cooperará con el consumidor, el proveedor y el procesador de pago."
         ]
       },
       {
         "id": "entrega-garantia",
-        "title": "9. Entrega, garantía, vicios y posventa",
+        "title": "10. Entrega, garantía, vicios y posventa",
         "body": [
-          "El proveedor indicado en la oferta es responsable de preparar, despachar y entregar el producto conforme a la oferta, así como de la garantía, vicios, defectos, asistencia técnica, repuestos e información de seguridad, salvo que ShopFinder asuma expresamente alguna de esas funciones.",
-          "Plazos, costes, transportista, rastreo, riesgos de transporte y restricciones territoriales deben informarse antes de la contratación. La falta de stock, el retraso o la divergencia no autoriza a la empresa a simplemente cancelar derechos del consumidor. END ART Studios facilitará el contacto, registrará la reclamación y, cuando participe del flujo de pedido o pago, cooperará con la solución y el resarcimiento.",
-          "La garantía legal y los derechos de reclamación previstos en el CDC no quedan excluidos por estos Términos. La garantía contractual, si se ofrece, es complementaria a la legal y deberá presentarse por escrito por el responsable."
+          "El proveedor indicado en la oferta es responsable de preparar, despachar y entregar el producto conforme a la oferta, así como de la garantía, vicios, defectos, asistencia, repuestos, manuales, informaciones de seguridad y posventa, salvo que ShopFinder asuma expresamente alguna de esas funciones.",
+          "La oferta deberá indicar plazo, costes, transportista o modalidad de entrega, rastreo cuando esté disponible y restricciones territoriales. La falta de stock, el retraso o la divergencia entre oferta y producto no autorizan a la plataforma ni al proveedor a simplemente eliminar derechos legales del consumidor.",
+          "END ART Studios facilitará el contacto, registrará reclamaciones y, cuando participe del pedido o pago, cooperará con la solución, la cancelación y el resarcimiento. La garantía legal y los plazos de reclamación previstos en la legislación no quedan excluidos por estos Términos. La garantía contractual, cuando exista, es complementaria a la legal y deberá presentarse por escrito por el responsable."
         ]
       },
       {
         "id": "cancelamento-arrependimento",
-        "title": "10. Cancelación y derecho de arrepentimiento",
+        "title": "11. Cancelación y derecho de arrepentimiento",
         "body": [
-          "El consumidor puede desistir de la contratación realizada fuera del establecimiento comercial en el plazo legal de siete días, contado conforme al art. 49 del CDC, sin necesidad de justificar la decisión y sin costes indebidos. El ejercicio debe ser posible por la misma herramienta utilizada para la contratación o por un canal electrónico equivalente, sin exigir que el consumidor primero localice o contacte al proveedor.",
-          "Para solicitar la cancelación, utiliza el botón o formulario disponible en el pedido en /conta/pedidos o envía un mensaje a endart.studios@gmail.com, informando, si es posible, el número de pedido y un contacto. La ausencia de alguna información no impedirá el ejercicio del derecho cuando ShopFinder pueda identificar la contratación.",
-          "ShopFinder proporcionará confirmación de recibo y protocolo. La solicitud se enviará inmediatamente al proveedor y al procesador de pago, cuando corresponda, para impedir el lanzamiento o proporcionar el reembolso. Los valores debidos se devolverán de inmediato, en la forma legal aplicable, incluyendo el envío cuando corresponda. Los contratos accesorios se resolverán sin carga indebida.",
-          "Los derechos de cancelación por retraso, vicio, defecto, incumplimiento o cobro indebido no se limitan al plazo de arrepentimiento. Las reclamaciones deben ser recibidas por ShopFinder y reenviadas sin obligar al consumidor a repetir indefinidamente los hechos a terceros."
+          "El consumidor puede desistir de la contratación realizada fuera del establecimiento comercial en el plazo legal de siete días, contado conforme el art. 49 del Código de Defensa del Consumidor, sin necesidad de justificar la decisión y sin costes indebidos.",
+          "El pedido podrá hacerse por la misma herramienta utilizada para contratar, por el botón o formulario disponible en el pedido o por el correo endart.studios@gmail.com. No se exigirá que el consumidor primero localice, contacte u obtenga autorización del proveedor. La falta de número de pedido no impedirá la solicitud cuando ShopFinder pueda identificar la contratación por otros datos.",
+          "END ART Studios proporcionará confirmación de recibo y protocolo, enviará la solicitud al proveedor y comunicará al procesador de pago cuando corresponda. Se adoptarán las medidas necesarias para impedir el lanzamiento o proporcionar el reembolso de los valores debidos. El consumidor tendrá derecho a la restitución en la forma de la ley, incluyendo el envío cuando corresponda.",
+          "El arrepentimiento podrá rescindir contratos accesorios relacionados con la contratación principal, sin carga indebida al consumidor. Los derechos derivados de retraso, vicio, defecto, cobro indebido o incumplimiento de la oferta no se limitan al plazo de arrepentimiento."
         ]
       },
       {
         "id": "atendimento",
-        "title": "11. Atención al consumidor",
+        "title": "12. Atención al consumidor",
         "body": [
-          "El canal general es endart.studios@gmail.com, con plazo operacional de confirmación de recibo de hasta 2 días hábiles y respuesta conforme al plazo legal o reglamentario aplicable. ShopFinder deberá disponibilizar un canal electrónico eficaz para dudas, informaciones, reclamaciones, suspensión y cancelación.",
-          "Para pedidos intermediados, la atención debe permitir consulta del estado, identificación del proveedor, pago, entrega, reembolso, reclamación y documentos. El plazo de respuesta de ShopFinder no reduce los plazos legales del proveedor ni los derechos del consumidor. El consumidor podrá utilizar órganos administrativos, Procon, consumidor.gov.br, el Poder Judicial u otros medios previstos en la ley."
+          "El canal oficial de atención es endart.studios@gmail.com. END ART Studios buscará confirmar el recibo en hasta dos días hábiles y responderá las solicitudes en los plazos legales y reglamentarios aplicables. Ese plazo operacional no reduce derechos del consumidor ni sustituye plazos legales del proveedor.",
+          "La atención deberá permitir, conforme la funcionalidad utilizada, dudas, informaciones, reclamaciones, consulta de pedido, cancelación, arrepentimiento, suspensión de cuenta, corrección de datos, solicitudes de privacidad, problemas de pago y comunicación de vulnerabilidades.",
+          "En pedidos intermediados, ShopFinder podrá reenviar la demanda al proveedor, pero no exigirá que el consumidor repita indefinidamente la misma información. El consumidor mantiene el derecho de recurrir al Procon, consumidor.gov.br, a la ANPD cuando corresponda, al Poder Judicial u a otros órganos y medios previstos en la ley."
         ]
       },
       {
-        "id": "fornecedores-terceiros",
-        "title": "12. Proveedores y contenido de terceros",
+        "id": "fornecedores",
+        "title": "13. Proveedores terceros",
         "body": [
-          "Los proveedores solo podrán integrar la plataforma mediante aceptación de un contrato propio y suministro de información de identificación, contacto, catálogo y conformidad. El contrato deberá obligarlos a mantener precios, stock, especificaciones, plazos, origen y garantías correctos; atender a los consumidores; procesar arrepentimientos y reembolsos; cooperar con incidentes; respetar marcas y derechos de autor; y observar la legislación aplicable.",
-          "ShopFinder podrá suspender o retirar oferta o proveedor ante fraude, falsedad, riesgo para la seguridad, reclamaciones recurrentes, incumplimiento, violación de derechos o determinación legal. La medida podrá ser inmediata cuando sea necesaria para la protección de usuarios o de la plataforma. La suspensión contractual del proveedor no elimina derechos del consumidor ni impide la averiguación de responsabilidades.",
-          "El proveedor concede a ShopFinder una licencia limitada, no exclusiva, mundial y gratuita, durante la integración, para alojar, reproducir, adaptar técnicamente, traducir, resumir y exhibir los materiales necesarios para la oferta. El proveedor declara poseer autorización para suministrar el contenido e indemnizará a END ART Studios por reclamaciones derivadas de violación que le sea imputable, sin perjudicar derechos de terceros o consumidores."
+          "Los proveedores deberán suministrar informaciones de identificación, contacto, catálogo, precios, stock, plazos, garantías y conformidad. La integración depende de un contrato propio con END ART Studios.",
+          "El proveedor deberá mantener informaciones verdaderas; cumplir la oferta; entregar productos adecuados y seguros; atender a los consumidores; respetar garantías y arrepentimiento; procesar reembolsos; cooperar con incidentes; observar legislación fiscal, de consumo, de protección de datos y de propiedad intelectual; y suministrar documentos solicitados por END ART Studios.",
+          "END ART Studios podrá suspender o retirar oferta o proveedor en caso de fraude, falsedad, riesgo para la seguridad, violación de derechos, reclamaciones recurrentes, incumplimiento contractual, indisponibilidad no informada o determinación legal. Medidas urgentes pueden adoptarse inmediatamente para proteger usuarios, terceros o la plataforma.",
+          "La suspensión o retirada del proveedor no elimina derechos del consumidor, no impide reclamaciones y no constituye renuncia de END ART Studios a indemnizaciones, regreso o demás medidas contractuales que correspondan contra el proveedor."
         ]
       },
       {
-        "id": "ia-automacao",
-        "title": "13. Inteligencia artificial y automatización",
+        "id": "conteudo-usuarios",
+        "title": "14. Contenido enviado por usuarios",
         "body": [
-          "ShopFinder puede usar software, reglas, modelos estadísticos e inteligencia artificial para organizar el catálogo, normalizar especificaciones, resumir información, detectar incompatibilidades, prevenir fraude y recomendar productos. Estas herramientas pueden contener errores, usar datos de fuentes diferentes y no sustituyen la verificación del usuario, del proveedor o de un profesional cualificado.",
-          "Ninguna recomendación es garantía de compatibilidad, seguridad, desempeño, autenticidad, procedencia o idoneidad para una finalidad específica. El usuario debe conferir manuales, requisitos, voltaje, dimensiones, garantía, certificaciones e informaciones oficiales antes de comprar o instalar un producto.",
-          "END ART Studios no realizará decisión exclusivamente automatizada para imponer obligación jurídica, negar acceso esencial o definir crédito, salvo que exista fundamento legal y transparencia adecuados. Cuando el tratamiento automatizado afecte los intereses del titular, este podrá solicitar información sobre criterios y procedimientos y revisión humana, observados los secretos comerciales e industriales legítimos."
-        ]
-      },
-      {
-        "id": "privacidade-dados",
-        "title": "14. Privacidad y protección de datos",
-        "body": [
-          "El tratamiento de datos personales sigue la Política de Privacidad (/privacidade), que integra estos Términos. END ART Studios tratará los datos conforme a finalidades, bases legales, principios de necesidad, seguridad, transparencia y prevención, y compartirá solo lo necesario con procesadores de pago, proveedores, alojamiento, base de datos, soporte, IA, autoridades y otros destinatarios informados.",
-          "Las cookies, localStorage, sessionStorage y tecnologías semejantes se tratan conforme a la Política de Cookies (/cookies). El usuario no debe enviar datos sensibles innecesarios, credenciales, secretos ni datos de terceros sin autorización."
+          "El usuario es responsable del contenido que envíe a ShopFinder, incluyendo evaluaciones, comentarios, mensajes, imágenes, denuncias e informaciones insertas en solicitudes. El usuario declara poseer los derechos necesarios, que el contenido es lícito y que su publicación no viola privacidad, propiedad intelectual, secreto comercial, honor ni derechos de terceros.",
+          "El usuario concede a END ART Studios una licencia no exclusiva, mundial, gratuita, limitada, revocable cuando jurídicamente corresponda y válida por el tiempo necesario a la finalidad para alojar, almacenar, reproducir, adaptar técnicamente, moderar y exhibir el contenido en el contexto de ShopFinder. La licencia no autoriza uso publicitario incompatible con la finalidad original sin base legal o autorización adicional cuando sea necesaria.",
+          "END ART Studios podrá retirar, ocultar o restringir contenido que viole la ley, estos Términos, derechos de terceros, seguridad o reglas de integridad, preservando evidencias cuando sea necesario. La retirada no representa reconocimiento automático de responsabilidad."
         ]
       },
       {
         "id": "propriedade-intelectual",
-        "title": "15. Propiedad intelectual",
+        "title": "15. Propiedad intelectual de END ART Studios",
         "body": [
-          "La marca ShopFinder, el nombre, el diseño, el código, los textos propios, la organización del catálogo, la interfaz, las bases de datos y demás elementos desarrollados por END ART Studios están protegidos por la legislación aplicable. Estos Términos no transfieren propiedad al usuario.",
-          "El usuario recibe una licencia limitada, personal, revocable y no exclusiva para utilizar la plataforma de acuerdo con estos Términos. Está prohibido copiar, modificar, distribuir, vender, realizar ingeniería inversa, extraer datos a escala, usar robots no autorizados, retirar avisos o explotar comercialmente elementos de ShopFinder, salvo autorización escrita o hipótesis legal indisponible.",
-          "Las marcas, logotipos, fotografías, manuales, especificaciones y contenidos de proveedores o fabricantes pertenecen a sus respectivos titulares. Su exhibición no significa licencia amplia, patrocinio, autenticidad ni respaldo."
+          "La marca ShopFinder, el nombre END ART Studios, los signos distintivos, el diseño, la identidad visual, los textos, el código-fuente, el código ejecutable, la arquitectura, la interfaz, la organización del catálogo, las taxonomías, las bases de datos, los modelos, los prompts internos, las metodologías, los scores, la documentación, los flujos, las imágenes propias y demás elementos desarrollados o licenciados por END ART Studios están protegidos por la legislación aplicable y permanecen bajo titularidad de END ART Studios o de sus respectivos licenciantes.",
+          "El acceso a ShopFinder concede solamente una licencia limitada, personal, no exclusiva, intransferible, revocable y no sublicenciable para utilización de la plataforma conforme a estos Términos. Ningún derecho de propiedad, explotación comercial, reproducción, distribución ni modificación se transfiere al usuario.",
+          "Está prohibido, sin autorización previa y escrita de END ART Studios:",
+          "1. copiar, reproducir, republicar, vender, alquilar, sublicenciar, distribuir o explotar comercialmente cualquier parte de ShopFinder;",
+          "2. extraer, recolectar, indexar, replicar o reutilizar datos, páginas, imágenes, especificaciones, precios, scores o resultados a escala, por robots, crawlers, scrapers, APIs no autorizadas o herramientas automatizadas;",
+          "3. realizar ingeniería inversa, descompilar, desmontar, traducir, adaptar o intentar descubrir el código, arquitectura, modelos, prompts, pesos, reglas o lógica interna de la plataforma;",
+          "4. eludir autenticación, límites de petición, controles antifraude, mecanismos de seguridad, paywalls, bloqueos técnicos o reglas de acceso;",
+          "5. utilizar ShopFinder o sus datos para entrenar, ajustar, evaluar, validar o alimentar modelo de inteligencia artificial, base de datos, producto competidor o sistema de recomendación;",
+          "6. retirar avisos de derechos de autor, marcas, licencias, metadatos, atribuciones o mecanismos de protección;",
+          "7. utilizar la marca ShopFinder o END ART Studios de modo que sugiera afiliación, patrocinio, certificación, autorización o respaldo inexistente;",
+          "8. registrar dominio, perfil, aplicación, extensión o identificador que reproduzca o imite la marca, identidad o apariencia de ShopFinder;",
+          "9. usar informaciones de proveedores o fabricantes para crear publicidad engañosa, ofertas falsas, fraude, phishing, malware o violación de derechos de terceros; y",
+          "10. acceder o utilizar funcionalidades internas, endpoints, credenciales, tokens, prompts o herramientas de administración sin autorización expresa.",
+          "El uso permitido de citas, enlaces, hechos públicos o materiales bajo licencia de terceros deberá respetar la legislación, los términos de la licencia, la atribución y los límites de la finalidad. La extracción a escala no se autoriza por el simple hecho de que el contenido esté públicamente accesible.",
+          "15.1 Medidas en caso de uso indebido: en caso de violación, END ART Studios podrá suspender o cerrar accesos, revocar tokens, limitar peticiones, retirar contenido, bloquear agentes automatizados, notificar a proveedores, solicitar preservación de registros, exigir cesación, buscar indemnización por daños y perjuicios, requerir medidas urgentes y adoptar providencias civiles, administrativas o penales que correspondan.",
+          "Las prohibiciones de esta sección no impiden usos permitidos por la ley, investigación de seguridad realizada de forma responsable y previamente autorizada, ni derechos legalmente indisponibles. Solicitudes de autorización deben enviarse a endart.studios@gmail.com."
         ]
       },
       {
-        "id": "direitos-autorais",
-        "title": "16. Notificaciones de derechos de autor y retirada",
+        "id": "diretrizes-ia",
+        "title": "16. Directrices de uso de inteligencia artificial",
         "body": [
-          "El titular o representante autorizado que alegue violación debe enviar comunicación a endart.studios@gmail.com, conteniendo identificación de la obra, URL o localización del contenido, descripción de la violación, datos de contacto, declaración de buena fe, declaración de titularidad o autorización y firma física o electrónica.",
-          "ShopFinder analizará la notificación, podrá solicitar información adicional, preservar evidencias, suspender temporalmente el material y comunicar al responsable para presentar aclaración o contranotificación. Las retiradas ocurrirán en plazo razonable y proporcional, sin reconocimiento automático de responsabilidad. La expresión «DMCA» solo deberá usarse si END ART Studios mantiene procedimiento y agente designado para la legislación de los Estados Unidos; en Brasil se aplicará la legislación brasileña y los procedimientos compatibles."
+          "ShopFinder puede utilizar herramientas propias o de terceros para organización del catálogo, normalización de especificaciones, resumen de informaciones, detección de incompatibilidades, recomendaciones, clasificación, atención, seguridad y análisis de calidad.",
+          "Las herramientas de IA de ShopFinder se disponibilizan solamente para las finalidades e interfaces indicadas por END ART Studios. El usuario no recibe autorización para copiar, exportar, capturar a escala, reproducir, revender, redistribuir, manipular, probar abusivamente, hacer ingeniería inversa, descubrir prompts, extraer respuestas a escala ni utilizar cualquier salida para entrenar o perfeccionar herramienta competidora.",
+          "El usuario no podrá insertar en herramientas de END ART Studios:",
+          "1. datos personales innecesarios, datos personales sensibles, credenciales, claves, tokens, secretos comerciales o informaciones confidenciales de terceros;",
+          "2. contenido ilícito, malicioso, fraudulento, discriminatorio, difamatorio o destinado a causar daño;",
+          "3. instrucciones para eludir controles, obtener informaciones internas, exfiltrar datos, revelar prompts, alterar reglas o acceder a funciones administrativas;",
+          "4. material protegido por derechos de terceros sin autorización; o",
+          "5. datos sujetos a obligación de sigilo incompatible con el uso de la herramienta.",
+          "El usuario no podrá utilizar salidas de ShopFinder para tomar decisiones de alto impacto sobre personas, suministrar asesoramiento médico, jurídico o financiero, certificar seguridad de producto, declarar autenticidad, practicar fraude, crear publicidad engañosa ni atribuir a END ART Studios una garantía que no haya sido expresamente ofrecida.",
+          "Las salidas de IA pueden contener errores, omisiones, desactualizaciones o asociaciones incorrectas. Recomendaciones, compatibilidad, puntuaciones, resúmenes y clasificaciones no constituyen garantía de desempeño, autenticidad, seguridad, procedencia ni adecuación a finalidad específica. El usuario debe conferir manuales, requisitos, voltaje, dimensiones, garantía, certificaciones e informaciones oficiales antes de comprar, instalar o utilizar producto.",
+          "END ART Studios podrá registrar entradas técnicas, salidas, feedback, incidentes y métricas de seguridad en la medida necesaria a la prestación, auditoría, mejora, prevención de abuso y defensa de derechos, conforme la Política de Privacidad. Los datos personales enviados a proveedores de IA serán minimizados y tratados conforme contratos, configuraciones de retención y bases legales aplicables. END ART Studios no autoriza el entrenamiento de modelos de terceros con datos personales de usuarios sin fundamento jurídico, transparencia y controles apropiados.",
+          "END ART Studios podrá suspender el acceso a las herramientas de IA cuando detecte abuso, automatización indebida, intento de extracción, prompt injection, violación de propiedad intelectual, riesgo de seguridad o uso incompatible con estos Términos."
+        ]
+      },
+      {
+        "id": "privacidade-dados",
+        "title": "17. Privacidad y protección de datos",
+        "body": [
+          "El tratamiento de datos personales sigue la Política de Privacidad (/privacidade), que integra estos Términos. END ART Studios tratará los datos conforme la Ley General de Protección de Datos, el Marco Civil de Internet, los principios de necesidad, finalidad, transparencia, seguridad y prevención y las bases legales aplicables.",
+          "Las cookies, localStorage, sessionStorage y tecnologías semejantes se tratarán conforme la Política de Cookies (/cookies), cuando esté disponible. El usuario podrá ejercer sus derechos por el canal de privacidad indicado en la Política de Privacidad o por el correo endart.studios@gmail.com hasta que se divulgue canal específico del encargado.",
+          "END ART Studios no vende datos personales. Las comparticiones con procesadores de pago, proveedores, alojamiento, base de datos, soporte, seguridad, IA, autoridades u otros destinatarios ocurrirán solamente cuando sean necesarias, proporcionales y compatibles con la finalidad informada."
+        ]
+      },
+      {
+        "id": "pi-terceiros",
+        "title": "18. Propiedad intelectual de terceros",
+        "body": [
+          "Marcas, logotipos, fotografías, manuales, textos, especificaciones, códigos y demás materiales de fabricantes, proveedores, marketplaces y otras fuentes pertenecen a sus respectivos titulares. Su exhibición en ShopFinder no representa propiedad, licencia amplia, autenticidad, patrocinio ni respaldo de END ART Studios.",
+          "ShopFinder podrá recibir licencia limitada del proveedor para alojar, reproducir, adaptar técnicamente, traducir, resumir y exhibir materiales necesarios a la oferta. El proveedor deberá poseer autorización para suministrar esos materiales y responderá por reclamaciones derivadas de violación que le sea imputable."
+        ]
+      },
+      {
+        "id": "notificacoes-remocao",
+        "title": "19. Notificaciones de violación y retirada",
+        "body": [
+          "El titular o representante autorizado que alegue violación de derechos podrá enviar comunicación a endart.studios@gmail.com, conteniendo identificación de la obra o derecho, URL o localización del contenido, descripción de la violación, datos de contacto, declaración de titularidad o autorización, declaración de buena fe y firma física o electrónica.",
+          "END ART Studios podrá solicitar informaciones adicionales, preservar evidencias, restringir temporalmente el material, notificar al responsable y permitir aclaración o contranotificación. El análisis ocurrirá en plazo razonable y proporcional, sin obligación de reconocer automáticamente la alegación.",
+          "END ART Studios no declara adoptar el procedimiento de la DMCA de los Estados Unidos, salvo si publica agente y procedimiento específicos para ese fin. Para contenidos y relaciones sujetos a Brasil, se aplicarán la legislación brasileña y los procedimientos compatibles."
         ]
       },
       {
         "id": "disponibilidade-seguranca",
-        "title": "17. Disponibilidad, mantenimiento y seguridad",
+        "title": "20. Disponibilidad, mantenimiento y seguridad",
         "body": [
-          "ShopFinder busca mantener la plataforma disponible y segura, pero no garantiza operación ininterrumpida, ausencia absoluta de errores, disponibilidad permanente de proveedor ni actualización instantánea de todas las ofertas. Podrán ocurrir mantenimiento, indisponibilidad de terceros, fallos de red, ataques, caso fortuito o fuerza mayor.",
-          "END ART Studios adoptará medidas razonables de seguridad y responderá conforme a la ley por fallos propios. El usuario no debe intentar violar controles, explotar vulnerabilidades ni sobrecargar la plataforma. Las vulnerabilidades pueden comunicarse al canal de soporte, sin incluir datos personales ni código malicioso."
+          "ShopFinder busca mantener disponibilidad, integridad y seguridad razonables, pero no garantiza operación ininterrumpida, ausencia absoluta de errores, disponibilidad permanente de proveedor ni actualización instantánea de todas las ofertas.",
+          "Pueden ocurrir mantenimiento, indisponibilidad de red, fallo de integración, fallo de proveedor, ataque, caso fortuito o fuerza mayor. END ART Studios adoptará medidas razonables y responderá conforme la ley por fallos propios.",
+          "El usuario no podrá probar, explotar, sobrecargar ni divulgar vulnerabilidad de forma irresponsable. Las vulnerabilidades deben comunicarse a endart.studios@gmail.com sin incluir datos personales innecesarios, credenciales, código malicioso ni informaciones obtenidas ilícitamente."
         ]
       },
       {
         "id": "limitacao-responsabilidade",
-        "title": "18. Limitación de responsabilidad",
+        "title": "21. Limitación de responsabilidad",
         "body": [
-          "Nada en estos Términos excluye o limita responsabilidad que no pueda excluirse por la legislación, incluyendo derechos del consumidor, responsabilidad por acto propio, dolo, culpa cuando corresponda, seguridad, protección de datos, propiedad intelectual y obligaciones derivadas de la oferta.",
-          "En la medida permitida por la ley, END ART Studios no responde por acto exclusivo de proveedor, fabricante, transportista, procesador de pago, marketplace externo u otro tercero fuera de su control, siempre que no haya contribuido al daño por acción u omisión propia y haya cumplido sus deberes legales de información, selección, monitoreo y atención.",
-          "Ninguna limitación se interpretará como transferencia al consumidor de obligación legal de ShopFinder, exigencia de renuncia, impedimento de acción judicial, exclusión del derecho de arrepentimiento ni alejamiento de la responsabilidad solidaria cuando caracterizada."
+          "Nada en estos Términos excluye o limita responsabilidad que no pueda excluirse por la legislación, incluyendo derechos del consumidor, responsabilidad por acto propio, dolo, culpa cuando corresponda, fallos de seguridad, protección de datos, propiedad intelectual y obligaciones derivadas de la oferta.",
+          "En la medida permitida por la ley, END ART Studios no responderá por acto exclusivo de proveedor, fabricante, transportista, procesador de pago, marketplace externo u otro tercero fuera de su control, siempre que no haya contribuido al daño por acción u omisión propia y haya cumplido sus deberes legales de información, atención, seguridad y cooperación.",
+          "Ninguna limitación se interpretará como transferencia al consumidor de obligación legal de ShopFinder, exclusión del derecho de arrepentimiento, renuncia a indemnización legal, impedimento de acción judicial ni alejamiento de la responsabilidad solidaria cuando caracterizada."
         ]
       },
       {
         "id": "suspensao-encerramento",
-        "title": "19. Suspensión y cierre",
+        "title": "22. Suspensión y cierre",
         "body": [
-          "END ART Studios podrá suspender o cerrar cuenta o acceso cuando haya violación de estos Términos, fraude, riesgo de seguridad, obligación legal, abuso, incumplimiento o uso incompatible con la plataforma. Siempre que sea posible, habrá aviso y oportunidad proporcional de aclaración; las medidas urgentes podrán ocurrir de inmediato.",
-          "El usuario puede cerrar la cuenta por el canal de atención. El cierre no cancela automáticamente pedidos, garantías, reclamaciones, reembolsos, derechos de arrepentimiento ya ejercidos, obligaciones legales, registros necesarios ni cláusulas que por su naturaleza deban sobrevivir."
+          "END ART Studios podrá suspender o cerrar acceso, cuenta o herramienta cuando haya violación de estos Términos, fraude, riesgo de seguridad, uso indebido de IA, scraping no autorizado, violación de propiedad intelectual, obligación legal, abuso o incumplimiento.",
+          "Siempre que sea posible, END ART Studios informará el motivo y ofrecerá oportunidad proporcional de aclaración. Medidas urgentes podrán tomarse de inmediato para prevenir daño, fraude, fuga, ataque o violación continuada.",
+          "El usuario puede solicitar el cierre de la cuenta por el correo endart.studios@gmail.com. El cierre no cancela automáticamente pedidos, garantías, reclamaciones, reembolsos, derechos de arrepentimiento ni obligaciones legales."
         ]
       },
       {
         "id": "disputas",
-        "title": "20. Disputas y atención previa",
+        "title": "23. Solución de problemas y disputas",
         "body": [
-          "ShopFinder incentiva la solución rápida por la atención, sin impedir que el consumidor acuda a Procon, consumidor.gov.br, autoridad competente, mediación, arbitraje voluntario o Poder Judicial. Ningún consumidor será obligado por estos Términos a utilizar arbitraje, renunciar a acción colectiva, desistir de derecho legal ni demandar fuera del foro permitido por la legislación.",
-          "Para consumidores en Brasil, se preservan el foro del domicilio del consumidor y demás reglas protectoras aplicables. Cualquier cláusula de elección de foro se interpretará de modo que no dificulte el acceso a la Justicia.",
-          "Las cuentas empresariales de proveedores o usuarios que actúen exclusivamente con fines comerciales podrán tener un contrato B2B separado, con cláusula de mediación o arbitraje negociada en instrumento propio. Esa cláusula no se aplica a compras personales, consumidores, usuarios vulnerables ni relaciones de consumo. La validez del arbitraje y la eventual limitación de acciones colectivas en los Estados Unidos dependerá de la ley aplicable, de la jurisdicción y de los requisitos de consentimiento, sin incorporación automática por estos Términos públicos."
+          "END ART Studios incentiva la solución rápida por el canal de atención, sin impedir que el consumidor acuda a Procon, consumidor.gov.br, autoridad competente, mediación voluntaria o Poder Judicial.",
+          "Ningún consumidor será obligado por estos Términos a someter disputa a arbitraje, renunciar a acción colectiva, renunciar a derecho legal ni demandar fuera del foro permitido por la legislación.",
+          "Para consumidores en Brasil, se preservan el foro del domicilio del consumidor y demás reglas protectoras aplicables. Cualquier cláusula de foro se interpretará de modo que no dificulte el acceso a la Justicia.",
+          "Eventual mediación o arbitraje para proveedores o usuarios que actúen exclusivamente con fines comerciales deberá constar de instrumento B2B separado, con aceptación propia y sin aplicación a compras personales ni relaciones de consumo. Estos Términos públicos no incorporan renuncia a acciones colectivas ni arbitraje obligatorio para consumidores."
         ]
       },
       {
         "id": "alteracoes",
-        "title": "21. Alteraciones de estos Términos",
+        "title": "24. Alteraciones de estos Términos",
         "body": [
-          "END ART Studios puede actualizar estos Términos para reflejar cambios legales, técnicos, operativos o de seguridad. La versión vigente, la fecha de actualización y el histórico razonable estarán disponibles en esta página.",
-          "Las alteraciones materiales se comunicarán por medio adecuado, con resumen de los cambios y antelación razonable. Cuando lo exija la ley o cuando la alteración modifique sustancialmente una contratación, se solicitará nueva aceptación. El uso continuado no podrá modificar retroactivamente pedidos concluidos, derechos ya ejercidos ni obligaciones legales."
+          "END ART Studios podrá actualizar estos Términos para reflejar alteraciones legales, técnicas, operativas o de seguridad. La versión vigente y la fecha de actualización estarán disponibles en esta página.",
+          "Las alteraciones materiales se comunicarán por medio adecuado, con resumen de los cambios y antelación razonable. Cuando lo exija la ley o cuando el cambio altere sustancialmente una contratación, se solicitará nueva aceptación.",
+          "El uso continuado no modificará retroactivamente pedidos concluidos, derechos ya ejercidos ni obligaciones legales. END ART Studios mantendrá un histórico razonable de las versiones anteriores."
         ]
       },
       {
         "id": "lei-aplicavel",
-        "title": "22. Ley aplicable y prevalencia legal",
+        "title": "25. Ley aplicable y prevalencia legal",
         "body": [
-          "Estos Términos se rigen por la legislación brasileña en lo que involucre la operación en Brasil, especialmente el Código de Defensa del Consumidor, el Marco Civil de Internet, la Ley General de Protección de Datos, el Decreto nº 7.962/2013 y normas aplicables. Los usuarios extranjeros podrán tener derechos obligatorios adicionales conforme a su localización y a la actividad efectivamente dirigida a ellos.",
-          "Si cualquier disposición se considera inválida, las demás permanecerán vigentes y la disposición se ajustará al máximo permitido por la ley, sin perjudicar derechos indisponibles. En caso de conflicto entre estos Términos, una oferta específica, contrato de proveedor, Política de Privacidad o norma obligatoria, prevalecerá la disposición más específica y, en relaciones de consumo, la protección legal aplicable."
+          "Estos Términos se rigen por la legislación brasileña aplicable a la operación en Brasil, especialmente el Código de Defensa del Consumidor, el Marco Civil de Internet, la Ley General de Protección de Datos, el Decreto nº 7.962/2013 y las normas aplicables de la ANPD.",
+          "Usuarios localizados en otros países podrán tener derechos obligatorios adicionales cuando la legislación local incida sobre la operación. Nada en estos Términos pretende excluir derechos indisponibles conferidos por la ley aplicable.",
+          "Si cualquier disposición se considera inválida o inexigible, las demás permanecerán vigentes. La disposición afectada se interpretará o ajustará en el límite máximo permitido, sin perjudicar a consumidores, titulares de datos ni terceros protegidos por la ley.",
+          "En caso de conflicto entre estos Términos, una oferta específica, contrato con proveedor, Política de Privacidad, Política de Cookies o norma obligatoria, prevalecerá la disposición más específica y, en las relaciones de consumo, la norma protectora aplicable."
         ]
       },
       {
         "id": "contato",
-        "title": "23. Contacto",
+        "title": "26. Contacto oficial",
         "body": [
           "END ART Studios",
           "CNPJ: 45.370.930/0001-75",
-          "Dirección: Osasco, São Paulo - Brasil",
-          "Atención: endart.studios@gmail.com",
-          "Cancelación/arrepentimiento: botón en el pedido en /conta/pedidos o endart.studios@gmail.com",
-          "Privacidad/encargado: endart.studios@gmail.com",
-          "Plazo operacional de respuesta: 2 días hábiles, sin limitar plazos legales."
+          "Localización informada: Osasco, São Paulo — Brasil",
+          "Correo oficial: endart.studios@gmail.com",
+          "Sitio: https://shop-finder-taupe.vercel.app/"
         ]
       },
       {
@@ -473,11 +545,11 @@
         "title": "Referencias normativas",
         "body": [
           "Ley nº 8.078/1990 — Código de Defensa del Consumidor: https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
-          "Decreto nº 7.962/2013 — comercio electrónico: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
-          "Ley nº 13.709/2018 — Ley General de Protección de Datos: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+          "Decreto nº 7.962/2013 — contratación en el comercio electrónico: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
+          "Ley nº 13.709/2018 — Ley General de Protección de Datos Personales: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
           "Ley nº 12.965/2014 — Marco Civil de Internet: https://www.planalto.gov.br/ccivil_03/leis/l12965.htm",
-          "ANPD — Transferencia Internacional de Datos y Resolución CD/ANPD nº 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
-          "Reglamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+          "Reglamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+          "ANPD — Transferencia Internacional de Datos y Resolución CD/ANPD nº 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados"
         ]
       }
     ]
