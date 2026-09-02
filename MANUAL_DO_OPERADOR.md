@@ -102,11 +102,13 @@ WHERE table_name = 'Order' AND column_name LIKE 'cancellation%';
 
 6. Registre a aplicação em `DECISOES.md` (ou avise o Doer para registrar).
 
-**Pendências de migration em PRODUÇÃO (checar/aplicar):**
-- `20260830193000_terms_acceptance` (T051 — colunas de aceite no `User`;
-  NÃO idempotente, rodar 1×).
+**Migrations aplicadas em PRODUÇÃO (registro):**
+- `20260830193000_terms_acceptance` (T051 — colunas de aceite no `User`) —
+  **APLICADA em 31/08/2026**, validada por `information_schema`.
 - `20260831150000_cancellation_request` (T061 — colunas de arrependimento no
-  `Order`; idempotente).
+  `Order`) — **APLICADA em 31/08/2026**, validada por `information_schema`.
+- Próximas migrations do repo devem seguir o padrão idempotente
+  (`ADD COLUMN IF NOT EXISTS`) e entrar nesta lista após aplicação.
 
 **Proibições:** NUNCA executar `DROP`, `TRUNCATE`, `DELETE` em massa ou `UPDATE`
 sem `WHERE` em produção. Qualquer correção de dados passa pelo Doer/Thinker e
@@ -214,12 +216,17 @@ fallback documentado no código.
 
 ## 9. Pendências do Operador
 
-1. **Endereço completo** (rua/número) para §23 dos Termos de Uso e §1 da
-   Política de Privacidade — hoje "Osasco, São Paulo - Brasil" nos 3 locales
-   (`messages/*.json`) e em `src/config/company.ts`. Ao obter, abrir issue para
-   o Doer aplicar nos dois pontos.
-2. **Aplicar migrations no Neon de PRODUÇÃO** (§4): T051 (aceite de termos) e
-   T061 (arrependimento) — aditivas; a T051 é de uso único.
-3. **Revisão jurídica por advogado** do pacote v2.0 (Termos/Privacidade/Cookies)
+1. **Endereço completo** (rua/número) para §1 da Política de Privacidade —
+   hoje "Osasco, São Paulo - Brasil" nos 3 locales (`messages/*.json`) e em
+   `src/config/company.ts`. **Nos Termos de Uso não há mais pendência**: a
+   revisão de 02/09/2026 (26 seções) passou a declarar expressamente que a
+   operadora não possui endereço físico de atendimento e que "Osasco, São
+   Paulo — Brasil" é *localização informada*, não endereço postal. Ao obter
+   endereço para a Privacidade, abrir issue para o Doer.
+2. **Revisão jurídica por advogado** do pacote v2.0 (Termos/Privacidade/Cookies)
    **antes de anunciar publicamente** — os preenchimentos residuais estão
-   registrados em `DECISOES.md` (DECISAO-T059-001) para ratificação.
+   registrados em `DECISOES.md` (DECISAO-T059-001 e DECISAO-T067-001) para
+   ratificação.
+
+*(Migrations T051 e T061 foram aplicadas em PRODUÇÃO em 31/08/2026 e saíram
+desta lista — ver registro no §4.)*
