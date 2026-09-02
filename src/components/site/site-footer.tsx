@@ -22,6 +22,7 @@ import { company } from "@/config/company";
 export function SiteFooter() {
   const t = useTranslations("hero");
   const tFooter = useTranslations("footer");
+  const tCookies = useTranslations("cookies");
 
   return (
     <footer className="mt-auto border-t border-border/60 bg-muted/20">
@@ -57,6 +58,14 @@ export function SiteFooter() {
           </Link>
           <Link href="/cookies" className="hover:text-foreground transition-colors">
             Cookies
+          </Link>
+          {/* Link permanente exigido pela Política de Cookies v2.0 (§5) —
+              reabre o painel de preferências (cookies.page #preferencias). */}
+          <Link
+            href="/cookies#preferencias"
+            className="hover:text-foreground transition-colors"
+          >
+            {tCookies("panel.title")}
           </Link>
         </div>
 

@@ -557,65 +557,64 @@
   "privacy": {
     "title": "Política de Privacidade",
     "toc": "Sumário",
-    "updated": "Última atualização: 1 de setembro de 2026 · Versão 2.0",
-    "intro": "Esta Política explica como a END ART Studios, responsável pela plataforma ShopFinder, coleta, utiliza, armazena, compartilha e protege dados pessoais. Ela deve ser lida conjuntamente com os Termos de Uso (/termos) e com a Política de Cookies (/cookies), quando disponíveis.",
+    "updated": "Última atualização: 2 de setembro de 2026 · Versão 2.0",
+    "intro": "A presente Política de Privacidade explica como a END ART Studios, operadora da ShopFinder, trata dados pessoais durante o acesso e uso do site, catálogo, busca, comparação de produtos, carrinho, conta, atendimento e funcionalidades de intermediação eventualmente disponibilizadas. Esta Política deve ser lida em conjunto com os Termos de Uso (/termos) e com a Política de Cookies (/cookies).",
     "sections": [
       {
-        "id": "quem-somos",
-        "title": "1. Quem somos e como falar conosco",
+        "id": "controlador",
+        "title": "1. Controlador e contato",
         "body": [
-          "A END ART Studios é a controladora dos dados pessoais tratados para operar e administrar a ShopFinder, salvo quando esta Política indicar que determinado terceiro atua como controlador independente. A ShopFinder é uma plataforma de comparação de produtos e, em determinadas funcionalidades expressamente indicadas na interface, de intermediação de pedidos entre usuários e fornecedores terceiros.",
-          "Para dúvidas, solicitações ou reclamações relativas à proteção de dados, utilize o canal abaixo:",
-          "A identidade e as informações de contato do encarregado devem permanecer públicas, claras e atualizadas. Se a ANPD reconhecer hipótese de dispensa aplicável à empresa, a END ART Studios manterá, ainda assim, canal adequado para titulares e informará essa condição nesta Política."
+          "O controlador dos dados pessoais tratados para operar a ShopFinder é:",
+          "A END ART Studios não possui endereço físico de atendimento ao público. A localização \"Osasco, São Paulo — Brasil\" identifica a localização informada da operadora e não representa endereço postal para recebimento presencial de documentos ou mercadorias.",
+          "O e-mail acima funciona como canal de privacidade, atendimento aos titulares e comunicação com o encarregado ou responsável designado pela END ART Studios. A identidade do responsável pelo canal será divulgada nesta Política sempre que houver designação nominal aplicável."
         ],
         "table": {
           "headers": [
-            "Canal",
-            "Informação"
+            "Informação",
+            "Dados"
           ],
           "rows": [
             [
-              "Controlador",
-              "END ART Studios — CNPJ nº 45.370.930/0001-75"
-            ],
-            [
-              "Endereço",
-              "Osasco, São Paulo - Brasil"
-            ],
-            [
-              "Encarregado pelo tratamento de dados pessoais",
+              "Nome fantasia",
               "END ART Studios"
             ],
             [
-              "Canal do encarregado",
+              "CNPJ",
+              "45.370.930/0001-75"
+            ],
+            [
+              "Localização informada",
+              "Osasco, São Paulo — Brasil"
+            ],
+            [
+              "E-mail oficial",
               "endart.studios@gmail.com"
             ],
             [
-              "Atendimento geral",
-              "endart.studios@gmail.com"
+              "Site",
+              "https://shop-finder-taupe.vercel.app/"
             ],
             [
-              "Prazo operacional de resposta",
-              "Confirmação de recebimento em até 2 dias úteis e resposta conforme o prazo legal ou regulatório aplicável"
+              "Canal de privacidade e direitos dos titulares",
+              "endart.studios@gmail.com"
             ]
           ]
         }
       },
       {
-        "id": "abrangencia-definicoes",
+        "id": "abrangencia",
         "title": "2. Abrangência e definições",
         "body": [
-          "Esta Política aplica-se aos dados pessoais tratados por meio do site, das páginas, da conta, do carrinho, da comparação de produtos, do atendimento, do checkout, das comunicações e das integrações da ShopFinder.",
-          "Para esta Política, dado pessoal é qualquer informação relacionada a pessoa natural identificada ou identificável; titular é a pessoa a quem o dado se refere; controlador é quem decide sobre o tratamento; operador é quem trata dados em nome do controlador; tratamento inclui coleta, acesso, uso, armazenamento, compartilhamento, transferência, eliminação e demais operações; e encarregado é o canal de comunicação entre a END ART Studios, os titulares e a Autoridade Nacional de Proteção de Dados — ANPD."
+          "Esta Política aplica-se aos dados pessoais tratados por meio do site e de suas funcionalidades, incluindo páginas públicas, conta, login, catálogo, busca, filtros, comparação, carrinho, recomendações, checkout, atendimento, reclamações e integrações.",
+          "Dado pessoal é a informação relacionada a pessoa natural identificada ou identificável. Titular é a pessoa a quem o dado se refere. Controlador é quem toma as decisões sobre o tratamento. Operador trata dados em nome do controlador. Tratamento inclui coleta, acesso, utilização, armazenamento, compartilhamento, transferência, eliminação e outras operações realizadas com dados pessoais."
         ]
       },
       {
         "id": "dados-tratados",
-        "title": "3. Dados pessoais que podemos tratar",
+        "title": "3. Dados pessoais tratados",
         "body": [
-          "Tratamos somente dados adequados, pertinentes e necessários às finalidades informadas. As categorias podem variar conforme a funcionalidade utilizada.",
-          "A END ART Studios não solicita dados pessoais sensíveis para a utilização ordinária da ShopFinder. O titular não deve enviar dados sensíveis ao suporte salvo quando indispensável e expressamente solicitado. Se dados sensíveis forem recebidos indevidamente, serão avaliados, protegidos e eliminados ou tratados somente na hipótese legal aplicável.",
-          "A senha é armazenada somente em forma protegida, nunca em texto aberto. Dados completos de cartão devem ser tratados pelo processador de pagamentos, conforme o fluxo efetivamente contratado. A empresa não deve declarar que não armazena dados de cartão sem confirmar a arquitetura técnica vigente."
+          "A END ART Studios trata somente dados adequados, pertinentes e necessários às finalidades informadas. As categorias dependem da funcionalidade utilizada.",
+          "As senhas são armazenadas somente em forma protegida, nunca em texto aberto. A ShopFinder não solicita dados pessoais sensíveis para uso ordinário. O titular não deve enviar dados sensíveis, senhas, chaves ou segredos comerciais ao canal de atendimento, salvo quando expressamente solicitado e necessário."
         ],
         "table": {
           "headers": [
@@ -626,53 +625,53 @@
           "rows": [
             [
               "Cadastro e autenticação",
-              "Nome, e-mail, senha protegida por função criptográfica, identificadores da conta, data e versão do aceite",
+              "E-mail, senha protegida por função criptográfica, identificador da conta, data e versão do aceite",
               "Informados pelo titular ou gerados pelo sistema"
             ],
             [
               "Conta e preferências",
-              "Idioma, moeda de exibição, notificações, produtos comparados e itens do carrinho",
+              "Idioma, moeda, notificações, produtos comparados e itens do carrinho",
               "Informados pelo titular ou registrados pela interação"
             ],
             [
               "Busca e navegação",
-              "Termos pesquisados, filtros, páginas acessadas, cliques, data e hora e respostas a recomendações",
-              "Gerados durante o uso, conforme a configuração do navegador"
+              "Termos pesquisados, filtros, páginas visualizadas, cliques e data/hora",
+              "Gerados durante a utilização"
             ],
             [
               "Pedido e contratação",
-              "Itens, quantidades, preço, moeda, câmbio utilizado, frete, status, identificador do pedido e fornecedor escolhido",
+              "Produtos, quantidades, preço, status, fornecedor, identificador do pedido e condições do pedido",
               "Titular, ShopFinder e fornecedor"
             ],
             [
               "Entrega e atendimento",
-              "Nome, endereço de entrega, telefone, dados de contato, protocolo, mensagens e informações necessárias à solução da solicitação",
+              "Nome, endereço de entrega, telefone, contato, mensagens e protocolo",
               "Titular, fornecedor e atendimento"
             ],
             [
               "Pagamento",
-              "Identificador da transação, status, método, informações antifraude e token ou referência fornecida pelo processador",
-              "Stripe e titular; a ShopFinder não deve armazenar o número completo do cartão"
+              "Identificador da transação, status, método, dados antifraude, token ou referência do processador",
+              "Stripe/processador e titular"
             ],
             [
-              "Dados técnicos e de segurança",
-              "Endereço IP, data e hora, navegador, sistema, dispositivo, identificadores de sessão, logs, eventos de segurança e registros de autenticação",
+              "Dados técnicos",
+              "IP, data e hora, navegador, sistema, dispositivo, sessão, logs e eventos de segurança",
               "Dispositivo, navegador e servidores"
             ],
             [
-              "Cookies e armazenamento local",
-              "Chaves e identificadores descritos na Política de Cookies, incluindo carrinho, preferências e comparação",
+              "Armazenamento local",
+              "Carrinho, comparação, idioma, moeda, taxa cambial temporária, imagens e preferências",
               "Navegador ou dispositivo"
             ],
             [
               "Comunicações",
-              "Mensagens enviadas ao suporte, solicitações de direitos, avaliações e denúncias",
-              "Titular ou terceiro autorizado"
+              "Mensagens enviadas ao suporte, pedidos de titular, avaliações e denúncias",
+              "Titular ou representante autorizado"
             ],
             [
-              "Dados de fornecedores",
-              "Dados de contato profissional, conta comercial, catálogo e registros de conformidade",
-              "Fornecedor ou fontes públicas/profissionais"
+              "Dados profissionais",
+              "Nome, e-mail, telefone e dados de contato de fornecedores ou parceiros",
+              "Fornecedor ou fonte profissional"
             ]
           ]
         }
@@ -681,36 +680,36 @@
         "id": "finalidades-bases",
         "title": "4. Finalidades e bases legais",
         "body": [
-          "Cada tratamento deve estar ligado a uma finalidade determinada. A tabela abaixo descreve as bases jurídicas principais, sem impedir a aplicação de outra hipótese legal válida quando os fatos concretos assim exigirem.",
-          "A END ART Studios documentará, quando utilizar legítimo interesse, a finalidade, a necessidade, a expectativa razoável do titular, os impactos e as salvaguardas. O titular pode solicitar informações sobre essa avaliação, observados segredos comerciais e industriais legítimos.",
-          "Quando o tratamento depender de consentimento, ele será solicitado de forma livre, informada, específica, destacada e revogável. A recusa não impedirá o uso de funcionalidades que não dependam daquela finalidade opcional. A revogação não torna ilícitos os tratamentos realizados anteriormente e não elimina dados que devam ser conservados por obrigação legal ou defesa de direitos."
+          "Cada tratamento deve possuir finalidade determinada e base legal compatível. A tabela apresenta as bases principais:",
+          "Quando a base for legítimo interesse, a END ART Studios avaliará finalidade, necessidade, expectativa razoável, impactos e salvaguardas. Quando a base for consentimento, a manifestação será livre, informada, específica, destacada e revogável.",
+          "A recusa de consentimento opcional não impedirá o uso de funções que não dependam daquela finalidade. A revogação não invalida tratamentos realizados antes dela e não exige eliminação de dados que devam ser mantidos por obrigação legal ou defesa de direitos."
         ],
         "table": {
           "headers": [
             "Finalidade",
-            "Dados normalmente envolvidos",
+            "Dados envolvidos",
             "Base legal principal"
           ],
           "rows": [
             [
               "Criar, autenticar e manter a conta",
-              "Cadastro, autenticação e segurança",
+              "Cadastro, credenciais e segurança",
               "Execução de contrato ou procedimentos preliminares solicitados pelo titular"
             ],
             [
               "Operar catálogo, busca, filtros, comparação e carrinho",
               "Preferências, busca, comparação e carrinho",
-              "Execução de funcionalidade solicitada e legítimo interesse, conforme avaliação documentada"
+              "Execução da funcionalidade solicitada e legítimo interesse documentado"
             ],
             [
-              "Processar pedido, pagamento, entrega, cancelamento e pós-venda",
+              "Processar pedidos, pagamentos, entrega e pós-venda",
               "Pedido, contato, endereço, pagamento e fornecedor",
-              "Execução de contrato; obrigação legal quando aplicável"
+              "Execução de contrato e cumprimento de obrigação legal quando aplicável"
             ],
             [
-              "Exibir preço, moeda, câmbio, disponibilidade e prazo",
-              "Dados do produto, preferência de moeda, fonte e timestamp",
-              "Execução da funcionalidade solicitada e legítimo interesse; consentimento somente quando necessário"
+              "Exibir preço, moeda, câmbio, estoque e prazo",
+              "Dados do produto, preferências e fonte da oferta",
+              "Execução da funcionalidade solicitada e legítimo interesse documentado"
             ],
             [
               "Prevenir fraude, abuso, invasão e uso ilícito",
@@ -719,42 +718,37 @@
             ],
             [
               "Cumprir obrigações legais e regulatórias",
-              "Pedidos, documentos, registros e comunicações",
+              "Pedidos, registros e comunicações",
               "Cumprimento de obrigação legal ou regulatória"
             ],
             [
-              "Responder ao suporte e aos direitos dos titulares",
+              "Responder atendimento e direitos dos titulares",
               "Dados da conta, contato, protocolo e solicitação",
-              "Cumprimento de obrigação legal ou exercício regular de direitos; execução de contrato quando aplicável"
+              "Cumprimento de obrigação legal, execução de contrato e exercício regular de direitos"
             ],
             [
               "Enviar comunicações operacionais",
-              "E-mail, conta, pedido e preferências",
-              "Execução de contrato ou legítimo interesse, conforme a comunicação"
+              "E-mail, conta e pedido",
+              "Execução de contrato ou legítimo interesse, conforme o caso"
             ],
             [
-              "Enviar comunicações promocionais opcionais",
-              "E-mail, preferências e histórico de interação",
-              "Consentimento, quando exigido; o titular pode cancelar a qualquer momento"
+              "Enviar comunicações promocionais",
+              "E-mail e preferências",
+              "Consentimento, quando exigido"
             ],
             [
-              "Melhorar produtos, segurança e qualidade",
-              "Dados técnicos e dados agregados ou anonimizados",
+              "Melhorar segurança, qualidade e funcionalidades",
+              "Dados técnicos, agregados ou pseudonimizados",
               "Legítimo interesse, com minimização e salvaguardas"
             ],
             [
-              "Produzir métricas e relatórios",
-              "Dados agregados, pseudonimizados ou técnicos",
-              "Legítimo interesse; anonimização quando possível"
+              "Organizar catálogo e recomendar produtos",
+              "Dados de produtos, especificações, busca e preferências",
+              "Execução da funcionalidade solicitada e legítimo interesse; consentimento quando exigido"
             ],
             [
-              "Organizar catálogo e gerar recomendações por IA",
-              "Dados de produtos, especificações, busca e preferências não sensíveis",
-              "Execução da funcionalidade e legítimo interesse; consentimento quando exigido"
-            ],
-            [
-              "Defender direitos em processos",
-              "Registros, pedidos, comunicações e evidências",
+              "Defender direitos",
+              "Registros, pedidos, atendimento e evidências",
               "Exercício regular de direitos em processo judicial, administrativo ou arbitral"
             ]
           ]
@@ -764,8 +758,8 @@
         "id": "compartilhamento",
         "title": "5. Compartilhamento de dados",
         "body": [
-          "A END ART Studios compartilha dados somente quando necessário, proporcional e compatível com a finalidade informada. Os destinatários e a função de cada um devem ser mantidos atualizados no inventário interno.",
-          "Não vendemos dados pessoais. Não compartilhamos dados para publicidade comportamental de terceiros sem base legal, transparência e, quando necessário, consentimento. O compartilhamento com fornecedor deve limitar-se aos dados necessários à oferta, pedido, entrega, garantia e atendimento, com obrigações contratuais de segurança, confidencialidade, direitos dos titulares e incidentes."
+          "A END ART Studios não vende dados pessoais. Compartilhamentos ocorrerão somente quando necessários, proporcionais e compatíveis com as finalidades informadas.",
+          "Os fornecedores receberão apenas os dados necessários à oferta, ao pedido, à entrega, à garantia, ao cancelamento e ao atendimento. Prestadores e fornecedores deverão manter confidencialidade, segurança, cooperação com direitos dos titulares e comunicação de incidentes."
         ],
         "table": {
           "headers": [
@@ -775,44 +769,44 @@
           ],
           "rows": [
             [
-              "Stripe ou processador efetivamente contratado",
-              "Pagamento, prevenção a fraude, estorno e conciliação",
+              "Stripe ou processador indicado",
+              "Pagamento, antifraude, autenticação, conciliação e estorno",
               "Operador ou controlador independente, conforme o serviço"
             ],
             [
               "Fornecedor responsável pela oferta",
-              "Processar pedido, entrega, atendimento, garantia e cancelamento",
-              "Controlador independente ou operador conforme a operação"
+              "Processamento do pedido, entrega, garantia e atendimento",
+              "Controlador independente ou operador, conforme a operação"
             ],
             [
               "Vercel e provedores de hospedagem/edge",
-              "Hospedagem, segurança e disponibilidade",
+              "Hospedagem, disponibilidade e segurança",
               "Operador"
             ],
             [
               "Neon ou provedor de banco de dados",
-              "Armazenamento e consulta de dados",
+              "Armazenamento e consulta",
               "Operador"
             ],
             [
               "Provedores de e-mail, suporte e observabilidade",
-              "Comunicação, atendimento, logs e segurança",
+              "Atendimento, comunicação, logs e segurança",
               "Operador"
             ],
             [
               "Provedores de IA",
-              "Organização de catálogo e recomendações, sem dados pessoais quando tecnicamente possível",
-              "Operador ou controlador conforme contrato"
+              "Organização e avaliação de catálogo, sem dados pessoais quando possível",
+              "Operador ou controlador, conforme o contrato"
             ],
             [
-              "Autoridades públicas, judiciais e administrativas",
-              "Cumprir ordem ou obrigação legal",
-              "Destinatário legal"
-            ],
-            [
-              "Consultores, auditores e assessores",
-              "Segurança, contabilidade, jurídico e defesa de direitos",
+              "Consultores e auditores",
+              "Segurança, jurídico, contabilidade e defesa de direitos",
               "Operador ou destinatário autorizado"
+            ],
+            [
+              "Autoridades públicas",
+              "Ordem, investigação ou obrigação legal",
+              "Destinatário legal"
             ]
           ]
         }
@@ -821,60 +815,60 @@
         "id": "transferencias",
         "title": "6. Transferências internacionais",
         "body": [
-          "Alguns prestadores podem tratar dados fora do Brasil, inclusive nos Estados Unidos ou em outros países, conforme a infraestrutura contratada. A transferência internacional somente será realizada quando houver hipótese legal e mecanismo válido segundo a LGPD e a regulamentação da ANPD, incluindo decisão de adequação, cláusulas-padrão contratuais, cláusulas equivalentes, cláusulas específicas, normas corporativas globais ou outra hipótese legal aplicável.",
-          "Antes de transferir dados, a END ART Studios deve manter registro do destinatário, país ou região, categorias de dados, finalidade, papel do destinatário, suboperadores, mecanismo jurídico, salvaguardas e procedimento para exercício de direitos. A existência de certificação de segurança ou conformidade setorial, como PCI-DSS, não é apresentada isoladamente como fundamento da transferência internacional.",
-          "Os prestadores atualmente previstos são: Stripe, Inc. — Estados Unidos; Vercel, Inc. — Estados Unidos; Neon, Inc. — Estados Unidos; OpenAI — Estados Unidos; e demais prestadores listados no inventário atualizado. A lista deve ser corrigida antes da publicação se qualquer prestador, entidade, país ou fluxo estiver diferente da operação real.",
-          "Quando o provedor de IA receber dados, a END ART Studios aplicará minimização, instruções contratuais, controles de retenção, restrição de treinamento e segregação. Dados pessoais de usuários não serão utilizados para treinar modelos de terceiros sem base legal, transparência e controles adequados."
+          "Alguns prestadores podem tratar dados fora do Brasil, inclusive nos Estados Unidos ou em outros países, conforme a infraestrutura efetivamente contratada. A transferência internacional somente ocorrerá quando houver hipótese legal e mecanismo válido conforme a LGPD e a regulamentação da ANPD.",
+          "Os mecanismos podem incluir decisão de adequação, cláusulas-padrão contratuais, cláusulas equivalentes, cláusulas específicas, normas corporativas globais ou outra hipótese legal aplicável. A END ART Studios mantém registro do destinatário, país ou região, finalidade, categorias de dados, papel do destinatário, suboperadores, mecanismo adotado e salvaguardas.",
+          "Os prestadores que podem estar envolvidos incluem Stripe, Vercel, Neon, provedor de IA, e-mail, suporte e segurança. A identificação da entidade, país, papel e mecanismo deve refletir os contratos vigentes. Certificações setoriais, incluindo PCI-DSS, são consideradas medidas de segurança e não constituem, isoladamente, fundamento jurídico para transferência internacional.",
+          "A END ART Studios aplica minimização, restrição de finalidade, controles de retenção, confidencialidade e segurança. Dados pessoais não serão utilizados para treinamento de modelos de terceiros sem base legal, transparência e controles apropriados."
         ]
       },
       {
         "id": "cookies-armazenamento",
-        "title": "7. Cookies, armazenamento local e tecnologias semelhantes",
+        "title": "7. Cookies, localStorage e sessionStorage",
         "body": [
-          "A ShopFinder pode utilizar cookies, localStorage, sessionStorage e tecnologias semelhantes. O tratamento efetivo deve ser descrito na Política de Cookies (/cookies), com nome, fornecedor, finalidade, duração, categoria e mecanismo de desativação.",
-          "Armazenamentos estritamente necessários à funcionalidade solicitada pelo titular, à segurança, à autenticação ou à transmissão de comunicação podem ser utilizados sem consentimento quando a lei permitir. Preferências e quaisquer tecnologias de análise, publicidade, personalização não necessária ou rastreamento somente serão ativadas com a base legal adequada e, quando necessário, após consentimento.",
-          "Quando houver consentimento, o titular terá opções equivalentes para aceitar, rejeitar e gerenciar categorias, além de acesso permanente ao painel de preferências. A continuidade da navegação não será utilizada como consentimento presumido para finalidades que exigem manifestação positiva. O titular poderá revogar ou alterar escolhas com facilidade."
+          "A ShopFinder utiliza cookies e tecnologias de armazenamento local ou de sessão para autenticação, segurança, carrinho, comparação, idioma, moeda, taxa cambial temporária, imagens, notificações e preferências. A lista atualizada, a classificação, a duração, os fornecedores e as opções de gestão estão na Política de Cookies (/cookies).",
+          "Armazenamentos estritamente necessários à funcionalidade solicitada, à autenticação, à segurança ou à transmissão de comunicação podem ser utilizados sem consentimento quando permitido pela legislação. Preferências opcionais, analytics, publicidade, personalização não necessária e rastreamento dependerão da base legal aplicável e de consentimento quando exigido.",
+          "Quando houver consentimento, o titular poderá aceitar, rejeitar e gerenciar categorias com opções equivalentes e poderá alterar ou revogar sua escolha pelo painel de preferências."
         ]
       },
       {
         "id": "retencao",
         "title": "8. Retenção e eliminação",
         "body": [
-          "Os dados serão conservados pelo tempo necessário à finalidade, à relação contratual, à segurança, ao atendimento de direitos e às obrigações legais. A tabela abaixo é uma estrutura de governança e deve ser preenchida e ajustada conforme a operação e as leis aplicáveis.",
-          "Após o término do prazo, os dados serão eliminados, anonimizados ou bloqueados, salvo preservação necessária por obrigação legal, exercício regular de direitos, prevenção à fraude ou outra hipótese legal. A eliminação da conta não necessariamente elimina registros que a END ART Studios seja obrigada a conservar."
+          "Os dados serão conservados pelo tempo necessário à finalidade, à relação contratual, à segurança, ao atendimento de direitos e às obrigações legais.",
+          "Após o término do prazo, os dados serão eliminados, anonimizados ou bloqueados, salvo preservação necessária por obrigação legal, fraude, auditoria, exercício regular de direitos ou outra hipótese legal."
         ],
         "table": {
           "headers": [
             "Registro",
-            "Critério de retenção"
+            "Critério"
           ],
           "rows": [
             [
               "Conta",
-              "Durante a atividade da conta e por até 180 dias após encerramento para segurança, auditoria e defesa, salvo pedido ou obrigação que imponha tratamento diverso"
+              "Enquanto ativa e por período posterior necessário à segurança, auditoria e defesa de direitos"
             ],
             [
-              "Pedido e pagamento",
-              "Pelo prazo necessário a obrigações fiscais, contábeis, consumeristas, prevenção a fraude e defesa de direitos"
+              "Pedidos e pagamentos",
+              "Pelo prazo necessário a obrigações fiscais, contábeis, consumeristas, antifraude e defesa"
             ],
             [
               "Logs de acesso e segurança",
-              "Pelo período exigido pelo Marco Civil da Internet, pela LGPD e pela segurança, limitado ao necessário"
+              "Pelo prazo exigido pelo Marco Civil da Internet, LGPD, segurança e necessidade operacional"
             ],
             [
               "Solicitações de titulares",
-              "Pelo prazo necessário a comprovar atendimento e cumprir obrigações legais"
+              "Pelo tempo necessário à resposta, auditoria e comprovação de atendimento"
             ],
             [
               "Consentimentos e preferências",
-              "Enquanto válidos e pelo prazo necessário à demonstração da escolha e defesa de direitos"
+              "Enquanto válidos e pelo prazo necessário à demonstração da escolha"
             ],
             [
               "Atendimento e reclamações",
-              "Pelo prazo necessário à solução, qualidade, auditoria e defesa de direitos"
+              "Pelo tempo necessário à solução, qualidade e defesa de direitos"
             ],
             [
-              "Dados agregados/anonimizados",
+              "Dados agregados ou anonimizados",
               "Enquanto úteis, desde que não permitam reidentificação por meios razoáveis"
             ]
           ]
@@ -882,70 +876,69 @@
       },
       {
         "id": "seguranca",
-        "title": "9. Segurança e confidencialidade",
+        "title": "9. Segurança",
         "body": [
-          "A END ART Studios adota medidas técnicas e administrativas proporcionais ao risco, incluindo criptografia em trânsito quando aplicável, proteção de credenciais, controle de acesso por necessidade, registros de auditoria, gestão de vulnerabilidades, cópias de segurança, segregação de ambientes, gestão de fornecedores e treinamento.",
-          "Nenhuma transmissão ou armazenamento é absolutamente seguro. A empresa revisa suas medidas de segurança considerando a natureza dos dados, a finalidade, o estado da tecnologia e os riscos identificados. A obrigação de segurança permanece após o término do tratamento na medida exigida pela lei e pelos contratos.",
-          "O titular deve manter suas credenciais confidenciais, utilizar dispositivo seguro e comunicar imediatamente suspeita de acesso indevido. A END ART Studios nunca solicitará senha completa por e-mail."
+          "A END ART Studios adota medidas técnicas e administrativas proporcionais ao risco, incluindo proteção de credenciais, criptografia em trânsito quando aplicável, controle de acesso por necessidade, registros de auditoria, cópias de segurança, gestão de vulnerabilidades, segregação de ambientes, gestão de prestadores e treinamento.",
+          "Nenhuma transmissão ou armazenamento é absolutamente seguro. O titular deve manter suas credenciais confidenciais, utilizar dispositivo protegido e comunicar suspeitas de acesso indevido pelo e-mail oficial. A END ART Studios não solicitará senha completa por e-mail."
         ]
       },
       {
         "id": "incidentes",
         "title": "10. Incidentes de segurança",
         "body": [
-          "A END ART Studios mantém procedimento para identificar, conter, investigar, remediar e documentar incidentes. Operadores e fornecedores devem comunicar prontamente qualquer evento à END ART Studios e cooperar com a avaliação.",
-          "Quando o incidente puder acarretar risco ou dano relevante aos titulares, a END ART Studios comunicará a ANPD e os titulares afetados no prazo e na forma previstos na LGPD e na regulamentação vigente, incluindo a Resolução CD/ANPD nº 15/2024. A comunicação indicará, quando aplicável, a natureza dos dados, titulares envolvidos, riscos, medidas de proteção, medidas de mitigação e canal de contato. A comunicação à ANPD não substitui a comunicação aos titulares quando esta for exigida."
+          "A END ART Studios mantém procedimento para identificar, conter, investigar, remediar e documentar incidentes. Fornecedores e operadores deverão comunicar prontamente qualquer evento relevante e cooperar com a investigação.",
+          "Quando o incidente puder acarretar risco ou dano relevante aos titulares, a END ART Studios comunicará a ANPD e os titulares afetados no prazo e na forma previstos na LGPD e na regulamentação vigente, incluindo a Resolução CD/ANPD nº 15/2024. A comunicação indicará, quando aplicável, natureza dos dados, titulares envolvidos, riscos, medidas de proteção e ações de mitigação."
         ]
       },
       {
         "id": "ia-decisoes",
-        "title": "11. Inteligência artificial, recomendações e decisões automatizadas",
+        "title": "11. Inteligência artificial e decisões automatizadas",
         "body": [
-          "A ShopFinder pode utilizar regras automatizadas, modelos estatísticos e ferramentas de inteligência artificial para normalizar informações, resumir especificações, identificar compatibilidade, organizar o catálogo e recomendar ou ordenar produtos.",
-          "As saídas podem conter erros. Recomendações, scores de Authority, Coverage, compatibilidade ou confiança não constituem certificação, garantia de qualidade, endosso de fabricante, aconselhamento profissional ou promessa de desempenho. A página correspondente deve informar metodologia geral, fontes, data de atualização, limitações e eventual destaque patrocinado.",
-          "A END ART Studios não utiliza IA para decidir sozinha sobre direitos civis, crédito, contratação obrigatória ou acesso essencial do titular. Se houver tratamento automatizado que afete os interesses do titular, este poderá solicitar informações sobre critérios e procedimentos e revisão humana, observados os segredos comerciais e industriais e os limites legais.",
-          "A END ART Studios não utilizará dados pessoais sensíveis para recomendações ordinárias. Dados pessoais enviados ao provedor de IA serão minimizados, pseudonimizados ou excluídos quando possível, tratados conforme contrato e não usados para treinamento de terceiros sem fundamento válido."
+          "A ShopFinder pode usar regras automatizadas, modelos estatísticos e inteligência artificial para organizar catálogo, resumir especificações, identificar compatibilidade, ordenar resultados, recomendar produtos, detectar abuso e melhorar segurança.",
+          "As saídas podem conter erros, omissões ou desatualizações. Recomendações, scores de Authority e Coverage, compatibilidade e classificações não constituem certificação, garantia de qualidade, autenticidade, segurança, procedência ou aconselhamento profissional.",
+          "A END ART Studios não utiliza IA para decidir sozinha sobre crédito, direitos civis ou acesso essencial do titular. Quando houver tratamento automatizado que afete interesses do titular, ele poderá solicitar informações sobre critérios e procedimentos e revisão humana, observados os segredos comerciais e industriais legítimos.",
+          "Dados pessoais enviados a provedores de IA serão minimizados, pseudonimizados ou excluídos quando possível. Não serão utilizados para treinamento de modelos de terceiros sem fundamento jurídico, transparência e controles adequados."
         ]
       },
       {
         "id": "direitos",
         "title": "12. Direitos dos titulares",
         "body": [
-          "Nos termos da LGPD, o titular pode solicitar, conforme aplicável: confirmação da existência de tratamento; acesso aos dados; correção de dados incompletos, inexatos ou desatualizados; anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade; portabilidade, observada a regulamentação; eliminação de dados tratados com consentimento, ressalvadas as exceções legais; informação sobre entidades com as quais houve compartilhamento; informação sobre a possibilidade de não fornecer consentimento e suas consequências; revogação do consentimento; oposição a tratamento realizado em determinadas hipóteses; revisão de decisões automatizadas; e peticionamento perante a ANPD.",
-          "O pedido deve ser enviado ao canal do encarregado. Para proteger a conta, a END ART Studios poderá solicitar comprovação proporcional de identidade ou autoridade, sem exigir dados excessivos. Pedidos serão respondidos nos prazos legais e regulatórios aplicáveis; a empresa poderá informar, de modo fundamentado, impossibilidade legal, técnica ou operacional, sem restringir direitos indevidamente.",
-          "Se o titular entender que a resposta foi insuficiente, poderá solicitar reavaliação pelo encarregado e utilizar os canais da ANPD ou do Poder Judiciário, sem prejuízo dos direitos do consumidor."
+          "Nos termos da LGPD, o titular poderá solicitar confirmação da existência de tratamento, acesso, correção, anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade, portabilidade conforme regulamentação, eliminação de dados tratados com consentimento quando cabível, informação sobre compartilhamentos, informação sobre a possibilidade de não fornecer consentimento, revogação de consentimento, oposição quando aplicável, revisão de decisões automatizadas e demais direitos previstos em lei.",
+          "As solicitações devem ser enviadas para endart.studios@gmail.com. Poderá ser solicitada comprovação proporcional de identidade para evitar fraude. A END ART Studios responderá nos prazos legais e regulatórios aplicáveis e poderá explicar, de forma fundamentada, limitações decorrentes de obrigação legal, segurança, direitos de terceiros ou segredo comercial.",
+          "O titular poderá também procurar a ANPD, órgãos de defesa do consumidor ou o Poder Judiciário, sem prejuízo de seus direitos."
         ]
       },
       {
         "id": "criancas",
         "title": "13. Crianças e adolescentes",
         "body": [
-          "A ShopFinder possui catálogo acessível ao público, mas não é direcionada a crianças. A criação de conta, contratação e coleta de dados devem observar capacidade civil, melhor interesse, legislação aplicável e medidas de proteção compatíveis com a idade.",
-          "A END ART Studios não solicita intencionalmente dados de crianças para finalidades incompatíveis com a LGPD. Se identificar coleta indevida, adotará medidas razoáveis para verificar o ocorrido, eliminar ou proteger os dados e contatar responsável quando apropriado. Pais, responsáveis ou adolescentes podem utilizar o canal do encarregado para comunicar dúvidas ou solicitar providências."
+          "A ShopFinder possui catálogo acessível ao público, mas não é direcionada a crianças. A criação de conta, a contratação e o tratamento de dados deverão observar capacidade civil, melhor interesse, legislação aplicável e medidas de proteção compatíveis com a idade.",
+          "A END ART Studios não solicita intencionalmente dados de crianças para finalidades incompatíveis com a LGPD. Se identificar coleta indevida, adotará medidas razoáveis para verificar o ocorrido, proteger ou eliminar os dados e contatar responsável quando apropriado."
         ]
       },
       {
-        "id": "terceiros-links",
-        "title": "14. Serviços de terceiros e links externos",
-        "body": "A ShopFinder pode conter links ou integrações com fornecedores, marketplaces, fabricantes, processadores de pagamento e outros sites. Ao sair da ShopFinder, o tratamento passa a seguir as políticas e os termos do terceiro. A existência de link não significa endosso, garantia ou controle da END ART Studios sobre o conteúdo ou as práticas do terceiro."
+        "id": "links-terceiros",
+        "title": "14. Links e serviços de terceiros",
+        "body": "A ShopFinder pode conter links ou integrações com fornecedores, fabricantes, marketplaces, processadores de pagamento e outros sites. Ao sair da ShopFinder, o tratamento passa a seguir as políticas e os termos do terceiro. Um link não significa controle, garantia, autenticidade, patrocínio ou endosso da END ART Studios."
       },
       {
         "id": "alteracoes",
         "title": "15. Alterações desta Política",
         "body": [
-          "Esta Política pode ser atualizada para refletir alterações legais, técnicas, operacionais ou de segurança. A versão vigente, a data de atualização e um histórico razoável de versões serão disponibilizados nesta página.",
-          "Alterações materiais serão comunicadas por meio adequado e, quando exigido, dependerão de novo consentimento ou aceite. Alterações não reduzirão retroativamente direitos relativos a tratamentos já realizados nem modificarão contratos de compra concluídos, salvo fundamento legal válido."
+          "Esta Política poderá ser atualizada para refletir mudanças legais, técnicas, operacionais ou de segurança. A versão vigente e a data de atualização serão disponibilizadas nesta página.",
+          "Alterações materiais serão comunicadas por meio adequado e, quando exigido, dependerão de novo consentimento. A atualização não reduzirá retroativamente direitos relativos a tratamentos já realizados nem modificará pedidos concluídos."
         ]
       },
       {
         "id": "lei-contato",
         "title": "16. Lei aplicável e contato",
         "body": [
-          "Esta Política será interpretada conforme a legislação brasileira aplicável, especialmente a Lei nº 13.709/2018 — LGPD, o Marco Civil da Internet, o Código de Defesa do Consumidor e normas da ANPD. Direitos inderrogáveis de titulares e consumidores prevalecem sobre qualquer disposição incompatível.",
-          "Dúvidas e solicitações: endart.studios@gmail.com",
-          "Atendimento geral: endart.studios@gmail.com",
-          "END ART Studios — CNPJ nº 45.370.930/0001-75",
-          "Endereço: Osasco, São Paulo - Brasil"
+          "Esta Política será interpretada conforme a legislação brasileira aplicável, especialmente a LGPD, o Marco Civil da Internet, o Código de Defesa do Consumidor e as normas da ANPD. Direitos inderrogáveis de titulares e consumidores prevalecerão sobre qualquer disposição incompatível.",
+          "END ART Studios — CNPJ: 45.370.930/0001-75",
+          "Localização: Osasco, São Paulo — Brasil",
+          "Contato: endart.studios@gmail.com",
+          "Canal de privacidade: endart.studios@gmail.com"
         ]
       },
       {
@@ -954,11 +947,11 @@
         "body": [
           "Lei nº 13.709/2018 — LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
           "Lei nº 8.078/1990 — Código de Defesa do Consumidor: https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
-          "Decreto nº 7.962/2013 — comércio eletrônico: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
-          "ANPD — Transferência Internacional de Dados e Resolução CD/ANPD nº 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
-          "ANPD — Guia orientativo Cookies e Proteção de Dados Pessoais: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
-          "Regulamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-          "ANPD — Comunicação de Incidente de Segurança: https://www.gov.br/anpd/pt-br/assuntos/comunicacao-de-incidentes-de-seguranca-cis"
+          "Lei nº 12.965/2014 — Marco Civil da Internet: https://www.planalto.gov.br/ccivil_03/leis/l12965.htm",
+          "ANPD — Transferência Internacional de Dados: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
+          "ANPD — Cookies e Proteção de Dados Pessoais: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
+          "ANPD — Comunicação de Incidente de Segurança: https://www.gov.br/anpd/pt-br/assuntos/comunicacao-de-incidentes-de-seguranca-cis",
+          "Regulamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
         ]
       }
     ]
@@ -977,88 +970,223 @@
   },
   "cookies": {
     "title": "Política de Cookies",
-    "updated": "Última atualização: 1 de setembro de 2026 · Versão 1.1",
-    "whatTitle": "O que são cookies?",
-    "what": "Cookies são pequenos arquivos gravados pelo seu navegador para manter informações entre visitas. Também usamos armazenamento local (localStorage), que funciona de forma parecida, mas não é enviado aos servidores. O ShopFinder usa SOMENTE armazenamento essencial e de preferência: sem cookies de analytics, publicidade ou rastreamento de terceiros.",
-    "tableTitle": "Cookies e armazenamentos que utilizamos",
-    "colName": "Nome",
-    "colProvider": "Fornecedor",
-    "colDuration": "Duração",
-    "colPurpose": "Finalidade",
-    "colType": "Tipo",
-    "rows": {
-      "cart": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistente (até limpar os dados do site)",
-        "purpose": "Manter os itens do carrinho entre visitas",
-        "type": "Essencial"
+    "toc": "Sumário",
+    "updated": "Última atualização: 2 de setembro de 2026 · Versão 2.0",
+    "intro": "Esta Política explica como a ShopFinder, operada pela END ART Studios, utiliza cookies, localStorage, sessionStorage e tecnologias semelhantes. A END ART Studios é identificada pelos seguintes dados: nome fantasia END ART Studios — CNPJ 45.370.930/0001-75, localização informada Osasco, São Paulo — Brasil, contato endart.studios@gmail.com, site https://shop-finder-taupe.vercel.app/.",
+    "sections": [
+      {
+        "id": "o-que-sao",
+        "title": "1. O que são cookies e armazenamento local",
+        "body": [
+          "Cookies são pequenos arquivos ou identificadores armazenados no navegador ou dispositivo. Eles podem manter sessão, preferências, carrinho, segurança e outras informações entre acessos.",
+          "localStorage e sessionStorage são mecanismos de armazenamento do navegador. Embora não funcionem exatamente como cookies, podem permitir que scripts armazenem e leiam informações no dispositivo. Por isso, a ShopFinder os descreve nesta Política e os classifica conforme sua finalidade.",
+          "O fato de uma tecnologia não ser enviada automaticamente ao servidor não significa, por si só, que ela esteja fora do escopo de transparência ou proteção de dados. A classificação considera a finalidade, a necessidade e a possibilidade de associação com o usuário ou dispositivo."
+        ]
       },
-      "locale": {
-        "provider": "ShopFinder (localStorage + cookie)",
-        "duration": "Persistente (1 ano no cookie)",
-        "purpose": "Idioma da interface",
-        "type": "Preferência"
+      {
+        "id": "categorias",
+        "title": "2. Categorias utilizadas",
+        "body": [
+          "Essenciais: necessários para autenticação, segurança, prevenção de fraude, funcionamento técnico ou disponibilização de funcionalidade solicitada pelo usuário. Sem eles, determinadas funções podem não funcionar.",
+          "Preferências: permitem lembrar escolhas como idioma, moeda, itens comparados, notificações ou outras configurações. Podem ser desativados, embora isso possa exigir nova configuração em visitas futuras.",
+          "Análise e medição: medem utilização e desempenho para gerar estatísticas ou melhorar a plataforma. Não serão ativados sem a base legal aplicável e consentimento quando exigido.",
+          "Publicidade e rastreamento: utilizados para publicidade comportamental, rastreamento entre sites ou criação de perfis publicitários. A ShopFinder não utiliza essa categoria na configuração atualmente declarada. Se vier a utilizá-la, atualizará esta Política e solicitará consentimento prévio quando necessário."
+        ]
       },
-      "currency": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistente (até limpar os dados do site)",
-        "purpose": "Moeda de exibição dos preços",
-        "type": "Preferência"
+      {
+        "id": "inventario",
+        "title": "3. Inventário de cookies e armazenamento",
+        "body": [
+          "A lista abaixo deve refletir o inventário técnico atualmente utilizado. Caso a implementação real utilize nome, fornecedor, duração ou finalidade diferente, a equipe responsável deverá atualizar esta Política antes da publicação.",
+          "Os itens sf:img:* podem conter referências a imagens hospedadas por terceiros. A referência não autoriza automaticamente o uso da imagem fora da licença aplicável nem significa que a END ART Studios controle o servidor de origem."
+        ],
+        "table": {
+          "headers": [
+            "Nome/chave",
+            "Tecnologia",
+            "Fornecedor",
+            "Duração",
+            "Categoria",
+            "Finalidade"
+          ],
+          "rows": [
+            [
+              "sf:cart",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza dos dados do site ou remoção pelo usuário",
+              "Essencial, quando o carrinho for solicitado",
+              "Manter itens do carrinho"
+            ],
+            [
+              "shopfinder:compare",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza ou remoção pelo usuário",
+              "Preferência/funcionalidade",
+              "Manter produtos selecionados para comparação"
+            ],
+            [
+              "sf:locale",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza dos dados do site",
+              "Preferência",
+              "Lembrar idioma da interface"
+            ],
+            [
+              "locale",
+              "Cookie, se efetivamente utilizado",
+              "ShopFinder",
+              "Até 1 ano ou prazo técnico menor",
+              "Preferência",
+              "Lembrar idioma da interface"
+            ],
+            [
+              "sf:currency",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza dos dados do site",
+              "Preferência",
+              "Lembrar moeda de exibição"
+            ],
+            [
+              "sf:notifications",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza dos dados do site",
+              "Preferência",
+              "Lembrar preferências de notificação"
+            ],
+            [
+              "shopfinder:read-notifications",
+              "localStorage",
+              "ShopFinder",
+              "Até limpeza dos dados do site",
+              "Preferência",
+              "Estado de leitura do sino de notificações"
+            ],
+            [
+              "sf:fx",
+              "sessionStorage",
+              "ShopFinder",
+              "Durante a sessão",
+              "Essencial/funcionalidade solicitada",
+              "Manter taxa cambial temporária para conversão de exibição"
+            ],
+            [
+              "sf:img:*",
+              "sessionStorage",
+              "ShopFinder",
+              "Durante a sessão",
+              "Funcionalidade",
+              "Manter referências temporárias de imagens exibidas no catálogo"
+            ],
+            [
+              "nextauth.message",
+              "localStorage ou outro armazenamento, se efetivamente utilizado",
+              "NextAuth/ShopFinder",
+              "Conforme a sessão e a configuração técnica",
+              "Essencial",
+              "Comunicar estado técnico de autenticação"
+            ],
+            [
+              "next-auth.session-token",
+              "Cookie, se efetivamente utilizado",
+              "ShopFinder/NextAuth",
+              "Conforme a sessão ou até 30 dias, segundo configuração",
+              "Essencial",
+              "Manter autenticação segura"
+            ],
+            [
+              "next-auth.csrf-token",
+              "Cookie, se efetivamente utilizado",
+              "ShopFinder/NextAuth",
+              "Sessão ou conforme configuração",
+              "Essencial",
+              "Proteção contra ataques CSRF"
+            ]
+          ]
+        }
       },
-      "notifications": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistente (até limpar os dados do site)",
-        "purpose": "Preferências de notificação",
-        "type": "Preferência"
+      {
+        "id": "terceiros",
+        "title": "4. Cookies de terceiros",
+        "body": [
+          "A ShopFinder pode utilizar prestadores de hospedagem, autenticação, pagamento, segurança, banco de dados, e-mail, observabilidade ou inteligência artificial. Uma integração técnica pode criar ou ler identificadores próprios do prestador, mesmo que não apareçam na lista acima.",
+          "Antes de ativar qualquer tecnologia não essencial de terceiro, a END ART Studios deverá registrar nome, domínio, fornecedor, finalidade, duração, categorias de dados, país, mecanismo de consentimento e opção de revogação. Prestadores de pagamento, autenticação e segurança podem operar tecnologias estritamente necessárias ao serviço solicitado, conforme a arquitetura vigente e a legislação aplicável.",
+          "A END ART Studios não utiliza cookies de publicidade, analytics ou rastreamento comportamental de terceiros na configuração atualmente declarada. Se essa configuração mudar, esta Política e o mecanismo de consentimento serão atualizados antes da ativação."
+        ]
       },
-      "compare": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistente (até limpar os dados do site)",
-        "purpose": "Lista de comparação de produtos",
-        "type": "Preferência"
+      {
+        "id": "consentimento",
+        "title": "5. Consentimento e gestão de preferências",
+        "body": [
+          "Tecnologias estritamente necessárias podem ser ativadas sem consentimento quando permitidas pela legislação. Tecnologias de preferência, análise, publicidade ou rastreamento serão ativadas conforme a base legal aplicável e, quando necessário, somente depois de manifestação positiva do usuário.",
+          "A ShopFinder não considera o simples prosseguimento da navegação como consentimento válido para finalidades opcionais. O usuário deverá encontrar opções equivalentes para aceitar, rejeitar e gerenciar categorias não essenciais.",
+          "O usuário poderá alterar ou revogar suas escolhas por meio do link \"Preferências de Cookies\", disponível no rodapé ou em local de acesso permanente. A revogação não afeta a licitude do tratamento realizado antes dela, mas interromperá as tecnologias opcionais assim que tecnicamente possível.",
+          "A recusa de cookies não essenciais não impedirá o acesso às funções que não dependam deles. A ShopFinder poderá manter tecnologias essenciais necessárias à segurança, à autenticação, ao carrinho solicitado ou ao cumprimento de obrigação legal."
+        ]
       },
-      "fx": {
-        "provider": "ShopFinder (sessionStorage)",
-        "duration": "Sessão (até fechar o navegador)",
-        "purpose": "Cotação de câmbio USD-BRL usada nos preços",
-        "type": "Preferência"
+      {
+        "id": "navegador",
+        "title": "6. Como controlar tecnologias no navegador",
+        "body": [
+          "O usuário também pode limpar ou bloquear cookies e armazenamento local nas configurações do navegador. O bloqueio de tecnologias essenciais pode impedir login, carrinho, comparação, segurança ou outras funcionalidades.",
+          "A limpeza do armazenamento não necessariamente revoga registros de consentimento mantidos de forma segura para comprovar uma escolha anterior. Para alterar a escolha de consentimento, utilize o painel \"Preferências de Cookies\" da ShopFinder."
+        ]
       },
-      "img": {
-        "provider": "ShopFinder (sessionStorage)",
-        "duration": "Sessão (até fechar o navegador)",
-        "purpose": "Cache de URLs de imagens de produtos (desempenho)",
-        "type": "Preferência"
+      {
+        "id": "relacao-privacidade",
+        "title": "7. Relação com a Política de Privacidade",
+        "body": [
+          "Cookies e armazenamento podem conter identificadores ou informações associáveis a uma pessoa natural. Quando isso ocorrer, o tratamento seguirá também a Política de Privacidade (/privacidade), incluindo finalidades, bases legais, compartilhamentos, transferências internacionais, segurança, retenção e direitos dos titulares.",
+          "O titular poderá solicitar confirmação, acesso, correção, eliminação, oposição, revogação ou outras providências pelo e-mail endart.studios@gmail.com, conforme a LGPD e a legislação aplicável."
+        ]
       },
-      "session": {
-        "provider": "ShopFinder / NextAuth (cookie)",
-        "duration": "30 dias (sessão de login)",
-        "purpose": "Manter você autenticado com segurança",
-        "type": "Essencial"
+      {
+        "id": "atualizacoes",
+        "title": "8. Atualizações",
+        "body": [
+          "Esta Política poderá ser atualizada quando houver mudança de tecnologia, fornecedor, finalidade, duração, categoria, base legal ou legislação. A versão vigente e a data de atualização estarão disponíveis nesta página.",
+          "Alterações que introduzam tecnologias não essenciais serão comunicadas e submetidas ao consentimento quando necessário antes da ativação."
+        ]
       },
-      "csrf": {
-        "provider": "ShopFinder / NextAuth (cookie)",
-        "duration": "Sessão",
-        "purpose": "Proteção contra ataques CSRF no login",
-        "type": "Essencial"
+      {
+        "id": "contato",
+        "title": "9. Contato",
+        "body": [
+          "END ART Studios",
+          "CNPJ: 45.370.930/0001-75",
+          "Localização: Osasco, São Paulo — Brasil",
+          "E-mail: endart.studios@gmail.com"
+        ]
       },
-      "notificationsRead": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistente (até limpar os dados do site)",
-        "purpose": "Estado de leitura do sino de notificações",
-        "type": "Preferência"
+      {
+        "id": "referencias",
+        "title": "Referências",
+        "body": [
+          "Lei nº 13.709/2018 — LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+          "ANPD — Guia orientativo Cookies e Proteção de Dados Pessoais: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
+          "Diretiva 2002/58/CE — ePrivacy: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32002L0058",
+          "Regulamento (UE) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+        ]
       }
-    },
-    "noneTitle": "Analytics e marketing",
-    "none": "Não utilizamos cookies de analytics ou marketing de nenhuma espécie.",
-    "manageTitle": "Como gerenciar cookies",
-    "manageIntro": "Você pode limpar cookies e dados de site a qualquer momento nas configurações do seu navegador:",
-    "chrome": "Chrome: Configurações → Privacidade e segurança → Limpar dados de navegação / Configurações do site",
-    "firefox": "Firefox: Configurações → Privacidade e Segurança → Cookies e dados do site",
-    "safari": "Safari: Preferências → Privacidade → Gerenciar dados de site",
-    "edge": "Edge: Configurações → Cookies e permissões de site → Gerenciar e excluir cookies",
-    "bannerNote": "Como usamos apenas armazenamento essencial e de preferência — sem cookies de analytics, publicidade ou marketing —, não exibimos banner de consentimento.",
-    "preferencesNote": "Se você desativar ou limpar cookies e dados de site no navegador, algumas preferências (idioma, moeda, carrinho, lista de comparação) podem não persistir entre as visitas.",
-    "privacyLink": "Veja também a nossa Política de Privacidade."
+    ],
+    "panel": {
+      "title": "Preferências de Cookies",
+      "intro": "Escolha quais categorias de tecnologias opcionais deseja permitir. As tecnologias essenciais não podem ser desativadas porque são necessárias para segurança, autenticação ou funcionamento de funções que você solicitou. Você pode alterar sua escolha a qualquer momento.",
+      "essentialTitle": "Essenciais",
+      "essentialDesc": "Autenticação, segurança, prevenção de fraude, carrinho solicitado e funcionamento técnico.",
+      "alwaysOn": "Sempre ativa",
+      "preferencesTitle": "Preferências",
+      "preferencesDesc": "Idioma, moeda, comparação, notificações e outras configurações de conveniência.",
+      "save": "Salvar preferências",
+      "reject": "Rejeitar não essenciais",
+      "savedMsg": "Preferências salvas. Suas escolhas foram registradas. Você pode alterá-las a qualquer momento em Preferências de Cookies. Para saber mais sobre tratamento de dados pessoais, consulte a Política de Privacidade ou fale conosco pelo e-mail endart.studios@gmail.com.",
+      "rejectedMsg": "Tecnologias opcionais rejeitadas. Mantivemos somente as tecnologias essenciais para segurança e funcionamento das funções solicitadas. Você pode alterar sua escolha a qualquer momento em Preferências de Cookies.",
+      "revokedMsg": "Preferências atualizadas. As categorias opcionais foram desativadas conforme sua solicitação. A alteração não afeta a licitude dos tratamentos realizados antes da revogação. Algumas tecnologias essenciais continuarão ativas para manter a segurança e o funcionamento da ShopFinder."
+    }
   },
   "scores": {
     "sectionTitle": "Metodologia dos indicadores e IA",

@@ -557,65 +557,64 @@
   "privacy": {
     "title": "Privacy Policy",
     "toc": "Contents",
-    "updated": "Last updated: September 1, 2026 · Version 2.0",
-    "intro": "This Policy explains how END ART Studios, the entity responsible for the ShopFinder platform, collects, uses, stores, shares and protects personal data. It should be read together with the Terms of Use (/termos) and the Cookie Policy (/cookies), where available.",
+    "updated": "Last updated: September 2, 2026 · Version 2.0",
+    "intro": "This Privacy Policy explains how END ART Studios, operator of ShopFinder, processes personal data during access to and use of the website, catalog, search, product comparison, cart, account, customer support and any intermediation features made available. This Policy must be read together with the Terms of Use (/termos) and the Cookie Policy (/cookies).",
     "sections": [
       {
-        "id": "quem-somos",
-        "title": "1. Who we are and how to reach us",
+        "id": "controlador",
+        "title": "1. Controller and contact",
         "body": [
-          "END ART Studios is the controller of the personal data processed to operate and administer ShopFinder, except where this Policy indicates that a given third party acts as an independent controller. ShopFinder is a product comparison platform and, in certain features expressly indicated in the interface, an order intermediation service between users and third-party suppliers.",
-          "For questions, requests or complaints regarding data protection, use the channel below:",
-          "The controller's identity and contact information must remain public, clear and up to date. If the ANPD recognizes a waiver applicable to the company, END ART Studios will still maintain an adequate channel for data subjects and will disclose that condition in this Policy."
+          "The controller of the personal data processed to operate ShopFinder is:",
+          "END ART Studios does not have a physical public-facing service address. The location \"Osasco, São Paulo — Brazil\" identifies the operator's informed location and does not represent a postal address for in-person receipt of documents or goods.",
+          "The e-mail above serves as the privacy channel, data subject support and communication with the officer or representative designated by END ART Studios. The identity of the person responsible for the channel will be disclosed in this Policy whenever an applicable nominal designation exists."
         ],
         "table": {
           "headers": [
-            "Channel",
-            "Information"
+            "Information",
+            "Data"
           ],
           "rows": [
             [
-              "Controller",
-              "END ART Studios — CNPJ No. 45.370.930/0001-75"
-            ],
-            [
-              "Address",
-              "Osasco, São Paulo - Brazil"
-            ],
-            [
-              "Data protection officer (Encarregado)",
+              "Trade name",
               "END ART Studios"
             ],
             [
-              "DPO channel",
+              "CNPJ",
+              "45.370.930/0001-75"
+            ],
+            [
+              "Informed location",
+              "Osasco, São Paulo — Brazil"
+            ],
+            [
+              "Official e-mail",
               "endart.studios@gmail.com"
             ],
             [
-              "General support",
-              "endart.studios@gmail.com"
+              "Website",
+              "https://shop-finder-taupe.vercel.app/"
             ],
             [
-              "Operational response time",
-              "Acknowledgment of receipt within 2 business days and response within the applicable statutory or regulatory period"
+              "Privacy and data subject rights channel",
+              "endart.studios@gmail.com"
             ]
           ]
         }
       },
       {
-        "id": "abrangencia-definicoes",
+        "id": "abrangencia",
         "title": "2. Scope and definitions",
         "body": [
-          "This Policy applies to personal data processed through the website, pages, account, cart, product comparison, customer support, checkout, communications and integrations of ShopFinder.",
-          "For this Policy, personal data is any information related to an identified or identifiable natural person; data subject is the person to whom the data refers; controller is whoever decides on the processing; operator is whoever processes data on behalf of the controller; processing includes collection, access, use, storage, sharing, transfer, deletion and other operations; and the Encarregado (DPO) is the communication channel between END ART Studios, data subjects and the Brazilian National Data Protection Authority (ANPD)."
+          "This Policy applies to personal data processed through the website and its features, including public pages, account, login, catalog, search, filters, comparison, cart, recommendations, checkout, support, complaints and integrations.",
+          "Personal data is any information related to an identified or identifiable natural person. Data subject is the person to whom the data refers. Controller is whoever makes the decisions about processing. Operator processes data on behalf of the controller. Processing includes collection, access, use, storage, sharing, transfer, deletion and other operations performed with personal data."
         ]
       },
       {
         "id": "dados-tratados",
-        "title": "3. Personal data we may process",
+        "title": "3. Personal data processed",
         "body": [
-          "We process only data that is adequate, pertinent and necessary for the stated purposes. Categories may vary according to the feature used.",
-          "END ART Studios does not request sensitive personal data for ordinary use of ShopFinder. Data subjects must not send sensitive data to support unless indispensable and expressly requested. If sensitive data is improperly received, it will be assessed, protected and deleted or processed only under the applicable legal hypothesis.",
-          "Passwords are stored only in protected form, never in plain text. Full card data must be handled by the payment processor, according to the flow actually contracted. The company must not claim it does not store card data without confirming the current technical architecture."
+          "END ART Studios processes only data that is adequate, pertinent and necessary for the stated purposes. Categories depend on the feature used.",
+          "Passwords are stored only in protected form, never in plain text. ShopFinder does not request sensitive personal data for ordinary use. Data subjects must not send sensitive data, passwords, keys or trade secrets to the support channel, unless expressly requested and necessary."
         ],
         "table": {
           "headers": [
@@ -626,53 +625,53 @@
           "rows": [
             [
               "Registration and authentication",
-              "Name, e-mail, password protected by a cryptographic function, account identifiers, date and version of acceptance",
+              "E-mail, password protected by a cryptographic function, account identifier, date and version of acceptance",
               "Provided by the data subject or generated by the system"
             ],
             [
               "Account and preferences",
-              "Language, display currency, notifications, compared products and cart items",
+              "Language, currency, notifications, compared products and cart items",
               "Provided by the data subject or recorded through interaction"
             ],
             [
               "Search and navigation",
-              "Search terms, filters, pages visited, clicks, date and time and responses to recommendations",
-              "Generated during use, according to browser configuration"
+              "Search terms, filters, pages viewed, clicks and date/time",
+              "Generated during use"
             ],
             [
               "Order and contracting",
-              "Items, quantities, price, currency, exchange rate used, shipping, status, order identifier and chosen supplier",
+              "Products, quantities, price, status, supplier, order identifier and order conditions",
               "Data subject, ShopFinder and supplier"
             ],
             [
               "Delivery and support",
-              "Name, delivery address, phone, contact details, reference number, messages and information needed to resolve the request",
+              "Name, delivery address, phone, contact, messages and reference number",
               "Data subject, supplier and support"
             ],
             [
               "Payment",
-              "Transaction identifier, status, method, anti-fraud information and token or reference provided by the processor",
-              "Stripe and the data subject; ShopFinder must not store the full card number"
+              "Transaction identifier, status, method, anti-fraud data, token or processor reference",
+              "Stripe/processor and data subject"
             ],
             [
-              "Technical and security data",
-              "IP address, date and time, browser, system, device, session identifiers, logs, security events and authentication records",
+              "Technical data",
+              "IP, date and time, browser, system, device, session, logs and security events",
               "Device, browser and servers"
             ],
             [
-              "Cookies and local storage",
-              "Keys and identifiers described in the Cookie Policy, including cart, preferences and comparison",
+              "Local storage",
+              "Cart, comparison, language, currency, temporary exchange rate, images and preferences",
               "Browser or device"
             ],
             [
               "Communications",
-              "Messages sent to support, rights requests, reviews and reports",
-              "Data subject or authorized third party"
+              "Messages sent to support, data subject requests, reviews and reports",
+              "Data subject or authorized representative"
             ],
             [
-              "Supplier data",
-              "Professional contact data, business account, catalog and compliance records",
-              "Supplier or public/professional sources"
+              "Professional data",
+              "Name, e-mail, phone and contact details of suppliers or partners",
+              "Supplier or professional source"
             ]
           ]
         }
@@ -681,36 +680,36 @@
         "id": "finalidades-bases",
         "title": "4. Purposes and legal bases",
         "body": [
-          "Each processing operation must be tied to a determined purpose. The table below describes the main legal bases, without preventing the application of another valid legal hypothesis when concrete facts so require.",
-          "END ART Studios will document, when relying on legitimate interest, the purpose, necessity, the data subject's reasonable expectation, impacts and safeguards. Data subjects may request information about this assessment, subject to legitimate trade and industrial secrets.",
-          "Where processing depends on consent, it will be requested in a free, informed, specific, prominent and revocable manner. Refusal will not prevent the use of features that do not depend on that optional purpose. Revocation does not render unlawful the processing previously carried out and does not delete data that must be retained under a legal obligation or for defense of rights."
+          "Each processing operation must have a determined purpose and a compatible legal basis. The table presents the main bases:",
+          "Where the basis is legitimate interest, END ART Studios will assess purpose, necessity, the data subject's reasonable expectation, impacts and safeguards. Where the basis is consent, the manifestation will be free, informed, specific, prominent and revocable.",
+          "Refusal of optional consent will not prevent the use of features that do not depend on that purpose. Revocation does not invalidate processing carried out before it and does not require deletion of data that must be kept under a legal obligation or for defense of rights."
         ],
         "table": {
           "headers": [
             "Purpose",
-            "Data typically involved",
+            "Data involved",
             "Main legal basis"
           ],
           "rows": [
             [
               "Create, authenticate and maintain the account",
-              "Registration, authentication and security",
+              "Registration, credentials and security",
               "Performance of a contract or pre-contractual steps requested by the data subject"
             ],
             [
               "Operate catalog, search, filters, comparison and cart",
               "Preferences, search, comparison and cart",
-              "Performance of the requested feature and legitimate interest, per documented assessment"
+              "Performance of the requested feature and documented legitimate interest"
             ],
             [
-              "Process order, payment, delivery, cancellation and after-sales",
+              "Process orders, payments, delivery and after-sales",
               "Order, contact, address, payment and supplier",
-              "Contract performance; legal obligation where applicable"
+              "Contract performance and compliance with a legal obligation where applicable"
             ],
             [
-              "Display price, currency, exchange rate, availability and lead time",
-              "Product data, currency preference, source and timestamp",
-              "Performance of the requested feature and legitimate interest; consent only when necessary"
+              "Display price, currency, exchange rate, stock and lead time",
+              "Product data, preferences and offer source",
+              "Performance of the requested feature and documented legitimate interest"
             ],
             [
               "Prevent fraud, abuse, intrusion and unlawful use",
@@ -719,42 +718,37 @@
             ],
             [
               "Comply with legal and regulatory obligations",
-              "Orders, documents, records and communications",
+              "Orders, records and communications",
               "Compliance with a legal or regulatory obligation"
             ],
             [
-              "Respond to support and data subject rights",
+              "Answer support and data subject rights",
               "Account data, contact, reference number and request",
-              "Compliance with a legal obligation or regular exercise of rights; contract performance where applicable"
+              "Compliance with a legal obligation, contract performance and regular exercise of rights"
             ],
             [
               "Send operational communications",
-              "E-mail, account, order and preferences",
-              "Contract performance or legitimate interest, depending on the communication"
+              "E-mail, account and order",
+              "Contract performance or legitimate interest, as applicable"
             ],
             [
-              "Send optional promotional communications",
-              "E-mail, preferences and interaction history",
-              "Consent, where required; the data subject may opt out at any time"
+              "Send promotional communications",
+              "E-mail and preferences",
+              "Consent, where required"
             ],
             [
-              "Improve products, security and quality",
-              "Technical data and aggregated or anonymized data",
+              "Improve security, quality and features",
+              "Technical, aggregated or pseudonymized data",
               "Legitimate interest, with minimization and safeguards"
             ],
             [
-              "Produce metrics and reports",
-              "Aggregated, pseudonymized or technical data",
-              "Legitimate interest; anonymization where possible"
+              "Organize the catalog and recommend products",
+              "Product data, specifications, search and preferences",
+              "Performance of the requested feature and legitimate interest; consent where required"
             ],
             [
-              "Organize the catalog and generate AI recommendations",
-              "Product data, specifications, search and non-sensitive preferences",
-              "Feature performance and legitimate interest; consent where required"
-            ],
-            [
-              "Defend rights in proceedings",
-              "Records, orders, communications and evidence",
+              "Defend rights",
+              "Records, orders, support and evidence",
               "Regular exercise of rights in judicial, administrative or arbitration proceedings"
             ]
           ]
@@ -764,8 +758,8 @@
         "id": "compartilhamento",
         "title": "5. Data sharing",
         "body": [
-          "END ART Studios shares data only when necessary, proportionate and compatible with the stated purpose. Recipients and each one's role must be kept up to date in the internal inventory.",
-          "We do not sell personal data. We do not share data for third-party behavioral advertising without a legal basis, transparency and, where necessary, consent. Sharing with a supplier must be limited to the data necessary for the offer, order, delivery, warranty and support, with contractual obligations covering security, confidentiality, data subject rights and incidents."
+          "END ART Studios does not sell personal data. Sharing will occur only when necessary, proportionate and compatible with the stated purposes.",
+          "Suppliers will receive only the data necessary for the offer, order, delivery, warranty, cancellation and support. Providers and suppliers must maintain confidentiality, security, cooperation with data subject rights and incident reporting."
         ],
         "table": {
           "headers": [
@@ -775,44 +769,44 @@
           ],
           "rows": [
             [
-              "Stripe or the processor actually contracted",
-              "Payment, fraud prevention, refund and reconciliation",
+              "Stripe or the indicated processor",
+              "Payment, anti-fraud, authentication, reconciliation and refunds",
               "Operator or independent controller, depending on the service"
             ],
             [
               "Supplier responsible for the offer",
-              "Process order, delivery, support, warranty and cancellation",
-              "Independent controller or operator depending on the operation"
+              "Order processing, delivery, warranty and support",
+              "Independent controller or operator, depending on the operation"
             ],
             [
               "Vercel and hosting/edge providers",
-              "Hosting, security and availability",
+              "Hosting, availability and security",
               "Operator"
             ],
             [
               "Neon or database provider",
-              "Data storage and query",
+              "Storage and query",
               "Operator"
             ],
             [
               "E-mail, support and observability providers",
-              "Communication, support, logs and security",
+              "Support, communication, logs and security",
               "Operator"
             ],
             [
               "AI providers",
-              "Catalog organization and recommendations, without personal data where technically possible",
-              "Operator or controller according to the contract"
+              "Catalog organization and assessment, without personal data where possible",
+              "Operator or controller, according to the contract"
             ],
             [
-              "Public, judicial and administrative authorities",
-              "Comply with a legal order or obligation",
-              "Legal recipient"
-            ],
-            [
-              "Consultants, auditors and advisors",
-              "Security, accounting, legal and defense of rights",
+              "Consultants and auditors",
+              "Security, legal, accounting and defense of rights",
               "Operator or authorized recipient"
+            ],
+            [
+              "Public authorities",
+              "Order, investigation or legal obligation",
+              "Legal recipient"
             ]
           ]
         }
@@ -821,60 +815,60 @@
         "id": "transferencias",
         "title": "6. International transfers",
         "body": [
-          "Some providers may process data outside Brazil, including in the United States or other countries, according to the contracted infrastructure. International transfers will only take place where there is a legal hypothesis and a valid mechanism under the LGPD and ANPD regulation, including an adequacy decision, standard contractual clauses, equivalent clauses, specific clauses, global corporate rules or another applicable legal hypothesis.",
-          "Before transferring data, END ART Studios must keep a record of the recipient, country or region, data categories, purpose, recipient's role, sub-processors, legal mechanism, safeguards and procedure for exercising rights. The existence of a security certification or sectoral compliance, such as PCI-DSS, is not presented in isolation as the basis for the international transfer.",
-          "The providers currently foreseen are: Stripe, Inc. — United States; Vercel, Inc. — United States; Neon, Inc. — United States; OpenAI — United States; and other providers listed in the updated inventory. The list must be corrected before publication if any provider, entity, country or flow differs from the actual operation.",
-          "When the AI provider receives data, END ART Studios will apply minimization, contractual instructions, retention controls, training restrictions and segregation. Users' personal data will not be used to train third-party models without a valid legal basis, transparency and adequate controls."
+          "Some providers may process data outside Brazil, including in the United States or other countries, according to the infrastructure actually contracted. International transfers will only occur where there is a legal hypothesis and a valid mechanism under the LGPD and ANPD regulation.",
+          "Mechanisms may include an adequacy decision, standard contractual clauses, equivalent clauses, specific clauses, global corporate rules or another applicable legal hypothesis. END ART Studios keeps a record of the recipient, country or region, purpose, data categories, recipient's role, sub-processors, adopted mechanism and safeguards.",
+          "Providers that may be involved include Stripe, Vercel, Neon, the AI provider, e-mail, support and security. The identification of the entity, country, role and mechanism must reflect the contracts in force. Sectoral certifications, including PCI-DSS, are considered security measures and do not, by themselves, constitute a legal basis for international transfers.",
+          "END ART Studios applies minimization, purpose restriction, retention controls, confidentiality and security. Personal data will not be used to train third-party models without a legal basis, transparency and appropriate controls."
         ]
       },
       {
         "id": "cookies-armazenamento",
-        "title": "7. Cookies, local storage and similar technologies",
+        "title": "7. Cookies, localStorage and sessionStorage",
         "body": [
-          "ShopFinder may use cookies, localStorage, sessionStorage and similar technologies. Effective processing must be described in the Cookie Policy (/cookies), with name, provider, purpose, duration, category and deactivation mechanism.",
-          "Storage strictly necessary for the functionality requested by the data subject, for security, authentication or transmission of communication may be used without consent where the law allows. Preferences and any analytics, advertising, non-essential personalization or tracking technologies will only be activated with an adequate legal basis and, where necessary, after consent.",
-          "Where there is consent, the data subject will have equivalent options to accept, reject and manage categories, plus permanent access to the preferences panel. Continued browsing will not be used as presumed consent for purposes that require a positive manifestation. Data subjects may revoke or change choices easily."
+          "ShopFinder uses cookies and local or session storage technologies for authentication, security, cart, comparison, language, currency, temporary exchange rate, images, notifications and preferences. The updated list, classification, duration, providers and management options are in the Cookie Policy (/cookies).",
+          "Storage strictly necessary for the requested feature, authentication, security or communication transmission may be used without consent where allowed by law. Optional preferences, analytics, advertising, unnecessary personalization and tracking depend on the applicable legal basis and consent where required.",
+          "Where there is consent, the data subject may accept, reject and manage categories with equivalent options and may change or revoke their choice through the preferences panel."
         ]
       },
       {
         "id": "retencao",
         "title": "8. Retention and deletion",
         "body": [
-          "Data will be kept for the time necessary for the purpose, the contractual relationship, security, handling of rights and legal obligations. The table below is a governance structure and must be filled in and adjusted according to the operation and applicable laws.",
-          "After the period ends, data will be deleted, anonymized or blocked, except where retention is required by legal obligation, regular exercise of rights, fraud prevention or another legal hypothesis. Deleting the account does not necessarily delete records that END ART Studios is required to keep."
+          "Data will be kept for the time necessary for the purpose, the contractual relationship, security, handling of rights and legal obligations.",
+          "After the period ends, data will be deleted, anonymized or blocked, except where retention is required by legal obligation, fraud, audit, regular exercise of rights or another legal hypothesis."
         ],
         "table": {
           "headers": [
             "Record",
-            "Retention criterion"
+            "Criterion"
           ],
           "rows": [
             [
               "Account",
-              "During the life of the account and for up to 180 days after closure for security, audit and defense purposes, unless a request or obligation requires different processing"
+              "While active and for the subsequent period necessary for security, audit and defense of rights"
             ],
             [
-              "Order and payment",
-              "For the period required by tax, accounting, consumer, fraud prevention and defense-of-rights obligations"
+              "Orders and payments",
+              "For the period required by tax, accounting, consumer, anti-fraud and defense obligations"
             ],
             [
               "Access and security logs",
-              "For the period required by the Brazilian Internet Civil Framework, the LGPD and security, limited to what is necessary"
+              "For the period required by the Brazilian Internet Civil Framework, the LGPD, security and operational necessity"
             ],
             [
               "Data subject requests",
-              "For the period necessary to evidence compliance and meet legal obligations"
+              "For the time necessary for response, audit and evidence of compliance"
             ],
             [
               "Consents and preferences",
-              "While valid and for the period necessary to demonstrate the choice and defend rights"
+              "While valid and for the period necessary to demonstrate the choice"
             ],
             [
               "Support and complaints",
-              "For the period necessary for resolution, quality, audit and defense of rights"
+              "For the time necessary for resolution, quality and defense of rights"
             ],
             [
-              "Aggregated/anonymized data",
+              "Aggregated or anonymized data",
               "While useful, provided re-identification is not possible by reasonable means"
             ]
           ]
@@ -882,70 +876,69 @@
       },
       {
         "id": "seguranca",
-        "title": "9. Security and confidentiality",
+        "title": "9. Security",
         "body": [
-          "END ART Studios adopts technical and administrative measures proportionate to the risk, including encryption in transit where applicable, credential protection, access control by need, audit records, vulnerability management, backups, environment segregation, supplier management and training.",
-          "No transmission or storage is absolutely secure. The company reviews its security measures considering the nature of the data, the purpose, the state of the art and the identified risks. The security obligation remains after processing ends to the extent required by law and contracts.",
-          "Data subjects must keep their credentials confidential, use a secure device and immediately report any suspicion of unauthorized access. END ART Studios will never request full passwords by e-mail."
+          "END ART Studios adopts technical and administrative measures proportionate to the risk, including credential protection, encryption in transit where applicable, access control by need, audit records, backups, vulnerability management, environment segregation, provider management and training.",
+          "No transmission or storage is absolutely secure. Data subjects must keep their credentials confidential, use a protected device and report suspected unauthorized access via the official e-mail. END ART Studios will never request full passwords by e-mail."
         ]
       },
       {
         "id": "incidentes",
         "title": "10. Security incidents",
         "body": [
-          "END ART Studios maintains a procedure to identify, contain, investigate, remediate and document incidents. Operators and suppliers must promptly communicate any event to END ART Studios and cooperate with the assessment.",
-          "Where the incident may cause relevant risk or damage to data subjects, END ART Studios will notify the ANPD and affected data subjects within the period and in the form set out in the LGPD and current regulation, including ANPD Resolution No. 15/2024. The notice will state, where applicable, the nature of the data, data subjects involved, risks, protection measures, mitigation measures and contact channel. Notice to the ANPD does not replace notice to data subjects where the latter is required."
+          "END ART Studios maintains a procedure to identify, contain, investigate, remediate and document incidents. Suppliers and operators must promptly report any relevant event and cooperate with the investigation.",
+          "Where the incident may cause relevant risk or damage to data subjects, END ART Studios will notify the ANPD and affected data subjects within the period and in the form set out in the LGPD and current regulation, including ANPD Resolution No. 15/2024. The notice will state, where applicable, the nature of the data, data subjects involved, risks, protection measures and mitigation actions."
         ]
       },
       {
         "id": "ia-decisoes",
-        "title": "11. Artificial intelligence, recommendations and automated decisions",
+        "title": "11. Artificial intelligence and automated decisions",
         "body": [
-          "ShopFinder may use automated rules, statistical models and artificial intelligence tools to normalize information, summarize specifications, identify compatibility, organize the catalog and recommend or order products.",
-          "Outputs may contain errors. Recommendations, Authority and Coverage scores, compatibility or trust indicators do not constitute certification, quality guarantee, manufacturer endorsement, professional advice or a promise of performance. The corresponding page must state the general methodology, sources, update date, limitations and any sponsored placement.",
-          "END ART Studios does not use AI to decide alone on civil rights, credit, mandatory contracting or essential access of the data subject. Where automated processing affects the data subject's interests, they may request information about criteria and procedures and human review, subject to legitimate trade and industrial secrets and legal limits.",
-          "END ART Studios will not use sensitive personal data for ordinary recommendations. Personal data sent to the AI provider will be minimized, pseudonymized or deleted where possible, processed under contract and not used for third-party training without a valid basis."
+          "ShopFinder may use automated rules, statistical models and artificial intelligence to organize the catalog, summarize specifications, identify compatibility, order results, recommend products, detect abuse and improve security.",
+          "Outputs may contain errors, omissions or outdated information. Recommendations, Authority and Coverage scores, compatibility and classifications do not constitute certification, quality guarantee, authenticity, safety, provenance or professional advice.",
+          "END ART Studios does not use AI to decide alone on credit, civil rights or the data subject's essential access. Where automated processing affects the data subject's interests, they may request information about criteria and procedures and human review, subject to legitimate trade and industrial secrets.",
+          "Personal data sent to AI providers will be minimized, pseudonymized or deleted where possible. It will not be used to train third-party models without a legal basis, transparency and appropriate controls."
         ]
       },
       {
         "id": "direitos",
         "title": "12. Data subject rights",
         "body": [
-          "Under the LGPD, data subjects may request, where applicable: confirmation of the existence of processing; access to data; correction of incomplete, inaccurate or outdated data; anonymization, blocking or deletion of unnecessary or unlawfully processed data; portability, subject to regulation; deletion of data processed on the basis of consent, subject to legal exceptions; information about entities with which data has been shared; information about the possibility of not providing consent and its consequences; revocation of consent; objection to processing carried out in certain hypotheses; review of automated decisions; and petition before the ANPD.",
-          "Requests must be sent to the DPO channel. To protect the account, END ART Studios may request proportionate proof of identity or authority, without demanding excessive data. Requests will be answered within the applicable statutory and regulatory periods; the company may provide reasoned notice of legal, technical or operational impossibility, without unduly restricting rights.",
-          "If data subjects consider the response insufficient, they may request reassessment by the DPO and use the ANPD or judicial channels, without prejudice to consumer rights."
+          "Under the LGPD, the data subject may request confirmation of the existence of processing, access, correction, anonymization, blocking or deletion of unnecessary or unlawfully processed data, portability subject to regulation, deletion of consent-based data where applicable, information about sharing, information about the possibility of not providing consent, revocation of consent, objection where applicable, review of automated decisions and other rights provided by law.",
+          "Requests must be sent to endart.studios@gmail.com. Proportionate proof of identity may be requested to prevent fraud. END ART Studios will respond within the applicable statutory and regulatory periods and may explain, in a reasoned manner, limitations arising from legal obligation, security, third-party rights or trade secrets.",
+          "Data subjects may also resort to the ANPD, consumer protection bodies or the courts, without prejudice to their rights."
         ]
       },
       {
         "id": "criancas",
         "title": "13. Children and adolescents",
         "body": [
-          "ShopFinder has a catalog accessible to the public but is not directed at children. Account creation, contracting and data collection must observe legal capacity, best interest, applicable law and age-appropriate protection measures.",
-          "END ART Studios does not intentionally request children's data for purposes incompatible with the LGPD. If improper collection is identified, it will take reasonable measures to verify the occurrence, delete or protect the data and contact a guardian where appropriate. Parents, guardians or adolescents may use the DPO channel to raise questions or request action."
+          "ShopFinder has a catalog accessible to the public but is not directed at children. Account creation, contracting and data processing must observe legal capacity, best interest, applicable law and age-appropriate protection measures.",
+          "END ART Studios does not intentionally request children's data for purposes incompatible with the LGPD. If improper collection is identified, it will take reasonable measures to verify the occurrence, protect or delete the data and contact a guardian where appropriate."
         ]
       },
       {
-        "id": "terceiros-links",
-        "title": "14. Third-party services and external links",
-        "body": "ShopFinder may contain links to or integrations with suppliers, marketplaces, manufacturers, payment processors and other websites. Upon leaving ShopFinder, processing follows the third party's policies and terms. The existence of a link does not imply endorsement, warranty or control by END ART Studios over the content or practices of the third party."
+        "id": "links-terceiros",
+        "title": "14. Links and third-party services",
+        "body": "ShopFinder may contain links to or integrations with suppliers, manufacturers, marketplaces, payment processors and other websites. Upon leaving ShopFinder, processing follows the third party's policies and terms. A link does not mean control, warranty, authenticity, sponsorship or endorsement by END ART Studios."
       },
       {
         "id": "alteracoes",
         "title": "15. Changes to this Policy",
         "body": [
-          "This Policy may be updated to reflect legal, technical, operational or security changes. The current version, the update date and a reasonable version history will be made available on this page.",
-          "Material changes will be communicated by appropriate means and, where required, will depend on new consent or acceptance. Changes will not retroactively reduce rights related to processing already carried out nor modify completed purchase contracts, except on a valid legal basis."
+          "This Policy may be updated to reflect legal, technical, operational or security changes. The current version and the update date will be made available on this page.",
+          "Material changes will be communicated by appropriate means and, where required, will depend on new consent. The update will not retroactively reduce rights related to processing already carried out nor modify completed orders."
         ]
       },
       {
         "id": "lei-contato",
         "title": "16. Governing law and contact",
         "body": [
-          "This Policy will be interpreted according to applicable Brazilian law, especially Law No. 13.709/2018 (LGPD), the Brazilian Internet Civil Framework, the Consumer Defense Code and ANPD rules. Non-waivable rights of data subjects and consumers prevail over any incompatible provision.",
-          "Questions and requests: endart.studios@gmail.com",
-          "General support: endart.studios@gmail.com",
-          "END ART Studios — CNPJ No. 45.370.930/0001-75",
-          "Address: Osasco, São Paulo - Brazil"
+          "This Policy will be interpreted according to applicable Brazilian law, especially the LGPD, the Brazilian Internet Civil Framework, the Consumer Defense Code and ANPD rules. Non-waivable rights of data subjects and consumers will prevail over any incompatible provision.",
+          "END ART Studios — CNPJ: 45.370.930/0001-75",
+          "Location: Osasco, São Paulo — Brazil",
+          "Contact: endart.studios@gmail.com",
+          "Privacy channel: endart.studios@gmail.com"
         ]
       },
       {
@@ -954,11 +947,11 @@
         "body": [
           "Law No. 13.709/2018 — LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
           "Law No. 8.078/1990 — Consumer Defense Code: https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
-          "Decree No. 7.962/2013 — e-commerce: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
-          "ANPD — International Data Transfer and CD/ANPD Resolution No. 19/2024: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
-          "ANPD — Guidance on Cookies and Personal Data Protection: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
-          "Regulation (EU) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-          "ANPD — Security Incident Communication: https://www.gov.br/anpd/pt-br/assuntos/comunicacao-de-incidentes-de-seguranca-cis"
+          "Law No. 12.965/2014 — Brazilian Internet Civil Framework: https://www.planalto.gov.br/ccivil_03/leis/l12965.htm",
+          "ANPD — International Data Transfer: https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
+          "ANPD — Cookies and Personal Data Protection: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
+          "ANPD — Security Incident Communication: https://www.gov.br/anpd/pt-br/assuntos/comunicacao-de-incidentes-de-seguranca-cis",
+          "Regulation (EU) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
         ]
       }
     ]
@@ -977,88 +970,223 @@
   },
   "cookies": {
     "title": "Cookie Policy",
-    "updated": "Last updated: September 1, 2026 · Version 1.1",
-    "whatTitle": "What are cookies?",
-    "what": "Cookies are small files stored by your browser to keep information between visits. We also use local storage (localStorage), which works similarly but is not sent to servers. ShopFinder uses ONLY essential and preference storage: no analytics, advertising or third-party tracking cookies.",
-    "tableTitle": "Cookies and storage we use",
-    "colName": "Name",
-    "colProvider": "Provider",
-    "colDuration": "Duration",
-    "colPurpose": "Purpose",
-    "colType": "Type",
-    "rows": {
-      "cart": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistent (until site data is cleared)",
-        "purpose": "Keep cart items between visits",
-        "type": "Essential"
+    "toc": "Contents",
+    "updated": "Last updated: September 2, 2026 · Version 2.0",
+    "intro": "This Policy explains how ShopFinder, operated by END ART Studios, uses cookies, localStorage, sessionStorage and similar technologies. END ART Studios is identified by the following data: trade name END ART Studios — CNPJ 45.370.930/0001-75, informed location Osasco, São Paulo — Brazil, contact endart.studios@gmail.com, website https://shop-finder-taupe.vercel.app/.",
+    "sections": [
+      {
+        "id": "o-que-sao",
+        "title": "1. What cookies and local storage are",
+        "body": [
+          "Cookies are small files or identifiers stored in the browser or device. They can keep session, preferences, cart, security and other information between visits.",
+          "localStorage and sessionStorage are browser storage mechanisms. Although they do not work exactly like cookies, they can allow scripts to store and read information on the device. For that reason, ShopFinder describes them in this Policy and classifies them according to their purpose.",
+          "The fact that a technology is not automatically sent to the server does not, by itself, mean it is outside the scope of transparency or data protection. The classification considers purpose, necessity and the possibility of association with the user or device."
+        ]
       },
-      "locale": {
-        "provider": "ShopFinder (localStorage + cookie)",
-        "duration": "Persistent (1 year for the cookie)",
-        "purpose": "Interface language",
-        "type": "Preference"
+      {
+        "id": "categorias",
+        "title": "2. Categories used",
+        "body": [
+          "Essential: necessary for authentication, security, fraud prevention, technical operation or making a user-requested feature available. Without them, certain functions may not work.",
+          "Preferences: allow remembering choices such as language, currency, compared items, notifications or other settings. They can be disabled, although this may require setting them again on future visits.",
+          "Analytics and measurement: measure usage and performance to produce statistics or improve the platform. They will not be activated without the applicable legal basis and consent where required.",
+          "Advertising and tracking: used for behavioral advertising, cross-site tracking or advertising profiles. ShopFinder does not use this category in the currently declared configuration. Should it start to, it will update this Policy and request prior consent where necessary."
+        ]
       },
-      "currency": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistent (until site data is cleared)",
-        "purpose": "Currency used to display prices",
-        "type": "Preference"
+      {
+        "id": "inventario",
+        "title": "3. Cookie and storage inventory",
+        "body": [
+          "The list below must reflect the technical inventory currently in use. If the actual implementation uses a different name, provider, duration or purpose, the responsible team must update this Policy before publication.",
+          "The sf:img:* items may contain references to images hosted by third parties. The reference does not automatically authorize use of the image beyond the applicable license nor does it mean that END ART Studios controls the origin server."
+        ],
+        "table": {
+          "headers": [
+            "Name/key",
+            "Technology",
+            "Provider",
+            "Duration",
+            "Category",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "sf:cart",
+              "localStorage",
+              "ShopFinder",
+              "Until site data is cleared or removed by the user",
+              "Essential, when the cart is requested",
+              "Keep cart items"
+            ],
+            [
+              "shopfinder:compare",
+              "localStorage",
+              "ShopFinder",
+              "Until cleared or removed by the user",
+              "Preference/feature",
+              "Keep products selected for comparison"
+            ],
+            [
+              "sf:locale",
+              "localStorage",
+              "ShopFinder",
+              "Until site data is cleared",
+              "Preference",
+              "Remember interface language"
+            ],
+            [
+              "locale",
+              "Cookie, if actually used",
+              "ShopFinder",
+              "Up to 1 year or shorter technical period",
+              "Preference",
+              "Remember interface language"
+            ],
+            [
+              "sf:currency",
+              "localStorage",
+              "ShopFinder",
+              "Until site data is cleared",
+              "Preference",
+              "Remember display currency"
+            ],
+            [
+              "sf:notifications",
+              "localStorage",
+              "ShopFinder",
+              "Until site data is cleared",
+              "Preference",
+              "Remember notification preferences"
+            ],
+            [
+              "shopfinder:read-notifications",
+              "localStorage",
+              "ShopFinder",
+              "Until site data is cleared",
+              "Preference",
+              "Notification bell read state"
+            ],
+            [
+              "sf:fx",
+              "sessionStorage",
+              "ShopFinder",
+              "During the session",
+              "Essential/requested feature",
+              "Keep temporary exchange rate for display conversion"
+            ],
+            [
+              "sf:img:*",
+              "sessionStorage",
+              "ShopFinder",
+              "During the session",
+              "Feature",
+              "Keep temporary references to images displayed in the catalog"
+            ],
+            [
+              "nextauth.message",
+              "localStorage or other storage, if actually used",
+              "NextAuth/ShopFinder",
+              "According to session and technical configuration",
+              "Essential",
+              "Communicate authentication technical state"
+            ],
+            [
+              "next-auth.session-token",
+              "Cookie, if actually used",
+              "ShopFinder/NextAuth",
+              "According to session or up to 30 days, per configuration",
+              "Essential",
+              "Keep authentication secure"
+            ],
+            [
+              "next-auth.csrf-token",
+              "Cookie, if actually used",
+              "ShopFinder/NextAuth",
+              "Session or per configuration",
+              "Essential",
+              "Protection against CSRF attacks"
+            ]
+          ]
+        }
       },
-      "notifications": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistent (until site data is cleared)",
-        "purpose": "Notification preferences",
-        "type": "Preference"
+      {
+        "id": "terceiros",
+        "title": "4. Third-party cookies",
+        "body": [
+          "ShopFinder may use providers for hosting, authentication, payment, security, database, e-mail, observability or artificial intelligence. A technical integration may create or read the provider's own identifiers, even if they do not appear in the list above.",
+          "Before activating any non-essential third-party technology, END ART Studios must register name, domain, provider, purpose, duration, data categories, country, consent mechanism and revocation option. Payment, authentication and security providers may operate technologies strictly necessary to the requested service, according to the current architecture and applicable law.",
+          "END ART Studios does not use third-party advertising, analytics or behavioral tracking cookies in the currently declared configuration. If that configuration changes, this Policy and the consent mechanism will be updated before activation."
+        ]
       },
-      "compare": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistent (until site data is cleared)",
-        "purpose": "Product comparison list",
-        "type": "Preference"
+      {
+        "id": "consentimento",
+        "title": "5. Consent and preference management",
+        "body": [
+          "Strictly necessary technologies may be activated without consent where permitted by law. Preference, analytics, advertising or tracking technologies will be activated according to the applicable legal basis and, where necessary, only after a positive manifestation by the user.",
+          "ShopFinder does not consider the mere continuation of browsing as valid consent for optional purposes. The user must find equivalent options to accept, reject and manage non-essential categories.",
+          "The user may change or revoke their choices through the \"Cookie Preferences\" link, available in the footer or in a permanently accessible location. Revocation does not affect the lawfulness of processing carried out before it, but will stop the optional technologies as soon as technically possible.",
+          "Refusing non-essential cookies will not prevent access to functions that do not depend on them. ShopFinder may keep essential technologies necessary for security, authentication, the requested cart or compliance with a legal obligation."
+        ]
       },
-      "fx": {
-        "provider": "ShopFinder (sessionStorage)",
-        "duration": "Session (until the browser is closed)",
-        "purpose": "USD-BRL exchange rate used in prices",
-        "type": "Preference"
+      {
+        "id": "navegador",
+        "title": "6. How to control technologies in the browser",
+        "body": [
+          "The user can also clear or block cookies and local storage in the browser settings. Blocking essential technologies may prevent login, cart, comparison, security or other features.",
+          "Clearing storage does not necessarily revoke consent records kept securely to evidence a previous choice. To change the consent choice, use ShopFinder's \"Cookie Preferences\" panel."
+        ]
       },
-      "img": {
-        "provider": "ShopFinder (sessionStorage)",
-        "duration": "Session (until the browser is closed)",
-        "purpose": "Product image URL cache (performance)",
-        "type": "Preference"
+      {
+        "id": "relacao-privacidade",
+        "title": "7. Relationship with the Privacy Policy",
+        "body": [
+          "Cookies and storage may contain identifiers or information associable to a natural person. Where that happens, processing will also follow the Privacy Policy (/privacidade), including purposes, legal bases, sharing, international transfers, security, retention and data subject rights.",
+          "The data subject may request confirmation, access, correction, deletion, objection, revocation or other measures via endart.studios@gmail.com, in accordance with the LGPD and applicable law."
+        ]
       },
-      "session": {
-        "provider": "ShopFinder / NextAuth (cookie)",
-        "duration": "30 days (login session)",
-        "purpose": "Keep you securely signed in",
-        "type": "Essential"
+      {
+        "id": "atualizacoes",
+        "title": "8. Updates",
+        "body": [
+          "This Policy may be updated when there is a change of technology, provider, purpose, duration, category, legal basis or legislation. The current version and the update date are available on this page.",
+          "Changes that introduce non-essential technologies will be communicated and submitted to consent where necessary before activation."
+        ]
       },
-      "csrf": {
-        "provider": "ShopFinder / NextAuth (cookie)",
-        "duration": "Session",
-        "purpose": "Protection against CSRF attacks on sign-in",
-        "type": "Essential"
+      {
+        "id": "contato",
+        "title": "9. Contact",
+        "body": [
+          "END ART Studios",
+          "CNPJ: 45.370.930/0001-75",
+          "Location: Osasco, São Paulo — Brazil",
+          "E-mail: endart.studios@gmail.com"
+        ]
       },
-      "notificationsRead": {
-        "provider": "ShopFinder (localStorage)",
-        "duration": "Persistent (until site data is cleared)",
-        "purpose": "Notification bell read state",
-        "type": "Preference"
+      {
+        "id": "referencias",
+        "title": "References",
+        "body": [
+          "Law No. 13.709/2018 — LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+          "ANPD — Guidance on Cookies and Personal Data Protection: https://www.gov.br/anpd/pt-br/assuntos/noticias-periodo-eleitoral/anpd-lanca-guia-orientativo-201ccookies-e-protecao-de-dados-pessoais201d",
+          "Directive 2002/58/EC — ePrivacy: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32002L0058",
+          "Regulation (EU) 2016/679 — GDPR: https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+        ]
       }
-    },
-    "noneTitle": "Analytics and marketing",
-    "none": "We do not use analytics or marketing cookies of any kind.",
-    "manageTitle": "How to manage cookies",
-    "manageIntro": "You can clear cookies and site data at any time in your browser settings:",
-    "chrome": "Chrome: Settings → Privacy and security → Clear browsing data / Site settings",
-    "firefox": "Firefox: Settings → Privacy & Security → Cookies and Site Data",
-    "safari": "Safari: Preferences → Privacy → Manage Website Data",
-    "edge": "Edge: Settings → Cookies and site permissions → Manage and delete cookies",
-    "bannerNote": "Because we use only essential and preference storage — no analytics, advertising or marketing cookies —, no consent banner is shown.",
-    "preferencesNote": "If you disable or clear cookies and site data in your browser, some preferences (language, currency, cart, comparison list) may not persist between visits.",
-    "privacyLink": "See also our Privacy Policy."
+    ],
+    "panel": {
+      "title": "Cookie Preferences",
+      "intro": "Choose which categories of optional technologies you want to allow. Essential technologies cannot be disabled because they are necessary for security, authentication or the operation of features you requested. You can change your choice at any time.",
+      "essentialTitle": "Essential",
+      "essentialDesc": "Authentication, security, fraud prevention, requested cart and technical operation.",
+      "alwaysOn": "Always on",
+      "preferencesTitle": "Preferences",
+      "preferencesDesc": "Language, currency, comparison, notifications and other convenience settings.",
+      "save": "Save preferences",
+      "reject": "Reject non-essential",
+      "savedMsg": "Preferences saved. Your choices have been recorded. You can change them at any time in Cookie Preferences. To learn more about personal data processing, see the Privacy Policy or contact us at endart.studios@gmail.com.",
+      "rejectedMsg": "Optional technologies rejected. We kept only the essential technologies for security and the operation of the requested features. You can change your choice at any time in Cookie Preferences.",
+      "revokedMsg": "Preferences updated. The optional categories were disabled as requested. The change does not affect the lawfulness of processing carried out before the revocation. Some essential technologies will remain active to maintain ShopFinder's security and operation."
+    }
   },
   "scores": {
     "sectionTitle": "Indicator and AI methodology",
