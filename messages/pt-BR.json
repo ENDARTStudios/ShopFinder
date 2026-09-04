@@ -69,7 +69,8 @@
     "compare": "Comparar",
     "addToCart": "Adicionar ao carrinho",
     "buy": "Comprar",
-    "from": "a partir de"
+    "from": "a partir de",
+    "stockAtSupplier": "Disponibilidade confirmada no fornecedor"
   },
   "filter": {
     "title": "Filtros",
@@ -146,7 +147,8 @@
     "offersCount": "em {count, plural, one {# oferta} other {# ofertas}}",
     "relationCompatible": "Compatível",
     "relationSameManufacturer": "Mesmo fabricante",
-    "relationsCount": "{count, plural, one {# relação} other {# relações}}"
+    "relationsCount": "{count, plural, one {# relação} other {# relações}}",
+    "stockAtSupplier": "Disponibilidade confirmada no fornecedor"
   },
   "admin": {
     "title": "Dashboard do Operador",
@@ -215,6 +217,22 @@
       {
         "q": "Como funciona a compatibilidade entre produtos?",
         "a": "O catálogo mantém um grafo de relações (ex.: CPU e placa-mãe com o mesmo socket). Na página de produto você vê o que é compatível antes de comprar, evitando peças que não trabalham juntas."
+      },
+      {
+        "q": "Quem vende e entrega o produto?",
+        "a": "O fornecedor identificado na oferta (ex.: DigiKey, eBay ou o lojista) vende, entrega e dá garantia. A ShopFinder compara, organiza e, quando indicado, intermedia o pedido — você vê quem é o responsável antes de contratar."
+      },
+      {
+        "q": "Como cancelo ou me arrependo da compra?",
+        "a": "Pedidos intermediados têm botão de arrependimento em /conta/pedidos dentro do prazo legal de 7 dias (art. 49 do CDC), com protocolo na hora. Também atendemos pelo e-mail endart.studios@gmail.com."
+      },
+      {
+        "q": "Meus dados estão seguros?",
+        "a": "Sim. Seguimos a LGPD: minimização de dados, senhas protegidas, sem venda de dados e sem rastreamento de terceiros. Detalhes em /privacidade e /cookies."
+      },
+      {
+        "q": "Por que um preço pode mudar?",
+        "a": "Preços vêm dos fornecedores e o câmbio USD→BRL é indicado com data e hora. A oferta exibe \"Atualizado em\" — confirme o valor final no fornecedor antes de contratar."
       }
     ]
   },

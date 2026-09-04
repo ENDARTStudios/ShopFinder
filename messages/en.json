@@ -69,7 +69,8 @@
     "compare": "Compare",
     "from": "from",
     "addToCart": "Add to cart",
-    "buy": "Buy"
+    "buy": "Buy",
+    "stockAtSupplier": "Availability confirmed with the supplier"
   },
   "filter": {
     "title": "Filters",
@@ -146,7 +147,8 @@
     "offersCount": "in {count, plural, one {# offer} other {# offers}}",
     "relationCompatible": "Compatible",
     "relationSameManufacturer": "Same manufacturer",
-    "relationsCount": "{count, plural, one {# relation} other {# relations}}"
+    "relationsCount": "{count, plural, one {# relation} other {# relations}}",
+    "stockAtSupplier": "Availability confirmed with the supplier"
   },
   "admin": {
     "title": "Operator Dashboard",
@@ -203,6 +205,22 @@
       {
         "q": "How does product compatibility work?",
         "a": "The catalog keeps a graph of relations (e.g.: CPU and motherboard with the same socket). On the product page you can see what is compatible before buying, avoiding parts that do not work together."
+      },
+      {
+        "q": "Who sells and ships the product?",
+        "a": "The supplier identified in the offer (e.g., DigiKey, eBay or the retailer) sells, ships and provides the warranty. ShopFinder compares, organizes and, when indicated, intermediates the order — you see who is responsible before contracting."
+      },
+      {
+        "q": "How do I cancel or withdraw from a purchase?",
+        "a": "Intermediated orders have a withdrawal button in /conta/pedidos within the statutory 7-day period (CDC Art. 49), with an instant reference number. We also handle requests at endart.studios@gmail.com."
+      },
+      {
+        "q": "Is my data safe?",
+        "a": "Yes. We follow the LGPD (Brazilian data protection law): data minimization, protected passwords, no data sales and no third-party tracking. Details in /privacidade and /cookies."
+      },
+      {
+        "q": "Why might a price change?",
+        "a": "Prices come from suppliers and the USD→BRL exchange rate is shown with date and time. The offer displays \"Updated at\" — confirm the final price with the supplier before contracting."
       }
     ]
   },

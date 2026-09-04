@@ -374,7 +374,7 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
 
 // ── Niches section (from API) ──────────────────────────────
 
-function NichesSection() {
+function NichesSection({ onExplore }: { onExplore: (nicheId: string) => void }) {
   const t = useTranslations("niches");
   const { data, loading } = useFetch<{ niches: ApiNiche[] }>("/api/catalog?path=niches");
 
@@ -397,6 +397,10 @@ function NichesSection() {
               <FadeInItem key={niche.id}>
                 <a
                   href="#produtos"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onExplore(niche.id);
+                  }}
                   className="group relative block h-full overflow-hidden rounded-2xl border border-border/60 p-6 transition-all hover:border-emerald-500/40 hover:shadow-xl"
                 >
                   <div
@@ -460,14 +464,18 @@ function NichesSection() {
 
 // ── Categories (from API, filtered by niche) ───────────────
 
-function CategoriesSection() {
+function CategoriesSection({ onExplore }: { onExplore: (nicheId: string) => void }) {
   const t = useTranslations("categories");
   const { data, loading } = useFetch<{ categories: ApiCategory[] }>("/api/catalog?path=categories");
   const [activeNiche, setActiveNiche] = React.useState<string>("all");
 
   const categories = data?.categories ?? [];
-  const filtered =
-    activeNiche === "all" ? categories : categories.filter((c) => c.nicheId === activeNiche);
+  // T069 — categorias sem produtos não entram na grade (Monitores, Passivos,
+  // Smart Home no catálogo atual).
+  const filtered = (activeNiche === "all"
+    ? categories
+    : categories.filter((c) => c.nicheId === activeNiche)
+  ).filter((c) => c.productCount > 0);
 
   const nicheTabs = [
     { id: "all", name: t("tabs.all") },
@@ -512,6 +520,10 @@ function CategoriesSection() {
               <FadeInItem key={cat.id}>
                 <a
                   href="#produtos"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onExplore(cat.nicheId);
+                  }}
                   className="group block h-full rounded-2xl border border-border/60 bg-card p-5 transition-all hover:border-emerald-500/40 hover:shadow-lg"
                 >
                   <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-colors group-hover:bg-emerald-500/20">
@@ -936,7 +948,14 @@ function ProductsSection({
                                             : "text-muted-foreground"
                                         }
                                       >
-                                        {offer.inStock ? `${offer.inventory} un.` : "sem estoque"}
+                                        {/* T069 — eBay/marketplace não expõe
+                                            quantidade: nota neutra em vez de
+                                            negar estoque. */}
+                                        {offer.supplier?.code === "ebay"
+                                          ? t("stockAtSupplier")
+                                          : offer.inStock
+                                            ? `${offer.inventory} un.`
+                                            : "sem estoque"}
                                       </span>
                                     </div>
                                   </div>
@@ -1050,13 +1069,23 @@ export function Landing() {
   const [nicheFilter, setNicheFilter] = React.useState<string | null>(null);
   const [filters, setFilters] = React.useState<ProductFilter>(EMPTY_FILTER);
 
+  // T069 — "Explorar nicho": aplica o filtro do nicho e rola até a vitrine.
+  const handleExplore = React.useCallback(
+    (nicheId: string) => {
+      setNicheFilter(nicheId);
+      setFilters(EMPTY_FILTER);
+      document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+    },
+    []
+  );
+
   return (
     <>
       <SiteHeader />
       <main className="flex-1">
         <Hero onSearch={setSearchQuery} />
-        <NichesSection />
-        <CategoriesSection />
+        <NichesSection onExplore={handleExplore} />
+        <CategoriesSection onExplore={handleExplore} />
         <ManufacturersSection />
         <ProductsSection
           searchQuery={searchQuery}

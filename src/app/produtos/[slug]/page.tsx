@@ -185,6 +185,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   );
   const totalStock = product.offers.reduce((sum, o) => sum + o.inventory, 0);
   const inStock = totalStock > 0;
+  // T069 — ofertas de marketplace (eBay) não expõem quantidade: sem dado de
+  // estoque, não assertamos "Esgotado".
+  const knownStock = product.offers.some((o) => (o.externalProvider ?? "") !== "ebay");
 
   // T063 — transparência: momento da última atualização dos dados exibidos.
   const updatedAtFmt = new Intl.DateTimeFormat(locale, {
@@ -258,8 +261,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <Badge variant="outline">{product.category?.name ?? tDetail("noCategory")}</Badge>
                 {inStock ? (
                   <Badge className="bg-emerald-500/90 text-white">{tDetail("inStock")}</Badge>
-                ) : (
+                ) : knownStock ? (
                   <Badge className="bg-amber-500/90 text-white">{tDetail("outOfStock")}</Badge>
+                ) : (
+                  <Badge variant="outline">{tDetail("stockAtSupplier")}</Badge>
                 )}
               </div>
               <h1 className="mb-2 text-3xl font-black tracking-tight">{product.title}</h1>
@@ -475,10 +480,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
-                                  ? tDetail("inStockCount", {
+                                  ? tDetail("offerStock", {
                                       count: formatInventoryCount(offer.inventory, locale)
                                     })
-                                  : tDetail("outOfStockCount")}
+                                  : (offer.externalProvider ?? "") === "ebay"
+                                    ? tDetail("stockAtSupplier")
+                                    : tDetail("outOfStockCount")}
                               </div>
                             </div>
                             <div className="text-right text-[10px] text-muted-foreground">

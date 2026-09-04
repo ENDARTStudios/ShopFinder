@@ -69,7 +69,8 @@
     "compare": "Comparar",
     "from": "desde",
     "addToCart": "Añadir al carrito",
-    "buy": "Comprar"
+    "buy": "Comprar",
+    "stockAtSupplier": "Disponibilidad confirmada con el proveedor"
   },
   "filter": {
     "title": "Filtros",
@@ -146,7 +147,8 @@
     "offersCount": "en {count, plural, one {# oferta} other {# ofertas}}",
     "relationCompatible": "Compatible",
     "relationSameManufacturer": "Mismo fabricante",
-    "relationsCount": "{count, plural, one {# relación} other {# relaciones}}"
+    "relationsCount": "{count, plural, one {# relación} other {# relaciones}}",
+    "stockAtSupplier": "Disponibilidad confirmada con el proveedor"
   },
   "admin": {
     "title": "Panel del operador",
@@ -203,6 +205,22 @@
       {
         "q": "¿Cómo funciona la compatibilidad de productos?",
         "a": "El catálogo mantiene un grafo de relaciones (ej.: CPU y placa madre con el mismo socket) para sugerir combinaciones compatibles."
+      },
+      {
+        "q": "¿Quién vende y entrega el producto?",
+        "a": "El proveedor identificado en la oferta (ej.: DigiKey, eBay o el comercio) vende, entrega y da garantía. ShopFinder compara, organiza y, cuando se indica, intermedia el pedido — ves quién es el responsable antes de contratar."
+      },
+      {
+        "q": "¿Cómo cancelo o me arrepiento de una compra?",
+        "a": "Los pedidos intermediados tienen botón de desistimiento en /conta/pedidos dentro del plazo legal de 7 días (art. 49 del CDC), con protocolo al instante. También atendemos por endart.studios@gmail.com."
+      },
+      {
+        "q": "¿Mis datos están seguros?",
+        "a": "Sí. Seguimos la LGPD (ley brasileña de protección de datos): minimización de datos, contraseñas protegidas, sin venta de datos y sin rastreo de terceros. Detalles en /privacidade y /cookies."
+      },
+      {
+        "q": "¿Por qué puede cambiar un precio?",
+        "a": "Los precios vienen de los proveedores y el tipo de cambio USD→BRL se indica con fecha y hora. La oferta muestra \"Actualizado el\" — confirma el valor final con el proveedor antes de contratar."
       }
     ]
   },

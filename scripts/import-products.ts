@@ -72,7 +72,8 @@ function slugify(title: string, sku: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, 60)
     .replace(/-+$/g, "");
-  return `${base || "produto"}-${sku.toLowerCase()}`;
+  const skuSlug = sku.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return `${base || "produto"}-${skuSlug}`;
 }
 
 async function importDigiKey(): Promise<NormalizedHit[]> {
