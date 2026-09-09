@@ -13,15 +13,30 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   // SDKs de observabilidade rodam externos ao bundle do servidor
-  // (docs/eng/OBSERVABILITY.md — instrumentation.ts os importa em runtime)
-  serverExternalPackages: [
-    "@opentelemetry/api",
-    "@opentelemetry/sdk-node",
-    "@opentelemetry/resources",
-    "@opentelemetry/semantic-conventions",
-    "@opentelemetry/auto-instrumentations-node",
-    "@opentelemetry/exporter-trace-otlp-http"
-  ],
+  // (docs/eng/OBSERVABILITY.md — instrumentation.ts os importa em runtime).
+  // T070: a stack OTel saiu desta lista — serverExternalPackages copia o
+  // pacote INTEIRO para cada função (ignora outputFileTracingExcludes), e o
+  // OTel é peso morto sem OTEL_EXPORTER_OTLP_ENDPOINT (instrumentation.ts
+  // guarda por env). Para reativar: devolver os pacotes à lista E remover as
+  // outputFileTracingExcludes de @opentelemetry abaixo.
+  serverExternalPackages: [],
+  // T070 — peso morto FORA do bundle serverless. A stack OTel (e os hooks
+  // import-in-the-middle/require-in-the-middle + systeminformation) só roda
+  // quando OTEL_EXPORTER_OTLP_ENDPOINT está configurado — hoje não está em
+  // produção (src/instrumentation.ts guarda por env). bullmq é exportado pelo
+  // barrel do infrastructure mas nenhuma rota o importa. Para REATIVAR OTel,
+  // remover estas exclusões e redeployar. Prisma engine NÃO é excluído.
+  outputFileTracingExcludes: {
+    "*": [
+      "**/node_modules/@opentelemetry/**",
+      "**/node_modules/import-in-the-middle/**",
+      "**/node_modules/require-in-the-middle/**",
+      "**/node_modules/systeminformation/**",
+      "**/node_modules/@grpc/**",
+      "**/node_modules/protobufjs/**",
+      "**/node_modules/bullmq/**"
+    ]
+  },
   // Security headers — docs/eng/SECURITY.md (TLS Full (Strict) na edge)
   async headers() {
     return [

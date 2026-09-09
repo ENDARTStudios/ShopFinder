@@ -178,7 +178,29 @@ Stripe e substituir `STRIPE_WEBHOOK_SECRET` (Redeploy).
 
 ---
 
-## 8. Incidentes básicos
+## 8. Limpeza de Functions Storage (deployments)
+
+A Vercel retém o bundle serverless de **cada deployment** (~centenas de MB cada
+— Prisma engine + dependências traçadas). Sem limpeza, o "Functions Storage"
+acumula GB (pico histórico: 8,74 GB em ~29 deployments).
+
+**Rotina (2 min, libera GB na hora, sem afetar o site):**
+
+1. Vercel → projeto `shop-finder` → aba **Deployments**.
+2. Para cada deployment antigo: menu **⋯ → Delete**. Confirme.
+3. **Nunca delete** o deployment de produção atual nem os 2–3 mais recentes
+   (são seu rollback imediato).
+4. Frequência sugerida: **semanal**, ou após rajadas de commits (cada push
+   cria um deployment novo).
+5. Confira em **Settings → Usage** o gráfico de Functions Storage cair.
+
+Complemento técnico (T070): o bundle por deployment foi reduzido excluindo do
+traçado serverless a stack OTel + bullmq (peso morto sem
+`OTEL_EXPORTER_OTLP_ENDPOINT`) — ver `next.config.ts`
+(`outputFileTracingExcludes`). **Se um dia a observabilidade OTel for
+ativada, remover essas exclusões e redeployar** (Sentry permanece no bundle).
+
+## 9. Incidentes básicos
 
 **Site fora / 500 geral**
 1. Vercel → Deployments: o último deploy está `Ready`? Se `Error`: abrir Build
@@ -214,7 +236,7 @@ fallback documentado no código.
 
 ---
 
-## 9. Pendências do Operador
+## 10. Pendências do Operador
 
 1. **Endereço completo** (rua/número) para §1 da Política de Privacidade —
    hoje "Osasco, São Paulo - Brasil" nos 3 locales (`messages/*.json`) e em
