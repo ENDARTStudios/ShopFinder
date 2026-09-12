@@ -39,3 +39,12 @@ test-results/
 reports/
 .vercel
 .env.local
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Build/dev artifacts — regenerados, nunca versionados (T065-chore/44)
+next-env.d.ts
+*.tsbuildinfo
+dev.log
+server.log

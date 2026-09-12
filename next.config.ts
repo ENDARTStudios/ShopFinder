@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   // o builder faz o próprio bundling — com standalone o build do Next 16
   // falha com ENOENT em .next/next-server.js.nft.json.
   output: process.env.VERCEL ? undefined : "standalone",
+  // Robustez: `next dev` e `next build` usam diretórios separados — um build
+  // de produção não corrompe mais o servidor de desenvolvimento (e vice-
+  // versa). A Vercel e o standalone seguem no .next (NODE_ENV=production).
+  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   typescript: {
     ignoreBuildErrors: false
   },
