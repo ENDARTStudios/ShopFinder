@@ -99,7 +99,8 @@
     "statPipelineValue": "layered"
   },
   "footer": {
-    "rights": "Copyright © 2026 END ART"
+    "rights": "Copyright © 2026 END ART",
+    "affiliateDisclosure": "As an Amazon Associate, END ART Studios may earn a commission on qualifying purchases. The commission is paid by the retailer and does not change the displayed price."
   },
   "language": {
     "label": "Language",
@@ -148,7 +149,9 @@
     "relationCompatible": "Compatible",
     "relationSameManufacturer": "Same manufacturer",
     "relationsCount": "{count, plural, one {# relation} other {# relations}}",
-    "stockAtSupplier": "Availability confirmed with the supplier"
+    "stockAtSupplier": "Availability confirmed with the supplier",
+    "viewOnAmazon": "View offer on Amazon",
+    "affiliateDisclosure": "As an Amazon Associate, END ART Studios may earn a commission on qualifying purchases. The commission is paid by the retailer and does not change the displayed price."
   },
   "admin": {
     "title": "Operator Dashboard",

@@ -47,6 +47,7 @@ import { ProductImage } from "@/components/site/product-image";
 import { FadeIn } from "@/components/motion/fade-in";
 import { FxNote } from "@/components/site/fx-note";
 import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
+import { buildAmazonOfferUrl } from "@/lib/amazon-affiliate";
 import { formatInventoryCount, humanizeSpecName, supplierDisplayName } from "@/lib/spec-labels";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -501,12 +502,41 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               </div>
                             </div>
                           </div>
+                          {/* T071 — link de saída com tag de Associado (somente
+                              Amazon; URL montada idempotentemente server-side). */}
+                          {(() => {
+                            const offerUrl =
+                              (offer.externalProvider ?? "") === "amazon"
+                                ? buildAmazonOfferUrl(offer.externalId ?? "")
+                                : null;
+                            return offerUrl ? (
+                              <a
+                                href={offerUrl}
+                                target="_blank"
+                                rel="sponsored noopener noreferrer"
+                                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-500 hover:underline"
+                              >
+                                {tDetail("viewOnAmazon")}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : null;
+                          })()}
                         </div>
                       );
                     })}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">{tDetail("noOffers")}</p>
+                )}
+
+                {/* T071 — disclosure de afiliado (CDC art. 36): publicidade
+                    identificável quando a oferta é Amazon/Associado. */}
+                {product.offers.some(
+                  (o) => (o.externalProvider ?? "") === "amazon"
+                ) && (
+                  <p className="mt-4 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+                    {tDetail("affiliateDisclosure")}
+                  </p>
                 )}
 
                 {/* T063 — transparência da oferta: fonte por oferta (nome do

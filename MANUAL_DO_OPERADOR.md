@@ -175,6 +175,7 @@ Stripe e substituir `STRIPE_WEBHOOK_SECRET` (Redeploy).
 | **DigiKey** | API Console: client ativo, quota de requisições, validade do OAuth2. `test-digikey-connector` é o canário. |
 | **Neon** | Console do banco de PRODUÇÃO: consumo do plano, branches e o SQL Editor (§4). Confira SEMPRE o nome do projeto antes de rodar SQL. |
 | **Vercel** | Deployments (status/erro), Runtime Logs (500s), Settings → Environment Variables (inventário de segredos), Domains. |
+| **Amazon (afiliados/PA-API)** | Affiliate Central: relatório de cliques/vendas pela tag `shopfinder01-20` (`AMAZON_ASSOCIATE_TAG`). **PA-API de Produto só após 3 vendas qualificadas em 180 dias** — quando atingir, requisitar acesso no Affiliate Central e abrir issue para o Doer integrar (hoje não há PA-API no código; as 22 ofertas Amazon do seed são o catálogo). |
 
 ---
 

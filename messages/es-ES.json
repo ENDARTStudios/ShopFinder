@@ -99,7 +99,8 @@
     "statPipelineValue": "en capas"
   },
   "footer": {
-    "rights": "Copyright © 2026 END ART"
+    "rights": "Copyright © 2026 END ART",
+    "affiliateDisclosure": "Como Afiliado de Amazon, END ART Studios puede recibir comisión por compras calificadas. La comisión la paga el minorista y no altera el precio mostrado."
   },
   "language": {
     "label": "Idioma",
@@ -148,7 +149,9 @@
     "relationCompatible": "Compatible",
     "relationSameManufacturer": "Mismo fabricante",
     "relationsCount": "{count, plural, one {# relación} other {# relaciones}}",
-    "stockAtSupplier": "Disponibilidad confirmada con el proveedor"
+    "stockAtSupplier": "Disponibilidad confirmada con el proveedor",
+    "viewOnAmazon": "Ver oferta en Amazon",
+    "affiliateDisclosure": "Como Afiliado de Amazon, END ART Studios puede recibir comisión por compras calificadas. La comisión la paga el minorista y no altera el precio mostrado."
   },
   "admin": {
     "title": "Panel del operador",

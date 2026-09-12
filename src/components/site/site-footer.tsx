@@ -81,6 +81,11 @@ export function SiteFooter() {
             Copyright © {new Date().getFullYear()} {company.legalName}
           </div>
         </div>
+        {/* T071 — disclosure de afiliado Amazon (CDC art. 36): publicidade
+            identificável, permanente e visível em todas as páginas. */}
+        <p className="mt-3 border-t border-border/40 pt-3 text-[10px] leading-relaxed text-muted-foreground">
+          {tFooter("affiliateDisclosure")}
+        </p>
       </div>
     </footer>
   );
