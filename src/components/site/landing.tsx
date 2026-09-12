@@ -93,8 +93,7 @@ export interface ApiProduct {
   inStock: boolean;
   stockCount: number;
   suppliers: number;
-  rating: number;
-  reviewCount: number;
+  imageUrl: string | null;
   imageGradient: string;
   imageLabel: string;
   specs: Array<{ name: string; value: string }>;
@@ -845,11 +844,24 @@ function ProductsSection({
                             }
                             gradient={product.imageGradient}
                             label={product.imageLabel}
+                            src={product.imageUrl ?? undefined}
                             className="absolute inset-0"
                           />
+                          {/* T069 — marketplace sem dado de quantidade (eBay):
+                              nota neutra em vez de negar estoque. */}
                           {product.inStock ? (
                             <Badge className="absolute right-3 top-3 bg-emerald-500/90 text-white">
                               {t("inStock")}
+                            </Badge>
+                          ) : product.offers.length > 0 &&
+                            product.offers.every(
+                              (o) => o.supplier?.code === "ebay"
+                            ) ? (
+                            <Badge
+                              variant="outline"
+                              className="absolute right-3 top-3 bg-background/90 text-[10px]"
+                            >
+                              {t("stockAtSupplier")}
                             </Badge>
                           ) : (
                             <Badge className="absolute right-3 top-3 bg-amber-500/90 text-white">
@@ -893,11 +905,9 @@ function ProductsSection({
                           </div>
 
                           <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                            <span className="font-medium text-foreground">{product.rating}</span>
-                            <span>({product.reviewCount.toLocaleString()})</span>
-                            <span className="mx-1">·</span>
-                            <span>{t("suppliers", { count: product.suppliers })}</span>
+                            <span className="font-medium text-foreground">
+                              {t("suppliers", { count: product.suppliers })}
+                            </span>
                           </div>
 
                           <div className="flex items-end justify-between">
@@ -906,11 +916,6 @@ function ProductsSection({
                                 {t("from")}
                               </span>
                               <Price amount={product.priceRange.min} currency={product.currency} />
-                              <PriceRange
-                                min={product.priceRange.min}
-                                max={product.priceRange.max}
-                                currency={product.currency}
-                              />
                             </div>
                             <CompareButton
                               slug={product.slug}

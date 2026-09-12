@@ -68,9 +68,10 @@ export function PriceRange({ min, max, currency, size = "default" }: PriceRangeP
     size === "large" ? "text-2xl font-bold" : "text-sm font-semibold text-foreground";
 
   const single = min === max;
+  // T071 — converte pela taxa antes de rotular BRL (antes: USD relabelado R$).
   const brlLine = single
-    ? formatCurrency(min, "BRL")
-    : `${formatCurrency(min, "BRL")} – ${formatCurrency(max, "BRL")}`;
+    ? formatCurrency(min * rate, "BRL")
+    : `${formatCurrency(min * rate, "BRL")} – ${formatCurrency(max * rate, "BRL")}`;
 
   if (upper === "BRL") {
     return <span className={`${mainClass} tabular-nums`}>{brlLine}</span>;

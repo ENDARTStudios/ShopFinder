@@ -56,9 +56,16 @@ interface ProductImageProps {
   label: string;
   /** Classes do container visual (ex.: "absolute inset-0"). */
   className?: string;
+  /**
+   * T071 — URL direta de imagem (ex.: ProductMedia de produtos importados).
+   * Quando presente, tem prioridade sobre a busca na Commons; erro de load
+   * cai no fluxo Wikimedia/gradiente existente.
+   */
+  src?: string | null;
 }
 
-export function ProductImage({ query, gradient, label, className = "" }: ProductImageProps) {
+export function ProductImage({ query, gradient, label, className = "", src }: ProductImageProps) {
+  const [directFailed, setDirectFailed] = React.useState(false);
   const [state, setState] = React.useState<{
     query: string;
     src: string | null;
@@ -75,8 +82,10 @@ export function ProductImage({ query, gradient, label, className = "" }: Product
     setState({ query, src: cached ?? null, resolved: cached !== undefined });
   }
 
+  const useDirect = Boolean(src) && !directFailed;
+
   React.useEffect(() => {
-    if (state.query !== query || state.resolved) return;
+    if (useDirect || state.query !== query || state.resolved) return;
 
     let alive = true;
     const controller = new AbortController();
@@ -111,13 +120,22 @@ export function ProductImage({ query, gradient, label, className = "" }: Product
     };
   }, [query, state.query, state.resolved]);
 
-  const src = state.query === query ? state.src : null;
+  const wikimediaSrc = state.query === query ? state.src : null;
 
   return (
     <div className={className} style={{ background: gradient }}>
-      {src ? (
+      {useDirect ? (
         <img
-          src={src}
+          src={src ?? undefined}
+          alt={label}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setDirectFailed(true)}
+          className="h-full w-full object-cover"
+        />
+      ) : wikimediaSrc ? (
+        <img
+          src={wikimediaSrc}
           alt={label}
           width={640}
           height={480}

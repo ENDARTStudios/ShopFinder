@@ -172,6 +172,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     ? primaryMedia.url.replace("data:gradient;", "")
     : "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)";
   const imageLabel = primaryMedia?.altText ?? product.title;
+  // T071 — imagem real de ProductMedia tem prioridade sobre a busca Wikimedia
+  const imageUrl = primaryMedia?.url?.startsWith("http") ? primaryMedia.url : null;
 
   // Separate enriched attributes (with source) from plain ones
   const enrichedAttrs = product.attributes.filter((a) => a.source !== null);
@@ -251,6 +253,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 query={imageQuery}
                 gradient={imageGradient}
                 label={imageLabel}
+                src={imageUrl}
                 className="absolute inset-0"
               />
             </div>
@@ -283,7 +286,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  {tDetail("stockCount", { count: formatInventoryCount(totalStock, locale) })}
+                  {tDetail("unitsInStock", { count: formatInventoryCount(totalStock, locale) })}
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -480,7 +483,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               <Price amount={price} currency="USD" />
                               <div className="text-xs text-muted-foreground">
                                 {offer.inventory > 0
-                                  ? tDetail("offerStock", {
+                                  ? tDetail("inStockCount", {
                                       count: formatInventoryCount(offer.inventory, locale)
                                     })
                                   : (offer.externalProvider ?? "") === "ebay"
