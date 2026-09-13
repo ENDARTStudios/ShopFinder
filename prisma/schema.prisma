@@ -881,3 +881,30 @@ model IdempotencyKey {
 
   @@index([scope, expiresAt])
 }
+
+// T075 — lista de espera do pré-lançamento (email capture, cookieless)
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  niche     String?
+  locale    String   @default("pt-BR")
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// T077 — analytics first-party cookieless: agregados sem cookie, sem IP
+// cru e sem identificadores (apenas path, host de origem e classe de
+// dispositivo). Não entra no inventário de /cookies (nada é armazenado
+// no navegador do usuário).
+model AnalyticsPageView {
+  id           String   @id @default(cuid())
+  path         String
+  referrerHost String?
+  device       String   @default("desktop") // desktop | mobile | tablet
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+}

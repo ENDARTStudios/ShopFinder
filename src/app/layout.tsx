@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { CompareProvider } from "@/contexts/compare-context";
 import { CartProvider } from "@/context/cart-context";
 import { CartDrawer } from "@/components/site/cart-drawer";
@@ -122,6 +123,8 @@ export default async function RootLayout({
                 </div>
                 <CartDrawer />
                 <Toaster />
+                {/* T077 — pageview first-party cookieless (DECISAO-ANALYTICS-001) */}
+                <PageViewTracker />
               </CartProvider>
             </CompareProvider>
           </ThemeProvider>
