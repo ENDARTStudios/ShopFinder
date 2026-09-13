@@ -163,7 +163,7 @@ export async function generateMetadata({
     ...meta,
     openGraph: {
       ...(meta.openGraph ?? {}),
-      title: `${product.title} — a partir de R$ ${brl}`
+      title: `${product.title} — a partir de ${brl}`
     }
   };
 }
