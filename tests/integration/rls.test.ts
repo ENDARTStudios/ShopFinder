@@ -55,15 +55,16 @@ describe("RLS — isolamento por tenant", () => {
     );
     await tenantDb.$executeRawUnsafe(`SELECT set_config('app.user_role', 'admin', false)`);
 
-    // Desenho (RLS.md §5): public_read_catalog libera PRODUTOS PUBLICADOS
-    // para leitura anônima. O invariante de isolamento é: nenhum dado
-    // NÃO-público (draft/review/archived) e nenhum dado sensível de outra
-    // loja (Customer é PII) vaza para quem está fora do tenant.
+    // Desenho (RLS.md §5): a política public_read_catalog libera PRODUTOS
+    // PUBLICADOS para leitura anônima. O invariante de isolamento é: nenhum
+    // dado NÃO-público (draft/review/archived) e nenhum dado sensível de
+    // outra loja (Customer) pode vazar para quem está fora do tenant.
     const nonPublic = await tenantDb.$queryRaw<
       Array<{ status: string }>
     >`SELECT "status" FROM "Product" WHERE "status" <> 'published' LIMIT 5`;
     expect(nonPublic).toHaveLength(0); // leak de não-publicado = falha
 
+    // Customers de outro tenant são PII — sempre 0 para fora do tenant
     const leakedCustomers = await tenantDb.$queryRaw<
       Array<{ id: string }>
     >`SELECT "id" FROM "Customer" LIMIT 5`;
