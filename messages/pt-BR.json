@@ -1223,5 +1223,24 @@
     "limitations": "Limitações: os indicadores podem conter erros; não são certificação, garantia de qualidade, endosso do fabricante ou recomendação oficial.",
     "notSponsored": "Ranking não patrocinado: nenhuma remuneração, publicidade ou destaque pago altera a pontuação.",
     "contest": "Quer contestar uma informação ou pontuação? Fale com a gente pelo /contato ou endart.studios@gmail.com."
+  },
+  "waitlist": {
+    "title": "ShopFinder — compare preços, specs e disponibilidade em um só lugar",
+    "subtitle": "Receba o convite quando abrirmos o beta público",
+    "emailLabel": "Seu e-mail",
+    "emailPlaceholder": "voce@email.com",
+    "nicheLabel": "Nicho preferido (opcional)",
+    "nicheAny": "Indiferente",
+    "nichePc": "PC Hardware & Gamer",
+    "nicheComponents": "Componentes Eletrônicos",
+    "nicheConsumer": "Eletrônicos de Consumo",
+    "cta": "Quero ser avisado",
+    "ctaLoading": "Enviando…",
+    "ctaRetry": "Tentar de novo",
+    "disclaimer": "Não enviamos spam. Você pode cancelar a qualquer momento.",
+    "successTitle": "Obrigado!",
+    "successBody": "Avisaremos em {email} quando o beta abrir.",
+    "alreadyTitle": "Você já está na lista",
+    "errorMsg": "Algo deu errado ao enviar."
   }
 }
