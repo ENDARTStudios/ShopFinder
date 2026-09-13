@@ -18,6 +18,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@workspace/database";
 import { verifyPassword } from "./password";
 import { resolvePermissions, type Role } from "@workspace/application";
+import { isFlagEnabled } from "@workspace/config/flags";
+import { verifyTotp } from "./totp";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -25,7 +27,8 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        totpCode: { label: "2FA code", type: "text" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -42,6 +45,8 @@ export const authOptions: NextAuthOptions = {
             status: true,
             storeId: true,
             supplierId: true,
+            mfaSecret: true,
+            mfaEnabled: true,
             customer: { select: { id: true } }
           }
         });
@@ -57,6 +62,22 @@ export const authOptions: NextAuthOptions = {
           roles = JSON.parse(user.roles) as Role[];
         } catch {
           roles = ["customer"];
+        }
+
+        // ── MFA TOTP (#22) ──────────────────────────────────────
+        // Obrigatório para roles admin quando a flag mfa_admin está ativa
+        // e o usuário concluiu o enrollment (docs/eng/RBAC.md).
+        const mfaRequired =
+          isFlagEnabled("mfa_admin") &&
+          roles.includes("admin") &&
+          user.mfaEnabled &&
+          Boolean(user.mfaSecret);
+
+        if (mfaRequired) {
+          const code = (credentials as { totpCode?: string }).totpCode ?? "";
+          if (!code || !verifyTotp(user.mfaSecret!, code)) {
+            return null;
+          }
         }
 
         const permissions = resolvePermissions(roles);

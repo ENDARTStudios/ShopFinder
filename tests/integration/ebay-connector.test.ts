@@ -67,11 +67,11 @@ describe("EbayConnector mode resolution", () => {
   it("should accept an injected transport for testing", () => {
     const mockTransport: Transport = {
       kind: "mock",
-      async execute() {
+      async execute<T = unknown>() {
         return {
           status: 200,
           headers: {},
-          body: {},
+          body: {} as T,
           source: "mock",
           durationMs: 1
         };

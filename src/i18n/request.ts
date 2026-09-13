@@ -11,15 +11,14 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies } from "next/headers";
 
-export const locales = ["pt-BR", "en"] as const;
+export const locales = ["pt-BR", "en", "es-ES"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "pt-BR";
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
   const cookie = cookieStore.get("locale")?.value;
-  const locale: Locale =
-    cookie === "en" || cookie === "pt-BR" ? cookie : defaultLocale;
+  const locale: Locale = cookie === "en" || cookie === "pt-BR" || cookie === "es-ES" ? cookie : defaultLocale;
 
   return {
     locale,

@@ -1,0 +1,24 @@
+name: Lighthouse CI
+
+# Auditoria semanal de performance/SEO/A11y contra a produção (#34,
+# docs/eng/SEO-AEO-AIO-GEO.md). Lembrete trimestral de crawl com
+# Screaming Frog fica no issue tracker (ação manual).
+on:
+  schedule:
+    - cron: "0 6 * * 1" # segundas, 06:00
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://shop-finder-taupe.vercel.app/
+            https://shop-finder-taupe.vercel.app/compare
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

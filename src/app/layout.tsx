@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
 import { CompareProvider } from "@/contexts/compare-context";
+import { CartProvider } from "@/context/cart-context";
+import { CartDrawer } from "@/components/site/cart-drawer";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -34,7 +36,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = t("tagline");
 
   return {
-    metadataBase: new URL("https://shopfinder.local"),
+    // Base para URLs relativas de metadados (og:image, twitter:image) —
+    // o domínio real vem de NEXT_PUBLIC_SITE_URL; sem ele, URLs relativas
+    // ficam sem host (melhor que o placeholder shopfinder.local em produção).
+    metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+      : null,
     title: {
       default: `${BRAND_NAME} — ${tagline}`,
       template: `%s · ${BRAND_NAME}`
@@ -108,11 +115,14 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <CompareProvider>
-              <div className="flex min-h-screen flex-col">
-                {children}
-                <SiteFooter />
-              </div>
-              <Toaster />
+              <CartProvider>
+                <div className="flex min-h-screen flex-col">
+                  {children}
+                  <SiteFooter />
+                </div>
+                <CartDrawer />
+                <Toaster />
+              </CartProvider>
             </CompareProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

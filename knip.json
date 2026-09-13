@@ -1,0 +1,31 @@
+{
+  "$schema": "https://unpkg.com/knip-json-schema@6.json",
+  "workspaces": {
+    ".": {
+      "entry": [
+        "src/app/**/{page,layout,loading,error,global-error,not-found,route,template,sitemap,robots,opengraph-image,twitter-image,apple-icon,icon}.{}",
+        "src/instrumentation.ts",
+        "scripts/*.{}",
+        "tests/unit/*.test.ts",
+        "tests/integration/*.test.ts",
+        "tests/e2e/*.spec.ts",
+        "packages/*/src/index.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "scripts/*.{ts,mjs}", "tests/**/*.{ts,tsx}"]
+    }
+  },
+  "ignore": [
+    // Gerados / build / docs — fora do alcance do dead-code
+    ".next/**",
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
+    "docs/**"
+  ],
+  "ignoreDependencies": [
+    // tw-animate-css é importado via CSS (globals.css) — invisível ao Knip
+    "tw-animate-css"
+  ],
+  "ignoreBinaries": ["turbo"],
+  "include": ["exports", "dependencies"]
+}

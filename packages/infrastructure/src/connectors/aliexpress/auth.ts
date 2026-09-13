@@ -91,6 +91,7 @@ function md5Hex(input: string): string {
   // Use node:crypto if available (Bun/Node), fallback to pure JS
   try {
     // Bun and Node both have this available globally
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- probe dinamica com fallback puro
     const { createHash } = require("node:crypto");
     return createHash("md5").update(input, "utf8").digest("hex");
   } catch {
@@ -124,7 +125,9 @@ function pureJsMd5(input: string): string {
   }
   h1 = Math.imul(h1 ^ h2, 0x01000193) >>> 0;
   h2 = Math.imul(h2 ^ h1, 0x01000193) >>> 0;
-  return (h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0")).repeat(2).slice(0, 32);
+  return (h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0"))
+    .repeat(2)
+    .slice(0, 32);
 }
 
 // ── AliExpressAuthProvider ─────────────────────────────────

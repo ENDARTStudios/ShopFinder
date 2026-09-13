@@ -77,6 +77,7 @@ export const ConnectorErrors = {
     code: "UNKNOWN",
     message: cause instanceof Error ? cause.message : String(cause),
     retriable: false,
+    statusCode: 500,
     cause
   })
 } as const;
@@ -84,7 +85,11 @@ export const ConnectorErrors = {
 /**
  * Map an HTTP status code to a connector error.
  */
-export function fromHttpStatus(status: number, body: string, url: string): {
+export function fromHttpStatus(
+  status: number,
+  body: string,
+  url: string
+): {
   code: string;
   message: string;
   retriable: boolean;

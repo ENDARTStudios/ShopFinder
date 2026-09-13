@@ -22,6 +22,9 @@ const eslintConfig = [
       // React rules
       "react-hooks/exhaustive-deps": "off",
       "react-hooks/purity": "off",
+      // Novo rule do react-hooks v7 — a base tem ~16 padrões de sync-on-mount
+      // (storage/hydration). Triagem por componente antes de promover a error (#36).
+      "react-hooks/set-state-in-effect": "warn",
       "react/no-unescaped-entities": "off",
       "react/display-name": "off",
       "react/prop-types": "off",
@@ -48,6 +51,13 @@ const eslintConfig = [
     }
   },
   {
+    // Scripts legados one-shot e artefatos de log usam require()/CJS por natureza
+    files: ["scripts/**", "tool-results/**", "**/*.cjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off"
+    }
+  },
+  {
     ignores: [
       "node_modules/**",
       ".next/**",
@@ -55,7 +65,8 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
       "examples/**",
-      "skills"
+      "skills",
+      "tool-results/**"
     ]
   }
 ];

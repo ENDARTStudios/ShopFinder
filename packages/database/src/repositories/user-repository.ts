@@ -49,7 +49,7 @@ export class PrismaUserRepository
       roles = ["customer"];
     }
     return {
-      id: prisma.id,
+      id: prisma.id as UserId,
       email: prisma.email,
       passwordHash: prisma.passwordHash,
       roles,

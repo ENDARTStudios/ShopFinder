@@ -347,3 +347,12 @@ export const PaymentPolicy = {
   canInitiate: (c: RequestContext) => c.auth.isAuthenticated,
   canRefund: (c: RequestContext) => c.auth.permissions.includes("payment.refund")
 };
+
+// ── CQRS registries (commands/queries com schema Zod) ──────
+export * from "./commands";
+
+// ── Handlers de command/query ──────────────────────────────
+export * from "./handlers";
+
+// ── Query definitions (queries com schema Zod) ─────────────
+export * from "./queries";

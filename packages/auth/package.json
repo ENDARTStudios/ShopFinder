@@ -22,5 +22,8 @@
   },
   "publishConfig": {
     "access": "restricted"
+  },
+  "dependencies": {
+    "@workspace/config": "workspace:*"
   }
 }
