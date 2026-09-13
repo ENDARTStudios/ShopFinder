@@ -47,6 +47,7 @@ import { ProductImage } from "@/components/site/product-image";
 import { FadeIn } from "@/components/motion/fade-in";
 import { FxNote } from "@/components/site/fx-note";
 import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
+import { getUsdBrlRate } from "@/lib/fx-server";
 import { buildAmazonOfferUrl } from "@/lib/amazon-affiliate";
 import { formatInventoryCount, humanizeSpecName, supplierDisplayName } from "@/lib/spec-labels";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -126,7 +127,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await prisma.product.findFirst({
     where: { slug, deletedAt: null, status: "published" },
-    select: { title: true, description: true }
+    select: {
+      title: true,
+      description: true,
+      basePriceMinorUnits: true,
+      offers: { where: { deletedAt: null }, select: { priceMinorUnits: true } }
+    }
   });
 
   // Defesa em profundidade: o gate primário do 404 real (pré-flush do
@@ -135,11 +141,31 @@ export async function generateMetadata({
     notFound();
   }
 
-  return buildMetadata({
+  // T076 — og:title com nome + preço (a partir do menor preço das ofertas,
+  // convertido pela taxa server-side com fallback).
+  const prices = product.offers
+    .map((o) => minorUnitsToNumber(o.priceMinorUnits))
+    .filter((x) => x > 0);
+  const minUsd = prices.length > 0 ? Math.min(...prices) : minorUnitsToNumber(product.basePriceMinorUnits);
+  const rate = await getUsdBrlRate().catch(() => 5.5);
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    minUsd * rate
+  );
+
+  const meta = buildMetadata({
     title: product.title,
     description: product.description.slice(0, 160),
-    path: `/produtos/${slug}`
+    path: `/produtos/${slug}`,
+    image: siteUrl(`/produtos/${slug}/opengraph-image`)
   });
+
+  return {
+    ...meta,
+    openGraph: {
+      ...(meta.openGraph ?? {}),
+      title: `${product.title} — a partir de R$ ${brl}`
+    }
+  };
 }
 
 // ── Page ───────────────────────────────────────────────────

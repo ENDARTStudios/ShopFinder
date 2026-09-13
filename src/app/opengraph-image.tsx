@@ -6,7 +6,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "ShopFinder — compra inteligente. Encontre qualquer componente de hardware entre milhares de fornecedores.";
+  "ShopFinder — Compare preços, specs e disponibilidade. Encontre qualquer componente de hardware entre milhares de fornecedores.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -69,7 +69,7 @@ export default function OpenGraphImage() {
           <span
             style={{ fontSize: 16, fontWeight: 500, color: "#10B981", letterSpacing: "0.08em" }}
           >
-            compra inteligente
+            Compare preços, specs e disponibilidade
           </span>
         </div>
       </div>
