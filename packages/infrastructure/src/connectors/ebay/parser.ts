@@ -38,7 +38,7 @@ export class EbayBrowseParser {
       throw this.parseError(response);
     }
 
-    const json = this.safeParseJson(response.body);
+    const json = this.safeParseJson(response.body) as { itemSummaries?: unknown[]; total?: number; limit?: number; offset?: number; errors?: unknown[] } | null;
 
     const itemSummaries = json?.itemSummaries ?? [];
     const items: ParsedEbayItem[] = [];

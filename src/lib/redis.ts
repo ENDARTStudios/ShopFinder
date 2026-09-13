@@ -1,70 +1,40 @@
-import { Redis } from '@upstash/redis'
-import { logger } from './logger'
-
-let redisInstance: Redis | null = null
-
 /**
- * Obtém instância singleton do Redis (Upstash)
- * Retorna null se variáveis de ambiente não estiverem configuradas
- * Nunca lança erro em inicialização — falha graciosamente
+ * ShopFinder — Redis (Upstash REST) health check
+ *
+ * Usa a REST API via fetch, no mesmo padrão de src/lib/rate-limit.ts:
+ * sem SDK (@upstash/redis não é dependência), degrada graciosamente
+ * quando não configurado. Ver docs/eng/OBSERVABILITY.md.
  */
-export function getRedisClient(): Redis | null {
-  if (redisInstance) {
-    return redisInstance
-  }
 
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-
-  if (!url || !token) {
-    logger.warn('Redis not configured: UPSTASH_REDIS_REST_URL or TOKEN missing')
-    return null
-  }
-
-  try {
-    redisInstance = new Redis({
-      url,
-      token,
-      // Timeout curto para não travar o app se Redis estiver lento
-      signal: AbortSignal.timeout(5000),
-    })
-    logger.info('Redis client initialized successfully')
-    return redisInstance
-  } catch (error) {
-    logger.error('Failed to initialize Redis', {
-      error: error instanceof Error ? error.message : '[REDACTED]',
-    })
-    return null
-  }
+export interface RedisHealth {
+  status: "ok" | "degraded" | "not_configured";
+  latencyMs?: number;
 }
 
-/**
- * Verifica conectividade do Redis com timeout
- * @returns Latência em ms ou null se falhar
- */
-export async function checkRedisHealth(): Promise<{ status: 'ok' | 'degraded' | 'not_configured'; latencyMs?: number }> {
-  const client = getRedisClient()
+/** Timeout máximo do ping — acima disso considera degraded. */
+const PING_TIMEOUT_MS = 1500;
 
-  if (!client) {
-    return { status: 'not_configured' }
+export async function checkRedisHealth(): Promise<RedisHealth> {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    return { status: "not_configured" };
   }
 
   try {
-    const start = Date.now()
-    await client.ping('health_check')
-    const latency = Date.now() - start
+    const start = Date.now();
+    const res = await fetch(`${url}/ping`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(PING_TIMEOUT_MS)
+    });
+    const latencyMs = Date.now() - start;
 
-    // Timeout máximo de 1500ms considerado degraded
-    if (latency > 1500) {
-      logger.warn('Redis latency high', { latencyMs: latency })
-      return { status: 'degraded', latencyMs: latency }
+    if (!res.ok) {
+      return { status: "degraded" };
     }
-
-    return { status: 'ok', latencyMs: latency }
-  } catch (error) {
-    logger.error('Redis health check failed', {
-      error: error instanceof Error ? error.message : '[REDACTED]',
-    })
-    return { status: 'degraded' }
+    return { status: "ok", latencyMs };
+  } catch {
+    return { status: "degraded" };
   }
 }

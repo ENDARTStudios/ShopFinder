@@ -4,7 +4,7 @@
  * AmazonProductMapper — maps ParsedAmazonCatalogItem to NormalizedDiscoveredProduct.
  * ALL payload transformation lives here. The connector itself only coordinates.
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 import type { ParsedAmazonCatalogItem } from "./parser";
 

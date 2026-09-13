@@ -30,6 +30,7 @@ import type {
   VariantRepository,
   InventoryRepository,
   CustomerRepository,
+  UserRepository,
   CartRepository,
   CheckoutSessionRepository,
   OrderRepository,
@@ -47,6 +48,7 @@ export interface RepositoryRegistry {
   readonly variantRepository: VariantRepository;
   readonly inventoryRepository: InventoryRepository;
   readonly customerRepository: CustomerRepository;
+  readonly userRepository: UserRepository;
   readonly cartRepository: CartRepository;
   readonly checkoutSessionRepository: CheckoutSessionRepository;
   readonly orderRepository: OrderRepository;
@@ -68,7 +70,7 @@ export interface UnitOfWork {
    *
    * Implementations MUST guarantee isolation level READ COMMITTED by default.
    */
-  transaction<T>(fn: (repositories: RepositoryRegistry) => Promise<T>): Promise<T>;
+  transaction<T>(fn: (repositories: RepositoryRegistry, tx: unknown) => Promise<T>): Promise<T>;
 
   /**
    * Access repositories outside a transaction (autocommit mode).

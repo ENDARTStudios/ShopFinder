@@ -161,13 +161,13 @@ export default function OpenGraphImage() {
         ))}
       </div>
 
-      {/* Trust footer */}
+      {/* Trust footer — T063: apenas claims verificáveis */}
       <div style={{ display: "flex", gap: 32, fontSize: 16, color: "#64748B" }}>
         <span>Powered by Catalog Intelligence</span>
         <span>·</span>
-        <span>15 estágios</span>
+        <span>Validação em camadas</span>
         <span>·</span>
-        <span>7 conectores</span>
+        <span>7 fornecedores</span>
       </div>
     </div>,
     { ...size }

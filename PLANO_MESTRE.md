@@ -28,7 +28,7 @@
 - **Escala:** 100 → 1.000 → 10–50k usuários no Ano 1. Monolito modular (sem microsserviços).
 - **Login:** Sim. **Assinatura:** Sim (Free/Pro/Elite). **Dado sensível:** Não. **Upload:** Sim (admin/CSV).
 - **Prazo:** Não. Qualidade > velocidade.
-- **Marca:** "Almanaque dos Clubes". **Domínio:** Pendente (PENDENCIAS_OPERADOR.md item 1).
+- **Marca:** "ShopFinder". **Domínio:** Pendente (PENDENCIAS_OPERADOR.md item 1).
 
 ---
 
