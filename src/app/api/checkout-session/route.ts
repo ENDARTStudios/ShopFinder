@@ -38,8 +38,14 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: `Produto não encontrado: ${sku}` }, { status: 400 });
       }
       const cheapest = product.offers[0];
-      const unit = cheapest ? Number(cheapest.priceMinorUnits) : Number(product.basePriceMinorUnits);
-      const currency = (cheapest?.currency ?? product.basePriceCurrencyCode ?? "USD").toLowerCase();
+      const unit = cheapest
+        ? Number(cheapest.priceMinorUnits)
+        : Number(product.basePriceMinorUnits);
+      const currency = (
+        cheapest?.priceCurrencyCode ??
+        product.basePriceCurrencyCode ??
+        "USD"
+      ).toLowerCase();
       if (!Number.isFinite(unit) || unit <= 0) {
         return NextResponse.json({ error: `Preço inválido: ${sku}` }, { status: 400 });
       }

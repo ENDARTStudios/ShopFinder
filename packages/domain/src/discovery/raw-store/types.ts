@@ -17,6 +17,7 @@ import type { BrandedId } from "../../shared";
 import type { NormalizedDiscoveredProduct } from "../../marketplace";
 import type { ProviderSnapshot } from "../workers/contracts";
 import type { WorkerMetricsSnapshot } from "../workers/types";
+import type { ArtifactMetadata } from "../traceability";
 
 // ── Branded IDs ────────────────────────────────────────────
 
@@ -63,6 +64,8 @@ export interface DiscoveryExecution {
   readonly metrics: WorkerMetricsSnapshot;
   readonly versions: RawStoreVersions;
   readonly partitionKey: string;
+  /** Linhagem do artefato (traceId, versões, produtor) — serializado como JSON no Prisma. */
+  readonly metadata?: ArtifactMetadata;
   readonly error?: {
     readonly code: string;
     readonly message: string;
@@ -85,6 +88,8 @@ export interface RawProductRecord {
   readonly payloadHash: string;
   readonly discoveredAt: Date;
   readonly partitionKey: string;
+  /** Linhagem do artefato (traceId, versões, produtor) — serializado como JSON no Prisma. */
+  readonly metadata?: ArtifactMetadata;
   readonly versions: RawStoreVersions;
 }
 
@@ -171,6 +176,8 @@ export interface RawStoreCoordinatorInput {
   readonly metrics: WorkerMetricsSnapshot;
   readonly versions: RawStoreVersions;
   readonly region: string;
+  /** Linhagem do artefato normalizado (traceId, versões, produtor). */
+  readonly metadata?: ArtifactMetadata;
   readonly products: ReadonlyArray<NormalizedDiscoveredProduct>;
   readonly error?: {
     readonly code: string;

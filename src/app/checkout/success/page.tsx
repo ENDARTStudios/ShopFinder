@@ -3,6 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/cart-context";
 
 function fmt(amount: number | null, currency: string | null): string {
   if (amount == null) return "—";
@@ -20,10 +21,21 @@ export default function SuccessPage() {
   const [loading, setLoading] = React.useState(true);
   const [sessionId, setSessionId] = React.useState<string | null>(null);
 
+  // T042: compra concluída → esvazia o carrinho (estado + localStorage sf:cart).
+  // Só após a hidratação do provider — senão o restore do localStorage
+  // sobrescreve o clear (efeito de hidratação roda depois do do filho).
+  const { clear, hydrated } = useCart();
+  React.useEffect(() => {
+    if (hydrated) clear();
+  }, [hydrated, clear]);
+
   React.useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("session_id");
     setSessionId(id);
-    if (!id) { setLoading(false); return; }
+    if (!id) {
+      setLoading(false);
+      return;
+    }
     fetch(`/api/checkout-status?session_id=${encodeURIComponent(id)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("falha ao verificar pagamento"))))
       .then(setData)
@@ -63,7 +75,10 @@ export default function SuccessPage() {
           )}
           {data?.amount_total != null && (
             <p className="mt-1 text-muted-foreground">
-              Total: <span className="font-semibold text-foreground">{fmt(data.amount_total, data.currency)}</span>
+              Total:{" "}
+              <span className="font-semibold text-foreground">
+                {fmt(data.amount_total, data.currency)}
+              </span>
             </p>
           )}
           <p className="mt-1 text-muted-foreground">

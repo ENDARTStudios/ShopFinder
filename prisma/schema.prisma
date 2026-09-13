@@ -68,6 +68,12 @@ model User {
   status          String   @default("active") // active | suspended | deleted
   lastLoginAt     DateTime?
   emailVerifiedAt DateTime?
+  // MFA TOTP (#22) — obrigatório para roles admin quando flag mfa_admin ativa
+  mfaSecret       String?
+  mfaEnabled      Boolean  @default(false)
+  // Aceite dos Termos de Uso/Privacidade (T051) — LGPD art. 8º e Marco Civil art. 10
+  termsAcceptedAt DateTime?
+  termsVersion    String?
   version         Int      @default(1)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -442,6 +448,9 @@ model Order {
   shippedAt                DateTime?
   deliveredAt              DateTime?
   cancelledAt              DateTime?
+  cancellationRequestedAt  DateTime?
+  cancellationProtocol     String?
+  cancellationStatus       String? // requested | processed | refunded
   version                  Int      @default(1)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt

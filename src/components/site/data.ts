@@ -539,7 +539,7 @@ export const PROJECT_META = {
   name: "ShopFinder",
   tagline: "compra inteligente",
   version: "0.6.0",
-  iteration: "Catalog Intelligence Platform — 15 estágios, 7 conectores, 628 testes",
+  iteration: "Catalog Intelligence Platform — validação em camadas, 7 fornecedores",
   summary:
     "ShopFinder é uma plataforma de Catalog Intelligence baseada em IA que transforma dados heterogêneos de produtos em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais."
 };

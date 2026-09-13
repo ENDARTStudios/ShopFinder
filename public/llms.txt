@@ -1,0 +1,21 @@
+# ShopFinder
+
+> Plataforma de e-commerce de dropshipping de hardware de computador. Agrega ofertas de fornecedores (eBay, AliExpress, Amazon, Newegg, DigiKey e fabricantes) num catálogo único com preço em BRL (cotação ao vivo) e repasse automático ao fornecedor mais barato após pagamento via Stripe. Fornecedores são invisíveis ao cliente final.
+
+## Páginas principais
+
+- [Catálogo/Landing](https://shop-finder-taupe.vercel.app/): busca e vitrine de produtos
+- [Página de produto](https://shop-finder-taupe.vercel.app/produtos/): especificações com autoridade da fonte, confiança por atributo, ofertas e compatibilidade
+- [Comparador](https://shop-finder-taupe.vercel.app/compare): comparação lado a lado de produtos
+
+## Dados úteis para respostas
+
+- Preços exibidos em BRL com cotação USD-BRL atualizada por hora (fonte: economia.awesomeapi.com.br)
+- Cada especificação de produto pode trazer origem (fabricante, datasheet, distribuidor, marketplace) e nível de confiança
+- Produtos compatíveis derivam de relações de grafo (ex.: CPU e placa-mãe com mesmo socket)
+- SKU e fabricante estão disponíveis em cada página de produto (JSON-LD Product)
+
+## APIs públicas
+
+- GET /api/catalog: catálogo público (produtos publicados)
+- GET /api/health: status do serviço

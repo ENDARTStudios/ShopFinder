@@ -76,9 +76,9 @@ export class S3ObjectStorage implements ObjectStorage {
       method: "PUT",
       headers: {
         "Content-Type": "application/octet-stream",
-        "Content-Length": String(data.byteLength),
+        "Content-Length": String(data.byteLength)
       },
-      body: data,
+      body: Buffer.from(data)
     });
 
     if (!response.ok) {
