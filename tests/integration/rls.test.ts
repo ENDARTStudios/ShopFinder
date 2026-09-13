@@ -12,8 +12,15 @@
  *   GRANT USAGE ON SCHEMA public TO rls_verify;
  *   GRANT SELECT ON "Product" TO rls_verify;
  *
- * Sem a variável, os casos que dependem dela são pulados; o teste do
- * helper withTenantTransaction roda sempre (usa a DATABASE_URL normal).
+ * CI-RUNNABLE (#47/T074): o job `integration` do ci.yml sobe postgres:16,
+ * aplica migrações (políticas RLS inclusas), cria o role `rls_verify` e
+ * exporta RLS_TEST_DATABASE_URL — o teste executa de verdade a cada push.
+ *
+ * Sem a variável, os casos que dependem dela são pulados COM marcador
+ * explícito ("skipped: RLS DB não configurada") — nunca falham nem passam
+ * falso; as invariantes foram validadas manualmente com container +
+ * role não-owner (T073, DECISOES). O teste do helper withTenantTransaction
+ * roda sempre (usa a DATABASE_URL normal).
  */
 /// <reference types="bun-types" />
 import { describe, it, expect, beforeAll } from "bun:test";
@@ -31,6 +38,11 @@ describe("RLS — isolamento por tenant", () => {
     await appDb.$executeRawUnsafe(`GRANT SELECT ON "Customer" TO rls_verify`);
     await appDb.$executeRawUnsafe(`GRANT SELECT ON "Store" TO rls_verify`);
   });
+
+  // T074 — marcador explícito de skip (nunca falha nem passa falso).
+  if (!RLS_URL) {
+    console.log("skipped: RLS DB não configurada (RLS_TEST_DATABASE_URL ausente) — invariantes validadas manualmente (T073)");
+  }
 
   it.skipIf(!RLS_URL)("fora do tenant: nada além do catálogo público vaza", async () => {
     const tenantDb = new PrismaClient({
