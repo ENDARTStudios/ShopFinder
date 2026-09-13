@@ -6,13 +6,11 @@
 # em todo push com "Code scanning is not enabled for this repository".
 # Após habilitar GHAS, restaurar os triggers de push/PR/schedule abaixo.
 #
-# Reference: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
+# Reference: https://docs.github.com/en/code-security/code-scanning-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
 
 name: "CodeQL"
 
 on:
-  workflow_dispatch:
-    - cron: "0 3 * * 1"
   workflow_dispatch:
 
 jobs:
