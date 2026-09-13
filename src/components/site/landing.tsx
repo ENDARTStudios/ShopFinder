@@ -10,7 +10,6 @@ import {
   Zap,
   Box,
   ShoppingCart,
-  Star,
   TrendingUp,
   ShieldCheck,
   Sparkles,
