@@ -24,7 +24,6 @@ import {
   ArrowLeft,
   X,
   Trash2,
-  Star,
   Search,
   ShieldCheck,
   Factory,
@@ -89,8 +88,7 @@ interface CompareProduct {
   inStock: boolean;
   stockCount: number;
   suppliers: number;
-  rating: number;
-  reviewCount: number;
+  imageUrl: string | null;
   imageGradient: string;
   imageLabel: string;
   specs: Array<{ name: string; value: string }>;
@@ -395,23 +393,15 @@ function ComparePage() {
                     ))}
                     {!isFull && <td className="p-3" />}
                   </tr>
-                  {/* Rating row */}
+                  {/* Rating row — T071: sem dado real de avaliação, exibe "—"
+                      (os ratings fabricados foram removidos do payload). */}
                   <tr className="border-b border-border/40">
                     <td className="sticky left-0 z-10 bg-background p-3 text-xs font-medium text-muted-foreground">
                       {t("rating")}
                     </td>
                     {products.map((p) => (
                       <td key={p.slug} className="p-3 text-xs">
-                        <div className="flex items-center gap-1">
-                          <Star
-                            className="h-3 w-3 fill-amber-400 text-amber-400"
-                            aria-hidden="true"
-                          />
-                          <span className="font-medium">{p.rating}</span>
-                          <span className="text-muted-foreground">
-                            ({p.reviewCount.toLocaleString()})
-                          </span>
-                        </div>
+                        <span className="text-muted-foreground/50">—</span>
                       </td>
                     ))}
                     {!isFull && <td className="p-3" />}
