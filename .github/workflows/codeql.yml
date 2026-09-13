@@ -1,16 +1,19 @@
 # CodeQL — Static Analysis (SAST) for JavaScript/TypeScript
 #
-# REPO PRIVADO: o upload de resultados exige GitHub Advanced Security
-# (Settings → Code security → Advanced Security). Enquanto não estiver
-# habilitado, o workflow fica manual (workflow_dispatch) — o job falhava
-# em todo push com "Code scanning is not enabled for this repository".
-# Após habilitar GHAS, restaurar os triggers de push/PR/schedule abaixo.
+# GHAS liberado (billing resolvido 12/09/2026 — dispatch validado com
+# sucesso). Triggers de push/PR/semanal ativos.
 #
 # Reference: https://docs.github.com/en/code-security/code-scanning-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
 
 name: "CodeQL"
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 1"
   workflow_dispatch:
 
 jobs:
