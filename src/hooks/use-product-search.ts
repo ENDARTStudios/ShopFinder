@@ -174,66 +174,81 @@ export function useProductSearch(
   const [searchIndex, setSearchIndex] = React.useState<MiniSearch<SearchableProduct> | null>(null);
   const [indexed, setIndexed] = React.useState(false);
 
-  // Build the MiniSearch index when products change
+  // Build the MiniSearch index when products change.
+  // T078 — adiado para idle: não bloqueia a primeira pintura/interação
+  // (index de ~1.000 produtos custa ~1s de main thread).
   React.useEffect(() => {
     if (allProducts.length === 0) {
       setIndexed(false);
       return;
     }
 
-    const docs: SearchableProduct[] = allProducts.map((p) => {
-      const attributeIds = p.specs.map((s) => s.name).join(" ");
-      const attributeValues = p.specs.map((s) => s.value).join(" ");
-      const allText = [
-        p.title,
-        p.brand,
-        p.category,
-        p.description,
-        attributeIds,
-        attributeValues
-      ].join(" ");
+    const buildIndex = () => {
+      const docs: SearchableProduct[] = allProducts.map((p) => {
+        const attributeIds = p.specs.map((s) => s.name).join(" ");
+        const attributeValues = p.specs.map((s) => s.value).join(" ");
+        const allText = [
+          p.title,
+          p.brand,
+          p.category,
+          p.description,
+          attributeIds,
+          attributeValues
+        ].join(" ");
 
-      return {
-        ...p,
-        attributeIds,
-        attributeValues,
-        allText
-      };
-    });
+        return {
+          ...p,
+          attributeIds,
+          attributeValues,
+          allText
+        };
+      });
 
-    const ms = new MiniSearch<SearchableProduct>({
-      fields: ["title", "brand", "category", "attributeIds", "attributeValues", "allText"],
-      storeFields: [
-        "title",
-        "brand",
-        "category",
-        "price",
-        "slug",
-        "imageGradient",
-        "imageLabel",
-        "specs",
-        "offers",
-        "inStock",
-        "stockCount",
-        "suppliers",
-        "nicheId",
-        "priceRange",
-        "rating",
-        "reviewCount",
-        "mpn",
-        "description"
-      ],
-      searchOptions: {
-        boost: { title: 3, brand: 2, attributeValues: 2 },
-        fuzzy: 0.2,
-        prefix: true,
-        combineWith: "AND"
-      }
-    });
+      const ms = new MiniSearch<SearchableProduct>({
+        fields: ["title", "brand", "category", "attributeIds", "attributeValues", "allText"],
+        storeFields: [
+          "title",
+          "brand",
+          "category",
+          "price",
+          "slug",
+          "imageGradient",
+          "imageLabel",
+          "specs",
+          "offers",
+          "inStock",
+          "stockCount",
+          "suppliers",
+          "nicheId",
+          "priceRange",
+          "rating",
+          "reviewCount",
+          "mpn",
+          "description"
+        ],
+        searchOptions: {
+          boost: { title: 3, brand: 2, attributeValues: 2 },
+          fuzzy: 0.2,
+          prefix: true,
+          combineWith: "AND"
+        }
+      });
 
-    ms.addAll(docs);
-    setSearchIndex(ms);
-    setIndexed(true);
+      ms.addAll(docs);
+      setSearchIndex(ms);
+      setIndexed(true);
+    };
+
+    // Defer to idle: o build de ~1.000 docs custa ~1s de main thread.
+    const ric = (
+      globalThis as { requestIdleCallback?: (cb: () => void) => number }
+    ).requestIdleCallback;
+    if (typeof ric === "function") {
+      ric(buildIndex);
+    } else {
+      const t = setTimeout(buildIndex, 50);
+      return () => clearTimeout(t);
+    }
   }, [allProducts]);
 
   // Search + filter

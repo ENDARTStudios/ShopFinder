@@ -51,6 +51,7 @@ import { getUsdBrlRate } from "@/lib/fx-server";
 import { buildAmazonOfferUrl } from "@/lib/amazon-affiliate";
 import { formatInventoryCount, humanizeSpecName, supplierDisplayName } from "@/lib/spec-labels";
 import { getLocale, getTranslations } from "next-intl/server";
+import { preconnect } from "react-dom";
 
 // ── Helpers ────────────────────────────────────────────────
 
@@ -171,6 +172,11 @@ export async function generateMetadata({
 // ── Page ───────────────────────────────────────────────────
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  // T078 — pré-conexão aos hosts de imagem/foto (LCP das fotos nos cards de
+  // oferta e na imagem principal).
+  preconnect("https://mm.digikey.com");
+  preconnect("https://i.ebayimg.com");
+  preconnect("https://upload.wikimedia.org");
   const { slug } = await params;
   const locale = await getLocale();
   const tDetail = await getTranslations("detail");
