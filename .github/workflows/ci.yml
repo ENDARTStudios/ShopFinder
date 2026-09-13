@@ -20,7 +20,7 @@ jobs:
       - name: Run unit tests with coverage
         run: bun test tests/unit --coverage --coverage-reporter=lcov
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
