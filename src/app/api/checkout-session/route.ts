@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-    const skus: string[] = [];
+    const itemsMeta: Array<{ sku: string; qty: number }> = [];
 
     for (const it of raw) {
       const sku = typeof it.sku === "string" ? it.sku : "";
@@ -38,12 +38,18 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: `Produto não encontrado: ${sku}` }, { status: 400 });
       }
       const cheapest = product.offers[0];
-      const unit = cheapest ? Number(cheapest.priceMinorUnits) : Number(product.basePriceMinorUnits);
-      const currency = (cheapest?.currency ?? product.basePriceCurrencyCode ?? "USD").toLowerCase();
+      const unit = cheapest
+        ? Number(cheapest.priceMinorUnits)
+        : Number(product.basePriceMinorUnits);
+      const currency = (
+        cheapest?.priceCurrencyCode ??
+        product.basePriceCurrencyCode ??
+        "USD"
+      ).toLowerCase();
       if (!Number.isFinite(unit) || unit <= 0) {
         return NextResponse.json({ error: `Preço inválido: ${sku}` }, { status: 400 });
       }
-      skus.push(sku);
+      itemsMeta.push({ sku, qty });
       line_items.push({
         quantity: qty,
         price_data: {
@@ -62,10 +68,9 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-      automatic_payment_methods: { enabled: true },
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/checkout/cancel`,
-      metadata: { skus: skus.join(",") }
+      metadata: { items: JSON.stringify(itemsMeta) }
     });
 
     return NextResponse.json({ url: session.url });

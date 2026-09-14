@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ShoppingCart, X, Plus, Minus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/context/cart-context";
+import { Price } from "@/components/site/price";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,14 +15,7 @@ import {
   SheetTitle,
   SheetClose
 } from "@/components/ui/sheet";
-
-function formatPrice(price: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-}
+import { FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
 
 export function CartDrawer() {
   const t = useTranslations("cart");
@@ -61,12 +55,10 @@ export function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              <ul className="space-y-4">
+              <FadeInStagger className="space-y-4" role="list">
                 {items.map((item) => (
-                  <li
-                    key={item.sku}
-                    className="flex items-start gap-3 rounded-lg border border-border/60 p-3"
-                  >
+                  <FadeInItem key={item.sku} className="block" role="listitem">
+                    <div className="flex items-start gap-3 rounded-lg border border-border/60 p-3">
                     {/* Image placeholder */}
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-bold text-muted-foreground">
                       {item.imageLabel ?? item.title.slice(0, 2).toUpperCase()}
@@ -86,9 +78,10 @@ export function CartDrawer() {
                         </Button>
                       </div>
 
-                      <p className="text-xs text-muted-foreground">
-                        {formatPrice(item.price, item.currency)} / un.
-                      </p>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Price amount={item.price} currency={item.currency} variant="small" />
+                        <span>/ un.</span>
+                      </div>
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
@@ -115,22 +108,19 @@ export function CartDrawer() {
                           </Button>
                         </div>
 
-                        <span className="text-sm font-semibold tabular-nums">
-                          {formatPrice(item.price * item.qty, item.currency)}
-                        </span>
+                        <Price amount={item.price * item.qty} currency={item.currency} variant="small" />
                       </div>
                     </div>
-                  </li>
+                    </div>
+                  </FadeInItem>
                 ))}
-              </ul>
+              </FadeInStagger>
             </div>
 
             <div className="border-t border-border/60 px-4 pb-4 pt-4">
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm font-medium">{t("subtotal")}</span>
-                <span className="text-lg font-bold tabular-nums">
-                  {formatPrice(subtotal, items[0]?.currency ?? "USD")}
-                </span>
+                <Price amount={subtotal} currency={items[0]?.currency ?? "USD"} />
               </div>
 
               <div className="flex flex-col gap-2">

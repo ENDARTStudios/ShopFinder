@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
+import { ServiceWorkerRegister } from "@/components/site/sw-register";
 import { CompareProvider } from "@/contexts/compare-context";
 import { CartProvider } from "@/context/cart-context";
 import { CartDrawer } from "@/components/site/cart-drawer";
@@ -36,7 +38,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = t("tagline");
 
   return {
-    metadataBase: new URL("https://shopfinder.local"),
+    // Base para URLs relativas de metadados (og:image, twitter:image) —
+    // o domínio real vem de NEXT_PUBLIC_SITE_URL; sem ele, URLs relativas
+    // ficam sem host (melhor que o placeholder shopfinder.local em produção).
+    metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+      : null,
     title: {
       default: `${BRAND_NAME} — ${tagline}`,
       template: `%s · ${BRAND_NAME}`
@@ -117,6 +124,10 @@ export default async function RootLayout({
                 </div>
                 <CartDrawer />
                 <Toaster />
+                {/* T077 — pageview first-party cookieless (DECISAO-ANALYTICS-001) */}
+                <PageViewTracker />
+                {/* T085 — PWA: registro do service worker (só produção) */}
+                <ServiceWorkerRegister />
               </CartProvider>
             </CompareProvider>
           </ThemeProvider>

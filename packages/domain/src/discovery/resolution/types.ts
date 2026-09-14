@@ -159,6 +159,12 @@ export interface CanonicalProduct {
   readonly offerCount: number;
   readonly supplierCodes: ReadonlyArray<string>;
   readonly primaryProductId: NormalizedProductRecordId;
+  /** Resumo da avaliação de IA, quando o produto já passou pelo evaluator. */
+  readonly evaluationSummary?: {
+    readonly overallScore: number;
+    readonly recommendation: string;
+    readonly confidence: number;
+  };
   readonly builtAt: Date;
   readonly schemaVersion: "1.0.0";
 }

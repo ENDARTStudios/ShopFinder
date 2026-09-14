@@ -18,3 +18,4 @@ export * from "./pagination";
 export * from "./parser";
 export * from "./mapper";
 export * from "./connector";
+export * from "./client";

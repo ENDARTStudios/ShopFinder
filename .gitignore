@@ -27,3 +27,31 @@ coverage/
 # Claude
 .claude/exchange_log.jsonl
 .worktrees/
+.agents/
+skills-lock.json
+
+# Playwright
+playwright-report/
+test-results/
+
+# Stryker
+.stryker-tmp/
+reports/
+.vercel
+.env.local
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Build/dev artifacts — regenerados, nunca versionados (T065-chore/44)
+next-env.d.ts
+*.tsbuildinfo
+dev.log
+server.log
+
+# Tooling local por máquina — configs pessoais de agente/IDE (T086)
+.next-dev/
+.gemini/
+GEMINI.md
+opencode.json
+.mcp.json

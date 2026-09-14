@@ -5,16 +5,9 @@ import Link from "next/link";
 import { ShoppingCart, ArrowLeft, CreditCard, Lock, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/context/cart-context";
+import { Price } from "@/components/site/price";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-function formatPrice(price: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(price);
-  } catch {
-    return `${currency} ${price.toFixed(2)}`;
-  }
-}
 
 export default function CheckoutPage() {
   const t = useTranslations("cart");
@@ -100,14 +93,13 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <p className="text-sm font-medium break-words">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatPrice(item.price, item.currency)} × {item.qty}
-                          </p>
+                          <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Price amount={item.price} currency={item.currency} variant="small" />
+                            <span>× {item.qty}</span>
+                          </div>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold tabular-nums shrink-0 whitespace-nowrap">
-                        {formatPrice(item.price * item.qty, item.currency)}
-                      </span>
+                      <Price amount={item.price * item.qty} currency={item.currency} variant="small" />
                     </li>
                   ))}
                 </ul>
@@ -138,9 +130,7 @@ export default function CheckoutPage() {
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium tabular-nums">
-                      {formatPrice(subtotal, items[0]?.currency ?? "USD")}
-                    </span>
+                    <Price amount={subtotal} currency={items[0]?.currency ?? "USD"} variant="small" />
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Frete</span>
@@ -148,9 +138,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="border-t border-border/60 pt-3 flex items-center justify-between">
                     <span className="font-semibold">Total</span>
-                    <span className="text-xl font-bold tabular-nums">
-                      {formatPrice(subtotal, items[0]?.currency ?? "USD")}
-                    </span>
+                    <Price amount={subtotal} currency={items[0]?.currency ?? "USD"} />
                   </div>
                 </div>
 
@@ -166,7 +154,7 @@ export default function CheckoutPage() {
                       Processando...
                     </>
                   ) : (
-                    `Pagar — ${formatPrice(subtotal, items[0]?.currency ?? "USD")}`
+                    <>Pagar — <Price amount={subtotal} currency={items[0]?.currency ?? "USD"} variant="small" /></>
                   )}
                 </Button>
 

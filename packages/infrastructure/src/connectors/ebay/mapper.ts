@@ -3,7 +3,7 @@
  *
  * EbayProductMapper — maps ParsedEbayItem to NormalizedDiscoveredProduct.
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 import type { ParsedEbayItem } from "./parser";
 

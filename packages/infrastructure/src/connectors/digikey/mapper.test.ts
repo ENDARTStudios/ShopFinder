@@ -34,9 +34,9 @@ function makeProduct(o?: Partial<ParsedDigiKeyProduct>): ParsedDigiKeyProduct {
       { parameterName: "Core Processor", parameterValue: "ARM Cortex-M4" },
       { parameterName: "Program Memory Size", parameterValue: "1MB (1M x 8)" },
       { parameterName: "Speed", parameterValue: "168MHz" },
-      { parameterName: "Package / Case", parameterValue: "100-LQFP" },
+      { parameterName: "Package / Case", parameterValue: "100-LQFP" }
     ],
-    ...o,
+    ...o
   };
 }
 
@@ -104,13 +104,15 @@ describe("DigiKey Mapper", () => {
   });
 
   it("should map technical parameters as attributes", () => {
-    const result = mapper.map(makeProduct({
-      parameters: [
-        { parameterName: "Capacitance", parameterValue: "10µF" },
-        { parameterName: "Voltage Rated", parameterValue: "10V" },
-        { parameterName: "Tolerance", parameterValue: "±10%" },
-      ],
-    }));
+    const result = mapper.map(
+      makeProduct({
+        parameters: [
+          { parameterName: "Capacitance", parameterValue: "10µF" },
+          { parameterName: "Voltage Rated", parameterValue: "10V" },
+          { parameterName: "Tolerance", parameterValue: "±10%" }
+        ]
+      })
+    );
     expect(result.attributes["Capacitance"]).toBe("10µF");
     expect(result.attributes["Voltage Rated"]).toBe("10V");
     expect(result.attributes["Tolerance"]).toBe("±10%");
@@ -123,11 +125,13 @@ describe("DigiKey Mapper", () => {
   });
 
   it("should map category and subcategory", () => {
-    const result = mapper.map(makeProduct({
-      category: "Integrated Circuits (ICs)",
-      subcategory: "Embedded Microcontrollers",
-      series: "STM32 F4",
-    }));
+    const result = mapper.map(
+      makeProduct({
+        category: "Integrated Circuits (ICs)",
+        subcategory: "Embedded Microcontrollers",
+        series: "STM32 F4"
+      })
+    );
     expect(result.category).toBe("Integrated Circuits (ICs)");
     expect(result.attributes["Category"]).toBe("Integrated Circuits (ICs)");
     expect(result.attributes["Subcategory"]).toBe("Embedded Microcontrollers");
@@ -140,28 +144,30 @@ describe("DigiKey Mapper", () => {
   });
 
   it("should handle minimal product (DigiKey PN only)", () => {
-    const result = mapper.map(makeProduct({
-      digiKeyPartNumber: "MIN-ND",
-      manufacturerPartNumber: "",
-      manufacturerName: "",
-      productDescription: "Minimal Product",
-      detailedDescription: "",
-      productUrl: undefined,
-      primaryPhotoUrl: undefined,
-      primaryDatasheetUrl: undefined,
-      unitPrice: undefined,
-      currency: undefined,
-      quantityAvailable: undefined,
-      minimumOrderQuantity: undefined,
-      productStatus: undefined,
-      rohsStatus: undefined,
-      leadStatus: undefined,
-      customTariffNumber: undefined,
-      parameters: undefined,
-      category: undefined,
-      subcategory: undefined,
-      series: undefined,
-    }));
+    const result = mapper.map(
+      makeProduct({
+        digiKeyPartNumber: "MIN-ND",
+        manufacturerPartNumber: "",
+        manufacturerName: "",
+        productDescription: "Minimal Product",
+        detailedDescription: "",
+        productUrl: undefined,
+        primaryPhotoUrl: undefined,
+        primaryDatasheetUrl: undefined,
+        unitPrice: undefined,
+        currency: undefined,
+        quantityAvailable: undefined,
+        minimumOrderQuantity: undefined,
+        productStatus: undefined,
+        rohsStatus: undefined,
+        leadStatus: undefined,
+        customTariffNumber: undefined,
+        parameters: undefined,
+        category: undefined,
+        subcategory: undefined,
+        series: undefined
+      })
+    );
     expect(result.externalId).toBe("MIN-ND");
     expect(result.title).toBe("Minimal Product");
     expect(result.images).toEqual([]);
@@ -172,7 +178,7 @@ describe("DigiKey Mapper", () => {
   it("should map multiple products via mapAll", () => {
     const products = [
       makeProduct({ digiKeyPartNumber: "P1-ND" }),
-      makeProduct({ digiKeyPartNumber: "P2-ND" }),
+      makeProduct({ digiKeyPartNumber: "P2-ND" })
     ];
     const results = mapper.mapAll(products);
     expect(results.length).toBe(2);
