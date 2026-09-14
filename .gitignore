@@ -48,3 +48,10 @@ next-env.d.ts
 *.tsbuildinfo
 dev.log
 server.log
+
+# Tooling local por máquina — configs pessoais de agente/IDE (T086)
+.next-dev/
+.gemini/
+GEMINI.md
+opencode.json
+.mcp.json
