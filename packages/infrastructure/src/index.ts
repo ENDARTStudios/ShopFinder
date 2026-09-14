@@ -40,6 +40,7 @@ export {
 
 // Connector SDK
 export * from "./connectors/core/index.js";
+export { NoRetryPolicy } from "./connectors/core/index.js";
 export * from "./connectors/aliexpress/index.js";
 export * from "./connectors/amazon/index.js";
 export * from "./connectors/ebay/index.js";

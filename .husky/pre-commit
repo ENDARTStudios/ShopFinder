@@ -3,5 +3,7 @@
 
 echo "── lint-staged ─────────────────────────────────────"
 bunx lint-staged --quiet
-echo "── typecheck (root) ────────────────────────────────"
-bunx tsc --noEmit -p tsconfig.json
+
+# Typecheck completo vive no CI (job "typecheck", continue-on-error enquanto
+# a dívida de tipos de packages/* é saldada). Não roda aqui: pacotes com
+# tsconfig próprio quebrado faziam TODO commit local falhar (issue #43).

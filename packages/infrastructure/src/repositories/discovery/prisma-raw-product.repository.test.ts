@@ -24,7 +24,7 @@ import type { RawStoreVersions } from "@workspace/domain/discovery/raw-store/typ
 // client lives outside the root tsconfig include path.
 
 async function getPrismaClient(): Promise<any> {
-  const mod = await import("../../generated/prisma-client/default.js");
+  const mod = await import("@prisma/client");
   return new mod.PrismaClient({
     datasources: { db: { url: "file:./infra_test.db" } }
   });

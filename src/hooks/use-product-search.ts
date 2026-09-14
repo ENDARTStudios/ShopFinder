@@ -54,9 +54,9 @@ export function isFilterEmpty(f: ProductFilter): boolean {
 
 // MiniSearch document type — extends ApiProduct with searchable attribute IDs
 interface SearchableProduct extends ApiProduct {
-  readonly attributeIds: string;     // "cpu.socket cpu.cores gpu.memory ..."
-  readonly attributeValues: string;   // "LGA1700 24 24GB GDDR6X ..."
-  readonly allText: string;           // title + brand + category + specs
+  readonly attributeIds: string; // "cpu.socket cpu.cores gpu.memory ..."
+  readonly attributeValues: string; // "LGA1700 24 24GB GDDR6X ..."
+  readonly allText: string; // title + brand + category + specs
 }
 
 // ── Ontology term resolver (client-side, lightweight) ──────
@@ -65,25 +65,44 @@ interface SearchableProduct extends ApiProduct {
 // (subset of the full ontology — enough for search)
 const SEARCH_ALIASES: Record<string, string> = {
   // CPU
-  "socket": "cpu.socket", "soquete": "cpu.socket", "cpu_socket": "cpu.socket",
-  "cores": "cpu.cores", "nucleos": "cpu.cores", "núcleos": "cpu.cores",
-  "threads": "cpu.threads",
-  "base_clock": "cpu.base_clock", "frequencia": "cpu.base_clock", "frequência": "cpu.base_clock",
-  "turbo": "cpu.max_turbo", "boost": "cpu.max_turbo",
-  "tdp": "cpu.tdp", "consumo": "cpu.tdp",
+  socket: "cpu.socket",
+  soquete: "cpu.socket",
+  cpu_socket: "cpu.socket",
+  cores: "cpu.cores",
+  nucleos: "cpu.cores",
+  núcleos: "cpu.cores",
+  threads: "cpu.threads",
+  base_clock: "cpu.base_clock",
+  frequencia: "cpu.base_clock",
+  frequência: "cpu.base_clock",
+  turbo: "cpu.max_turbo",
+  boost: "cpu.max_turbo",
+  tdp: "cpu.tdp",
+  consumo: "cpu.tdp",
   // GPU
-  "vram": "gpu.memory", "memoria_video": "gpu.memory", "memória de vídeo": "gpu.memory",
-  "cuda": "gpu.cuda_cores",
+  vram: "gpu.memory",
+  memoria_video: "gpu.memory",
+  "memória de vídeo": "gpu.memory",
+  cuda: "gpu.cuda_cores",
   // Memory
-  "ddr": "memory.type", "ddr4": "memory.type", "ddr5": "memory.type",
-  "mhz": "memory.speed", "frequencia_ram": "memory.speed",
+  ddr: "memory.type",
+  ddr4: "memory.type",
+  ddr5: "memory.type",
+  mhz: "memory.speed",
+  frequencia_ram: "memory.speed",
   // Storage
-  "ssd": "storage.interface", "nvme": "storage.interface", "sata": "storage.interface",
-  "leitura": "storage.read_speed", "escrita": "storage.write_speed",
+  ssd: "storage.interface",
+  nvme: "storage.interface",
+  sata: "storage.interface",
+  leitura: "storage.read_speed",
+  escrita: "storage.write_speed",
   // PSU
-  "watts": "psu.wattage", "w": "psu.wattage", "fonte": "psu.wattage",
+  watts: "psu.wattage",
+  w: "psu.wattage",
+  fonte: "psu.wattage",
   // Cooling
-  "cooler": "cooling.type", "refrigeracao": "cooling.type",
+  cooler: "cooling.type",
+  refrigeracao: "cooling.type"
 };
 
 function resolveSearchTerms(query: string): { text: string; attributeIds: string[] } {
@@ -126,9 +145,7 @@ function passesParametricFilter(p: ApiProduct, filter: ProductFilter): boolean {
 
   // Attribute filters — match by canonical attribute name OR display label
   // substring; value matched by substring (case-insensitive).
-  const attrEntries = Object.entries(filter.attributes).filter(
-    ([, v]) => v && v.trim() !== ""
-  );
+  const attrEntries = Object.entries(filter.attributes).filter(([, v]) => v && v.trim() !== "");
   if (attrEntries.length > 0) {
     for (const [attrName, valueQuery] of attrEntries) {
       const lowered = valueQuery.toLowerCase().trim();
@@ -157,47 +174,81 @@ export function useProductSearch(
   const [searchIndex, setSearchIndex] = React.useState<MiniSearch<SearchableProduct> | null>(null);
   const [indexed, setIndexed] = React.useState(false);
 
-  // Build the MiniSearch index when products change
+  // Build the MiniSearch index when products change.
+  // T078 — adiado para idle: não bloqueia a primeira pintura/interação
+  // (index de ~1.000 produtos custa ~1s de main thread).
   React.useEffect(() => {
     if (allProducts.length === 0) {
       setIndexed(false);
       return;
     }
 
-    const docs: SearchableProduct[] = allProducts.map((p) => {
-      const attributeIds = p.specs.map((s) => s.name).join(" ");
-      const attributeValues = p.specs.map((s) => s.value).join(" ");
-      const allText = [
-        p.title,
-        p.brand,
-        p.category,
-        p.description,
-        attributeIds,
-        attributeValues
-      ].join(" ");
+    const buildIndex = () => {
+      const docs: SearchableProduct[] = allProducts.map((p) => {
+        const attributeIds = p.specs.map((s) => s.name).join(" ");
+        const attributeValues = p.specs.map((s) => s.value).join(" ");
+        const allText = [
+          p.title,
+          p.brand,
+          p.category,
+          p.description,
+          attributeIds,
+          attributeValues
+        ].join(" ");
 
-      return {
-        ...p,
-        attributeIds,
-        attributeValues,
-        allText
-      };
-    });
+        return {
+          ...p,
+          attributeIds,
+          attributeValues,
+          allText
+        };
+      });
 
-    const ms = new MiniSearch<SearchableProduct>({
-      fields: ["title", "brand", "category", "attributeIds", "attributeValues", "allText"],
-      storeFields: ["title", "brand", "category", "price", "slug", "imageGradient", "imageLabel", "specs", "offers", "inStock", "stockCount", "suppliers", "nicheId", "priceRange", "rating", "reviewCount", "mpn", "description"],
-      searchOptions: {
-        boost: { title: 3, brand: 2, attributeValues: 2 },
-        fuzzy: 0.2,
-        prefix: true,
-        combineWith: "AND"
-      }
-    });
+      const ms = new MiniSearch<SearchableProduct>({
+        fields: ["title", "brand", "category", "attributeIds", "attributeValues", "allText"],
+        storeFields: [
+          "title",
+          "brand",
+          "category",
+          "price",
+          "slug",
+          "imageGradient",
+          "imageLabel",
+          "specs",
+          "offers",
+          "inStock",
+          "stockCount",
+          "suppliers",
+          "nicheId",
+          "priceRange",
+          "rating",
+          "reviewCount",
+          "mpn",
+          "description"
+        ],
+        searchOptions: {
+          boost: { title: 3, brand: 2, attributeValues: 2 },
+          fuzzy: 0.2,
+          prefix: true,
+          combineWith: "AND"
+        }
+      });
 
-    ms.addAll(docs);
-    setSearchIndex(ms);
-    setIndexed(true);
+      ms.addAll(docs);
+      setSearchIndex(ms);
+      setIndexed(true);
+    };
+
+    // Defer to idle: o build de ~1.000 docs custa ~1s de main thread.
+    const ric = (
+      globalThis as { requestIdleCallback?: (cb: () => void) => number }
+    ).requestIdleCallback;
+    if (typeof ric === "function") {
+      ric(buildIndex);
+    } else {
+      const t = setTimeout(buildIndex, 50);
+      return () => clearTimeout(t);
+    }
   }, [allProducts]);
 
   // Search + filter
@@ -218,10 +269,14 @@ export function useProductSearch(
       // Resolve ontology terms
       const { text, attributeIds } = resolveSearchTerms(query);
 
-      // Build search query — search for text AND resolved attribute IDs
-      const searchQueries: Array<{ queries: string[]; fields?: string[]; boost?: Record<string, number> }> = [
-        { queries: [text] }
-      ];
+      // Build search query — search for text AND resolved attribute IDs.
+      // MiniSearch v7: múltiplas queries vão numa QueryCombination
+      // ({ queries: [...] }) — passar o array direto lança TypeError.
+      const searchQueries: Array<{
+        queries: string[];
+        fields?: string[];
+        boost?: Record<string, number>;
+      }> = [{ queries: [text] }];
 
       if (attributeIds.length > 0) {
         // Also search for the attribute values (e.g., "AM5", "LGA1700")
@@ -234,7 +289,9 @@ export function useProductSearch(
       }
 
       // Execute search
-      const searchResults = searchIndex.search(searchQueries as any);
+      const searchResults = searchIndex.search({ queries: searchQueries } as Parameters<
+        typeof searchIndex.search
+      >[0]);
       const resultSlugs = new Set(searchResults.map((r) => r.slug));
       textMatches = filtered.filter((p) => resultSlugs.has(p.slug));
     }

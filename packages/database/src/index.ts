@@ -22,6 +22,9 @@
 export { prisma, type PrismaClient } from "./client";
 export type { Prisma } from "./client";
 
+// RLS — transações com contexto de tenant (docs/eng/RLS.md)
+export { withTenantTransaction, type TenantContext } from "./rls";
+
 export {
   PrismaUnitOfWork,
   PrismaRepositoryFactory,
@@ -58,6 +61,30 @@ export {
 } from "./mappers";
 
 export type { CacheRepository, NoopCacheRepository, CacheKeys } from "./cache";
+
+// Query services (read side) — consumidos pelo bootstrap/container
+export {
+  PrismaProductQueryService,
+  PrismaCategoryQueryService,
+  PrismaCustomerQueryService,
+  PrismaCartQueryService,
+  PrismaOrderQueryService,
+  PrismaSupplierQueryService
+} from "./queries";
+
+// Query/entity caches (Rec 9) — getEntityCache/getQueryCache usados no container
+export {
+  NoopEntityCache,
+  NoopQueryCache,
+  InMemoryEntityCache,
+  InMemoryQueryCache,
+  getEntityCache,
+  getQueryCache,
+  setEntityCache,
+  setQueryCache,
+  buildQuerySignature
+} from "./cache/query-cache";
+export type { EntityCache, QueryCache } from "./cache/query-cache";
 
 export type {
   TransactionClient,
