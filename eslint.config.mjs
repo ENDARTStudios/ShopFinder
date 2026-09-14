@@ -1,5 +1,6 @@
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import nextTypescript from "eslint-config-next/typescript";
+import reactHooks from "eslint-plugin-react-hooks";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -10,6 +11,11 @@ const eslintConfig = [
   ...nextCoreWebVitals,
   ...nextTypescript,
   {
+    // eslint-config-next 16.3+ não registra mais o plugin react-hooks;
+    // registro explícito mantém as rules v7 abaixo funcionando (T087).
+    plugins: {
+      "react-hooks": reactHooks
+    },
     rules: {
       // TypeScript rules
       "@typescript-eslint/no-explicit-any": "off",
@@ -61,12 +67,18 @@ const eslintConfig = [
     ignores: [
       "node_modules/**",
       ".next/**",
+      ".next-dev/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
       "examples/**",
       "skills",
-      "tool-results/**"
+      "tool-results/**",
+      "graft/**",
+      ".agents/**",
+      ".claude/**",
+      "dev.log",
+      "server.log"
     ]
   }
 ];
