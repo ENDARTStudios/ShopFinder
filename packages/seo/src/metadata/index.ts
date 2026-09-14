@@ -26,7 +26,7 @@ export function buildMetadata(params: {
   keywords?: string[];
 }): Metadata {
   const url = params.path ? `${SITE_DEFAULTS.siteUrl}${params.path}` : SITE_DEFAULTS.siteUrl;
-  const image = params.image ?? `${SITE_DEFAULTS.siteUrl}/og-default.png`;
+  const image = params.image ?? `${SITE_DEFAULTS.siteUrl}/opengraph-image`;
   return {
     title: params.title,
     description: params.description,

@@ -107,6 +107,26 @@ export function sameTrace(a: Traceable, b: Traceable): boolean {
   return a.traceId === b.traceId;
 }
 
+// ── Artifact metadata (linhagem raw → normalizado) ─────────
+
+/** Metadados de linhagem anexados a cada artefato do pipeline de descoberta. */
+export interface ArtifactMetadata {
+  readonly traceId: DiscoveryTraceId;
+  readonly artifactVersion: string;
+  readonly schemaVersion: string;
+  readonly producer: string;
+  readonly createdAt: string;
+}
+
+export function buildArtifactMetadata(input: {
+  traceId: DiscoveryTraceId;
+  artifactVersion: string;
+  schemaVersion: string;
+  producer: string;
+}): ArtifactMetadata {
+  return { ...input, createdAt: new Date().toISOString() };
+}
+
 // ── Re-exports ─────────────────────────────────────────────
 
 export type { DiscoveryTraceId };

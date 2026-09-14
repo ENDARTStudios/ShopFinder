@@ -15,9 +15,12 @@ import {
   createStringCheckpointSerializer,
   NoopAuthProvider,
   type RecordedInteraction,
-  type ConnectorConfig,
+  type ConnectorConfig
 } from "../core";
-import { createPrismaRawProductRepository, createPrismaNormalizedProductRepository } from "../../index.js";
+import {
+  createPrismaRawProductRepository,
+  createPrismaNormalizedProductRepository
+} from "../../index.js";
 import { DefaultProductNormalizer } from "@workspace/domain/discovery/normalizer/normalizer";
 import { DefaultNormalizerVersions } from "@workspace/domain/discovery/normalizer/types";
 import { generateDiscoveryTraceId } from "@workspace/domain/discovery/traceability";
@@ -27,12 +30,18 @@ import page1Json from "./fixtures/product-search-page1.json" with { type: "json"
 import page2Json from "./fixtures/product-search-page2.json" with { type: "json" };
 
 const recordings: RecordedInteraction[] = [
-  { request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" }, response: { status: 200, headers: {}, body: JSON.stringify(page1Json), durationMs: 300 } },
-  { request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" }, response: { status: 200, headers: {}, body: JSON.stringify(page2Json), durationMs: 250 } },
+  {
+    request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" },
+    response: { status: 200, headers: {}, body: JSON.stringify(page1Json), durationMs: 300 }
+  },
+  {
+    request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" },
+    response: { status: 200, headers: {}, body: JSON.stringify(page2Json), durationMs: 250 }
+  }
 ];
 
 async function getPrismaClient(): Promise<any> {
-  const mod = await import("../../generated/prisma-client/default.js");
+  const mod = await import("@prisma/client");
   return new mod.PrismaClient({ datasources: { db: { url: "file:./digikey_e2e.db" } } });
 }
 
@@ -47,9 +56,15 @@ describe("DigiKey Connector E2E", () => {
     await prisma.$executeRawUnsafe("DROP TABLE IF EXISTS normalized_product_records");
     await prisma.$executeRawUnsafe("DROP TABLE IF EXISTS raw_product_records");
     await prisma.$executeRawUnsafe("DROP TABLE IF EXISTS discovery_executions");
-    await prisma.$executeRawUnsafe(`CREATE TABLE "discovery_executions" ("id" TEXT NOT NULL PRIMARY KEY, "executionKey" TEXT NOT NULL, "planId" TEXT NOT NULL, "jobId" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "providerSnapshot" TEXT NOT NULL, "status" TEXT NOT NULL, "startedAt" DATETIME NOT NULL, "completedAt" DATETIME NOT NULL, "durationMs" INTEGER NOT NULL, "attempts" INTEGER NOT NULL, "apiCallsUsed" INTEGER NOT NULL, "productsDiscovered" INTEGER NOT NULL, "reservationConsumed" BOOLEAN NOT NULL, "metrics" TEXT NOT NULL, "versions" TEXT NOT NULL, "partitionKey" TEXT NOT NULL, "error" TEXT, "traceId" TEXT, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)`);
-    await prisma.$executeRawUnsafe(`CREATE TABLE "raw_product_records" ("id" TEXT NOT NULL PRIMARY KEY, "executionId" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "externalId" TEXT NOT NULL, "payloadKey" TEXT NOT NULL, "payloadHash" TEXT NOT NULL, "payloadCompression" TEXT NOT NULL DEFAULT 'noop', "payloadSize" INTEGER NOT NULL, "discoveredAt" DATETIME NOT NULL, "partitionKey" TEXT NOT NULL, "versions" TEXT NOT NULL, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY ("executionId") REFERENCES "discovery_executions"("id"), UNIQUE("executionId", "payloadHash"))`);
-    await prisma.$executeRawUnsafe(`CREATE TABLE "normalized_product_records" ("id" TEXT NOT NULL PRIMARY KEY, "rawProductId" TEXT NOT NULL, "executionId" TEXT NOT NULL, "payloadHash" TEXT NOT NULL, "semanticFingerprint" TEXT NOT NULL, "normalizedTitle" TEXT NOT NULL, "normalizedBrand" TEXT NOT NULL, "canonicalBrandId" TEXT, "normalizedCategory" TEXT NOT NULL, "canonicalCategoryId" TEXT, "normalizedAttributes" TEXT NOT NULL, "normalizedImages" TEXT NOT NULL, "normalizedPrice" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "externalId" TEXT NOT NULL, "region" TEXT NOT NULL, "language" TEXT NOT NULL, "discoveredAt" DATETIME NOT NULL, "normalizedAt" DATETIME NOT NULL, "partitionKey" TEXT NOT NULL, "normalizerVersions" TEXT NOT NULL, "rawVersions" TEXT NOT NULL, "schemaVersion" TEXT NOT NULL DEFAULT '1.0.0', "confidenceScore" REAL NOT NULL, "warnings" TEXT NOT NULL, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE("rawProductId", "normalizerVersions"), FOREIGN KEY ("rawProductId") REFERENCES "raw_product_records"("id"))`);
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE "discovery_executions" ("id" TEXT NOT NULL PRIMARY KEY, "executionKey" TEXT NOT NULL, "planId" TEXT NOT NULL, "jobId" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "providerSnapshot" TEXT NOT NULL, "status" TEXT NOT NULL, "startedAt" DATETIME NOT NULL, "completedAt" DATETIME NOT NULL, "durationMs" INTEGER NOT NULL, "attempts" INTEGER NOT NULL, "apiCallsUsed" INTEGER NOT NULL, "productsDiscovered" INTEGER NOT NULL, "reservationConsumed" BOOLEAN NOT NULL, "metrics" TEXT NOT NULL, "versions" TEXT NOT NULL, "partitionKey" TEXT NOT NULL, "error" TEXT, "traceId" TEXT, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)`
+    );
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE "raw_product_records" ("id" TEXT NOT NULL PRIMARY KEY, "executionId" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "externalId" TEXT NOT NULL, "payloadKey" TEXT NOT NULL, "payloadHash" TEXT NOT NULL, "payloadCompression" TEXT NOT NULL DEFAULT 'noop', "payloadSize" INTEGER NOT NULL, "discoveredAt" DATETIME NOT NULL, "partitionKey" TEXT NOT NULL, "versions" TEXT NOT NULL, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY ("executionId") REFERENCES "discovery_executions"("id"), UNIQUE("executionId", "payloadHash"))`
+    );
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE "normalized_product_records" ("id" TEXT NOT NULL PRIMARY KEY, "rawProductId" TEXT NOT NULL, "executionId" TEXT NOT NULL, "payloadHash" TEXT NOT NULL, "semanticFingerprint" TEXT NOT NULL, "normalizedTitle" TEXT NOT NULL, "normalizedBrand" TEXT NOT NULL, "canonicalBrandId" TEXT, "normalizedCategory" TEXT NOT NULL, "canonicalCategoryId" TEXT, "normalizedAttributes" TEXT NOT NULL, "normalizedImages" TEXT NOT NULL, "normalizedPrice" TEXT NOT NULL, "providerCode" TEXT NOT NULL, "externalId" TEXT NOT NULL, "region" TEXT NOT NULL, "language" TEXT NOT NULL, "discoveredAt" DATETIME NOT NULL, "normalizedAt" DATETIME NOT NULL, "partitionKey" TEXT NOT NULL, "normalizerVersions" TEXT NOT NULL, "rawVersions" TEXT NOT NULL, "schemaVersion" TEXT NOT NULL DEFAULT '1.0.0', "confidenceScore" REAL NOT NULL, "warnings" TEXT NOT NULL, "metadata" TEXT, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE("rawProductId", "normalizerVersions"), FOREIGN KEY ("rawProductId") REFERENCES "raw_product_records"("id"))`
+    );
 
     rawRepo = createPrismaRawProductRepository(prisma);
     normalizedRepo = createPrismaNormalizedProductRepository(prisma);
@@ -63,16 +78,24 @@ describe("DigiKey Connector E2E", () => {
       retryPolicy: createHttpRetryPolicy(3),
       checkpointSerializer: createStringCheckpointSerializer(),
       timeoutMs: 10000,
-      maxPages: 10,
+      maxPages: 10
     };
     connector = createDigiKeyConnector(config);
   });
 
-  afterAll(async () => { await prisma?.$disconnect(); });
+  afterAll(async () => {
+    await prisma?.$disconnect();
+  });
 
   it("should complete full E2E: discover → persist → normalize → verify", async () => {
     const traceId = generateDiscoveryTraceId();
-    const request: DiscoveryRequest = { keyword: "STM32", region: "US", language: "en", limit: 2, traceId: traceId as any };
+    const request: DiscoveryRequest = {
+      keyword: "STM32",
+      region: "US",
+      language: "en",
+      limit: 2,
+      traceId: traceId as any
+    };
 
     // ── 1. Discover ────────────────────────────────────────
     const allProducts: any[] = [];
@@ -101,15 +124,57 @@ describe("DigiKey Connector E2E", () => {
     // ── 3. Persist to RawProductRepository ─────────────────
     const executionId = "exec_digikey_e2e";
     await rawRepo.appendExecution({
-      id: executionId, executionKey: "ek_dk", planId: "plan_dk", jobId: "job_dk",
+      id: executionId,
+      executionKey: "ek_dk",
+      planId: "plan_dk",
+      jobId: "job_dk",
       providerCode: "digikey",
-      providerSnapshot: { providerCode: "digikey", providerVersion: "v4", manifestVersion: "v1", capturedAt: new Date(), health: { providerCode: "digikey", status: "healthy", lastSuccess: new Date(), consecutiveFailures: 0, averageLatencyMs: 300, errorRate: 0, totalRequests: 50, totalErrors: 0 }, rateLimit: { limitPerMinute: 30 } },
-      status: "succeeded", startedAt: new Date(Date.now() - 2000), completedAt: new Date(),
-      durationMs: 2000, attempts: 1, apiCallsUsed: 2, productsDiscovered: allProducts.length,
+      providerSnapshot: {
+        providerCode: "digikey",
+        providerVersion: "v4",
+        manifestVersion: "v1",
+        capturedAt: new Date(),
+        health: {
+          providerCode: "digikey",
+          status: "healthy",
+          lastSuccess: new Date(),
+          consecutiveFailures: 0,
+          averageLatencyMs: 300,
+          errorRate: 0,
+          totalRequests: 50,
+          totalErrors: 0
+        },
+        rateLimit: { limitPerMinute: 30 }
+      },
+      status: "succeeded",
+      startedAt: new Date(Date.now() - 2000),
+      completedAt: new Date(),
+      durationMs: 2000,
+      attempts: 1,
+      apiCallsUsed: 2,
+      productsDiscovered: allProducts.length,
       reservationConsumed: true,
-      metrics: { discoveryDurationMs: 550, checkpointDurationMs: 5, rateLimitWaitMs: 0, retryDelayMs: 0, totalDurationMs: 555, itemsProcessed: allProducts.length, apiCallsUsed: 2, retries: 0, checkpointsSaved: 2 },
-      versions: { schemaVersion: "1.0.0", workflowVersion: "1.0.0", plannerVersion: "1.0.0", providerVersion: "v4", connectorVersion: "2.0.0", providerManifestVersion: "v1" },
-      partitionKey: "digikey|US|2025-07-14", traceId,
+      metrics: {
+        discoveryDurationMs: 550,
+        checkpointDurationMs: 5,
+        rateLimitWaitMs: 0,
+        retryDelayMs: 0,
+        totalDurationMs: 555,
+        itemsProcessed: allProducts.length,
+        apiCallsUsed: 2,
+        retries: 0,
+        checkpointsSaved: 2
+      },
+      versions: {
+        schemaVersion: "1.0.0",
+        workflowVersion: "1.0.0",
+        plannerVersion: "1.0.0",
+        providerVersion: "v4",
+        connectorVersion: "2.0.0",
+        providerManifestVersion: "v1"
+      },
+      partitionKey: "digikey|US|2025-07-14",
+      traceId
     });
 
     const rawRecords = allProducts.map((product, i) => ({
@@ -121,7 +186,14 @@ describe("DigiKey Connector E2E", () => {
       payloadHash: `ph_dk_${product.externalId}`,
       discoveredAt: new Date(),
       partitionKey: "digikey|US|2025-07-14",
-      versions: { schemaVersion: "1.0.0", workflowVersion: "1.0.0", plannerVersion: "1.0.0", providerVersion: "v4", connectorVersion: "2.0.0", providerManifestVersion: "v1" },
+      versions: {
+        schemaVersion: "1.0.0",
+        workflowVersion: "1.0.0",
+        plannerVersion: "1.0.0",
+        providerVersion: "v4",
+        connectorVersion: "2.0.0",
+        providerManifestVersion: "v1"
+      }
     }));
     const appended = await rawRepo.appendProducts(rawRecords);
     expect(appended.length).toBe(3);
@@ -163,17 +235,35 @@ describe("DigiKey Connector E2E", () => {
 
   it("should handle empty response", async () => {
     const emptyRecordings: RecordedInteraction[] = [
-      { request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" }, response: { status: 200, headers: {}, body: JSON.stringify({ Products: { Products: [], TotalCount: 0, Count: 0, Offset: 0 } }), durationMs: 50 } },
+      {
+        request: { method: "POST", url: "https://api.digikey.com/Search/v4/Products" },
+        response: {
+          status: 200,
+          headers: {},
+          body: JSON.stringify({ Products: { Products: [], TotalCount: 0, Count: 0, Offset: 0 } }),
+          durationMs: 50
+        }
+      }
     ];
     const config: ConnectorConfig = {
-      provider: "digikey", transport: createReplayTransport(emptyRecordings),
-      auth: new NoopAuthProvider(), pagination: new DigiKeyOffsetPagination(),
-      rateLimiter: createNoopRateLimiter(), retryPolicy: createHttpRetryPolicy(3),
-      checkpointSerializer: createStringCheckpointSerializer(), timeoutMs: 5000, maxPages: 10,
+      provider: "digikey",
+      transport: createReplayTransport(emptyRecordings),
+      auth: new NoopAuthProvider(),
+      pagination: new DigiKeyOffsetPagination(),
+      rateLimiter: createNoopRateLimiter(),
+      retryPolicy: createHttpRetryPolicy(3),
+      checkpointSerializer: createStringCheckpointSerializer(),
+      timeoutMs: 5000,
+      maxPages: 10
     };
     const emptyConnector = createDigiKeyConnector(config);
     const pages: any[] = [];
-    for await (const page of emptyConnector.discover({ keyword: "none", region: "US", language: "en", limit: 20 })) {
+    for await (const page of emptyConnector.discover({
+      keyword: "none",
+      region: "US",
+      language: "en",
+      limit: 20
+    })) {
       pages.push(page);
     }
     expect(pages.length).toBe(1);

@@ -108,9 +108,7 @@ export function CompareButton({
       )}
       {t("headerCompare")}
       {items.length > 0 && !selected && (
-        <span className="ml-1 text-[10px] font-normal opacity-70">
-          ({items.length}/4)
-        </span>
+        <span className="ml-1 text-[10px] font-normal opacity-70">({items.length}/4)</span>
       )}
     </Button>
   );

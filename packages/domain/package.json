@@ -58,6 +58,14 @@
     "./queries": {
       "types": "./src/queries/index.ts",
       "import": "./src/queries/index.ts"
+    },
+    "./discovery/*": {
+      "types": "./src/discovery/*",
+      "import": "./src/discovery/*"
+    },
+    "./marketplace": {
+      "types": "./src/marketplace/index.ts",
+      "import": "./src/marketplace/index.ts"
     }
   },
   "scripts": {

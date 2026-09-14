@@ -68,6 +68,12 @@ model User {
   status          String   @default("active") // active | suspended | deleted
   lastLoginAt     DateTime?
   emailVerifiedAt DateTime?
+  // MFA TOTP (#22) — obrigatório para roles admin quando flag mfa_admin ativa
+  mfaSecret       String?
+  mfaEnabled      Boolean  @default(false)
+  // Aceite dos Termos de Uso/Privacidade (T051) — LGPD art. 8º e Marco Civil art. 10
+  termsAcceptedAt DateTime?
+  termsVersion    String?
   version         Int      @default(1)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -135,6 +141,8 @@ model Product {
   attributes ProductAttribute[]
   options    VariantOption[]
   offers     ProductOffer[]
+  reviews    Review[]
+  priceAlerts PriceAlert[]
 
   @@unique([storeId, slug])
   @@index([storeId])
@@ -314,6 +322,9 @@ model Customer {
   carts     Cart[]
   orders    Order[]
   wishlist  WishlistItem[]
+  reviews   Review[]
+  priceAlerts    PriceAlert[]
+  notifications  Notification[]
 
   @@unique([storeId, email])
   @@index([storeId])
@@ -442,6 +453,9 @@ model Order {
   shippedAt                DateTime?
   deliveredAt              DateTime?
   cancelledAt              DateTime?
+  cancellationRequestedAt  DateTime?
+  cancellationProtocol     String?
+  cancellationStatus       String? // requested | processed | refunded
   version                  Int      @default(1)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
@@ -871,4 +885,91 @@ model IdempotencyKey {
   updatedAt     DateTime @updatedAt
 
   @@index([scope, expiresAt])
+}
+
+// T075 — lista de espera do pré-lançamento (email capture, cookieless)
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  niche     String?
+  locale    String   @default("pt-BR")
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// T077 — analytics first-party cookieless: agregados sem cookie, sem IP
+// cru e sem identificadores (apenas path, host de origem e classe de
+// dispositivo). Não entra no inventário de /cookies (nada é armazenado
+// no navegador do usuário).
+model AnalyticsPageView {
+  id           String   @id @default(cuid())
+  path         String
+  referrerHost String?
+  device       String   @default("desktop") // desktop | mobile | tablet
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+}
+
+// T081 — reviews de produtos (1 por usuário/produto; moderação básica)
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  customerId String
+  rating     Int // 1-5
+  title      String?
+  body       String
+  status     String   @default("published") // published | flagged | removed
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product   Product  @relation(fields: [productId], references: [id])
+  customer  Customer @relation(fields: [customerId], references: [id])
+
+  @@unique([productId, customerId])
+  @@index([productId])
+}
+
+// T083 — alertas de preço (1 alerta ativo por par produto/customer; a
+// unicidade parcial entre ATIVOS vive no SQL da migration, não no Prisma).
+// Email adiado (DECISAO-ALERTAS-001): notificação in-app via Notification.
+model PriceAlert {
+  id              String    @id @default(cuid())
+  productId       String
+  customerId      String
+  storeId         String
+  targetPriceMinor BigInt
+  currency        String    @default("BRL")
+  status          String    @default("active") // active | triggered | disabled
+  triggeredAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id])
+  customer  Customer @relation(fields: [customerId], references: [id])
+
+  @@index([status])
+  @@index([customerId])
+  @@index([productId])
+}
+
+// T083 — notificações in-app persistidas (hoje: price_alert). O bell do
+// customer lê via /api/notifications; leitura (readAt) fica client-side.
+model Notification {
+  id         String    @id @default(cuid())
+  customerId String
+  storeId    String
+  type       String // price_alert | pipeline_failed | product_review | low_confidence
+  severity   String    @default("info") // info | warning | error
+  message    String
+  link       String?
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId, createdAt])
+  @@index([customerId, readAt])
 }

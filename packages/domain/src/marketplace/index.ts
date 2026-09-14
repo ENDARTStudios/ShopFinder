@@ -40,6 +40,12 @@ export interface CanonicalProduct {
   readonly lifecycleState: ProductLifecycleState;
   readonly aiScore?: number;
   readonly confidenceScore?: number;
+  /** Resumo da avaliação de IA (preenchido pelo materializador do catálogo). */
+  readonly evaluationSummary?: {
+    readonly overallScore: number;
+    readonly recommendation: string;
+    readonly confidence: number;
+  };
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }
