@@ -132,7 +132,7 @@
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.12.2",
     "react-syntax-highlighter": "^15.6.6",
-    "recharts": "^2.15.4",
+    "recharts": "^3.10.0",
     "sharp": "^0.35.4",
     "sonner": "^2.0.7",
     "stripe": "^22.3.2",
