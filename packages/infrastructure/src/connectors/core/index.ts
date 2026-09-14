@@ -24,6 +24,7 @@ export * from "./auth";
 export * from "./pagination";
 export * from "./rate-limiter";
 export * from "./retry";
+export { NoRetryPolicy } from "./retry";
 export * from "./checkpoint";
 export * from "./errors";
 export * from "./metrics";

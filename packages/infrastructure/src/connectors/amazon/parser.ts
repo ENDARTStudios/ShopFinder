@@ -45,7 +45,7 @@ export class AmazonCatalogParser {
       throw this.parseError(response);
     }
 
-    const json = this.safeParseJson(response.body);
+    const json = this.safeParseJson(response.body) as { errors?: unknown[]; items?: unknown[]; pagination?: { nextToken?: string | null } | null } | null;
 
     // Check for API-level errors
     if (json?.errors) {

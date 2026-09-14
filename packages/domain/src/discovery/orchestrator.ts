@@ -48,7 +48,11 @@ export interface DiscoveryJobRepository {
   saveBatch(jobs: ReadonlyArray<DiscoveryJob>): Promise<void>;
   findById(jobId: DiscoveryJobId): Promise<DiscoveryJob | null>;
   findByPlanId(planId: string): Promise<DiscoveryJob[]>;
-  updateStatus(jobId: DiscoveryJobId, status: DiscoveryJobStatus, result?: DiscoveryJobResult): Promise<void>;
+  updateStatus(
+    jobId: DiscoveryJobId,
+    status: DiscoveryJobStatus,
+    result?: DiscoveryJobResult
+  ): Promise<void>;
 }
 
 export interface CheckpointRepository {
@@ -159,7 +163,10 @@ export function validatePlan(
   // Check TTL
   const planAge = now.getTime() - plan.createdAt.getTime();
   if (planAge > config.planTtlMs) {
-    return { valid: false, reason: `Plan expired (age: ${Math.round(planAge / 1000)}s, ttl: ${config.planTtlMs / 1000}s)` };
+    return {
+      valid: false,
+      reason: `Plan expired (age: ${Math.round(planAge / 1000)}s, ttl: ${config.planTtlMs / 1000}s)`
+    };
   }
 
   // Check feature flag
@@ -170,7 +177,10 @@ export function validatePlan(
   // Check budget availability
   const remainingCalls = budget.maxApiCalls - budget.currentUsage.apiCallsUsed;
   if (remainingCalls < plan.budget.totalApiCalls) {
-    return { valid: false, reason: `Insufficient budget: need ${plan.budget.totalApiCalls}, available ${remainingCalls}` };
+    return {
+      valid: false,
+      reason: `Insufficient budget: need ${plan.budget.totalApiCalls}, available ${remainingCalls}`
+    };
   }
 
   // Check plan has sources
@@ -226,6 +236,8 @@ export function createJobsFromPlan(
         region,
         language: plan.languages[0] ?? "en",
         cursor: undefined,
+        parentPlanId: plan.id,
+        sequenceNumber: jobs.length + 1,
         priority: plan.priority.overall,
         status: "pending",
         attempts: 0,
@@ -283,7 +295,13 @@ export async function orchestratePlan(
   if (alreadyExecuted) {
     reasons["already_executed"] = (reasons["already_executed"] ?? 0) + 1;
     metrics.plansCancelled = 1;
-    return { jobs: [], planStatus: "cancelled", budgetReserved: false, metrics, durationMs: Date.now() - start };
+    return {
+      jobs: [],
+      planStatus: "cancelled",
+      budgetReserved: false,
+      metrics,
+      durationMs: Date.now() - start
+    };
   }
 
   // 2. Validate plan
@@ -294,11 +312,23 @@ export async function orchestratePlan(
       reasons["expired"] = 1;
       await deps.eventPublisher.publishPlanExpired(plan.id, validation.reason);
       await deps.planRepository.updateStatus(plan.id, "expired");
-      return { jobs: [], planStatus: "expired", budgetReserved: false, metrics, durationMs: Date.now() - start };
+      return {
+        jobs: [],
+        planStatus: "expired",
+        budgetReserved: false,
+        metrics,
+        durationMs: Date.now() - start
+      };
     }
     reasons[validation.reason ?? "validation_failed"] = 1;
     metrics.plansCancelled = 1;
-    return { jobs: [], planStatus: "cancelled", budgetReserved: false, metrics, durationMs: Date.now() - start };
+    return {
+      jobs: [],
+      planStatus: "cancelled",
+      budgetReserved: false,
+      metrics,
+      durationMs: Date.now() - start
+    };
   }
 
   // 3. Reserve budget
@@ -306,8 +336,17 @@ export async function orchestratePlan(
   if (!reservation.reserved) {
     metrics.budgetRejected = 1;
     reasons["budget_rejected"] = 1;
-    await deps.eventPublisher.publishBudgetRejected(plan.id, reservation.reason ?? "Budget reservation failed");
-    return { jobs: [], planStatus: "cancelled", budgetReserved: false, metrics, durationMs: Date.now() - start };
+    await deps.eventPublisher.publishBudgetRejected(
+      plan.id,
+      reservation.reason ?? "Budget reservation failed"
+    );
+    return {
+      jobs: [],
+      planStatus: "cancelled",
+      budgetReserved: false,
+      metrics,
+      durationMs: Date.now() - start
+    };
   }
   metrics.budgetReserved = 1;
 
@@ -345,7 +384,10 @@ export async function orchestratePlan(
   await deps.executionRegistry.markExecuted(plan.planHash, executionId);
 
   // 9. Publish events
-  await deps.eventPublisher.publishPlanScheduled(plan.id, jobs.map(j => j.id));
+  await deps.eventPublisher.publishPlanScheduled(
+    plan.id,
+    jobs.map((j) => j.id)
+  );
   for (const job of jobs) {
     await deps.eventPublisher.publishJobCreated(job);
   }

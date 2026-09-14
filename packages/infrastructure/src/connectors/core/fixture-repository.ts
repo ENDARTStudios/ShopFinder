@@ -19,6 +19,7 @@
  *           metadata.json
  */
 import type { RecordedInteraction } from "./transport";
+export type { RecordedInteraction };
 import type { MarketplaceProvider } from "./types";
 
 // ── Types ──────────────────────────────────────────────────
@@ -127,7 +128,7 @@ export class FilesystemFixtureRepository implements FixtureRepository {
     if (dates.length === 0) return null;
 
     // Get the latest date (sorted descending)
-    const latestDate = dates.sort().reverse()[0]!;
+    const latestDate = [...dates].sort().reverse()[0]!;
     return this.loadByDate(provider, endpoint, latestDate);
   }
 

@@ -42,7 +42,7 @@ export class NeweggParser {
       throw this.parseError(response);
     }
 
-    const json = this.safeParseJson(response.body);
+    const json = this.safeParseJson(response.body) as { ItemList?: unknown[]; TotalCount?: number; TotalPageCount?: number; CurrentPageNumber?: number; message?: string } | null;
     const itemsRaw = json?.ItemList ?? [];
     const items: ParsedNeweggItem[] = [];
 

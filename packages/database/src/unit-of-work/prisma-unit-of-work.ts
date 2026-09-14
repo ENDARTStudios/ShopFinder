@@ -45,10 +45,12 @@ export class PrismaUnitOfWork implements AdvancedUnitOfWork {
     private readonly factory: RepositoryFactory
   ) {}
 
-  async transaction<T>(fn: (repositories: RepositoryRegistry) => Promise<T>): Promise<T> {
+  async transaction<T>(
+    fn: (repositories: RepositoryRegistry, tx: TransactionClient) => Promise<T>
+  ): Promise<T> {
     return this.prisma.$transaction(async (tx) => {
       const repos = this.factory.createRegistry(tx, this.collector);
-      const result = await fn(repos);
+      const result = await fn(repos, tx);
       // Persist collected events to outbox in the SAME transaction
       await this.persistOutbox(tx);
       return result;

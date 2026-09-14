@@ -20,6 +20,7 @@ import type {
   ProductId,
   CategoryId,
   CustomerId,
+  UserId,
   CartId,
   CheckoutSessionId,
   OrderId,
@@ -101,6 +102,34 @@ export interface CustomerRepository {
   save(customer: Customer): Promise<Customer>;
   delete(id: CustomerId): Promise<void>;
   restore(id: CustomerId): Promise<void>;
+}
+
+// ── User ────────────────────────────────────────────────────
+// User é infraestrutura de identidade, não agregado de domínio
+// (a implementação Prisma vive em @workspace/database — ver
+// user-repository.ts). Contrato mínimo consumido pelos handlers.
+
+export interface UserRecord {
+  id: UserId;
+  email: string;
+  passwordHash: string;
+  roles: string[];
+  storeId?: string;
+  customerId?: string;
+  supplierId?: string;
+  status: string;
+  emailVerifiedAt?: Date;
+  lastLoginAt?: Date;
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserRepository {
+  findById(id: UserId): Promise<UserRecord | null>;
+  findByEmail(email: string): Promise<UserRecord | null>;
+  save(user: UserRecord): Promise<UserRecord>;
+  delete(id: UserId): Promise<void>;
 }
 
 // ── Cart ────────────────────────────────────────────────────

@@ -1,0 +1,47 @@
+name: Security Gate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      # npm não suporta o protocolo workspace:* dos workspaces — instalação via bun
+      - name: Install deps
+        run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
+      - name: Architecture contract
+        run: npm run test:arch --if-present
+      - name: Audit (zero high+)
+        # GHSAs triadas (backlog de deps):
+        # - GHSA-ggr8-5vv4-36mx (deepmerge-ts via prisma): stack exhaustion
+        #   exige input recursivo hostil no merge.
+        # - GHSA-52cp-r559-cp3m / GHSA-5p4m-2wfm-xmqj (js-yaml 4.x via
+        #   mdxeditor/commitlint): CPU quadrática em YAML hostil — inputs são
+        #   configs próprias do repo, não user input.
+        # T071-toolbelt (12/09/2026) — triagem pós-update de next/sharp/
+        # fast-uri/js-yaml diretos:
+        # - GHSA-5jgf-p345-68v8 / GHSA-f65p-4m7j-42xc / GHSA-fph4-wmhf-6fwf /
+        #   GHSA-jqff-g426-hqxp (fast-uri 3.x via ajv): cadeias de DEV
+        #   (eslint/commitlint/stryker); @hookform/resolvers não é importado
+        #   em src/ — zero exposição runtime. Pais atualizarão o range.
+        # - GHSA-2883-xcg3-v3hh (js-yaml 4.x via cosmiconfig/mdxeditor):
+        #   CPU quadrática em YAML hostil — mesma triagem das irmãs.
+        # - GHSA-x7hr-w5r2-h6wg (prismjs moderate): não bloqueia o gate
+        #   (level high); react-syntax-highlighter sem uso em src/.
+        run: bun audit --audit-level=high --ignore=GHSA-ggr8-5vv4-36mx --ignore=GHSA-52cp-r559-cp3m --ignore=GHSA-5p4m-2wfm-xmqj --ignore=GHSA-5jgf-p345-68v8 --ignore=GHSA-f65p-4m7j-42xc --ignore=GHSA-fph4-wmhf-6fwf --ignore=GHSA-jqff-g426-hqxp --ignore=GHSA-2883-xcg3-v3hh
+      - name: Gitleaks
+        # Binário direto (a action oficial falha com 403 no post de status)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz | tar xz -C /tmp
+          /tmp/gitleaks detect --source . --redact -v
