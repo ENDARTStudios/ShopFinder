@@ -1,37 +1,10 @@
 version: 2
 updates:
-  # Root app dependencies
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "06:00"
-      timezone: "America/Sao_Paulo"
-    open-pull-requests-limit: 10
-    versioning-strategy: "increase"
-    commit-message:
-      prefix: "chore(deps)"
-      include: "scope"
-    labels: ["dependencies", "automated"]
-    groups:
-      radix-ui:
-        patterns: ["@radix-ui/*"]
-      prisma:
-        patterns: ["prisma", "@prisma/client"]
-      next:
-        patterns: ["next", "eslint-config-next"]
-      react:
-        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
-      testing:
-        patterns: ["vitest", "@vitest/*", "@testing-library/*"]
-
-  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(ci)"
-    labels: ["ci", "dependencies", "automated"]

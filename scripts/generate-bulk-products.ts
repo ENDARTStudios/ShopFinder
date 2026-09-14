@@ -31,12 +31,12 @@ interface BulkVariant {
 const VARIANTS: BulkVariant[] = [
   { skuSuffix: "B1", titleSuffix: "(Bulk variant 1)", priceMultiplier: 0.95 },
   { skuSuffix: "B2", titleSuffix: "(Bulk variant 2)", priceMultiplier: 1.05 },
-  { skuSuffix: "B3", titleSuffix: "(Bulk variant 3)", priceMultiplier: 1.10 },
-  { skuSuffix: "B4", titleSuffix: "(Bulk variant 4)", priceMultiplier: 0.90 },
-  { skuSuffix: "B5", titleSuffix: "(Bulk variant 5)", priceMultiplier: 1.00 },
+  { skuSuffix: "B3", titleSuffix: "(Bulk variant 3)", priceMultiplier: 1.1 },
+  { skuSuffix: "B4", titleSuffix: "(Bulk variant 4)", priceMultiplier: 0.9 },
+  { skuSuffix: "B5", titleSuffix: "(Bulk variant 5)", priceMultiplier: 1.0 },
   { skuSuffix: "B6", titleSuffix: "(Bulk variant 6)", priceMultiplier: 1.15 },
   { skuSuffix: "B7", titleSuffix: "(Bulk variant 7)", priceMultiplier: 0.85 },
-  { skuSuffix: "B8", titleSuffix: "(Bulk variant 8)", priceMultiplier: 1.20 }
+  { skuSuffix: "B8", titleSuffix: "(Bulk variant 8)", priceMultiplier: 1.2 }
 ];
 
 function slugify(text: string): string {
@@ -127,7 +127,7 @@ async function main() {
     const sku = `SF-BULK-${template.sku.replace("SF-PIPE-", "")}-${variant.skuSuffix}-C${cycleNum}`;
     const title = `${template.title} ${variant.titleSuffix} C${cycleNum}`.slice(0, 200);
     const slug = `${slugify(title)}-${cycleNum}`.slice(0, 100);
-    const price = Number(template.basePriceMinorUnits) * variant.priceMultiplier / 100;
+    const price = (Number(template.basePriceMinorUnits) * variant.priceMultiplier) / 100;
 
     // Skip if already exists (idempotent re-run)
     const existing = await prisma.product.findFirst({
@@ -155,13 +155,14 @@ async function main() {
         attributes: {
           create: template.attributes.slice(0, 6).map((a) => ({
             name: a.name,
-            value: a.value,
-            unit: a.unit
+            value: a.value
           }))
         },
         media: {
           create: {
-            url: template.media[0]?.url ?? "data:gradient;linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
+            url:
+              template.media[0]?.url ??
+              "data:gradient;linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
             altText: title.slice(0, 100),
             position: 0,
             isPrimary: true

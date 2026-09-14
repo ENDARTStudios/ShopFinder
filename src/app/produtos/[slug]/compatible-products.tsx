@@ -10,10 +10,13 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Network, Loader2, ArrowRight } from "lucide-react";
+import { Network, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { ProductCardSkeletonGrid } from "@/components/site/product-card-skeleton";
+import { FadeIn, FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
 
 interface CompatibleProduct {
   slug: string;
@@ -30,6 +33,7 @@ interface KnowledgeResponse {
 }
 
 export function CompatibleProducts({ slug }: { slug: string }) {
+  const t = useTranslations("detail");
   const [data, setData] = React.useState<KnowledgeResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -50,11 +54,7 @@ export function CompatibleProducts({ slug }: { slug: string }) {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <ProductCardSkeletonGrid count={3} />;
   }
 
   if (!data || data.compatibleProducts.length === 0) {
@@ -62,58 +62,63 @@ export function CompatibleProducts({ slug }: { slug: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Network className="h-5 w-5 text-emerald-500" />
-          Produtos Compatíveis
-          <Badge variant="outline" className="ml-1 text-xs">
-            {data.totalRelations} relação(ões)
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {data.manufacturer && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-sm">
-            <Badge className="bg-emerald-500/90 text-white">
-              Tier {data.manufacturer.tier}
+    <FadeIn>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Network className="h-5 w-5 text-emerald-500" />
+            {t("compatibleTitle")}
+            <Badge variant="outline" className="ml-1 text-xs">
+              {t("relationsCount", { count: data.totalRelations })}
             </Badge>
-            <span className="text-muted-foreground">Fabricante:</span>
-            <span className="font-medium">{data.manufacturer.name}</span>
-            <span className="text-xs text-muted-foreground">
-              Authority: {data.manufacturer.authorityScore}
-            </span>
-          </div>
-        )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.manufacturer && (
+            <div className="mb-4 flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-sm">
+              <Badge className="bg-emerald-500/90 text-white">
+                Tier {data.manufacturer.tier}
+              </Badge>
+              <span className="text-muted-foreground">{t("manufacturer")}</span>
+              <span className="font-medium">{data.manufacturer.name}</span>
+              <span className="text-xs text-muted-foreground">
+                Authority: {data.manufacturer.authorityScore}
+              </span>
+            </div>
+          )}
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {data.compatibleProducts.map((cp) => (
-            <Link
-              key={cp.slug}
-              href={`/produtos/${cp.slug}`}
-              className="group flex items-center justify-between rounded-lg border border-border/40 p-3 transition-all hover:border-emerald-500/40 hover:shadow-sm"
-            >
-              <div className="flex-1">
-                <div className="text-sm font-medium line-clamp-2">{cp.title}</div>
-                <div className="mt-1 flex items-center gap-2">
-                  {cp.category && (
-                    <Badge variant="outline" className="text-[10px]">
-                      {cp.category}
-                    </Badge>
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {cp.relationType === "compatible_with" ? "Compatível" : "Mesmo fabricante"}
-                  </span>
-                </div>
-                <div className="mt-1 text-sm font-bold text-emerald-500">
-                  ${cp.price.toFixed(2)}
-                </div>
-              </div>
-              <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />
-            </Link>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          <FadeInStagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {data.compatibleProducts.map((cp) => (
+              <FadeInItem key={cp.slug}>
+                <Link
+                  href={`/produtos/${cp.slug}`}
+                  className="group flex items-center justify-between rounded-lg border border-border/40 p-3 transition-all hover:border-emerald-500/40 hover:shadow-sm"
+                >
+                  <div className="flex-1">
+                    <div className="text-sm font-medium line-clamp-2">{cp.title}</div>
+                    <div className="mt-1 flex items-center gap-2">
+                      {cp.category && (
+                        <Badge variant="outline" className="text-[10px]">
+                          {cp.category}
+                        </Badge>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {cp.relationType === "compatible_with"
+                          ? t("relationCompatible")
+                          : t("relationSameManufacturer")}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-sm font-bold text-emerald-500">
+                      ${cp.price.toFixed(2)}
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                </Link>
+              </FadeInItem>
+            ))}
+          </FadeInStagger>
+        </CardContent>
+      </Card>
+    </FadeIn>
   );
 }

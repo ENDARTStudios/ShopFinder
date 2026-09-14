@@ -12,12 +12,7 @@
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
-import { getServerAuthSession } from "@workspace/auth";
-
-function hasAdminRole(roles: string[] | undefined): boolean {
-  if (!roles) return false;
-  return roles.includes("admin") || roles.includes("operator");
-}
+import { requirePermissions } from "@/lib/admin-auth";
 
 interface Notification {
   id: string;
@@ -29,17 +24,9 @@ interface Notification {
 }
 
 export async function GET() {
-  const session = await getServerAuthSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const user = session.user as { roles?: string[] };
-  if (!hasAdminRole(user.roles)) {
-    return NextResponse.json(
-      { error: "Forbidden — requires admin or operator role" },
-      { status: 403 }
-    );
-  }
+  // Authorization: notificações operacionais exigem catalog.read (docs/eng/RBAC.md)
+  const guard = await requirePermissions("admin.access");
+  if (!guard.ok) return guard.response;
 
   const notifications: Notification[] = [];
 
@@ -98,7 +85,7 @@ export async function GET() {
     where: {
       status: "published",
       deletedAt: null,
-      attributes: { some: { confidence: { lt: 0.70, not: null } } }
+      attributes: { some: { confidence: { lt: 0.7, not: null } } }
     },
     orderBy: { updatedAt: "desc" },
     take: 10,

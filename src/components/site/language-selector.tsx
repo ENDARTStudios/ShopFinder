@@ -18,16 +18,15 @@ import { Button } from "@/components/ui/button";
 const LOCALE_COOKIE = "locale";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
-function readCurrentLocale(): "pt-BR" | "en" {
+function readCurrentLocale(): "pt-BR" | "en" | "es-ES" {
   if (typeof document === "undefined") return "pt-BR";
-  const match = document.cookie
-    .split("; ")
-    .find((c) => c.startsWith(`${LOCALE_COOKIE}=`));
-  return match?.split("=")[1] === "en" ? "en" : "pt-BR";
+  const match = document.cookie.split("; ").find((c) => c.startsWith(`${LOCALE_COOKIE}=`));
+  const v = match?.split("=")[1];
+  return v === "en" || v === "es-ES" ? v : "pt-BR";
 }
 
 export function LanguageSelector() {
-  const [locale, setLocale] = React.useState<"pt-BR" | "en">("pt-BR");
+  const [locale, setLocale] = React.useState<"pt-BR" | "en" | "es-ES">("pt-BR");
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -35,7 +34,7 @@ export function LanguageSelector() {
     setMounted(true);
   }, []);
 
-  const switchTo = (next: "pt-BR" | "en") => {
+  const switchTo = (next: "pt-BR" | "en" | "es-ES") => {
     if (next === locale) return;
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
     // Reload to pick up server-side locale change (layout, server components).
@@ -84,6 +83,20 @@ export function LanguageSelector() {
         }`}
       >
         EN
+      </button>
+      <button
+        type="button"
+        onClick={() => switchTo("es-ES")}
+        aria-pressed={locale === "es-ES"}
+        aria-label="Español"
+        title="Español"
+        className={`rounded px-2 py-0.5 text-[11px] font-semibold transition-colors ${
+          locale === "es-ES"
+            ? "bg-emerald-500 text-white"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        ES
       </button>
     </div>
   );
