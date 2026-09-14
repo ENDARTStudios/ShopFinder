@@ -46,7 +46,7 @@ import type { Job } from "bullmq";
 class MockQueue {
   private jobs: Map<string, any> = new Map();
   private processor: ((job: any) => Promise<any>) | null = null;
-  private eventHandlers: Map<string, Function[]> = new Map();
+  private eventHandlers: Map<string, Array<(...args: unknown[]) => void>> = new Map();
 
   async add(name: string, data: any, opts?: any): Promise<{ id: string }> {
     const id = opts?.jobId ?? `job_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -59,7 +59,7 @@ class MockQueue {
       data,
       attemptsMade: 0,
       returnvalue: null as any,
-      failedReason: null as string | null,
+      failedReason: null as string | null
     };
     this.jobs.set(id, job);
     return { id };
@@ -88,15 +88,20 @@ class MockQueue {
   async getJobCounts(...types: string[]): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
     for (const type of types) {
-      if (type === "completed") counts[type] = [...this.jobs.values()].filter((j) => j.returnvalue !== null).length;
-      else if (type === "failed") counts[type] = [...this.jobs.values()].filter((j) => j.failedReason).length;
-      else if (type === "waiting") counts[type] = [...this.jobs.values()].filter((j) => j.returnvalue === null && !j.failedReason).length;
+      if (type === "completed")
+        counts[type] = [...this.jobs.values()].filter((j) => j.returnvalue !== null).length;
+      else if (type === "failed")
+        counts[type] = [...this.jobs.values()].filter((j) => j.failedReason).length;
+      else if (type === "waiting")
+        counts[type] = [...this.jobs.values()].filter(
+          (j) => j.returnvalue === null && !j.failedReason
+        ).length;
       else counts[type] = 0;
     }
     return counts;
   }
 
-  on(event: string, handler: Function): void {
+  on(event: string, handler: (...args: unknown[]) => void): void {
     if (!this.eventHandlers.has(event)) this.eventHandlers.set(event, []);
     this.eventHandlers.get(event)!.push(handler);
   }
@@ -137,7 +142,7 @@ function makeJob(id: string = "job_test_001"): DiscoveryJob {
     maxAttempts: 3,
     createdAt: new Date(0),
     parentPlanId: "plan_test_001",
-    sequenceNumber: 0,
+    sequenceNumber: 0
   };
 }
 
@@ -147,14 +152,13 @@ function makeJobData(jobId?: string, traceId?: DiscoveryTraceId): DiscoveryJobDa
     traceId: traceId ?? ("trace_test_001" as DiscoveryTraceId),
     executionKey: "ek_test_001",
     workflowVersion: "1.0.0",
-    plannerVersion: "1.0.0",
+    plannerVersion: "1.0.0"
   };
 }
 
 // ── Tests ──────────────────────────────────────────────────
 
 describe("BullMQ Async Processing", () => {
-
   // ── Retry Policy ────────────────────────────────────────
   describe("RetryPolicy", () => {
     it("should produce correct BullMQ job options", () => {
@@ -207,7 +211,7 @@ describe("BullMQ Async Processing", () => {
       const jobs = [
         makeJobData("job_batch_1"),
         makeJobData("job_batch_2"),
-        makeJobData("job_batch_3"),
+        makeJobData("job_batch_3")
       ];
       const ids = await dispatcher.dispatchBatch(jobs);
       expect(ids.length).toBe(3);
@@ -245,7 +249,7 @@ describe("BullMQ Async Processing", () => {
           jobId: data.job.id,
           productsDiscovered: 5,
           durationMs: 100,
-          apiCallsUsed: 2,
+          apiCallsUsed: 2
         };
       });
 
@@ -280,7 +284,7 @@ describe("BullMQ Async Processing", () => {
       const jobs = [
         makeJobData("job_concurrent_1"),
         makeJobData("job_concurrent_2"),
-        makeJobData("job_concurrent_3"),
+        makeJobData("job_concurrent_3")
       ];
 
       const processedOrder: string[] = [];
@@ -293,7 +297,7 @@ describe("BullMQ Async Processing", () => {
           jobId: job.id,
           productsDiscovered: 1,
           durationMs: 10,
-          apiCallsUsed: 1,
+          apiCallsUsed: 1
         };
       });
 
@@ -314,7 +318,7 @@ describe("BullMQ Async Processing", () => {
       // Simulate completed job
       const mockJob = {
         id: "job_metrics_1",
-        data: { traceId: "trace_001" },
+        data: { traceId: "trace_001" }
       } as any;
 
       adapter.onCompleted(mockJob, {
@@ -322,7 +326,7 @@ describe("BullMQ Async Processing", () => {
         jobId: "job_metrics_1",
         productsDiscovered: 10,
         durationMs: 500,
-        apiCallsUsed: 2,
+        apiCallsUsed: 2
       });
 
       const metrics = adapter.getMetrics();
@@ -342,7 +346,13 @@ describe("BullMQ Async Processing", () => {
       const adapter = new BullMQMetricsAdapter(collector);
 
       const mockJob = { id: "job_fail", data: {} } as any;
-      adapter.onCompleted(mockJob, { state: "completed", jobId: "job1", productsDiscovered: 5, durationMs: 100, apiCallsUsed: 1 });
+      adapter.onCompleted(mockJob, {
+        state: "completed",
+        jobId: "job1",
+        productsDiscovered: 5,
+        durationMs: 100,
+        apiCallsUsed: 1
+      });
       adapter.onFailed({ id: "job2", data: {} } as any, new Error("test"));
 
       const metrics = adapter.getMetrics();
@@ -379,8 +389,8 @@ describe("BullMQ Async Processing", () => {
         config: {
           concurrency: 10,
           maxAttempts: 3,
-          queueName: "custom-queue",
-        },
+          queueName: "custom-queue"
+        }
       });
       expect(factory.config.concurrency).toBe(10);
       expect(factory.config.maxAttempts).toBe(3);

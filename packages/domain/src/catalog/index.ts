@@ -168,6 +168,7 @@ export interface InventoryReservation {
 // ── Aggregate root: Product ─────────────────────────────────
 
 export interface Product extends AggregateRoot<"ProductId"> {
+  readonly storeId?: string;
   readonly sku: SKU;
   readonly slug: Slug;
   readonly title: string;
@@ -240,6 +241,7 @@ export class CategoryCreated extends DomainEventBase {
 
 export function createProduct(params: {
   id?: ProductId;
+  storeId?: string;
   sku: string;
   slug: string;
   title: string;
@@ -250,6 +252,7 @@ export function createProduct(params: {
     const id = params.id ?? asProductId(`prod_${Date.now()}`);
     const product: Product = {
       id,
+      storeId: params.storeId,
       sku: sku(params.sku),
       slug: slug(params.slug),
       title: params.title,

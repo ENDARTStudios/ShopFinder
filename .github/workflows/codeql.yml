@@ -1,11 +1,9 @@
 # CodeQL — Static Analysis (SAST) for JavaScript/TypeScript
 #
-# Runs on every push to main and on every pull request. Also runs on a
-# weekly schedule to catch new advisories for code that hasn't changed.
+# GHAS liberado (billing resolvido 12/09/2026 — dispatch validado com
+# sucesso). Triggers de push/PR/semanal ativos.
 #
-# Free for public repositories (per GitHub CodeQL licensing).
-#
-# Reference: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
+# Reference: https://docs.github.com/en/code-security/code-scanning-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository
 
 name: "CodeQL"
 
@@ -15,7 +13,6 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    # Run every Monday at 03:00 UTC — catches new CodeQL rules + advisories
     - cron: "0 3 * * 1"
   workflow_dispatch:
 
@@ -38,7 +35,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4.37.3
         with:
           languages: ${{ matrix.language }}
           # Default queries suite covers security + correctness.
@@ -46,6 +43,6 @@ jobs:
           queries: security-extended
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4.37.3
         with:
           category: "/language:${{ matrix.language }}"

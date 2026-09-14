@@ -41,8 +41,8 @@ interface SerializedProduct {
   inStock: boolean;
   stockCount: number;
   suppliers: number;
-  rating: number;
-  reviewCount: number;
+  imageUrl: string | null;
+
   imageGradient: string;
   imageLabel: string;
   specs: Array<{ name: string; value: string }>;
@@ -113,6 +113,8 @@ function serializeProduct(p: any): SerializedProduct {
     ? primaryMedia.url.replace("data:gradient;", "")
     : "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)";
   const imageLabel = primaryMedia?.altText ?? p.title;
+  // T071 — URL real de imagem (http/https) p/ render direto; gradient p/ fallback
+  const imageUrl = primaryMedia?.url?.startsWith("http") ? primaryMedia.url : null;
 
   const specs = (p.attributes ?? []).map((a: any) => ({ name: a.name, value: a.value }));
 
@@ -170,8 +172,7 @@ function serializeProduct(p: any): SerializedProduct {
     inStock,
     stockCount: totalStock,
     suppliers: supplierCount,
-    rating: 4.8,
-    reviewCount: Math.floor(Math.random() * 5000) + 100,
+    imageUrl,
     imageGradient,
     imageLabel,
     specs,

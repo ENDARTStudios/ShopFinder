@@ -12,7 +12,7 @@
  *   - AttributeMapper: maps product_props to attributes Record
  *   - CategoryMapper: maps category hierarchy to canonical category
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 import type { ParsedAliExpressProduct } from "./parser";
 

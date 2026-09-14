@@ -8,12 +8,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
-import { getServerAuthSession } from "@workspace/auth";
-
-function hasAdminRole(roles: string[] | undefined): boolean {
-  if (!roles) return false;
-  return roles.includes("admin") || roles.includes("operator");
-}
+import { requirePermissions } from "@/lib/admin-auth";
 
 const VALID_STATUSES = ["draft", "published", "review", "archived"];
 
@@ -21,16 +16,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Check auth
-  const session = await getServerAuthSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const user = session.user as any;
-  if (!hasAdminRole(user.roles)) {
-    return NextResponse.json({ error: "Forbidden — requires admin or operator role" }, { status: 403 });
-  }
+  // Authorization: mutação exige catalog.write (docs/eng/RBAC.md)
+  const guard = await requirePermissions("catalog.write");
+  if (!guard.ok) return guard.response;
 
   const { id } = await params;
 
@@ -49,7 +37,7 @@ export async function PATCH(
       where: { id },
       data: {
         status,
-        updatedBy: user.id
+        updatedBy: guard.auth.userId
       },
       select: {
         id: true,

@@ -31,7 +31,7 @@ import {
   DefaultNormalizerVersions,
   type NormalizedProductRecord
 } from "@workspace/domain/discovery/normalizer/types";
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type {
   DiscoveryExecution,
   DiscoveryExecutionId,
@@ -50,7 +50,7 @@ import {
 // ── PrismaClient loader ────────────────────────────────────
 
 async function getPrismaClient(): Promise<any> {
-  const mod = await import("../../generated/prisma-client/default.js");
+  const mod = await import("@prisma/client");
   return new mod.PrismaClient({
     datasources: { db: { url: "file:./e2e_test.db" } }
   });
