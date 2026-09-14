@@ -96,6 +96,18 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+// T091 — recharts v3 omite payload/label das props tipadas do Tooltip
+// (passam a vir via contexto); tipagem local do conteúdo customizado.
+type ChartTooltipPayloadItem = {
+  dataKey?: string | number;
+  name?: string | number;
+  value?: number | string | Array<number | string>;
+  color?: string;
+  fill?: string;
+  payload?: Record<string, unknown> & { fill?: string };
+  graphicalItemId?: string;
+};
+
 function ChartTooltipContent({
   active,
   payload,
@@ -110,13 +122,23 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: Omit<React.ComponentProps<typeof RechartsPrimitive.Tooltip>, "formatter"> &
   React.ComponentProps<"div"> & {
+    active?: boolean;
+    payload?: ChartTooltipPayloadItem[];
+    label?: unknown;
     hideLabel?: boolean;
     hideIndicator?: boolean;
     indicator?: "line" | "dot" | "dashed";
     nameKey?: string;
     labelKey?: string;
+    formatter?: (
+      value: number | string | Array<number | string>,
+      name: string | number,
+      item: ChartTooltipPayloadItem,
+      index: number,
+      payload: Record<string, unknown>
+    ) => React.ReactNode;
   }) {
   const { config } = useChart();
 
@@ -135,7 +157,9 @@ function ChartTooltipContent({
 
     if (labelFormatter) {
       return (
-        <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>
+        <div className={cn("font-medium", labelClassName)}>
+          {labelFormatter(value, payload as never)}
+        </div>
       );
     }
 
@@ -164,7 +188,7 @@ function ChartTooltipContent({
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
-          const indicatorColor = color || item.payload.fill || item.color;
+          const indicatorColor = color || item.payload?.fill || item.color || "currentColor";
 
           return (
             <div
@@ -175,7 +199,7 @@ function ChartTooltipContent({
               )}
             >
               {formatter && item?.value !== undefined && item.name ? (
-                formatter(item.value, item.name, item, index, item.payload)
+                formatter(item.value, item.name, item, index, item.payload ?? {})
               ) : (
                 <>
                   {itemConfig?.icon ? (
@@ -238,11 +262,12 @@ function ChartLegendContent({
   payload,
   verticalAlign = "bottom",
   nameKey
-}: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-    hideIcon?: boolean;
-    nameKey?: string;
-  }) {
+}: React.ComponentProps<"div"> & {
+  payload?: ChartTooltipPayloadItem[];
+  verticalAlign?: "top" | "bottom";
+  hideIcon?: boolean;
+  nameKey?: string;
+}) {
   const { config } = useChart();
 
   if (!payload?.length) {
@@ -263,7 +288,7 @@ function ChartLegendContent({
 
         return (
           <div
-            key={item.value}
+            key={`${key}-${String(item.value ?? "")}`}
             className={cn(
               "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3"
             )}
