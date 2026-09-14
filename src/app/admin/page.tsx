@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive, Activity } from "lucide-react";
+import { ShieldCheck, AlertTriangle, CheckCircle2, Clock, Archive, Activity, MessageSquareWarning } from "lucide-react";
 import Link from "next/link";
 import { NotificationsBell } from "@/components/site/notifications-bell";
 import { AdminDashboardSkeleton } from "@/components/site/admin-skeletons";
@@ -205,6 +205,12 @@ export default function AdminDashboard() {
             <Button variant="outline" size="sm">
               <ShieldCheck className="mr-1.5 h-4 w-4" />
               Segurança
+            </Button>
+          </Link>
+          <Link href="/admin/reviews">
+            <Button variant="outline" size="sm">
+              <MessageSquareWarning className="mr-1.5 h-4 w-4" />
+              Reviews
             </Button>
           </Link>
           <NotificationsBell />

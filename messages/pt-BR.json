@@ -590,14 +590,35 @@
           "O e-mail acima funciona como canal de privacidade, atendimento aos titulares e comunicação com o encarregado ou responsável designado pela END ART Studios. A identidade do responsável pelo canal será divulgada nesta Política sempre que houver designação nominal aplicável."
         ],
         "table": {
-          "headers": ["Informação", "Dados"],
+          "headers": [
+            "Informação",
+            "Dados"
+          ],
           "rows": [
-            ["Nome fantasia", "END ART Studios"],
-            ["CNPJ", "45.370.930/0001-75"],
-            ["Localização informada", "Osasco, São Paulo — Brasil"],
-            ["E-mail oficial", "endart.studios@gmail.com"],
-            ["Site", "https://shop-finder-taupe.vercel.app/"],
-            ["Canal de privacidade e direitos dos titulares", "endart.studios@gmail.com"]
+            [
+              "Nome fantasia",
+              "END ART Studios"
+            ],
+            [
+              "CNPJ",
+              "45.370.930/0001-75"
+            ],
+            [
+              "Localização informada",
+              "Osasco, São Paulo — Brasil"
+            ],
+            [
+              "E-mail oficial",
+              "endart.studios@gmail.com"
+            ],
+            [
+              "Site",
+              "https://shop-finder-taupe.vercel.app/"
+            ],
+            [
+              "Canal de privacidade e direitos dos titulares",
+              "endart.studios@gmail.com"
+            ]
           ]
         }
       },
@@ -617,7 +638,11 @@
           "As senhas são armazenadas somente em forma protegida, nunca em texto aberto. A ShopFinder não solicita dados pessoais sensíveis para uso ordinário. O titular não deve enviar dados sensíveis, senhas, chaves ou segredos comerciais ao canal de atendimento, salvo quando expressamente solicitado e necessário."
         ],
         "table": {
-          "headers": ["Categoria", "Exemplos", "Origem"],
+          "headers": [
+            "Categoria",
+            "Exemplos",
+            "Origem"
+          ],
           "rows": [
             [
               "Cadastro e autenticação",
@@ -681,7 +706,11 @@
           "A recusa de consentimento opcional não impedirá o uso de funções que não dependam daquela finalidade. A revogação não invalida tratamentos realizados antes dela e não exige eliminação de dados que devam ser mantidos por obrigação legal ou defesa de direitos."
         ],
         "table": {
-          "headers": ["Finalidade", "Dados envolvidos", "Base legal principal"],
+          "headers": [
+            "Finalidade",
+            "Dados envolvidos",
+            "Base legal principal"
+          ],
           "rows": [
             [
               "Criar, autenticar e manter a conta",
@@ -754,7 +783,11 @@
           "Os fornecedores receberão apenas os dados necessários à oferta, ao pedido, à entrega, à garantia, ao cancelamento e ao atendimento. Prestadores e fornecedores deverão manter confidencialidade, segurança, cooperação com direitos dos titulares e comunicação de incidentes."
         ],
         "table": {
-          "headers": ["Destinatário", "Finalidade", "Papel possível"],
+          "headers": [
+            "Destinatário",
+            "Finalidade",
+            "Papel possível"
+          ],
           "rows": [
             [
               "Stripe ou processador indicado",
@@ -771,7 +804,11 @@
               "Hospedagem, disponibilidade e segurança",
               "Operador"
             ],
-            ["Neon ou provedor de banco de dados", "Armazenamento e consulta", "Operador"],
+            [
+              "Neon ou provedor de banco de dados",
+              "Armazenamento e consulta",
+              "Operador"
+            ],
             [
               "Provedores de e-mail, suporte e observabilidade",
               "Atendimento, comunicação, logs e segurança",
@@ -787,7 +824,11 @@
               "Segurança, jurídico, contabilidade e defesa de direitos",
               "Operador ou destinatário autorizado"
             ],
-            ["Autoridades públicas", "Ordem, investigação ou obrigação legal", "Destinatário legal"]
+            [
+              "Autoridades públicas",
+              "Ordem, investigação ou obrigação legal",
+              "Destinatário legal"
+            ]
           ]
         }
       },
@@ -818,7 +859,10 @@
           "Após o término do prazo, os dados serão eliminados, anonimizados ou bloqueados, salvo preservação necessária por obrigação legal, fraude, auditoria, exercício regular de direitos ou outra hipótese legal."
         ],
         "table": {
-          "headers": ["Registro", "Critério"],
+          "headers": [
+            "Registro",
+            "Critério"
+          ],
           "rows": [
             [
               "Conta",
@@ -1216,5 +1260,23 @@
     "reviewFlagged": "Recebemos sua avaliação, mas ela passará por revisão antes de aparecer publicamente.",
     "reviewDuplicate": "Você já avaliou este produto.",
     "reviewError": "Não foi possível publicar sua avaliação. Tente novamente."
+  },
+  "adminReviews": {
+    "title": "Moderação de avaliações",
+    "subtitle": "Reviews sinalizadas pela moderação automática e removidas. Aprovar devolve ao público; remover retira definitivamente.",
+    "loading": "Carregando…",
+    "loadingData": "Carregando avaliações…",
+    "accessDenied": "Acesso restrito.",
+    "backToDashboard": "Voltar ao dashboard",
+    "flaggedSection": "Sinalizadas ({count})",
+    "emptyFlagged": "Nenhuma review sinalizada.",
+    "removedSection": "Removidas ({count})",
+    "emptyRemoved": "Nenhuma review removida.",
+    "statusFlagged": "Sinalizada",
+    "statusRemoved": "Removida",
+    "approve": "Aprovar",
+    "remove": "Remover",
+    "confirmApprove": "Aprovar esta review e publicá-la no site?",
+    "confirmRemove": "Remover esta review definitivamente?"
   }
 }

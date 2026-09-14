@@ -590,14 +590,35 @@
           "The e-mail above serves as the privacy channel, data subject support and communication with the officer or representative designated by END ART Studios. The identity of the person responsible for the channel will be disclosed in this Policy whenever an applicable nominal designation exists."
         ],
         "table": {
-          "headers": ["Information", "Data"],
+          "headers": [
+            "Information",
+            "Data"
+          ],
           "rows": [
-            ["Trade name", "END ART Studios"],
-            ["CNPJ", "45.370.930/0001-75"],
-            ["Informed location", "Osasco, São Paulo — Brazil"],
-            ["Official e-mail", "endart.studios@gmail.com"],
-            ["Website", "https://shop-finder-taupe.vercel.app/"],
-            ["Privacy and data subject rights channel", "endart.studios@gmail.com"]
+            [
+              "Trade name",
+              "END ART Studios"
+            ],
+            [
+              "CNPJ",
+              "45.370.930/0001-75"
+            ],
+            [
+              "Informed location",
+              "Osasco, São Paulo — Brazil"
+            ],
+            [
+              "Official e-mail",
+              "endart.studios@gmail.com"
+            ],
+            [
+              "Website",
+              "https://shop-finder-taupe.vercel.app/"
+            ],
+            [
+              "Privacy and data subject rights channel",
+              "endart.studios@gmail.com"
+            ]
           ]
         }
       },
@@ -617,7 +638,11 @@
           "Passwords are stored only in protected form, never in plain text. ShopFinder does not request sensitive personal data for ordinary use. Data subjects must not send sensitive data, passwords, keys or trade secrets to the support channel, unless expressly requested and necessary."
         ],
         "table": {
-          "headers": ["Category", "Examples", "Source"],
+          "headers": [
+            "Category",
+            "Examples",
+            "Source"
+          ],
           "rows": [
             [
               "Registration and authentication",
@@ -681,7 +706,11 @@
           "Refusal of optional consent will not prevent the use of features that do not depend on that purpose. Revocation does not invalidate processing carried out before it and does not require deletion of data that must be kept under a legal obligation or for defense of rights."
         ],
         "table": {
-          "headers": ["Purpose", "Data involved", "Main legal basis"],
+          "headers": [
+            "Purpose",
+            "Data involved",
+            "Main legal basis"
+          ],
           "rows": [
             [
               "Create, authenticate and maintain the account",
@@ -754,7 +783,11 @@
           "Suppliers will receive only the data necessary for the offer, order, delivery, warranty, cancellation and support. Providers and suppliers must maintain confidentiality, security, cooperation with data subject rights and incident reporting."
         ],
         "table": {
-          "headers": ["Recipient", "Purpose", "Possible role"],
+          "headers": [
+            "Recipient",
+            "Purpose",
+            "Possible role"
+          ],
           "rows": [
             [
               "Stripe or the indicated processor",
@@ -766,8 +799,16 @@
               "Order processing, delivery, warranty and support",
               "Independent controller or operator, depending on the operation"
             ],
-            ["Vercel and hosting/edge providers", "Hosting, availability and security", "Operator"],
-            ["Neon or database provider", "Storage and query", "Operator"],
+            [
+              "Vercel and hosting/edge providers",
+              "Hosting, availability and security",
+              "Operator"
+            ],
+            [
+              "Neon or database provider",
+              "Storage and query",
+              "Operator"
+            ],
             [
               "E-mail, support and observability providers",
               "Support, communication, logs and security",
@@ -783,7 +824,11 @@
               "Security, legal, accounting and defense of rights",
               "Operator or authorized recipient"
             ],
-            ["Public authorities", "Order, investigation or legal obligation", "Legal recipient"]
+            [
+              "Public authorities",
+              "Order, investigation or legal obligation",
+              "Legal recipient"
+            ]
           ]
         }
       },
@@ -814,7 +859,10 @@
           "After the period ends, data will be deleted, anonymized or blocked, except where retention is required by legal obligation, fraud, audit, regular exercise of rights or another legal hypothesis."
         ],
         "table": {
-          "headers": ["Record", "Criterion"],
+          "headers": [
+            "Record",
+            "Criterion"
+          ],
           "rows": [
             [
               "Account",
@@ -974,7 +1022,14 @@
           "The sf:img:* items may contain references to images hosted by third parties. The reference does not automatically authorize use of the image beyond the applicable license nor does it mean that END ART Studios controls the origin server."
         ],
         "table": {
-          "headers": ["Name/key", "Technology", "Provider", "Duration", "Category", "Purpose"],
+          "headers": [
+            "Name/key",
+            "Technology",
+            "Provider",
+            "Duration",
+            "Category",
+            "Purpose"
+          ],
           "rows": [
             [
               "sf:cart",
@@ -1205,5 +1260,23 @@
     "reviewFlagged": "We received your review, but it will be moderated before appearing publicly.",
     "reviewDuplicate": "You already reviewed this product.",
     "reviewError": "Could not post your review. Please try again."
+  },
+  "adminReviews": {
+    "title": "Review moderation",
+    "subtitle": "Reviews flagged by automatic moderation and removed ones. Approve returns them to the public; remove takes them down for good.",
+    "loading": "Loading…",
+    "loadingData": "Loading reviews…",
+    "accessDenied": "Access restricted.",
+    "backToDashboard": "Back to dashboard",
+    "flaggedSection": "Flagged ({count})",
+    "emptyFlagged": "No flagged reviews.",
+    "removedSection": "Removed ({count})",
+    "emptyRemoved": "No removed reviews.",
+    "statusFlagged": "Flagged",
+    "statusRemoved": "Removed",
+    "approve": "Approve",
+    "remove": "Remove",
+    "confirmApprove": "Approve this review and publish it on the site?",
+    "confirmRemove": "Remove this review permanently?"
   }
 }
