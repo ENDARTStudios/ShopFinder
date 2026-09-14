@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "@/components/site/session-provider";
+import { buildMetadata } from "@workspace/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "Dashboard · ShopFinder"
-};
+// Área autenticada — nunca indexável.
+export const metadata: Metadata = buildMetadata({
+  title: "Dashboard",
+  description: "Painel de operação do catálogo.",
+  path: "/admin",
+  noIndex: true
+});
 
 export const dynamic = "force-dynamic";
 

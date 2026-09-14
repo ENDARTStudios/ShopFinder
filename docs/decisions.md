@@ -17,5 +17,6 @@
 | 0013 | Outbox Pattern & Webhook Inbox                      | Accepted | 2026-07-11 |
 | 0014 | Lookup Contexts (Currency & Country)                | Accepted | 2026-07-11 |
 | 0015 | Repository Implementation Patterns                  | Accepted | 2026-07-11 |
+| 0031 | Price alerts with in-app notifications (email deferred)  | Accepted | 2026-09-14 |
 
 See [`adr/`](./adr/) for full rationale.

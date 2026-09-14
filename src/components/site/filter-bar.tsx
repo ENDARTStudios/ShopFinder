@@ -7,7 +7,8 @@
  *
  * Dimensões de filtro:
  *   1. Fabricantes — checkboxes (top 10 por frequência + expansor "Mostrar todos")
- *   2. Faixa de preço — inputs numéricos min/max USD com validação onBlur
+ *   2. Faixa de preço — inputs numéricos min/max em BRL (primário, T063);
+ *      commit converte pela taxa fx para os bounds USD do /api/catalog
  *   3. Atributos dinâmicos — linhas com select (nome do atributo) + input de valor
  *      substring; múltiplas linhas via botão "+ Adicionar filtro"
  *
@@ -48,6 +49,7 @@ import {
   SheetFooter
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { useFxRate } from "@/lib/fx";
 
 import type { ApiProduct } from "@/components/site/landing";
 import type { ProductFilter } from "@/hooks/use-product-search";
@@ -128,7 +130,7 @@ const DEFAULT_LABELS = {
   price: "Preço",
   min: "Min",
   max: "Max",
-  priceHint: "Considera a faixa de ofertas quando disponível",
+  priceHint: "Valores em BRL (referência); a busca converte pelo câmbio do momento.",
   specs: "Especificações",
   valuePlaceholder: "Valor",
   addAttribute: "Adicionar filtro",
@@ -139,10 +141,20 @@ const DEFAULT_LABELS = {
   apply: "Aplicar filtros"
 };
 
-function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }: FilterBarBodyProps) {
+function FilterBarBody({
+  products,
+  filters,
+  onChange,
+  labels = DEFAULT_LABELS
+}: FilterBarBodyProps) {
   const t = { ...DEFAULT_LABELS, ...labels };
   const allManufacturers = useManufacturerOptions(products);
   const allAttributes = useAttributeOptions(products);
+
+  // T063 — o filtro é primário em BRL (moeda prometida ao consumidor). O
+  // usuário digita reais; o commit converte pela taxa USD→BRL em uso para os
+  // bounds USD que o /api/catalog aplica sobre as ofertas.
+  const { rate } = useFxRate();
 
   const [showAllManufacturers, setShowAllManufacturers] = React.useState(false);
   const visibleManufacturers = showAllManufacturers
@@ -151,26 +163,28 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
 
   // Numeric inputs keep their own string state so the user can type freely
   // (e.g. clearing the field, partial decimals) without the parent state
-  // snapping back to NaN.
-  const [minStr, setMinStr] = React.useState<string>(
-    filters.priceMin?.toString() ?? ""
-  );
-  const [maxStr, setMaxStr] = React.useState<string>(
-    filters.priceMax?.toString() ?? ""
-  );
+  // snapping back to NaN. Exibidos em BRL; filters guarda USD.
+  const [minStr, setMinStr] = React.useState<string>(filters.priceMin?.toString() ?? "");
+  const [maxStr, setMaxStr] = React.useState<string>(filters.priceMax?.toString() ?? "");
 
   React.useEffect(() => {
-    setMinStr(filters.priceMin?.toString() ?? "");
-    setMaxStr(filters.priceMax?.toString() ?? "");
+    setMinStr(filters.priceMin !== undefined ? (filters.priceMin * rate).toFixed(2) : "");
+    setMaxStr(filters.priceMax !== undefined ? (filters.priceMax * rate).toFixed(2) : "");
+    // rate no closure: o efeito reexecuta a cada render com o valor corrente
+    // quando os filtros mudam (deps abaixo); intencional não depender de rate
+    // para não sobrescrever o valor enquanto o usuário digita.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.priceMin, filters.priceMax]);
 
   const commitPrice = () => {
-    const min = minStr.trim() === "" ? undefined : Number(minStr);
-    const max = maxStr.trim() === "" ? undefined : Number(maxStr);
+    const minBrl = minStr.trim() === "" ? undefined : Number(minStr);
+    const maxBrl = maxStr.trim() === "" ? undefined : Number(maxStr);
+    const toUsd = (v: number | undefined) =>
+      typeof v === "number" && !Number.isNaN(v) && v >= 0 ? v / rate : undefined;
     onChange({
       ...filters,
-      priceMin: typeof min === "number" && !Number.isNaN(min) ? min : undefined,
-      priceMax: typeof max === "number" && !Number.isNaN(max) ? max : undefined
+      priceMin: toUsd(minBrl),
+      priceMax: toUsd(maxBrl)
     });
   };
 
@@ -220,11 +234,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
     Object.values(filters.attributes).filter((v) => v && v.trim() !== "").length;
 
   return (
-    <div
-      className="flex h-full flex-col gap-5"
-      role="region"
-      aria-label={t.title}
-    >
+    <div className="flex h-full flex-col gap-5" role="region" aria-label={t.title}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -273,9 +283,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
             onClick={() => setShowAllManufacturers((v) => !v)}
             className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
           >
-            {showAllManufacturers
-              ? t.showLess
-              : `${t.showAll} (${allManufacturers.length})`}
+            {showAllManufacturers ? t.showLess : `${t.showAll} (${allManufacturers.length})`}
           </button>
         )}
       </div>
@@ -285,7 +293,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
       {/* Price range */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t.price} (USD)
+          {t.price} (BRL)
         </Label>
         <div className="flex items-center gap-2">
           <Input
@@ -299,7 +307,9 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
             onBlur={commitPrice}
             className="h-9 text-sm"
           />
-          <span className="text-xs text-muted-foreground" aria-hidden="true">—</span>
+          <span className="text-xs text-muted-foreground" aria-hidden="true">
+            —
+          </span>
           <Input
             type="number"
             inputMode="decimal"
@@ -327,10 +337,7 @@ function FilterBarBody({ products, filters, onChange, labels = DEFAULT_LABELS }:
         <div className="space-y-2">
           {Object.entries(filters.attributes).map(([attrId, value]) => (
             <div key={attrId} className="flex items-center gap-1.5">
-              <Select
-                value={attrId}
-                onValueChange={(newId) => updateAttributeRow(attrId, newId)}
-              >
+              <Select value={attrId} onValueChange={(newId) => updateAttributeRow(attrId, newId)}>
                 <SelectTrigger className="h-9 flex-1 text-xs">
                   <SelectValue />
                 </SelectTrigger>

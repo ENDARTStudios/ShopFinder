@@ -42,7 +42,7 @@ export class BenchmarkRunner {
       stages: ["discovery", "normalization", "evaluation"],
       skipAI: false,
       warmupIterations: 10,
-      ...config,
+      ...config
     };
     this.cost = new CostBenchmark("gpt-4o-mini");
   }
@@ -74,7 +74,7 @@ export class BenchmarkRunner {
           payloadHash: `ph_warmup_${p.externalId}`,
           discoveredAt: new Date(),
           partitionKey: "warmup",
-          versions: { schemaVersion: "1.0.0" } as any,
+          versions: { schemaVersion: "1.0.0" } as any
         };
         await normalizer.normalize(raw, p);
       }
@@ -110,7 +110,14 @@ export class BenchmarkRunner {
           payloadHash: `ph_${product.externalId}`,
           discoveredAt: new Date(),
           partitionKey: `${product.marketplace}|US|2025-07-14`,
-          versions: { schemaVersion: "1.0.0", workflowVersion: "1.0.0", plannerVersion: "1.0.0", providerVersion: "1.0.0", connectorVersion: "2.0.0", providerManifestVersion: "v1" } as any,
+          versions: {
+            schemaVersion: "1.0.0",
+            workflowVersion: "1.0.0",
+            plannerVersion: "1.0.0",
+            providerVersion: "1.0.0",
+            connectorVersion: "2.0.0",
+            providerManifestVersion: "v1"
+          } as any
         };
         const normalized = await this.latency.measure("normalization", () =>
           normalizer.normalize(raw, product)
@@ -145,21 +152,26 @@ export class BenchmarkRunner {
             category: normalized.normalizedCategory,
             canonicalCategoryId: normalized.canonicalCategoryId,
             attributes: normalized.normalizedAttributes.map((a: any) => ({
-              name: a.name, value: a.value, confidence: a.confidence, sourceProductId: a.sourceProductId
+              name: a.name,
+              value: a.value,
+              confidence: a.confidence,
+              sourceProductId: a.sourceProductId
             })),
             images: normalized.normalizedImages.map((img: any) => ({
-              url: img.url, fingerprint: img.fingerprint, sourceProductId: normalized.rawProductId
+              url: img.url,
+              fingerprint: img.fingerprint,
+              sourceProductId: normalized.rawProductId
             })),
             priceRange: {
               min: normalized.normalizedPrice,
               max: normalized.normalizedPrice,
-              currency: normalized.normalizedPrice.currency,
+              currency: normalized.normalizedPrice.currency
             },
             offerCount: 1,
             supplierCodes: [normalized.providerCode],
             primaryProductId: normalized.rawProductId,
             builtAt: new Date(),
-            schemaVersion: "1.0.0",
+            schemaVersion: "1.0.0" as const
           };
 
           const artifact = await this.latency.measure("evaluation", () =>
@@ -187,7 +199,7 @@ export class BenchmarkRunner {
       throughput: this.throughput.getResults(),
       latency: this.latency.getResults(),
       cost: !this.config.skipAI ? this.cost.getResult() : undefined,
-      memory: this.memory.getSnapshots(),
+      memory: this.memory.getSnapshots()
     };
 
     const summary = buildSummary(reportWithoutSummary);

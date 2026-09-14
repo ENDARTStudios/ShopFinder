@@ -12,31 +12,15 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
-import { getServerAuthSession } from "@workspace/auth";
-import type { Role } from "@workspace/application";
-
-function minorUnitsToUSD(minor: bigint): number {
-  return Number(minor) / 100;
-}
-
-function hasAdminRole(roles: string[] | undefined): boolean {
-  if (!roles) return false;
-  return roles.includes("admin") || roles.includes("operator");
-}
+import { requirePermissions } from "@/lib/admin-auth";
+import { computePriceRange, minorUnitsToNumber } from "@/lib/price";
 
 // ── GET: List all products with admin metadata ─────────────
 
 export async function GET(request: NextRequest) {
-  // Check auth
-  const session = await getServerAuthSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const user = session.user as any;
-  if (!hasAdminRole(user.roles)) {
-    return NextResponse.json({ error: "Forbidden — requires admin or operator role" }, { status: 403 });
-  }
+  // Authorization: negar por padrão (docs/eng/RBAC.md)
+  const guard = await requirePermissions("admin.access");
+  if (!guard.ok) return guard.response;
 
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status"); // draft, published, review, archived
@@ -71,12 +55,13 @@ export async function GET(request: NextRequest) {
     const enrichedAttrs = p.attributes.filter((a) => a.source !== null);
     const totalAttrs = p.attributes.length;
     const enrichedCount = enrichedAttrs.length;
-    const avgConfidence = enrichedAttrs.length > 0
-      ? enrichedAttrs.reduce((sum, a) => sum + (a.confidence ?? 0), 0) / enrichedAttrs.length
-      : 0;
+    const avgConfidence =
+      enrichedAttrs.length > 0
+        ? enrichedAttrs.reduce((sum, a) => sum + (a.confidence ?? 0), 0) / enrichedAttrs.length
+        : 0;
 
-    const prices = p.offers.map((o) => minorUnitsToUSD(o.priceMinorUnits));
-    const minPrice = prices.length > 0 ? Math.min(...prices) : minorUnitsToUSD(p.basePriceMinorUnits);
+    const prices = p.offers.map((o) => minorUnitsToNumber(o.priceMinorUnits));
+    const { min: minPrice } = computePriceRange(prices, minorUnitsToNumber(p.basePriceMinorUnits));
     const totalStock = p.offers.reduce((sum, o) => sum + o.inventory, 0);
 
     // Extract manufacturer from description
@@ -112,9 +97,7 @@ export async function GET(request: NextRequest) {
   });
 
   // Filter by low confidence if requested
-  const filtered = lowConfidence
-    ? adminProducts.filter((p) => p.isLowConfidence)
-    : adminProducts;
+  const filtered = lowConfidence ? adminProducts.filter((p) => p.isLowConfidence) : adminProducts;
 
   return NextResponse.json({
     products: filtered,

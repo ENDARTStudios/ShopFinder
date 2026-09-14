@@ -33,7 +33,7 @@ const recordings: RecordedInteraction[] = [
 ];
 
 async function getPrismaClient(): Promise<any> {
-  const mod = await import("../../generated/prisma-client/default.js");
+  const mod = await import("@prisma/client");
   return new mod.PrismaClient({ datasources: { db: { url: "file:./aliexpress_e2e.db" } } });
 }
 

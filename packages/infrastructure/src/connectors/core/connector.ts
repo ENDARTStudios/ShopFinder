@@ -50,10 +50,7 @@ export abstract class BaseConnector implements DiscoveryConnector {
    * Build the HTTP request for a given discovery request + cursor.
    * Concrete connectors implement this (URL, method, headers, body).
    */
-  protected abstract buildRequest(
-    request: DiscoveryRequest,
-    cursor: unknown
-  ): HttpRequest;
+  protected abstract buildRequest(request: DiscoveryRequest, cursor: unknown): HttpRequest;
 
   /**
    * Parse an HTTP response into a DiscoveredProductPage.
@@ -70,11 +67,10 @@ export abstract class BaseConnector implements DiscoveryConnector {
     const checkpoint = this.config.checkpointSerializer;
 
     // Restore from checkpoint if provided
-    let cursor: unknown;
+    let cursor: string = pagination.first(request);
     if (request.cursor) {
-      cursor = checkpoint.deserialize(request.cursor);
-    } else {
-      cursor = pagination.first(request);
+      const restored = checkpoint.deserialize(request.cursor);
+      if (restored !== null && restored !== undefined) cursor = String(restored);
     }
 
     let pageCount = 0;
@@ -108,7 +104,9 @@ export abstract class BaseConnector implements DiscoveryConnector {
         break;
       }
 
-      cursor = pagination.next(response, cursor);
+      const nextCursor: string | null = pagination.next(response, cursor);
+      if (nextCursor === null) break;
+      cursor = nextCursor;
     }
   }
 
@@ -145,7 +143,10 @@ export abstract class BaseConnector implements DiscoveryConnector {
 
         return response;
       } catch (error) {
-        const connectorError = error.code ? error as ConnectorError : toConnectorError(error);
+        const connectorError =
+          (error as ConnectorError).code !== undefined
+            ? (error as ConnectorError)
+            : toConnectorError(error);
         lastError = connectorError;
         const durationMs = Date.now() - start;
         this.metrics.recordRequest(durationMs, false);

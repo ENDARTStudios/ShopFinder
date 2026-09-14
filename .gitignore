@@ -1,54 +1,57 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# dependencies
-node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Build
+dist/
+build/
+.next/
 
-# testing
-/coverage
+# Environment
+.env
+.env.*
+!.env.example
 
-# next.js
-/.next/
-/out/
+# Logs
+*.log
+npm-debug.log*
 
-# production
-/build
+# Testing
+coverage/
 
-# misc
+# Misc
 .DS_Store
 *.pem
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# Claude
+.claude/exchange_log.jsonl
+.worktrees/
+.agents/
+skills-lock.json
 
-# env files (can opt-in for committing if needed)
-.env*
+# Playwright
+playwright-report/
+test-results/
 
-# vercel
+# Stryker
+.stryker-tmp/
+reports/
 .vercel
+.env.local
 
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
 
-# typescript
-*.tsbuildinfo
+# Build/dev artifacts — regenerados, nunca versionados (T065-chore/44)
 next-env.d.ts
-local-*
-.claude
-.z-ai-config
-*.log
+*.tsbuildinfo
 dev.log
-dev.out.log
-test
-prompt
-
 server.log
-# Skills directory
-/skills/
+
+# Tooling local por máquina — configs pessoais de agente/IDE (T086)
+.next-dev/
+.gemini/
+GEMINI.md
+opencode.json
+.mcp.json

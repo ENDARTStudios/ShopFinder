@@ -5,7 +5,7 @@
  * Creates NormalizedDiscoveredProduct instances that mimic real
  * marketplace data without requiring API calls.
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 
 const TITLES = [

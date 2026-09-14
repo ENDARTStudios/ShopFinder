@@ -11,7 +11,7 @@
  *   - Condition (New, Refurbished, Open Box)
  *   - In-stock status → inventory
  */
-import type { NormalizedDiscoveredProduct } from "@workspace/domain/discovery/marketplace";
+import type { NormalizedDiscoveredProduct } from "@workspace/domain/marketplace";
 import type { Money } from "@workspace/domain/shared";
 import type { ParsedNeweggItem } from "./parser";
 

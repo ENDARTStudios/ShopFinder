@@ -56,6 +56,7 @@ export interface Wishlist {
 // ── Aggregate root: Customer ────────────────────────────────
 
 export interface Customer extends AggregateRoot<"CustomerId"> {
+  readonly storeId?: string;
   readonly email: Email;
   readonly name: string;
   readonly locale: string;
@@ -108,6 +109,7 @@ export class WishlistItemRemoved extends DomainEventBase {
 
 export function createCustomer(params: {
   id?: CustomerId;
+  storeId?: string;
   email: string;
   name: string;
   locale?: string;
@@ -118,6 +120,7 @@ export function createCustomer(params: {
     const now = new Date();
     const customer: Customer = {
       id,
+      storeId: params.storeId,
       email: custEmail,
       name: params.name,
       locale: params.locale ?? "en",
