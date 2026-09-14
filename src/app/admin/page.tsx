@@ -213,7 +213,7 @@ export default function AdminDashboard() {
               Reviews
             </Button>
           </Link>
-          <NotificationsBell />
+          <NotificationsBell admin />
         </div>
 
         {/* Summary cards */}

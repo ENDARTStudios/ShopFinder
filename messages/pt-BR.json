@@ -268,7 +268,9 @@
     "emailNotifications": "Notificações por email",
     "pushNotifications": "Notificações push",
     "save": "Salvar",
-    "saved": "Configurações salvas"
+    "saved": "Configurações salvas",
+    "priceAlerts": "Alertas de preço",
+    "priceAlertsDesc": "Avisos in-app quando o preço atinge seu alvo (sem email)."
   },
   "about": {
     "title": "Sobre o ShopFinder",
@@ -1278,5 +1280,23 @@
     "remove": "Remover",
     "confirmApprove": "Aprovar esta review e publicá-la no site?",
     "confirmRemove": "Remover esta review definitivamente?"
+  },
+  "alerts": {
+    "formLabel": "Avisar quando o preço cair até",
+    "create": "Criar alerta",
+    "creating": "Criando…",
+    "created": "Alerta criado! Você será avisado aqui na sua conta quando o preço atingir o alvo.",
+    "exists": "Você já tem um alerta ativo para este produto.",
+    "limitReached": "Limite de 20 alertas ativos atingido. Remova um alerta em Minha conta.",
+    "error": "Não foi possível criar o alerta. Tente novamente.",
+    "loginCta": "Entre na sua conta para criar um alerta de preço",
+    "disclaimer": "Notificação in-app (sem email). O preço é comparado em reais usando o câmbio exibido no site.",
+    "loading": "Carregando alertas…",
+    "empty": "Você ainda não tem alertas de preço. Crie um na página de qualquer produto.",
+    "targetLabel": "alvo: {price}",
+    "statusActive": "Ativo",
+    "statusTriggered": "Preço atingido",
+    "remove": "Remover alerta",
+    "removeConfirm": "Remover este alerta de preço?"
   }
 }

@@ -268,7 +268,9 @@
     "emailNotifications": "Email notifications",
     "pushNotifications": "Push notifications",
     "save": "Save",
-    "saved": "Settings saved"
+    "saved": "Settings saved",
+    "priceAlerts": "Price alerts",
+    "priceAlertsDesc": "In-app notifications when a price hits your target (no email)."
   },
   "about": {
     "title": "About ShopFinder",
@@ -1278,5 +1280,23 @@
     "remove": "Remove",
     "confirmApprove": "Approve this review and publish it on the site?",
     "confirmRemove": "Remove this review permanently?"
+  },
+  "alerts": {
+    "formLabel": "Notify me when the price drops to",
+    "create": "Create alert",
+    "creating": "Creating…",
+    "created": "Alert created! We'll notify you here in your account when the price hits the target.",
+    "exists": "You already have an active alert for this product.",
+    "limitReached": "Limit of 20 active alerts reached. Remove one in My account.",
+    "error": "Could not create the alert. Please try again.",
+    "loginCta": "Sign in to create a price alert",
+    "disclaimer": "In-app notification (no email). Prices are compared in BRL using the exchange rate shown on the site.",
+    "loading": "Loading alerts…",
+    "empty": "You have no price alerts yet. Create one on any product page.",
+    "targetLabel": "target: {price}",
+    "statusActive": "Active",
+    "statusTriggered": "Price reached",
+    "remove": "Remove alert",
+    "removeConfirm": "Remove this price alert?"
   }
 }

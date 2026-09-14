@@ -268,7 +268,9 @@
     "emailNotifications": "Notificaciones por email",
     "pushNotifications": "Notificaciones push",
     "save": "Guardar",
-    "saved": "Configuraciones guardadas"
+    "saved": "Configuraciones guardadas",
+    "priceAlerts": "Alertas de precio",
+    "priceAlertsDesc": "Avisos in-app cuando el precio alcanza tu objetivo (sin email)."
   },
   "about": {
     "title": "Acerca de ShopFinder",
@@ -1278,5 +1280,23 @@
     "remove": "Eliminar",
     "confirmApprove": "¿Aprobar esta opinión y publicarla en el sitio?",
     "confirmRemove": "¿Eliminar esta opinión definitivamente?"
+  },
+  "alerts": {
+    "formLabel": "Avisarme cuando el precio baje a",
+    "create": "Crear alerta",
+    "creating": "Creando…",
+    "created": "¡Alerta creado! Te avisaremos aquí en tu cuenta cuando el precio llegue al objetivo.",
+    "exists": "Ya tienes una alerta activa para este producto.",
+    "limitReached": "Límite de 20 alertas activas alcanzado. Elimina una en Mi cuenta.",
+    "error": "No se pudo crear la alerta. Inténtalo de nuevo.",
+    "loginCta": "Inicia sesión para crear una alerta de precio",
+    "disclaimer": "Notificación in-app (sin email). Los precios se comparan en reales usando el tipo de cambio mostrado en el sitio.",
+    "loading": "Cargando alertas…",
+    "empty": "Aún no tienes alertas de precio. Crea una en la página de cualquier producto.",
+    "targetLabel": "objetivo: {price}",
+    "statusActive": "Activa",
+    "statusTriggered": "Precio alcanzado",
+    "remove": "Eliminar alerta",
+    "removeConfirm": "¿Eliminar esta alerta de precio?"
   }
 }

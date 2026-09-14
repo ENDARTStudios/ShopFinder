@@ -7,6 +7,8 @@ import { Package, Settings } from "lucide-react";
 import { authOptions } from "@workspace/auth";
 import { prisma } from "@workspace/database/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NotificationsBell } from "@/components/site/notifications-bell";
+import { AlertsList } from "@/components/alerts/alerts-list";
 
 export const metadata: Metadata = {
   title: "Minha conta — ShopFinder"
@@ -84,6 +86,18 @@ export default async function ContaPage() {
           </Link>
         ))}
       </div>
+
+      {/* T083 — alertas de preço: lista + criação via detalhe do produto */}
+      <Card className="mt-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base">{t("priceAlerts")}</CardTitle>
+          <NotificationsBell />
+        </CardHeader>
+        <CardContent>
+          <p className="mb-3 text-xs text-muted-foreground">{t("priceAlertsDesc")}</p>
+          <AlertsList />
+        </CardContent>
+      </Card>
     </div>
   );
 }

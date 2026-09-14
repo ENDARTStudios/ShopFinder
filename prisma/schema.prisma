@@ -142,6 +142,7 @@ model Product {
   options    VariantOption[]
   offers     ProductOffer[]
   reviews    Review[]
+  priceAlerts PriceAlert[]
 
   @@unique([storeId, slug])
   @@index([storeId])
@@ -322,6 +323,8 @@ model Customer {
   orders    Order[]
   wishlist  WishlistItem[]
   reviews   Review[]
+  priceAlerts    PriceAlert[]
+  notifications  Notification[]
 
   @@unique([storeId, email])
   @@index([storeId])
@@ -928,4 +931,45 @@ model Review {
 
   @@unique([productId, customerId])
   @@index([productId])
+}
+
+// T083 — alertas de preço (1 alerta ativo por par produto/customer; a
+// unicidade parcial entre ATIVOS vive no SQL da migration, não no Prisma).
+// Email adiado (DECISAO-ALERTAS-001): notificação in-app via Notification.
+model PriceAlert {
+  id              String    @id @default(cuid())
+  productId       String
+  customerId      String
+  storeId         String
+  targetPriceMinor BigInt
+  currency        String    @default("BRL")
+  status          String    @default("active") // active | triggered | disabled
+  triggeredAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id])
+  customer  Customer @relation(fields: [customerId], references: [id])
+
+  @@index([status])
+  @@index([customerId])
+  @@index([productId])
+}
+
+// T083 — notificações in-app persistidas (hoje: price_alert). O bell do
+// customer lê via /api/notifications; leitura (readAt) fica client-side.
+model Notification {
+  id         String    @id @default(cuid())
+  customerId String
+  storeId    String
+  type       String // price_alert | pipeline_failed | product_review | low_confidence
+  severity   String    @default("info") // info | warning | error
+  message    String
+  link       String?
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId, createdAt])
+  @@index([customerId, readAt])
 }

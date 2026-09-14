@@ -43,6 +43,7 @@ import {
 } from "@workspace/seo/schema";
 import { CompatibleProducts } from "./compatible-products";
 import { ReviewsSection } from "@/components/reviews/reviews-section";
+import { PriceAlertForm } from "@/components/alerts/price-alert-form";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
@@ -227,6 +228,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   );
   const totalStock = product.offers.reduce((sum, o) => sum + o.inventory, 0);
   const inStock = totalStock > 0;
+  // T083 — preço corrente em BRL para a dica do alerta de preço (mesma taxa
+  // server-side do FxNote/OG; cache de 1h).
+  const rate = await getUsdBrlRate().catch(() => 5.5);
+  const currentPriceBrl = minPrice * rate;
   // T069 — ofertas de marketplace (eBay) não expõem quantidade: sem dado de
   // estoque, não assertamos "Esgotado".
   const knownStock = product.offers.some((o) => (o.externalProvider ?? "") !== "ebay");
@@ -341,6 +346,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 />
                 <CompareButton slug={product.slug} size="default" navigateOnAdd />
               </div>
+              {/* T083 — alerta de preço: "avisar quando ≤ R$ X" (in-app) */}
+              <PriceAlertForm
+                productId={product.id}
+                isAuthenticated={Boolean(session)}
+                currentPriceBrl={currentPriceBrl}
+              />
               {traceId && (
                 <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">
                   {tDetail("pipelineTrace")} {traceId}
