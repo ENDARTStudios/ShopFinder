@@ -253,3 +253,27 @@ fallback documentado no código.
 
 *(Migrations T051 e T061 foram aplicadas em PRODUÇÃO em 31/08/2026 e saíram
 desta lista — ver registro no §4.)*
+
+## 11. PWA — service worker (T085)
+
+O site é instalável (manifest + icons em `public/`, linkados no root layout)
+e tem service worker `public/sw.js` que cacheia páginas públicas para
+funcionar offline (network-first; estáticos cache-first). Rotas `/api/*`,
+`/conta*` e `/admin*` **nunca** são cacheadas — nada privado fica stale.
+
+**Versionamento/kill-switch:**
+- Para publicar uma versão nova do SW: bump de `CACHE_VERSION` (ex. `v1` →
+  `v2`) em `public/sw.js`. O `activate` apaga caches antigos e o
+  `skipWaiting`/`clients.claim` torna a versão ativa imediatamente (sem
+  esperar o usuário fechar as abas).
+- Para **desativar** o SW por completo: remover o componente
+  `<ServiceWorkerRegister />` do `src/app/layout.tsx` (para de registrar em
+  novos browsers) e bump de `CACHE_VERSION` (browsers já registrados ficam
+  sem atualização do SW, e o cleanup no activate eventual derruba os caches).
+  Em último caso, o usuário pode limpar "Armazenamento de sites" nas
+  DevTools (Application → Service Workers → Unregister).
+
+**Verificação rápida (pós-deploy):** DevTools → Application → Manifest (sem
+erro) e Service Workers (ativado); com a aba Network em "Offline", recarregar
+uma página pública já visitada deve renderizar do cache; `/conta` e `/admin`
+offline devem falhar (sem conteúdo privado stale).
