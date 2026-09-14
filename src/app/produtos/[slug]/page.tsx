@@ -13,6 +13,8 @@
  */
 import { notFound } from "next/navigation";
 import { prisma } from "@workspace/database/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@workspace/auth";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -40,6 +42,7 @@ import {
   siteUrl
 } from "@workspace/seo/schema";
 import { CompatibleProducts } from "./compatible-products";
+import { ReviewsSection } from "@/components/reviews/reviews-section";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
@@ -147,7 +150,8 @@ export async function generateMetadata({
   const prices = product.offers
     .map((o) => minorUnitsToNumber(o.priceMinorUnits))
     .filter((x) => x > 0);
-  const minUsd = prices.length > 0 ? Math.min(...prices) : minorUnitsToNumber(product.basePriceMinorUnits);
+  const minUsd =
+    prices.length > 0 ? Math.min(...prices) : minorUnitsToNumber(product.basePriceMinorUnits);
   const rate = await getUsdBrlRate().catch(() => 5.5);
   const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
     minUsd * rate
@@ -178,6 +182,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   preconnect("https://i.ebayimg.com");
   preconnect("https://upload.wikimedia.org");
   const { slug } = await params;
+  // T081 — sessão resolvida no servidor: o form de review só renderiza para
+  // autenticado (SessionProvider só existe em /admin; aqui o gate é server-side).
+  const session = await getServerSession(authOptions);
   const locale = await getLocale();
   const tDetail = await getTranslations("detail");
 
@@ -525,7 +532,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                               </div>
                             </div>
                             <div className="text-right text-[10px] text-muted-foreground">
-                              <div>{tDetail("shipsFrom")} {offer.shipsFromCountry}</div>
+                              <div>
+                                {tDetail("shipsFrom")} {offer.shipsFromCountry}
+                              </div>
                               <div>
                                 {tDetail("fulfillmentDays", {
                                   min: offer.fulfillmentDaysMin,
@@ -563,9 +572,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
                 {/* T071 — disclosure de afiliado (CDC art. 36): publicidade
                     identificável quando a oferta é Amazon/Associado. */}
-                {product.offers.some(
-                  (o) => (o.externalProvider ?? "") === "amazon"
-                ) && (
+                {product.offers.some((o) => (o.externalProvider ?? "") === "amazon") && (
                   <p className="mt-4 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
                     {tDetail("affiliateDisclosure")}
                   </p>
@@ -612,6 +619,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {/* Knowledge Graph: Compatible Products */}
         <CompatibleProducts slug={slug} />
+
+        {/* T081 — reviews com moderação básica (1 review/user/produto) */}
+        <Separator className="my-8" />
+        <ReviewsSection productId={product.id} isAuthenticated={Boolean(session)} />
 
         <Separator className="my-8" />
 

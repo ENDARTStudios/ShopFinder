@@ -590,35 +590,14 @@
           "El correo arriba funciona como canal de privacidad, atención a los titulares y comunicación con el encargado o responsable designado por END ART Studios. La identidad del responsable del canal se divulgará en esta Política siempre que exista designación nominal aplicable."
         ],
         "table": {
-          "headers": [
-            "Información",
-            "Datos"
-          ],
+          "headers": ["Información", "Datos"],
           "rows": [
-            [
-              "Nombre fantasia",
-              "END ART Studios"
-            ],
-            [
-              "CNPJ",
-              "45.370.930/0001-75"
-            ],
-            [
-              "Localización informada",
-              "Osasco, São Paulo — Brasil"
-            ],
-            [
-              "Correo oficial",
-              "endart.studios@gmail.com"
-            ],
-            [
-              "Sitio",
-              "https://shop-finder-taupe.vercel.app/"
-            ],
-            [
-              "Canal de privacidad y derechos de los titulares",
-              "endart.studios@gmail.com"
-            ]
+            ["Nombre fantasia", "END ART Studios"],
+            ["CNPJ", "45.370.930/0001-75"],
+            ["Localización informada", "Osasco, São Paulo — Brasil"],
+            ["Correo oficial", "endart.studios@gmail.com"],
+            ["Sitio", "https://shop-finder-taupe.vercel.app/"],
+            ["Canal de privacidad y derechos de los titulares", "endart.studios@gmail.com"]
           ]
         }
       },
@@ -638,11 +617,7 @@
           "Las contraseñas se almacenan solamente en forma protegida, nunca en texto abierto. ShopFinder no solicita datos personales sensibles para uso ordinario. El titular no debe enviar datos sensibles, contraseñas, claves ni secretos comerciales al canal de atención, salvo cuando expresamente solicitado y necesario."
         ],
         "table": {
-          "headers": [
-            "Categoría",
-            "Ejemplos",
-            "Origen"
-          ],
+          "headers": ["Categoría", "Ejemplos", "Origen"],
           "rows": [
             [
               "Registro y autenticación",
@@ -706,11 +681,7 @@
           "La negativa de consentimiento opcional no impedirá el uso de funciones que no dependan de aquella finalidad. La revocación no invalida tratamientos realizados antes de ella y no exige eliminación de datos que deban mantenerse por obligación legal o defensa de derechos."
         ],
         "table": {
-          "headers": [
-            "Finalidad",
-            "Datos envueltos",
-            "Base legal principal"
-          ],
+          "headers": ["Finalidad", "Datos envueltos", "Base legal principal"],
           "rows": [
             [
               "Crear, autenticar y mantener la cuenta",
@@ -783,11 +754,7 @@
           "Los proveedores recibirán apenas los datos necesarios a la oferta, al pedido, a la entrega, a la garantía, a la cancelación y a la atención. Prestadores y proveedores deberán mantener confidencialidad, seguridad, cooperación con derechos de los titulares y comunicación de incidentes."
         ],
         "table": {
-          "headers": [
-            "Destinatario",
-            "Finalidad",
-            "Papel posible"
-          ],
+          "headers": ["Destinatario", "Finalidad", "Papel posible"],
           "rows": [
             [
               "Stripe o procesador indicado",
@@ -804,11 +771,7 @@
               "Alojamiento, disponibilidad y seguridad",
               "Operador"
             ],
-            [
-              "Neon o proveedor de base de datos",
-              "Almacenamiento y consulta",
-              "Operador"
-            ],
+            ["Neon o proveedor de base de datos", "Almacenamiento y consulta", "Operador"],
             [
               "Proveedores de correo, soporte y observabilidad",
               "Atención, comunicación, logs y seguridad",
@@ -859,10 +822,7 @@
           "Tras el término del plazo, los datos serán eliminados, anonimizados o bloqueados, salvo preservación necesaria por obligación legal, fraude, auditoría, ejercicio regular de derechos u otra hipótesis legal."
         ],
         "table": {
-          "headers": [
-            "Registro",
-            "Criterio"
-          ],
+          "headers": ["Registro", "Criterio"],
           "rows": [
             [
               "Cuenta",
@@ -1242,5 +1202,23 @@
     "successBody": "Te avisaremos en {email} cuando se abra la beta.",
     "alreadyTitle": "Ya estás en la lista",
     "errorMsg": "Algo falló al enviar."
+  },
+  "reviews": {
+    "title": "Opiniones de clientes",
+    "loading": "Cargando opiniones…",
+    "noReviews": "Aún no hay opiniones para este producto. ¡Sé el primero!",
+    "reviewCount": "{count, plural, one {# opinión} other {# opiniones}}",
+    "starRating": "{rating} de 5 estrellas",
+    "loginToReview": "Inicia sesión para opinar sobre este producto",
+    "yourRating": "Tu valoración",
+    "titleLabel": "Título (opcional)",
+    "reviewLabel": "Tu opinión",
+    "reviewPlaceholder": "Cuenta tu experiencia con este producto…",
+    "reviewSubmit": "Publicar opinión",
+    "reviewSending": "Publicando…",
+    "reviewSubmitted": "Opinión publicada. ¡Gracias!",
+    "reviewFlagged": "Recibimos tu opinión, pero pasará por moderación antes de aparecer públicamente.",
+    "reviewDuplicate": "Ya opinaste sobre este producto.",
+    "reviewError": "No se pudo publicar tu opinión. Inténtalo de nuevo."
   }
 }
