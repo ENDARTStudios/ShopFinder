@@ -21,6 +21,7 @@ export const RATE_LIMIT_RULES: Record<string, RateLimitRule> = {
   "/api/auth/register": { limit: 5 },
   "/api/waitlist": { limit: 5 },
   "/api/catalog": { limit: 60 },
+  "/api/public/v1/products": { limit: 30 },
   "/api/checkout-session": { limit: 10 },
   "/api/webhook": { limit: 300 },
   default: { limit: 120 }

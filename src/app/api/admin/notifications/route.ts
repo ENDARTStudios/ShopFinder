@@ -16,7 +16,7 @@ import { requirePermissions } from "@/lib/admin-auth";
 
 interface Notification {
   id: string;
-  type: "pipeline_failed" | "product_review" | "low_confidence";
+  type: "pipeline_failed" | "product_review" | "low_confidence" | "flagged_review";
   severity: "info" | "warning" | "error";
   message: string;
   timestamp: string;
@@ -77,6 +77,28 @@ export async function GET() {
       message: `Product awaiting review: ${p.title} (avg confidence: ${(avgConfidence * 100).toFixed(0)}%)`,
       timestamp: p.updatedAt.toISOString(),
       link: `/produtos/${p.slug}`
+    });
+  }
+
+  // 2b. Reviews sinalizadas aguardando moderação humana (T082/D1-NOVA_DIRECAO)
+  const flaggedReviews = await prisma.review.findMany({
+    where: { status: "flagged" },
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      updatedAt: true,
+      product: { select: { slug: true, title: true } }
+    }
+  });
+  for (const r of flaggedReviews) {
+    notifications.push({
+      id: `flagged-review-${r.id}`,
+      type: "flagged_review",
+      severity: "warning",
+      message: `Review sinalizada aguardando moderação: ${r.product.title}`,
+      timestamp: r.updatedAt.toISOString(),
+      link: "/admin/reviews"
     });
   }
 

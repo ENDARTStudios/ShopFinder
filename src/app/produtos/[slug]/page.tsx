@@ -44,6 +44,7 @@ import {
 import { CompatibleProducts } from "./compatible-products";
 import { ReviewsSection } from "@/components/reviews/reviews-section";
 import { PriceAlertForm } from "@/components/alerts/price-alert-form";
+import { ProductViewRecorder, WishlistButton } from "@/components/site/product-extras";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
@@ -351,6 +352,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 productId={product.id}
                 isAuthenticated={Boolean(session)}
                 currentPriceBrl={currentPriceBrl}
+              />
+              {/* NOVA_DIRECAO A3 — wishlist por conta */}
+              <div className="mt-3">
+                <WishlistButton productId={product.id} isAuthenticated={Boolean(session)} />
+              </div>
+              {/* NOVA_DIRECAO A2 — grava o view no histórico local */}
+              <ProductViewRecorder
+                slug={product.slug}
+                title={product.title}
+                category={product.category?.name ?? null}
               />
               {traceId && (
                 <p className="mt-2 font-mono text-[10px] text-muted-foreground/60">

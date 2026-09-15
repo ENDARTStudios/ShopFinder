@@ -9,6 +9,7 @@ import { prisma } from "@workspace/database/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NotificationsBell } from "@/components/site/notifications-bell";
 import { AlertsList } from "@/components/alerts/alerts-list";
+import { WishlistList } from "@/components/site/wishlist-list";
 
 export const metadata: Metadata = {
   title: "Minha conta — ShopFinder"
@@ -96,6 +97,17 @@ export default async function ContaPage() {
         <CardContent>
           <p className="mb-3 text-xs text-muted-foreground">{t("priceAlertsDesc")}</p>
           <AlertsList />
+        </CardContent>
+      </Card>
+
+      {/* NOVA_DIRECAO A3 — wishlist por conta */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-base">{t("wishlist")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-3 text-xs text-muted-foreground">{t("wishlistDesc")}</p>
+          <WishlistList />
         </CardContent>
       </Card>
     </div>

@@ -267,12 +267,16 @@ function SiteHeader() {
 
 // ── Hero with real search ──────────────────────────────────
 
+import { recordSearch } from "@/lib/history";
+import { PersonalizedSections } from "./personalized";
+
 function Hero({ onSearch }: { onSearch: (q: string) => void }) {
   const t = useTranslations("hero");
   const [query, setQuery] = React.useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    recordSearch(query);
     onSearch(query);
     // Scroll to products section
     document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
@@ -1099,6 +1103,10 @@ export function Landing() {
           filters={filters}
           onFiltersChange={setFilters}
         />
+
+        {/* NOVA_DIRECAO A1/A2 — histórico local + recomendações por nicho */}
+        <PersonalizedSections />
+
         <FaqSection />
         <TrustSection />
       </main>
