@@ -195,6 +195,28 @@ acumula GB (pico histórico: 8,74 GB em ~29 deployments).
    cria um deployment novo).
 5. Confira em **Settings → Usage** o gráfico de Functions Storage cair.
 
+### 8.1 Prevenção do re-acúmulo (T097/T098)
+
+- **Origem dos previews**: a Git Integration do Vercel (GitHub App) cria um
+  preview para cada PR/push de branch — **nenhum workflow do repo faz deploy**
+  (não há job `vercel deploy` no CI; lighthouse.yml só audita). Logo, a
+  prevenção vive nas settings do projeto, não no CI.
+- **Operador — Settings do projeto (console, 2 min)**:
+  1. **Settings → Git → Build Controls**: ativar **auto-delete de preview
+     deployments** quando a PR é merged/closed (elimina a fonte principal).
+  2. Opcional (operação solo): **Settings → Git → Preview Deployments** pode
+     ser desabilitado/customizado — sem PRs de outros devs, previews deixam de
+     ser necessários no dia a dia.
+- **Rotina de limpeza (T097, autorizada por OK-DELETAR em 14/set/2026)**:
+  deletar tudo EXCETO o deployment de produção atual (o que o alias
+  `shop-finder-end-art-studios.vercel.app` aponta — conferir com
+  `vercel inspect`) + até 3 não-produção mais recentes. Em rounds: listar
+  (`vercel ls shop-finder`), deletar (`vercel rm <url> --yes`), repetir até
+  a lista conter só os retidos. Referência: 60 deployments removidos em
+  14/set/2026 (~18 GB), alias de produção intacto.
+- **Verificação pós-limpeza**: lista com só os retidos + `vercel inspect` do
+  alias apontando para o deployment anotado.
+
 Complemento técnico (T070): o bundle por deployment foi reduzido excluindo do
 traçado serverless a stack OTel + bullmq (peso morto sem
 `OTEL_EXPORTER_OTLP_ENDPOINT`) — ver `next.config.ts`
