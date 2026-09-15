@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   TrendingUp,
   ShieldCheck,
+  Scale,
   Sparkles,
   ArrowRight,
   CircuitBoard,
@@ -360,8 +361,8 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
               {t("statNiches")}
             </span>
             <span className="flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-              {t("statAi")}
+              <Scale className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+              {t("statRanking")}
             </span>
           </FadeInItem>
         </FadeInStagger>

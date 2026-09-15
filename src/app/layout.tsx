@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 
 const BRAND_NAME = "ShopFinder";
 const BRAND_DESCRIPTION =
-  "ShopFinder — Catalog Intelligence Platform baseada em IA. Transforma dados heterogêneos de produtos em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais.";
+  "ShopFinder — compare preços, specs e disponibilidade com ranking neutro e auditável. Um catálogo canônico, enriquecido e validado a partir de dados de fornecedores.";
 const BRAND_THEME_COLOR = "#0F172A"; // slate-900, matches icon.svg background
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -76,7 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: `${BRAND_NAME} — ${tagline}`,
       description:
-        "Catalog Intelligence Platform baseada em IA. Catálogo canônico, enriquecido e pronto para distribuição.",
+        "Compare preços, specs e disponibilidade com ranking neutro e auditável. Catálogo canônico, enriquecido e validado.",
       type: "website",
       siteName: BRAND_NAME,
       locale: "pt_BR"
@@ -84,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: `${BRAND_NAME} — ${tagline}`,
-      description: "Catalog Intelligence Platform baseada em IA."
+      description: "Compare preços, specs e disponibilidade com ranking neutro e auditável."
     }
   };
 }

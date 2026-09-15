@@ -18,7 +18,7 @@
     "popular": "Popular:",
     "statProducts": "Search across integrated suppliers",
     "statNiches": "3 niches · 7 suppliers",
-    "statAi": "Powered by AI"
+    "statRanking": "Neutral, auditable ranking"
   },
   "niches": {
     "title": "Pick your niche",
@@ -92,7 +92,7 @@
   "trust": {
     "badge": "Powered by Catalog Intelligence",
     "title": "Layered validation before products reach the catalog",
-    "description": "Offers from marketplaces, distributors and manufacturers are consolidated, enriched with official data and validated by AI before reaching the catalog.",
+    "description": "Offers from marketplaces, distributors and manufacturers are consolidated, enriched with official data and validated in layers before reaching the catalog.",
     "statPipeline": "offer validation",
     "statConnectors": "connected suppliers",
     "sources": "Sources: Marketplace · Distributor · Retailer · Manufacturer",

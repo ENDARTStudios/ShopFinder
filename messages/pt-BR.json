@@ -18,7 +18,7 @@
     "popular": "Populares:",
     "statProducts": "Busca integrada a fornecedores",
     "statNiches": "3 nichos · 7 fornecedores",
-    "statAi": "Powered by AI"
+    "statRanking": "Ranking neutro e auditável"
   },
   "niches": {
     "title": "Escolha seu nicho",
@@ -92,7 +92,7 @@
   "trust": {
     "badge": "Powered by Catalog Intelligence",
     "title": "Validação em camadas antes de chegar ao catálogo",
-    "description": "Ofertas de marketplaces, distribuidores e fabricantes são consolidadas, enriquecidas com dados oficiais e validadas por IA antes de chegarem ao catálogo.",
+    "description": "Ofertas de marketplaces, distribuidores e fabricantes são consolidadas, enriquecidas com dados oficiais e validadas em camadas antes de chegarem ao catálogo.",
     "statPipeline": "validação de ofertas",
     "statConnectors": "fornecedores conectados",
     "sources": "Fontes: Marketplace · Distributor · Retailer · Manufacturer",

@@ -541,7 +541,7 @@ export const PROJECT_META = {
   version: "0.6.0",
   iteration: "Catalog Intelligence Platform — validação em camadas, 7 fornecedores",
   summary:
-    "ShopFinder é uma plataforma de Catalog Intelligence baseada em IA que transforma dados heterogêneos de produtos em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais."
+    "ShopFinder é uma plataforma de comparação de preços com ranking neutro e auditável, que transforma dados heterogêneos de fornecedores em um catálogo canônico, enriquecido, validado e pronto para distribuição em múltiplos canais."
 };
 
 export interface DesignSystemLayer {
