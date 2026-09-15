@@ -15,7 +15,7 @@
  *
  * Exit codes:
  *   0 — sucesso (dry-run ou deletions completos)
- *   2 — VERCEL_TOKEN ausente ou falha de autenticação (/v2/user)
+ *   2 — VERCEL_TOKEN ausente ou rejeitado pela API
  *   3 — produção não resolvida (fail-closed: zero deletes)
  *   4 — erro/throttle durante a sequência de deletes (contagem parcial logada)
  *   5 — falha ao resolver projeto ou listar deployments
@@ -58,14 +58,21 @@ async function main(): Promise<number> {
     return 2;
   }
 
-  // 1. Identidade: a API aceita o token? (nunca loga o token)
+  // 1. Identidade: /v2/user valida tokens de conta; tokens ESCOPADOS AO PROJETO
+  // respondem 404 aqui (não acessam endpoint de conta) — nesse caso a identidade
+  // é provada pela resolução do projeto no passo 2. 401/403 → token rejeitado.
   const userRes = await fetch(`${BASE}/v2/user`, { headers: authHeaders() });
-  if (!userRes.ok) {
-    console.error(`[cleanup] auth falhou (/v2/user HTTP ${userRes.status}) — abortando (exit 2).`);
+  if (userRes.ok) {
+    const user = (await userRes.json()) as { user?: { username?: string } };
+    console.log(`[cleanup] auth ok (usuário: ${user.user?.username ?? "?"})`);
+  } else if (userRes.status !== 404) {
+    console.error(
+      `[cleanup] auth rejeitada (/v2/user HTTP ${userRes.status}) — abortando (exit 2).`
+    );
     return 2;
+  } else {
+    console.log("[cleanup] token escopado ao projeto (sem acesso a /v2/user) — seguindo.");
   }
-  const user = (await userRes.json()) as { user?: { username?: string } };
-  console.log(`[cleanup] auth ok (usuário: ${user.user?.username ?? "?"})`);
 
   // 2. Resolver projeto
   const projRes = await fetch(`${BASE}/v9/projects/${PROJECT_NAME}?${teamQ}`, {
