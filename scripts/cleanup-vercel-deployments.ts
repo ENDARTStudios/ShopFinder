@@ -23,6 +23,9 @@
  * Logs: somente uids/urls/contagens. O token NUNCA é logado.
  */
 
+// top-level await exige módulo (TS1375 em arquivo sem import/export).
+export {};
+
 const TOKEN = process.env.VERCEL_TOKEN ?? "";
 const DRY_RUN = (process.env.DRY_RUN ?? "true") === "true";
 const PROJECT_NAME = process.env.PROJECT_NAME ?? "shop-finder";
