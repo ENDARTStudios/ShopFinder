@@ -1,9 +1,10 @@
 /**
- * ShopFinder — Notifications bell (REC-005).
+ * ShopFinder — Notifications bell (REC-005 + T083).
  *
- * Polls /api/admin/notifications every 30s, displays a bell icon with a red
- * badge for unread count, and a dropdown listing recent notifications.
- * Read state persisted in localStorage (shopfinder:read-notifications).
+ * Polls /api/admin/notifications (montagem admin, prop `admin`) e
+ * /api/notifications (customer — price alerts) a cada 30s; exibe badge de
+ * não lidas. Read state persisted in localStorage
+ * (shopfinder:read-notifications).
  */
 "use client";
 
@@ -16,7 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 interface Notification {
   id: string;
-  type: "pipeline_failed" | "product_review" | "low_confidence";
+  type: "pipeline_failed" | "product_review" | "low_confidence" | "price_alert";
   severity: "info" | "warning" | "error";
   message: string;
   timestamp: string;
@@ -31,6 +32,21 @@ interface NotificationsResponse {
 
 const STORAGE_KEY = "shopfinder:read-notifications";
 const POLL_INTERVAL_MS = 30_000;
+
+function mergeResponses(
+  admin: NotificationsResponse | null,
+  customer: NotificationsResponse | null
+): NotificationsResponse {
+  const notifications = [
+    ...(admin?.notifications ?? []),
+    ...(customer?.notifications ?? [])
+  ].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+  return {
+    notifications,
+    total: notifications.length,
+    counts: admin?.counts ?? { error: 0, warning: 0, info: 0 }
+  };
+}
 
 function readReadSet(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -74,7 +90,7 @@ function severityIcon(sev: Notification["severity"]) {
   }
 }
 
-export function NotificationsBell() {
+export function NotificationsBell({ admin = false }: { admin?: boolean }) {
   const [data, setData] = React.useState<NotificationsResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [readSet, setReadSet] = React.useState<Set<string>>(new Set());
@@ -86,19 +102,22 @@ export function NotificationsBell() {
 
   const fetchOnce = React.useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/notifications");
-      if (!res.ok) {
-        setLoading(false);
-        return;
-      }
-      const json = (await res.json()) as NotificationsResponse;
-      setData(json);
+      const customerPromise = fetch("/api/notifications").then(async (res) =>
+        res.ok ? ((await res.json()) as NotificationsResponse) : null
+      );
+      const adminPromise = admin
+        ? fetch("/api/admin/notifications").then(async (res) =>
+            res.ok ? ((await res.json()) as NotificationsResponse) : null
+          )
+        : Promise.resolve(null);
+      const [customer, adminData] = await Promise.all([customerPromise, adminPromise]);
+      setData(mergeResponses(adminData ?? null, customer ?? null));
     } catch {
       // ignore
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [admin]);
 
   React.useEffect(() => {
     fetchOnce();

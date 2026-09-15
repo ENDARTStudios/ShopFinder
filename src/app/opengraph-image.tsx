@@ -6,7 +6,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "ShopFinder — compra inteligente. Encontre qualquer componente de hardware entre milhares de fornecedores.";
+  "ShopFinder — Compare preços, specs e disponibilidade. Encontre qualquer componente de hardware entre milhares de fornecedores.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -69,7 +69,7 @@ export default function OpenGraphImage() {
           <span
             style={{ fontSize: 16, fontWeight: 500, color: "#10B981", letterSpacing: "0.08em" }}
           >
-            compra inteligente
+            Compare preços, specs e disponibilidade
           </span>
         </div>
       </div>
@@ -161,13 +161,13 @@ export default function OpenGraphImage() {
         ))}
       </div>
 
-      {/* Trust footer */}
+      {/* Trust footer — T063: apenas claims verificáveis */}
       <div style={{ display: "flex", gap: 32, fontSize: 16, color: "#64748B" }}>
         <span>Powered by Catalog Intelligence</span>
         <span>·</span>
-        <span>15 estágios</span>
+        <span>Validação em camadas</span>
         <span>·</span>
-        <span>7 conectores</span>
+        <span>7 fornecedores</span>
       </div>
     </div>,
     { ...size }

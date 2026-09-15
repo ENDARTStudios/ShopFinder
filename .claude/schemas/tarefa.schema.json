@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["tarefa_id", "fase", "objetivo", "arquivos_afetados", "criterio_de_pronto"],
+  "properties": {
+    "tarefa_id": {"type": "string"},
+    "fase": {"type": "string"},
+    "objetivo": {"type": "string"},
+    "arquivos_afetados": {"type": "array", "items": {"type": "string"}},
+    "criterio_de_pronto": {"type": "string"}
+  }
+}

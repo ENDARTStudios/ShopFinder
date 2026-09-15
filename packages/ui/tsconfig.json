@@ -1,9 +1,10 @@
 {
   "extends": "@workspace/config/tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "composite": false
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["../../src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -8,25 +8,12 @@
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@workspace/database";
-import { getServerAuthSession } from "@workspace/auth";
-
-function hasAdminRole(roles: string[] | undefined): boolean {
-  if (!roles) return false;
-  return roles.includes("admin") || roles.includes("operator");
-}
+import { requirePermissions } from "@/lib/admin-auth";
 
 export async function GET() {
-  const session = await getServerAuthSession();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const user = session.user as { roles?: string[] };
-  if (!hasAdminRole(user.roles)) {
-    return NextResponse.json(
-      { error: "Forbidden — requires admin or operator role" },
-      { status: 403 }
-    );
-  }
+  // Authorization: status do pipeline exige supplier.read (docs/eng/RBAC.md)
+  const guard = await requirePermissions("admin.access");
+  if (!guard.ok) return guard.response;
 
   // Connector status — eBay via env vars, DigiKey/Amazon as not_configured placeholders
   const ebayAppId = process.env.EBAY_APP_ID ?? process.env.EBAY_CLIENT_ID;
@@ -106,26 +93,27 @@ export async function GET() {
       : 0;
 
   // Aggregate stage metrics across executions
-  const aggregatedStages: Array<{ name: string; totalMs: number; count: number; avgMs: number }> = (() => {
-    const acc = new Map<string, { totalMs: number; count: number }>();
-    for (const row of executions) {
-      if (!row.stageMetrics) continue;
-      for (const [name, ms] of Object.entries(row.stageMetrics)) {
-        const cur = acc.get(name) ?? { totalMs: 0, count: 0 };
-        cur.totalMs += ms;
-        cur.count += 1;
-        acc.set(name, cur);
+  const aggregatedStages: Array<{ name: string; totalMs: number; count: number; avgMs: number }> =
+    (() => {
+      const acc = new Map<string, { totalMs: number; count: number }>();
+      for (const row of executions) {
+        if (!row.stageMetrics) continue;
+        for (const [name, ms] of Object.entries(row.stageMetrics)) {
+          const cur = acc.get(name) ?? { totalMs: 0, count: 0 };
+          cur.totalMs += ms;
+          cur.count += 1;
+          acc.set(name, cur);
+        }
       }
-    }
-    return Array.from(acc.entries())
-      .map(([name, m]) => ({
-        name,
-        totalMs: m.totalMs,
-        count: m.count,
-        avgMs: m.count > 0 ? Math.round(m.totalMs / m.count) : 0
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  })();
+      return Array.from(acc.entries())
+        .map(([name, m]) => ({
+          name,
+          totalMs: m.totalMs,
+          count: m.count,
+          avgMs: m.count > 0 ? Math.round(m.totalMs / m.count) : 0
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    })();
 
   return NextResponse.json({
     connectors,

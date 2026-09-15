@@ -10,7 +10,7 @@
  *   DiscoveryTraceId → OTel Context → Span → Exporter → Jaeger/Tempo
  */
 import type { DiscoveryTraceId } from "@workspace/domain/shared";
-import { trace, context, SpanContext, TraceFlags } from "@opentelemetry/api";
+import { trace, context, type Context, SpanContext, TraceFlags } from "@opentelemetry/api";
 
 // ── Trace ID conversion ────────────────────────────────────
 
@@ -44,7 +44,9 @@ export function toOTelTraceId(traceId: DiscoveryTraceId): string {
 export function generateSpanId(): string {
   const bytes = new Uint8Array(8);
   crypto.getRandomValues(bytes);
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 // ── Context creation ───────────────────────────────────────
@@ -57,7 +59,7 @@ export function createSpanContext(traceId: DiscoveryTraceId): SpanContext {
   return {
     traceId: toOTelTraceId(traceId),
     spanId: generateSpanId(),
-    traceFlags: TraceFlags.SAMPLED,
+    traceFlags: TraceFlags.SAMPLED
   };
 }
 
@@ -66,8 +68,12 @@ export function createSpanContext(traceId: DiscoveryTraceId): SpanContext {
  * The context carries the traceId so all spans created within it
  * are correlated.
  */
-export function createContextFromTraceId(traceId: DiscoveryTraceId): context.Context {
+// Roundtrip DiscoveryTraceId → SpanContext sem depender de atributos internos do Span
+const spanContextTraceIds = new WeakMap<SpanContext, DiscoveryTraceId>();
+
+export function createContextFromTraceId(traceId: DiscoveryTraceId): Context {
   const spanContext = createSpanContext(traceId);
+  spanContextTraceIds.set(spanContext, traceId);
   // Create a context with the span context set as the active trace
   return trace.setSpanContext(context.active(), spanContext);
 }
@@ -81,7 +87,5 @@ export function getTraceIdFromContext(): DiscoveryTraceId | null {
   if (!span) return null;
   const spanContext = span.spanContext();
   if (!spanContext) return null;
-  // We can't reverse the hash, but we store the original traceId as a span attribute
-  const traceIdAttr = span.attributes?.["discovery.traceId"];
-  return traceIdAttr ? (traceIdAttr as string) as DiscoveryTraceId : null;
+  return spanContextTraceIds.get(spanContext) ?? null;
 }

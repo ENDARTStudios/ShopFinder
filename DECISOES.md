@@ -1,322 +1,163 @@
-# Decisões do Projeto
+# Passo 1: Backup do DECISOES.md atual
 
-Criado em: 2026-07-16
+Copy-Item DECISOES.md state\DECISOES_PRE_BOOTSTRAP.md
 
-## 2026-07-16 — Discovery
+# Passo 2: Gravar o conteúdo EXATO fornecido pelo Thinker
 
-### 1. O que é o projeto, em uma frase?
+@'
 
-Plataforma que coleta, organiza, verifica e entrega informações confiáveis de produtos para decisão de compra.
+# DECISÕES — ShopFinder
 
-### 2. Quem vai usar, e mais ou menos quantas pessoas?
+Este arquivo registra decisões de negócio, arquitetura e governança.
+Autoria: Thinker (regra do protocolo). O Qwen/Doer apenas grava o que o Thinker entrega; não inventa nem resume conteúdo aqui.
 
-- Consumidores que pesquisam antes de comprar hardware/componentes.
-- Profissionais de TI, montadores de PC, integradores.
-- Operadores de catálogo que supervisionam o pipeline (hoje, o próprio Operador nos testes, mas com potencial para pequenas equipes de e-commerce).
-- Escala inicial: pequena (dezenas de usuários internos/teste), com potencial de crescer para milhares de visitantes únicos/mês se for aberto ao público.
+## Negócio / Produto
 
-### 3. Existe algo parecido hoje que sirva de referência?
+### DECISAO-PRODUTO-001 — ShopFinder é e-commerce de dropshipping de hardware
 
-Sim:
+ShopFinder é uma loja online (e-commerce) de hardware e tecnologia que opera via dropshipping. O cliente compra na ShopFinder, paga à ShopFinder e recebe o produto; a relação comercial é exclusivamente com a ShopFinder. Fornecedores (AliExpress, Temu, distribuidores, fabricantes) são invisíveis ao cliente. A inteligência de catálogo (coleta, normalização, enriquecimento, validação em 15 estágios, Authority/Coverage) é tecnologia de bastidores, não o produto vendido. Origem: Operador.
 
-- **PCPartPicker** — referência para compatibilidade de hardware e comparação de preços entre lojas.
-- **Keepa/CamelCamelCamel** — referência para histórico de preços.
-- **GSMArena** — referência para especificações técnicas detalhadas e comparativo lado a lado de smartphones.
-- **Octopart** — referência para busca de componentes eletrônicos em múltiplos distribuidores.
+### DECISAO-MVP-005 — Escopo do MVP
 
-Nenhum deles faz exatamente o que a ShopFinder propõe (grafo de conhecimento com autoridade por atributo, pipeline de enriquecimento, trilha de evidências).
+MVP pronto = vitrine + carrinho + checkout + pagamento + pedido ao fornecedor + tracking. Decomposição: MVP-1 = vitrine + catálogo + busca + página do produto + carrinho + checkout + pagamento + área do cliente (viável já, com catálogo estático). MVP-2 = pedido automático ao fornecedor + tracking + sync de estoque/preço (depende de acesso às APIs dos fornecedores). Origem: Operador + decomposição Thinker.
 
-### 4. Vai ter login? Pagamento? Dado sensível? Upload de arquivo?
+### DECISAO-MVP-011 — Estratégia de início (opção d)
 
-- **Login:** Sim, já implementado (NextAuth, RBAC). Essencial para o dashboard do operador.
-- **Pagamento:** Não processamos pagamentos. A monetização planejada é via comissão por indicação, APIs, assinatura — mas isso é externo à plataforma.
-- **Dado sensível:** Hoje não armazenamos nada sensível de consumidores (sem documentos, saúde, financeiro). Senhas dos operadores são hasheadas com bcrypt (12 rounds). Se no futuro coletarmos dados de usuários finais (ex.: para assinatura), aí entra dado pessoal (email, nome) e possivelmente financeiro (cartão via Stripe — aí o PCI é do Stripe, não nosso).
-- **Upload de arquivo:** Hoje não. No futuro, fabricantes/operadores podem enviar datasheets ou imagens de produtos.
+MVP-1 avança com catálogo estático de produtos reais (seed de ~43 produtos fornecido pelo Thinker, expansível a ~200). A automação de dropshipping (MVP-2) aguarda o acesso às APIs. Origem: Operador.
 
-**Conclusão:** Hoje temos login e senha (bcrypt). Nada de dado sensível de consumidor, pagamento ou upload. Isso pode mudar com assinatura profissional no futuro.
+### DECISAO-ESTOQUE-003 — 100% dropshipping
 
-### 5. Existe prazo?
+A ShopFinder não mantém estoque próprio; o fornecedor envia direto ao cliente. Origem: Operador.
 
-Não há prazo rígido. O MVP está concluído. O próximo passo é demonstrar a plataforma para validação de mercado. Não há data limite — o foco é qualidade e prontidão para quando surgir a oportunidade de apresentar.
+### DECISAO-FORNECEDOR-004 — Pedido ao fornecedor via API, zero operador
 
-### 6. Já existe nome, domínio ou marca decidida?
+Após a venda, o pedido ao fornecedor é automático via API (AliExpress Open Platform / DSers / CJdropshipping), sem operação manual. PENDÊNCIA: requer credenciais de API que o Operador ainda não possui (ver PENDENCIAS_OPERADOR.md). Sem elas, o MVP-2 é inviável. Origem: Operador + escalonamento Thinker.
 
-- **Nome:** ShopFinder
-- **Slogan:** "compra inteligente" (pt-BR) / "smart shopping" (en)
-- **Domínio:** Não adquirido ainda. O nome ShopFinder é comum (existem apps com nomes similares). A decisão de adquirir um domínio `.com` ou usar um TLD alternativo (`.app`, `.ai`) ainda não foi tomada.
-- **Marca:** Identidade visual completa — logo (lupa emerald sobre slate-900), paleta de cores, tipografia, rodapé "ShopFinder - compra inteligente - V0.6.0 - Copyright © 2026 END ART".
+### DECISAO-PAGAMENTO-002 — Gateway
 
-### 7. O que "pronto" significa pra você?
+Gateway padrão: Stripe (sem mensalidade, multi-moeda BRL + outras, Pix via Stripe no Brasil). Alternativa: Mercado Pago (Pix nativo, foco LATAM). Esclarecimento: nenhum gateway é 100% gratuito; todos cobram taxa por transação. Gratuito = sem mensalidade/assinatura. Origem: Operador + decisão técnica Thinker.
 
-"Pronto" significa três coisas, em ordem:
+### DECISAO-MARGEM-006 — Margem dinâmica
 
-1. **Demonstrável** — a plataforma está no ar (deploy online), acessível via URL pública, com o catálogo de demonstração (564 produtos) funcionando: busca, comparação, detail page, troca de idioma.
-2. **Operável com dados reais** — pelo menos um conector (eBay ou DigiKey) está ativado com credenciais reais, e o pipeline está gerando produtos a partir de dados vivos, com curadoria funcionando (operador analisa, publica, arquiva).
-3. **Documentado** — qualquer pessoa com acesso ao repositório consegue: (a) subir a plataforma do zero seguindo o `DEPLOY.md`, (b) operar o dashboard seguindo o `operator-guide.md`, (c) adicionar um novo conector seguindo o `engineer-guide.md`.
+Margem configurável por regra (tabela pricing_rules: % por categoria/produto/fornecedor + fallback). Preço final = custo do fornecedor + frete + margem. Origem: Operador + decisão técnica Thinker.
 
-Só depois desses três itens eu considero o projeto concluído como produto funcional.
+### DECISAO-DEVOLUCAO-007 — Devolução ao fornecedor
 
----
+O cliente devolve ao fornecedor; a ShopFinder é ponte de compra (coordena a solicitação, não gerencia estoque de devolução). MVP: registro de solicitação + coordenação básica. Origem: Operador.
 
-## 2026-07-16 — Decisão: usar `bun audit` em vez de `npm audit` na Fase 8.1
+### DECISAO-UX-008 — Referência de experiência
 
-Motivo: O projeto usa Bun como gerenciador de pacotes (`bun.lock` commitado, scripts em `package.json` rodam via `bun run`). `npm audit` exige `package-lock.json`, que o npm se recusa a gerar a partir do `bun.lock` (erro `Cannot read properties of null (reading 'matches')`). Forçar geração do lock com `npm install` migraria o projeto para o ecossistema npm, contrariando a decisão arquitetural de usar Bun e possivelmente quebrando o `bun install` idempotente.
+Combinar o melhor de Kabum (foco técnico/hardware), Amazon (busca, recomendações, reviews, checkout), Pichau e Terabyte (especificações, comparação, compatibilidade). Design system: shadcn/ui + Tailwind v4. Design intelligence: UI UX Pro Max (estilo Minimalism + Aurora UI; paleta e-commerce; tipografia Inter + JetBrains Mono; gráficos Recharts). Animações: Motion.dev (padrão React), GSAP (scroll/timeline), anime.js (micro-interações/stagger). Origem: Operador + decisões técnicas Thinker.
 
-`bun audit` consulta o mesmo banco de dados de advisories (GitHub Advisory Database) que `npm audit`, com semântica idêntica para níveis de severidade. A substituição preserva o critério de pronto da OS GOV-004 (zero vulnerabilidades HIGH/CRITICAL) sem custo de migração.
+### DECISAO-VOLUME-009 — Escala inicial
 
-Alternativas consideradas:
+Catálogo inicial ~200 produtos (processadores, GPUs, placas-mãe, memórias, SSDs, HDs, fontes, gabinetes, refrigeração, monitores, periféricos, notebooks). Beta fechada 50–100 usuários. Arquitetura escalável para 10k+ produtos e 1k+ usuários sem reescrita. Origem: Thinker (delegado pelo Operador).
 
-1. Gerar `package-lock.json` com `npm install` — rejeitado: introduz segundo lockfile no repo, conflito com `bun.lock`, e `npm install` resinstala todos os pacotes sob outra resolução.
-2. Migrar projeto para npm — rejeitado: mudança de arquitetura fora do escopo da Fase 8.
-3. Usar `audit-ci` ou similar — rejeitado: adiciona nova dependência para algo que `bun audit` já faz nativamente.
+### DECISAO-PRAZO-010 — Sem prazo; pronto = beta com clientes reais
 
-Verificação substituta aceita: `bun audit 2>&1 | tail -5` exibe `No vulnerabilities found` e exit code 0.
+Sem prazo fixo. Qualidade > velocidade. Pronto = beta com clientes reais. Origem: Operador.
 
----
+## Infra / Arquitetura (decisões técnicas vigentes)
 
-## 2026-07-16 — Bloqueio técnico pendente de decisão do Thinker: SQLite vs Vercel serverless
+### DECISAO-STACK-LEGADO-001 — Stack do core pré-existente
 
-**Contexto:** Fase 9 (deploy Vercel) iniciada. Projeto usa SQLite local (`db/custom.db`, 1.1 MB, 64 produtos + 500 bulk). Schema Prisma declara `provider = "sqlite"`.
+Next.js (App Router) + TypeScript + Tailwind v4 + shadcn/ui no frontend; Neon PostgreSQL + Prisma no banco; NextAuth com cookie httpOnly para auth; Vercel para deploy; Upstash Redis para cache/fila/feature flags; busca textual via tsvector + pg_trgm (PostgreSQL nativo). Confirmado pelo código em src/ e pelos commits reais.
 
-**Bloqueio:** Vercel serverless functions têm filesystem efêmero — SQLite em arquivo não persiste entre invocações. O deploy funcionaria na primeira requisição, mas qualquer escrita (ex.: rodar pipeline) seria perdida. Não há como manter SQLite em produção na Vercel.
+### DECISAO-REDIS-PROVISIONED — Upstash Redis
 
-**Evidência técnica:**
+Upstash Redis (free tier) provisionado pelo Operador e conectado (src/lib/redis.ts; /api/health reporta status). Desbloqueia cache (6.3), fila (6.2) e feature flags (6.7). Origem: Operador.
 
-- `prisma/schema.prisma` → `provider = "sqlite"`, `url = env("DATABASE_URL")`
-- `.env` → `DATABASE_URL=file:/home/z/my-project/db/custom.db`
-- Schema já usa 38 ocorrências de tipos compatíveis com PostgreSQL (`Json`, `BigInt`, etc.) — projeto foi desenhado para PostgreSQL em prod (ver `docs/persistence-model.md` ADR-0009), SQLite é só o fallback de dev
-- `docker-compose.yml` já declara PostgreSQL 17 + PgBouncer para produção
-- `DEPLOY.md` já documenta `DATABASE_URL=postgresql://...` como variável de produção
+### DECISAO-SEARCH-POSTGRES — Busca textual nativa
 
-**Decisão necessária do Thinker (não delegável ao Doer):**
+Busca textual com PostgreSQL nativo (tsvector + pg_trgm), sem serviço externo. Justificativa: simplicidade, custo zero, escala suficiente. Origem: Thinker.
 
-1. Qual provedor de PostgreSQL gratuito usar?
-   - **Neon** — serverless Postgres, free tier 0.5 GB storage, branching gratuito, ideal para Vercel
-   - **Supabase** — Postgres + auth + storage, free tier 500 MB, pausa após 1 semana inativo
-   - **Railway** — Postgres gerenciado, free trial $5 credit, depois $5/mês
-2. Quem provisiona o banco?
-   - Operador cria conta + copia connection string (manual, item em PENDENCIAS_OPERADOR.md)
-   - Doer usa CLI gratuita se existir (Neon tem CLI; Supabase tem CLI)
-3. É necessário testar migração para PostgreSQL antes do deploy, ou confiamos no schema compatível + Prisma migrate?
-   - Opção A: Doer roda `prisma migrate deploy` localmente contra PostgreSQL (Docker) antes do deploy
-   - Opção B: Confia no schema, primeiro `prisma migrate deploy` roda na Vercel build
-4. O `bun run scripts/run-pipeline.ts` precisa ser re-executado em produção após a migração para popular o catálogo?
+### DECISAO-ANIMATION-LIBS — Três bibliotecas de animação
 
-**Ação do Doer enquanto aguarda:**
+Motion.dev (padrão para componentes React), GSAP (scroll-driven/timelines/SVG), anime.js (micro-interações/stagger). Todas respeitam prefers-reduced-motion. Origem: Operador + Thinker.
 
-- Prossegue com tarefa independente: criar `scripts/smoke-test.sh` (cobre 9 cenários do DEMO_CHECKLIST.md)
-- Prepara `PENDENCIAS_OPERADOR.md` com 3 itens, deixando `DATABASE_URL` como `{{DECIDIR_PROVEDOR}}` até o Thinker responder
-- Não modifica `prisma/schema.prisma` nem `.env` — essa é decisão do Thinker
+### DECISAO-UI_UX_PRO_MAX — Design intelligence normativa
 
-**Recomendação técnica do Doer (não decisão):** Neon é o melhor casamento com Vercel — ambos serverless, free tier generoso, integração nativa (botão "Connect to Vercel" no painel Neon). CLI existe (`neonctl`) mas provisionamento ainda exige login OAuth do Operador. Recomendação A: Operador cria conta Neon manualmente (mais simples que CLI); Doer adapta schema/provider após decisão.
+UI UX Pro Max adotado como guia normativo de design (estilo, paleta, tipografia, padrões de landing, diretrizes UX). Origem: Operador.
 
----
+## Governança / Processo
 
-## 2026-07-16 — BLOQUEIO CRÍTICO: Perda de código das Sprints 11-16 do working tree
+### DECISAO-RECON-001 — Reconciliação pós-reset
 
-**Severidade:** Crítica — bloqueia Fase 9 e qualquer progresso futuro até resolução.
+Após hard reset que descartou commits locais: preservar commits do Operador como fonte da verdade; reconstruir governança e features ausentes em tarefas atômicas verificadas no GitHub real; nunca sobrescrever commits do Operador. Origem: Thinker.
 
-**Sintoma:** Ao executar `bash scripts/smoke-test.sh` contra o dev server local na OS GOV-005, 10 de 22 checks falharam. Investigação revelou que rotas inteiras retornam 404:
+### DECISAO-CI-DEBT-001 — Dívida de CI verde (exceção temporária)
 
-- `/compare` → 404 (arquivo `src/app/compare/page.tsx` não existe)
-- `/api/admin/pipeline/status` → 404 (arquivo não existe)
-- `/admin/pipeline` → 404 (arquivo não existe)
+O workflow CI (GitHub Actions) está vermelho na main, inclusive para commits anteriores ao bootstrap (falha pré-existente de build/lint/typecheck do core e/ou YAML do ci.yml a corrigir). O deploy real (Vercel) está verde e o teste de integridade do protocolo passa. Decisão: até o CI voltar verde (tarefa dedicada T004), merges de GOVERNANÇA/RECUPERAÇÃO são permitidos como exceção documentada; NENHUM merge de feature de produto acontece com CI vermelho. Risco residual: médio (qualidade). Origem: Thinker (lição aprendida).
 
-**Evidência da perda:**
+### DECISAO-VERIFICACAO-001 — Operador é a fonte de verdade do remote
 
-- `ls src/app/compare/` → `No such file or directory`
-- `ls src/app/api/admin/pipeline/` → `No such file or directory`
-- `ls src/app/admin/pipeline/` → só existe `layout.tsx` e `page.tsx` (sem `pipeline/`)
-- `ls src/contexts/` → `No such file or directory` (CompareContext perdido)
-- `ls packages/integrations/src/connectors/` → `No such file or directory` (DigiKey/Amazon/eBay connectors perdidos)
-- `ls tests/integration/` → apenas `admin-api.test.ts` e `pipeline.test.ts` (compare, digikey, amazon-ebay, sigv4 perdidos)
-- `src/components/site/` → sem `filter-bar.tsx`, `compare-button.tsx`, `notifications-bell.tsx`, `language-selector.tsx`, `header-compare-link.tsx`, `empty-results.tsx`, `product-card-skeleton.tsx`
+Como o repositório é privado e o Doer já fabricou evidência, nenhum commit é considerado real sem o Operador confirmar sua presença no GitHub. O Thinker não aprova persistência com base apenas na transcrição do Doer. Origem: Thinker (lição aprendida).
 
-**Causa raiz (reconstruída via `git reflog`):**
+## Pendências de negócio (detalhes em PENDENCIAS_OPERADOR.md)
 
-- O `reflog` mostra 22+ entradas `reset: moving to HEAD` para o commit `f00c8db` (pré-Sprint 11)
-- O commit `76ada11` (GOV-001) foi feito com `--amend`, reescrevendo o commit `3b83065`
-- Todo o trabalho das Sprints 11-16 existia apenas no working tree **não rastreado pelo git**
-- Quando os resets para `f00c8db` aconteceram (provavelmente durante resets automáticos do ambiente), o working tree foi restaurado para o estado do commit, sobrescrevendo todos os arquivos não-commitados
+- Acesso às APIs de fornecedores (AliExpress/DSers/CJdropshipping) para o MVP-2.
 
-**Tentativa de recuperação:**
+## Nota sobre decisões técnicas herdadas
 
-- `git stash list` → vazio
-- `git fsck --lost-found` → 12 dangling commits encontrados, mas nenhum contém os arquivos das Sprints 11-16
-- `git reflog --all` → nenhum commit das Sprints 11-16 aparece (confirma que nunca foram commitados)
+Decisões técnicas das Sprints anteriores (auth, catálogo, pipeline, schema do knowledge graph etc.) que ainda valem estão refletidas no código em src/ e, quando documentadas antes do bootstrap, preservadas em state/DECISOES_PRE_BOOTSTRAP.md. Re-registrar aqui conforme forem relevantes para novas tarefas.
 
-**Impacto:**
+### DECISAO-TAXONOMIA-001 — Subcategorias cooling e mini-pc criadas; correção cirúrgica de categorias (T033)
 
-- ~30 arquivos perdidos (componentes, contexts, conectores, testes, rotas)
-- Funcionalidades perdidas: FilterBar, CompareContext, /compare page, NotificationsBell, /admin/pipeline, i18n (language-selector), DigiKeyConnector, AmazonConnector, EbayConnector, SigV4 signer, smoke-test, bulk-products generator, bench-search, ~50 testes de integração
-- 69 testes passando → caiu para 18 (apenas pipeline + admin-api originais)
-- Build ainda funciona (rotas perdidas não são referenciadas em código runtime), mas funcionalidades desapareceram
+A auditoria read-only do catálogo (22 produtos, `scripts/audit-categories.ts`) confirmou 2 atribuições erradas originadas no seed: DeepCool AK620 em "Gabinetes" e Minisforum N100 em "Monitores". Decisão: criar as subcategorias `cooling` ("Coolers & Ventoinhas") e `mini-pc` ("Mini PCs") no nicho pc-hardware — rejeitada a alternativa de reaproveitar categoria errada — e corrigir via SQL idempotente (`scripts/fix-categories-sql.ts`: 2 INSERT WHERE NOT EXISTS + 2 UPDATE por SKU, sem DELETE, sem INSERT de produtos, sem tocar SKU/preço/estoque). O `seed-catalog.ts` já nasce corrigido para instalações futuras. Execução em produção é autoridade do Operador (Neon SQL Editor); rollback trivial pelo UPDATE inverso. Origem: Doer (auditoria) / Thinker (aprovação).
 
-**Ação do Doer:** Parou a Fase 9. Não pode prosseguir sem orientação do Thinker.
+### DECISAO-T020B-001 — Causa raiz do pedido não persistido + correção de roteamento Stripe
 
-**Decisão necessária do Thinker:**
+Diagnóstico (T036-T040): o `STRIPE_SECRET_KEY` de produção apontava para a conta Stripe **velha (MEDIA Rate)** — provado por probe: sessão criada em produção não existia na conta ShopFinder (`No such checkout.session`). Pagamentos eram cobrados na conta errada e o evento `checkout.session.completed` disparava na conta velha, cujo endpoint nunca foi o `/api/webhook` da ShopFinder → 0 orders. Fix (Operador): substituição do valor em Vercel Production + Redeploy. Prova pós-fix (T038): sessão nova lida com a chave ShopFinder → 200. Handler do webhook auditado e funcionando (probe assinado T040 persistiu order `paid`); whsec de produção correto (== .env local, validado por assinatura). O pedido real do teste T039 foi backfillado por replay assinado do evento (order `cs_test_a1aBlaw...` status `paid`). Pendência operacional residual: confirmar no dashboard ShopFinder que a URL do endpoint webhook é `https://shop-finder-taupe.vercel.app/api/webhook` e inspecionar 1 linha do Runtime Logs — garante que futuros pagamentos reais persistam automaticamente. Origem: Doer (diagnóstico) / Thinker (matriz de decisão) / Operador (higiene da conta e execução Vercel).
 
-1. Recriar todo o trabalho perdido? (estimativa: 2-3 sessões para reimplantar Sprints 11-16)
-2. Aceitar a perda e seguir com o MVP base (Sprints 1-10 apenas)?
-3. Existe fonte externa de verdade (backup, fork, outro ambiente) que o Operador possa ter?
+### DECISAO-T041-001 — Entrega automática do Stripe confirmada (fecha a saga do Order)
 
-**Recomendação técnica do Doer (não decisão):**
+Após habilitar `checkout.session.completed` no endpoint ShopFinder (causa raiz do gap: o endpoint só assinava eventos de billing/`payment_intent.*`), o pagamento teste `4242…` (sessão `cs_test_a1R2AB9q…`, US$ 21,99) foi processado e a Order **persistiu sozinha** via entrega automática do Stripe — sem replay manual (`check-orders.ts`: 3 orders `paid`, nova em 19:36 UTC de 30/08/2026). A loja vende, cobra na conta certa, registra sozinha e mostra o pedido ao cliente. Evidência: probe de roteamento (T038) + entrega automática (T041). Origem: Doer (execução) / Thinker (diagnóstico) / Operador (config do dashboard).
 
-- O `worklog.md` contém o registro detalhado de todas as Sprints 11-16 (cada arquivo criado, cada implementação, cada teste). Pode servir de referência para recriação.
-- Antes de recriar, implementar commit-atômico-a-cada-tarefa rigorosamente (Seção 6 item 6 do protocolo) para evitar repetição da perda.
+### DECISAO-T059-001 — Publicação do pacote jurídico v2.0 (pt/en/es)
 
----
+Em 01/09/2026 foi publicado o pacote jurídico v2.0 (Parecer + Achados + minutas Termos v2.0 com 23 seções e Privacidade v2.0 com 16 seções), revisado pelo Thinker e autorizado pelo Operador. Fontes commitadas em `docs/legal/termos-de-uso-v2.md` e `docs/legal/politica-de-privacidade-v2.md` (verbatim); conteúdo publicado vive em `messages/*.json` (`terms.sections` 24 itens / `privacy.sections` 17 itens, incl. "Referências normativas"), com renderização multiparágrafo (`body: string | string[]`) e intro na Privacidade. /cookies v1.1 sem consentimento tácito e com tabela completa de storage (commit 55775b3). Paridade i18n 609 chaves × 3 locales.
 
-## 2026-07-16 — Decisão: Recriar Sprints 11-16 após perda de working tree
+Tabela de placeholders (decisões do Thinker):
 
-Motivo: Arquivos das Sprints 11-16 não foram commitados e foram destruídos por resets do Git durante GOV-001. O `worklog.md` também foi parcialmente afetado — entradas detalhadas das Sprints 10-16 foram perdidas do arquivo, restando apenas o registro até Sprint 8+9. A especificação para recriação vem da OS GOV-005 (instruções B1-B5 detalhadas) + memória de implementação do Doer + código preservado das Sprints 1-10.
+| Placeholder | Valor |
+|---|---|
+| `[DIA] de [MÊS] de 2026` | 1 de setembro de 2026 (EN: September 1, 2026 · ES: 1 de septiembre de 2026) |
+| Versão | 2.0 |
+| `[X] dias úteis` (confirmação) | 2 (coerente com o SAC já publicado) |
+| `[preencher endereço completo]` | Osasco, São Paulo - Brasil (PENDÊNCIA OPERADOR: complementar rua/número) |
+| `[e-mail do encarregado]` / canal privacidade | endart.studios@gmail.com |
+| `[canal de cancelamento]` | botão no pedido em /conta/pedidos ou endart.studios@gmail.com (botão vem na T061) |
 
-Alternativas consideradas:
-- Aceitar a perda e seguir com MVP base (Sprints 1-10): rejeitado, pois não atende à definição de "pronto" do Operador (demonstrável com filtros/comparação, operável com conectores).
-- Aguardar backup externo: o Operador será consultado via `PENDENCIAS_OPERADOR.md` item [1], mas a recriação começa em paralelo para não atrasar o projeto.
-- Recriar imediatamente: escolhido. Compromisso: commits atômicos por tarefa, sem exceção (Seção 6 item 6 do protocolo).
+Preenchimentos adicionais feitos pelo Doer (coerentes com dados públicos, a ratificar): `[canal jurídico]` = endart.studios@gmail.com (único canal existente); `[entidade e país]` (§6 Privacidade) = Stripe, Inc. / Vercel, Inc. / Neon, Inc. / OpenAI — Estados Unidos; `[prazo]` (retenção de conta pós-encerramento) = até 180 dias (estrutura de governança, ajustável). PENDÊNCIA: `termsVersion: "1.0"` hardcoded em `src/app/api/auth/register/route.ts` — aceites pós-publicação seguem gravando "1.0" até decisão do Thinker (rota fora do escopo do T059). Origem: Thinker (minutas + tabela) / Doer (publicação e preenchimentos residuais) / Operador (endereço completo).
 
-## 2026-07-16 — Decisão: Usar Neon como provedor PostgreSQL gratuito para deploy na Vercel
+### DECISAO-T067-001 — Revisão dos Termos de Uso v2.0 (26 seções) com marco de PI e uso de IA
 
-Motivo: Vercel não suporta SQLite persistente (filesystem efêmero em serverless). Neon é serverless, tem free tier generoso (0.5 GB storage, branching gratuito), e o Prisma já é compatível com PostgreSQL (schema desenhado para isso desde ADR-0009).
+Em 02/09/2026 os Termos de Uso publicados foram substituídos pela revisão v2.0 (26 seções + referências normativas), que incorpora a cláusula de Propriedade Intelectual (§15, com 15.1) e as Diretrizes de uso de IA (§16) fornecidas pela operação. Principais mudanças vs. a minuta de 31/08: 1) §1 declara expressamente que a operadora **não possui endereço físico** e que "Osasco, São Paulo — Brasil" é *localização informada* — resolve a pendência de rua/número para os Termos (permanece para §1 da Privacidade); 2) §15/§16 endurecem PI e IA (proibição de scraping/treinamento de modelos concorrentes, prompt injection, extração de prompts); 3) §23 remove referências condicionais de arbitragem nos EUA — termos agora neutros (lei brasileira); 4) §6 mantém a proibição de "em tempo real"/"preço real"/"estoque garantido" e consolida BRL prioritário. Minuta anterior preservada em `docs/legal/termos-de-uso-v2-20260831.md`; nova fonte em `docs/legal/termos-de-uso-v2.md`. Migrations T051 e T061 foram APLICADAS em PRODUÇÃO em 31/08/2026 (validadas por information_schema) e retiradas das pendências do MANUAL_DO_OPERADOR.md. Pendências restantes: endereço para §1 da Privacidade e revisão jurídica por advogado. `termsVersion` segue "2.0" (CURRENT_TERMS_VERSION inalterado). Origem: Operador (minutas) / Doer (publicação pt/en/es) / Thinker (ratificação).
 
-Alternativas consideradas:
-- Supabase: mais features (auth, storage), mas mais complexo e pausa após 1 semana inativo no free tier.
-- Railway: bom, mas free trial limitado a $5 credit (depois $5/mês).
-- Neon: escolhido por ser o mais simples e barato (Seção 3.6 do protocolo — entre soluções equivalentes, vence a mais simples). Integração nativa com Vercel (botão "Connect to Vercel").
+### DECISAO-LEGAL-COOKIES-001 — Publicação das Políticas de Privacidade e Cookies v2.0 + painel de preferências (02/09/2026)
 
-Decisão sobre provisionamento: Operador cria conta manualmente no painel neon.tech (mais simples que CLI, evita fluxo OAuth). Doer incluirá passo a passo em `PENDENCIAS_OPERADOR.md` item [2].
+Publicadas as revisões v2.0 fornecidas pela operação: **Política de Privacidade** (16 seções + referências) e **Política de Cookies** (9 seções + inventário de 12 chaves + referências), ambas em pt/en/es. Pontos principais: 1) §1 da Privacidade declara "não possui endereço físico" e "localização informada" — **resolve a pendência de endereço também para a Privacidade** (resta apenas a revisão por advogado); 2) §6 (transferências) e §8 (retenção) passam a usar linguagem genérica — substituem os preenchimentos residuais do T059 (Stripe, Inc. etc., 180 dias), que saem de cena; 3) inventário de cookies reestruturado em 6 colunas e separa `locale` (cookie) de `sf:locale` (localStorage), classifica `sf:fx`/`sf:img:*` como funcionalidade e inclui `nextauth.message` — **acrescentamos `shopfinder:read-notifications` por instrução da própria minuta** ("a lista deve refletir o inventário técnico real"); 4) `/cookies` reescrito no padrão de seções das outras páginas legais; 5) **banner de primeira camada dispensado** conforme §3 da especificação (somente essenciais/preferências), mas implementados o **painel permanente "Preferências de Cookies"** (/cookies#preferencias, com registro de consentimento `sf:cookie-consent` — id aleatório, timestamp, versão 2.0, escolhas, idioma; revogação remove as chaves opcionais) e o **link permanente no rodapé**. Especificação completa do banner preservada em `docs/legal/cookie-banner-consentimento-lgpd-v2.md`; minutas de 31/08 em `docs/legal/*-20260831.md`. Se a plataforma vier a adotar analytics/publicidade, o banner da especificação deve ser implementado ANTES da ativação. Origem: Operador (minutas) / Doer (publicação pt/en/es + painel) / Thinker (ratificação).
 
----
+### DECISAO-AFILIADO-AMAZON-001 — Modo afiliado Amazon: tag, disclosure e gate do PA-API (T071)
 
-## 2026-07-16 — Decisão do Operador: Licenciamento proprietário (All Rights Reserved)
+Ativado o modo afiliado Amazon das ofertas seed: as URLs de saída das ofertas cujo fornecedor é `amazon` passam a ser montadas com a tag de Associado **shopfinder01-20** (`AMAZON_ASSOCIATE_TAG`, idempotente — URL que já tem `tag=` volta intacta; vazia = sem tag), no link "Ver oferta na Amazon" do detalhe. **(a) Gate do PA-API**: credenciais de Product Advertising API só serão requeridas após vendas qualificadas (regra Amazon Associates: 3 vendas em 180 dias); até lá, o catálogo Amazon do seed (22 ASINs) é a fonte e NÃO há integração PA-API no código. **(b) Disclosure**: a comissão é publicidade identificável (CDC art. 36) — disclosure permanente no rodapé de todas as páginas + nota na seção de ofertas Amazon do detalhe, nos 3 locales. **(c) Coerência com Termos §12**: a comissão é paga pelo VAREJISTA (Amazon) e não altera o preço exibido — não há cobrança ao usuário, coerente com o já publicado. Fonte: `src/lib/amazon-affiliate.ts` (server-side; tag não vai ao client bundle). Origin: Thinker (decisão) / Doer (implementação).
 
-Origem: Decisão direta do Operador (Seção 1 do `PROTOCOLO_MESTRE.md` — "é o dono do produto").
+### DECISAO-TOOLBELT-001 — Toolbelt de agentes: adoções e recusas (T071-toolbelt)
 
-Conteúdo:
-- `LICENSE` criado na raiz do repositório com texto exato definido pelo Operador: Copyright © 2026 END ART Studios, All Rights Reserved. Software proprietário e confidencial. Proibido uso, cópia, modificação, distribuição, sublicenciamento, publicação, engenharia reversa sem permissão escrita prévia do titular.
-- `NOTICE` criado na raiz com: nome do projeto (ShopFinder — compra inteligente), titular dos direitos autorais (END ART Studios), e contato comercial para licenciamento (endart.studios@gmail.com).
+Avaliadas 10 ferramentas da comunidade (ver `docs/eng/AGENT-TOOLBELT.md`). **Adotadas**: Graft (já em produção), browser-use (já em uso nas auditorias visuais — passa pelo Vercel Checkpoint), skill diagram-design (`.agents/skills/`, 39 tipos de diagrama p/ docs/eng), Agent-Reach (venv `~/.agent-reach-venv`; Jina Reader, yt-dlp, RSS — `agent-reach doctor` antes de pesquisas web). **Recusadas com gatilho de revisão**: codebase-memory-mcp e agentmemory/openviking (overlap com Graft e memória nativa), agency-agents (conflita com o fluxo Doer/Thinker/Operador; referência p/ marketing), scientific-agent-skills (fora de domínio). **Strix (pentest)**: preparado, exige Docker + LLM_API_KEY — usar somente contra staging/dev com autorização expressa. Origin: Operador (lista de URLs) / Doer (análise e integração) / Thinker (ratificação).
 
-Motivo: Estabelecer base legal para futuras negociações de licenciamento comercial conforme modelo de negócio da ShopFinder (assinatura profissional, APIs de catálogo). Prática comum em projetos proprietários.
+### DECISAO-OPERADOR-T073-001 (14/set/2026) — Ratificação de exceção de segurança: ignores dev-only no Security Gate
 
-Impacto técnico: Nenhum. Apenas 2 arquivos novos na raiz do repositório. Código permanece sob governança do `PROTOCOLO_MESTRE.md`.
+O Operador **ratifica** os 5 ignores dev-only no Security Gate (T073): fast-uri 3.x ×4 (GHSA-5jgf-p345-68v8, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf, GHSA-jqff-g426-hqxp — via ajv, cadeias de eslint/commitlint/stryker) e js-yaml-2883 (GHSA-2883-xcg3-v3hh — via cosmiconfig/mdxeditor). Todas em cadeias de DEV, **zero exposição runtime** (`@hookform/resolvers` não é importado em `src/` — verificado). GHSAs nomeados no `security-gate.yml`. Correções de runtime (next 16.3.5, sharp, js-yaml/fast-uri diretos, prismjs) não dependiam desta ratificação. Origin: Operador (ratificação) / Doer (triagem).
 
-Commit: `87003bd` — `chore: adicionar LICENSE proprietario e NOTICE com contato comercial`.
+### DECISAO-ANALYTICS-001 (T077) — Analytics first-party cookieless (sem Plausible/Umami)
 
-Verificação: Ambos arquivos em UTF-8, conteúdo conforme especificado pelo Operador, na raiz do repositório.
+Escolhido **analytics first-party cookieless** (tabela `AnalyticsPageView` no Neon + beacon client `PageViewTracker` + página `/admin/analytics` com RBAC `admin.access`) em vez de Plausible/Umami self-hosted (exigem servidor + Postgres dedicados — a operação roda só Vercel serverless; Plausible Cloud é pago). **Privacy by design**: sem cookies, sem IP cru, sem UA armazenado, sem identificadores — apenas path, host do referrer externo e classe de dispositivo; beacon ignora `/admin` e `/api`; `navigator.webdriver` não rastreia. **Banner dispensado** conforme DECISAO-LEGAL-COOKIES-001 (sem cookies; ressalva: jurisdições estritas de consentimento p/ analytics mesmo cookieless devem ser confirmadas pelo Operador antes de expansão internacional). Alternativas registradas: Plausible/Umami self-hosted passam a ser viáveis se a operação criar infra dedicada. Origin: Thinker (T077) / Doer (implementação).
 
-Status do projeto: Permanece na Fase 9 (Deploy Vercel), aguardando Operador responder aos itens `[1]` (backup externo das Sprints 11-16) e `[2]` (criação do banco Neon) em `PENDENCIAS_OPERADOR.md`.
+### DECISAO-OPERADOR-T073-001 (14/set/2026) — Ratificação de exceção de segurança: ignores dev-only no Security Gate
 
-Doer em espera pela próxima instrução.
+O Operador **ratifica** os 5 ignores dev-only no Security Gate (T073): fast-uri 3.x ×4 (GHSA-5jgf-p345-68v8, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf, GHSA-jqff-g426-hqxp — via ajv, cadeias de eslint/commitlint/stryker) e js-yaml-2883 (GHSA-2883-xcg3-v3hh — via cosmiconfig/mdxeditor). Todas em cadeias de DEV, **zero exposição runtime** (`@hookform/resolvers` não é importado em `src/` — verificado). GHSAs nomeados no `security-gate.yml`. Correções de runtime (next 16.3.5, sharp, js-yaml/fast-uri diretos, prismjs) não dependiam desta ratificação. Origin: Operador (ratificação) / Doer (triagem).
 
----
+### DECISAO-TOOLING-001 (T086, 14/set/2026) — gitignore cobre .next-dev e tooling local: regra ignorar-vs-commitar
 
-## 2026-07-17 — Decisão (DEP-001): Provider Prisma dinâmico via select-prisma-provider.ts
-
-Motivo: Prisma não suporta `provider = env("DATABASE_PROVIDER")` nativamente — o campo `provider` em `datasource db {}` deve ser uma string literal. Para suportar SQLite (dev) e PostgreSQL (prod Neon) sem manter dois schemas separados manualmente, criamos um script que reescreve o `provider` em `prisma/schema.prisma` baseado em `DATABASE_URL`.
-
-Implementação:
-- `scripts/select-prisma-provider.ts` — lê `DATABASE_URL`, se começa com `postgresql://` ou `postgres://` → `provider = "postgresql"`, senão → `provider = "sqlite"`. Idempotente.
-- `package.json` scripts `db:generate`, `db:push`, `db:migrate`, `db:reset` agora chamam `select-prisma-provider.ts` antes do comando Prisma.
-- `postinstall` hook chama `select-prisma-provider.ts` após `bun install` (que pode resetar o schema via prisma generate).
-- Novo script isolado `db:select-provider` para invocação manual.
-
-Alternativas consideradas:
-- Dois arquivos `schema.prisma` + `schema.postgres.prisma` com symlink: rejeitado, frágil e confunde IDE.
-- `prisma-multi-tenant`: rejeitado, adiciona dependência para algo que um script de 5 linhas resolve.
-- Deixar `provider = "sqlite"` fixo e documentar: rejeitado, quebra o deploy Vercel/Neon automaticamente.
-
-Verificação:
-- `npx prisma validate` → exit 0 ✓
-- `packages/database/src/client.ts` → `new PrismaClient()` sem URL hardcode (Prisma lê DATABASE_URL do env) ✓
-- `scripts/run-pipeline.ts` → sem referência a sqlite/file: ✓
-- Teste manual: `DATABASE_URL=postgresql://...` → provider muda para "postgresql"; sem DATABASE_URL → "sqlite" ✓
-
-Risco: baixo. Alteração de configuração, sem impacto funcional. O schema em si não muda — apenas o provider declarado.
-
----
-
-## 2026-07-17 — Decisão (REC-004): Recriação eBay Connector — Opção A (híbrido com fallback automático)
-
-Motivo: O conector eBay original (Sprint 13) foi perdido no reset do working tree. A Opção A (híbrido com fallback automático) foi escolhida por ser a mais simples (Seção 3.6 do protocolo) e por alinhar com o padrão já estabelecido para outros conectores futuros (DigiKey, Amazon).
-
-Implementação:
-- Transport layer criada em `packages/integrations/src/transports/`:
-  - `Transport.ts` — interface `Transport`, `TransportRequest`, `TransportResponse`, helper `buildQueryString`
-  - `ReplayTransport.ts` — lê fixtures JSON do filesystem, lança `MissingFixtureError` quando arquivo não existe
-  - `FetchTransport.ts` — HTTPS real via `fetch` global, 4 estratégias de auth (none/bearer/basic/oauth2-client-credentials), OAuth2 token cached com refresh 60s antes do expiry
-- `EbayConnector` em `packages/integrations/src/connectors/ebay/EbayConnector.ts`:
-  - Detecta `EBAY_APP_ID` + `EBAY_CERT_ID` (ou aliases `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET`) do ambiente
-  - Se creds presentes e `EBAY_FORCE_REPLAY=false` → FetchTransport (mode="live") com OAuth2 client-credentials contra sandbox ou production
-  - Senão → ReplayTransport (mode="replay") lendo de `fixtures/ebay/`
-  - Aceita `transport` injetado para testes
-  - Métodos: `searchByKeyword(keyword, opts)`, `getItemDetails(itemId)`, `hasCredentials()`
-- Fixture `fixtures/ebay/get_buy_browse_v1_item_summary_search.json` com 4 itens (RTX 3080, IBM Model M, Ryzen 9 5950X, Arduino Uno R3)
-- Pipeline `scripts/run-pipeline.ts` instancia `EbayConnector` no início do `main()` e reporta o mode no log
-- 6 testes de integração cobrem: fallback replay, force-replay, live mode, aliases, transport injetado, fixture resolution
-
-Alternativas consideradas:
-- Opção B (apenas replay, sem FetchTransport): rejeitada — não permitiria ativação live quando credenciais chegarem.
-- Opção C (apenas FetchTransport, sem fallback): rejeitada — quebraria sandbox e CI sem credenciais.
-- Opção A (híbrido): escolhida — detecta credenciais automaticamente, fallback transparente, ativação live sem mudanças de código.
-
-Verificação:
-- `bun test tests/integration/ebay-connector.test.ts` → 6/6 pass, 18 expects
-- `bun test tests/integration/` → 47/47 pass (18 originais + 23 compare + 6 ebay), 153 expects
-- `bunx next build` → ✓ Compiled successfully
-- `bun run test:arch` → 269 arquivos, 0 violações
-
-Risco: baixo. Código isolado em `packages/integrations/`, sem conexão externa ativa no modo replay (default).
-
----
-
-## 2026-07-17 — Decisão: Deploy concluído — ShopFinder em produção
-
-**Contexto:** O Operador executou o deploy diretamente na Vercel (ação direta, sem aguardar fluxo formal do protocolo). Esta proatividade é bem-vinda e acelerou o processo.
-
-**Resultado:**
-- ShopFinder está no ar na Vercel com banco de dados PostgreSQL no Neon
-- URL de produção: `<URL_DO_OPERADOR>` (a ser confirmada pelo Operador para registro definitivo)
-- Build da Vercel executou: select-prisma-provider → prisma generate → prisma migrate deploy → next build
-- Variáveis configuradas: DATABASE_URL (Neon), NEXTAUTH_SECRET, NEXTAUTH_URL
-
-**Definição de "pronto" do Operador (Discovery, item 7):**
-1. **Demonstrável** — ✅ Plataforma no ar, URL pública acessível, catálogo funcional (busca, comparação, detail page, i18n)
-2. **Operável com dados reais** — ⏳ eBay Connector pronto para ativação (definir EBAY_APP_ID + EBAY_CERT_ID); pipeline e curadoria operacionais com dados de demonstração
-3. **Documentado** — ✅ DEPLOY.md, operator-guide.md, engineer-guide.md, DEMO_CHECKLIST.md, MANUAL_DO_OPERADOR.md todos atualizados
-
-**Nota sobre NEXTAUTH_URL:** O Operador mencionou que o build falhou inicialmente e foi corrigido. A causa mais provável é NEXTAUTH_URL incorreto ou ausente. O Operador deve verificar no painel da Vercel que NEXTAUTH_URL = `https://<projeto>.vercel.app` (URL exata de produção). Sem isso, o login admin não funcionará.
-
-**Nota sobre população do banco:** O `vercel-build` inclui `prisma migrate deploy` que aplica o schema no Neon. No entanto, o pipeline de seed (`run-pipeline.ts`) NÃO está incluído no `vercel-build` — ele precisa ser executado manualmente após o deploy via `bash scripts/deploy-setup.sh --seed` com `DATABASE_URL` do Neon no ambiente. Se a landing page de produção estiver vazia (0 produtos), é porque o seed não rodou.
-
-**Ação direta do Operador:** O Operador fez o deploy diretamente na Vercel sem aguardar o Doer preparar um script único (Seção 7 do protocolo permite exceção quando o Operador faz a ação manual diretamente). O resultado é o mesmo — plataforma no ar.
-
----
-
-## 2026-07-17 — CONCLUSÃO DO PROJETO ShopFinder V0.6.0
-
-**Status:** CONCLUÍDO
-
-**Definição de "pronto" do Operador (Discovery, item 7) — avaliação final:**
-
-1. **Demonstrável** — ✅ Plataforma no ar na Vercel, URL pública acessível, catálogo populado com 539 produtos de demonstração (39 pipeline enriquecidos + 500 bulk), busca ontológica funcional, comparação lado a lado, detail page com trilha de autoridade, troca de idioma PT/EN.
-
-2. **Operável com dados reais** — ✅ (parcial) eBay Connector pronto para ativação (plug-and-play, aguardando apenas EBAY_APP_ID + EBAY_CERT_ID). Pipeline operacional com SyncExecutionLog + StageMetrics. Dashboard do operador com RBAC, notificações in-app, e painel de pipeline. Curadoria (publish/review/archive) funcional. Usuário admin criado em produção via create-admin.ts.
-
-3. **Documentado** — ✅ DEPLOY.md, MANUAL_DO_OPERADOR.md, DEMO_CHECKLIST.md, operator-guide.md, engineer-guide.md, credentials-guide.md — todos commitados e validados pelo Operador seguindo as instruções.
-
-**URL de produção:** A confirmar pelo Operador (usar `<URL_DO_OPERADOR>` até registro definitivo).
-
-**Estatísticas finais:**
-- 57 testes de integração passando (186 expects)
-- 269 arquivos verificados, 0 violações de arquitetura
-- Build de produção compila sem erros
-- Smoke test local: 13/13 checks passando
-- p95 de busca: 0.25ms (meta < 100ms)
-- 5/5 itens de PENDENCIAS_OPERADOR.md concluídos
-- Fases 8, 9, 11, 12 do PLANO_MESTRE.md marcadas [x]
-- Fase 10 (ativação dados reais eBay) pendente — não bloqueia conclusão (conector pronto, aguarda credenciais externas)
-
-**Ação direta do Operador:** O Operador executou o deploy, o seed do catálogo, e a criação do usuário admin diretamente, seguindo as instruções em PENDENCIAS_OPERADOR.md. Esta proatividade acelerou o processo e é bem-vinda.
-
-**Projeto concluído como ShopFinder V0.6.0.**
+Classificação do `git status --porcelain` (10 entradas → alvo ≤5 intencionais) com regra explícita: **(a) COMMITAR — tooling compartilhado do repo**: `.claude/helpers/` (graft-hooks.cjs, graft-statusline.cjs), `.claude/skills/` (SKILL.md de graft/premortem/redteam), `.github/copilot-instructions.md` (padrão do repo — mesmo bloco graft:start do AGENTS.md, gerado para o GitHub Copilot), `.ignore` (re-admite `graft/` à busca do ripgrep, suportando o fluxo GRAFT-FIRST de qualquer dev) e a modificação de `.claude/settings.json` (liga os hooks aos helpers — inútil sem eles). **(b) IGNORAR — configs pessoais por máquina**: `.next-dev/` (cache de build do dev server; `.next/` não casa com `.next-dev/`), `.gemini/`, `GEMINI.md`, `opencode.json`, `.mcp.json` (cada agente/IDE tem config local com paths de máquina — versionar atrapalharia outros contribuidores). Confirmações: `next-env.d.ts`, `*.tsbuildinfo`, `dev.log`, `server.log` já cobertos (linhas 46-50 do .gitignore). `git add -A` proibido — stage seletivo apenas. Origin: Thinker (brief) / Doer (classificação e implementação).

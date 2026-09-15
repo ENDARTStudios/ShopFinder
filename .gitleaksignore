@@ -1,0 +1,14 @@
+# Gitleaks — findings triados como falso positivo (baseline)
+# Formato: <commit>:<arquivo>:<rule>:<linha>
+#
+# .env em commits antigos (removido desde então): DATABASE_URL=file:
+# (SQLite local de dev, sem credenciais) e NEXTAUTH_SECRET de dev para
+# HMR estável (comentado no próprio arquivo para trocar em produção).
+33ccbfaee898e4fbff32d796d6d7cd5871d4f93e:.env:generic-api-key:4
+5933953641cf2853e8b521232fdcf650715d717f:.env:generic-api-key:5
+719d0dbba49911ff627dca590c48a3e3bf36da14:.env:generic-api-key:4
+dda2baeaa8b3a7df0d2ce475b30fce1e7049d824:.env:generic-api-key:5
+#
+# Fixtures DigiKey: part numbers de produto (formato parece chave, não é)
+76ada113fdd9bb9d7c92d0efcb35e54b011422e4:packages/infrastructure/src/connectors/digikey/fixtures/product-search-page1.json:generic-api-key:5
+76ada113fdd9bb9d7c92d0efcb35e54b011422e4:packages/infrastructure/src/connectors/digikey/mapper.test.ts:generic-api-key:13

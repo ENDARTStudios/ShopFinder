@@ -36,8 +36,8 @@ export class DigiKeyAuthProvider implements AuthProvider {
       headers: {
         ...request.headers,
         Authorization: `Bearer ${token}`,
-        "X-DIGIKEY-Client-Id": this.config.clientId,
-      },
+        "X-DIGIKEY-Client-Id": this.config.clientId
+      }
     };
   }
 
@@ -46,16 +46,18 @@ export class DigiKeyAuthProvider implements AuthProvider {
       return this.token.accessToken;
     }
 
-    const credentials = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString("base64");
+    const credentials = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString(
+      "base64"
+    );
     const response = await fetch(this.tokenEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${credentials}`,
+        Authorization: `Basic ${credentials}`
       },
       body: new URLSearchParams({
-        grant_type: "client_credentials",
-      }),
+        grant_type: "client_credentials"
+      })
     });
 
     if (!response.ok) {
@@ -63,10 +65,10 @@ export class DigiKeyAuthProvider implements AuthProvider {
       throw new Error(`DigiKey OAuth2 token failed: ${response.status} ${body}`);
     }
 
-    const data = await response.json() as { access_token: string; expires_in: number };
+    const data = (await response.json()) as { access_token: string; expires_in: number };
     this.token = {
       accessToken: data.access_token,
-      expiresAt: Date.now() + data.expires_in * 1000,
+      expiresAt: Date.now() + data.expires_in * 1000
     };
     return this.token.accessToken;
   }

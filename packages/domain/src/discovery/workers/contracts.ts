@@ -416,11 +416,13 @@ export interface ProviderSnapshot {
   readonly manifestVersion: string;
   readonly capturedAt: Date;
   readonly health: {
+    readonly providerCode?: string;
     readonly status: ProviderHealth["status"];
     readonly errorRate: number;
     readonly averageLatencyMs: number;
     readonly consecutiveFailures: number;
     readonly totalRequests: number;
+    readonly lastSuccess?: Date;
   };
   readonly rateLimit: {
     readonly requestsRemaining?: number;

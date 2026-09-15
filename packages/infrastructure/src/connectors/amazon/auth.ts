@@ -46,8 +46,8 @@ export class LwaTokenProvider {
         grant_type: "refresh_token",
         refresh_token: this.config.refreshToken,
         client_id: this.config.clientId,
-        client_secret: this.config.clientSecret,
-      }),
+        client_secret: this.config.clientSecret
+      })
     });
 
     if (!response.ok) {
@@ -55,14 +55,14 @@ export class LwaTokenProvider {
       throw new Error(`LWA token refresh failed: ${response.status} ${body}`);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       access_token: string;
       expires_in: number;
     };
 
     this.token = {
       accessToken: data.access_token,
-      expiresAt: Date.now() + data.expires_in * 1000,
+      expiresAt: Date.now() + data.expires_in * 1000
     };
 
     return this.token.accessToken;
@@ -103,12 +103,15 @@ export class SigV4Signer {
       ...request.headers,
       host,
       "x-amz-date": amzDate,
-      "x-amz-access-token": accessToken,
+      "x-amz-access-token": accessToken
     };
 
-    const signedHeaders = Object.keys(headers).map(h => h.toLowerCase()).sort().join(";");
+    const signedHeaders = Object.keys(headers)
+      .map((h) => h.toLowerCase())
+      .sort()
+      .join(";");
     const canonicalHeaders = Object.keys(headers)
-      .map(h => `${h.toLowerCase()}:${headers[h].trim()}\n`)
+      .map((h) => `${h.toLowerCase()}:${headers[h].trim()}\n`)
       .sort()
       .join("");
 
@@ -120,7 +123,7 @@ export class SigV4Signer {
       canonicalQueryString,
       canonicalHeaders,
       signedHeaders,
-      payloadHash,
+      payloadHash
     ].join("\n");
 
     // String to sign
@@ -129,7 +132,7 @@ export class SigV4Signer {
       "AWS4-HMAC-SHA256",
       amzDate,
       credentialScope,
-      sha256Hex(canonicalRequest),
+      sha256Hex(canonicalRequest)
     ].join("\n");
 
     // Signing key
@@ -145,8 +148,8 @@ export class SigV4Signer {
         ...request.headers,
         "x-amz-date": amzDate,
         "x-amz-access-token": accessToken,
-        Authorization: authorization,
-      },
+        Authorization: authorization
+      }
     };
   }
 
@@ -172,10 +175,7 @@ export class AmazonAuthProvider implements AuthProvider {
   private readonly lwa: LwaTokenProvider;
   private readonly signer: SigV4Signer;
 
-  constructor(
-    lwaConfig: LwaTokenConfig,
-    awsCreds: AwsCredentials
-  ) {
+  constructor(lwaConfig: LwaTokenConfig, awsCreds: AwsCredentials) {
     this.lwa = new LwaTokenProvider(lwaConfig);
     this.signer = new SigV4Signer(awsCreds);
   }
@@ -196,6 +196,7 @@ async function sha256Async(data: string): Promise<string> {
 function sha256Hex(data: string): string {
   // Synchronous SHA-256 using node:crypto
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- probe dinamica com fallback puro
     const { createHash } = require("node:crypto");
     return createHash("sha256").update(data, "utf8").digest("hex");
   } catch {
@@ -210,6 +211,7 @@ function sha256Hex(data: string): string {
 
 function hmacRaw(key: string | Uint8Array, data: string): Uint8Array {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- probe dinamica com fallback
     const { createHmac } = require("node:crypto");
     const k = typeof key === "string" ? key : Buffer.from(key);
     return createHmac("sha256", k).update(data, "utf8").digest();
@@ -221,6 +223,7 @@ function hmacRaw(key: string | Uint8Array, data: string): Uint8Array {
 
 function hmacHex(key: Uint8Array, data: string): string {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- probe dinamica com fallback
     const { createHmac } = require("node:crypto");
     return createHmac("sha256", Buffer.from(key)).update(data, "utf8").digest("hex");
   } catch {
@@ -229,7 +232,9 @@ function hmacHex(key: Uint8Array, data: string): string {
 }
 
 function bufToHex(buf: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function toAmzDate(date: Date): string {

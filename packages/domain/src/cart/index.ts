@@ -48,6 +48,7 @@ export interface CartItem {
 // ── Aggregate root: Cart ────────────────────────────────────
 
 export interface Cart extends AggregateRoot<"CartId"> {
+  readonly storeId?: string;
   readonly customerId?: CustomerId;
   readonly sessionId: SessionId;
   readonly currency: string;
@@ -98,6 +99,7 @@ export class CartAbandoned extends DomainEventBase {
 
 export function createCart(params: {
   id?: CartId;
+  storeId?: string;
   sessionId: string;
   customerId?: string;
   currency: string;
@@ -106,6 +108,7 @@ export function createCart(params: {
     const id = params.id ?? asCartId(`cart_${Date.now()}`);
     const cart: Cart = {
       id,
+      storeId: params.storeId,
       sessionId: asSessionId(params.sessionId),
       customerId: params.customerId ? asCustomerId(params.customerId) : undefined,
       currency: params.currency.toUpperCase(),

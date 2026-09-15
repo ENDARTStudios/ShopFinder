@@ -72,6 +72,8 @@ const CATEGORIES: CategoryData[] = [
   { slug: "psu", name: "Fontes", nicheId: "pc-hardware" },
   { slug: "case", name: "Gabinetes", nicheId: "pc-hardware" },
   { slug: "monitor", name: "Monitores", nicheId: "pc-hardware" },
+  { slug: "cooling", name: "Coolers & Ventoinhas", nicheId: "pc-hardware" },
+  { slug: "mini-pc", name: "Mini PCs", nicheId: "pc-hardware" },
   // Electronic Components
   { slug: "mcu", name: "Microcontroladores", nicheId: "electronic-components" },
   { slug: "ic", name: "Circuitos Integrados", nicheId: "electronic-components" },
@@ -748,7 +750,7 @@ const PRODUCTS: ProductData[] = [
     slug: "deepcool-ak620-dual-tower-cooler",
     title: "DeepCool AK620 Dual Tower CPU Cooler",
     brand: "DeepCool",
-    categorySlug: "case",
+    categorySlug: "cooling",
     nicheId: "pc-hardware",
     description:
       "Cooler CPU DeepCool AK620, dual tower, 6 heat pipes, 2 fans 120mm. Fabricante chinês Tier C, performance comparável a Noctua.",
@@ -783,7 +785,7 @@ const PRODUCTS: ProductData[] = [
     slug: "minisforum-n100-mini-pc",
     title: "Minisforum N100 Mini PC (16GB RAM, 500GB SSD)",
     brand: "Minisforum",
-    categorySlug: "monitor",
+    categorySlug: "mini-pc",
     nicheId: "pc-hardware",
     description:
       "Mini PC Minisforum com Intel N100, 16GB DDR4, 500GB SSD, WiFi 6, Bluetooth 5.2. Fabricante chinês Tier C de mini PCs.",
@@ -870,7 +872,11 @@ async function main() {
       slug: "default",
       defaultCurrency: "USD",
       defaultLocale: "pt-BR",
-      settings: JSON.stringify({ timezone: "America/Sao_Paulo", taxInclusive: false, roundToMinorUnit: true }),
+      settings: JSON.stringify({
+        timezone: "America/Sao_Paulo",
+        taxInclusive: false,
+        roundToMinorUnit: true
+      }),
       status: "active"
     },
     create: {
@@ -879,7 +885,11 @@ async function main() {
       slug: "default",
       defaultCurrency: "USD",
       defaultLocale: "pt-BR",
-      settings: JSON.stringify({ timezone: "America/Sao_Paulo", taxInclusive: false, roundToMinorUnit: true }),
+      settings: JSON.stringify({
+        timezone: "America/Sao_Paulo",
+        taxInclusive: false,
+        roundToMinorUnit: true
+      }),
       status: "active"
     }
   });

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/api/schema/stryker-schema.json",
+  "testRunner": "command",
+  "command": "bun test tests/unit",
+  "coverageAnalysis": "off",
+  "reporters": ["clear-text", "progress", "html"],
+  "concurrency": 2,
+  "mutate": [
+    "src/lib/price.ts",
+    "src/lib/fx-core.ts",
+    "src/lib/totp.ts",
+    "packages/domain/src/**/*.ts"
+  ],
+  "tempDirName": ".stryker-tmp",
+  "htmlReporter": {
+    "fileName": "reports/mutation/mutation.html"
+  }
+}
