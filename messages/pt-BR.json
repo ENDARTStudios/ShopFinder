@@ -270,7 +270,9 @@
     "save": "Salvar",
     "saved": "Configurações salvas",
     "priceAlerts": "Alertas de preço",
-    "priceAlertsDesc": "Avisos in-app quando o preço atinge seu alvo (sem email)."
+    "priceAlertsDesc": "Avisos in-app quando o preço atinge seu alvo (sem email).",
+    "wishlist": "Wishlist",
+    "wishlistDesc": "Produtos que você salvou para acompanhar."
   },
   "about": {
     "title": "Sobre o ShopFinder",
@@ -1298,5 +1300,24 @@
     "statusTriggered": "Preço atingido",
     "remove": "Remover alerta",
     "removeConfirm": "Remover este alerta de preço?"
+  },
+  "personalized": {
+    "recentlyViewed": "Vistos recentemente",
+    "recommended": "Recomendados para você"
+  },
+  "wishlist": {
+    "add": "Adicionar à wishlist",
+    "inWishlist": "Na sua wishlist",
+    "loginCta": "Entre na sua conta para salvar na wishlist",
+    "loading": "Carregando wishlist…",
+    "empty": "Sua wishlist está vazia. Salve produtos pelo coração na página do produto.",
+    "error": "Não foi possível carregar a wishlist.",
+    "remove": "Remover da wishlist"
+  },
+  "guides": {
+    "backToGuides": "Voltar aos guias",
+    "minutes": "{count} min de leitura",
+    "ctaCatalog": "Compare preços das fontes no catálogo:",
+    "ctaCatalogLink": "ver fontes agora"
   }
 }

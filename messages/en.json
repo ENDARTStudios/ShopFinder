@@ -270,7 +270,9 @@
     "save": "Save",
     "saved": "Settings saved",
     "priceAlerts": "Price alerts",
-    "priceAlertsDesc": "In-app notifications when a price hits your target (no email)."
+    "priceAlertsDesc": "In-app notifications when a price hits your target (no email).",
+    "wishlist": "Wishlist",
+    "wishlistDesc": "Products you saved to keep an eye on."
   },
   "about": {
     "title": "About ShopFinder",
@@ -1298,5 +1300,24 @@
     "statusTriggered": "Price reached",
     "remove": "Remove alert",
     "removeConfirm": "Remove this price alert?"
+  },
+  "personalized": {
+    "recentlyViewed": "Recently viewed",
+    "recommended": "Recommended for you"
+  },
+  "wishlist": {
+    "add": "Add to wishlist",
+    "inWishlist": "In your wishlist",
+    "loginCta": "Sign in to save to your wishlist",
+    "loading": "Loading wishlist…",
+    "empty": "Your wishlist is empty. Save products with the heart on any product page.",
+    "error": "Could not load your wishlist.",
+    "remove": "Remove from wishlist"
+  },
+  "guides": {
+    "backToGuides": "Back to guides",
+    "minutes": "{count} min read",
+    "ctaCatalog": "Compare PSU prices in the catalog:",
+    "ctaCatalogLink": "browse PSUs now"
   }
 }
