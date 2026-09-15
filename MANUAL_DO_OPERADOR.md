@@ -217,6 +217,24 @@ acumula GB (pico histórico: 8,74 GB em ~29 deployments).
 - **Verificação pós-limpeza**: lista com só os retidos + `vercel inspect` do
   alias apontando para o deployment anotado.
 
+### 8.2 Limpeza automatizada (T099, RATIFICO-T099)
+
+A rotina do §8.1 virou workflow: `.github/workflows/cleanup-deployments.yml`
+(cron **segundas 12:00 UTC**) rodando `scripts/cleanup-vercel-deployments.ts`.
+
+- **Segurança embutida**: resolve a produção ANTES de qualquer delete
+  (não resolve → aborta sem deletar); keep-set = produção + 3 mais recentes;
+  paginação completa; falha em delete aborta com contagem parcial; o token
+  nunca aparece em logs.
+- **Nasce DESARMADO**: sem a variável `CLEANUP_ENABLED=true`, todo run roda
+  em **dry-run** (lista, não deleta).
+- **Para ver o run**: Actions → "Cleanup Vercel Deployments".
+- **Dry-run manual**: `gh workflow run cleanup-deployments.yml -f dry_run=true`.
+- **Armar** (só após revisar um dry-run): Settings → Secrets and variables →
+  Actions → **Variables** → `CLEANUP_ENABLED=true`. **Desarmar**: remover a
+  variável. Requer o secret `VERCEL_TOKEN` (escopo mínimo no projeto
+  `shop-finder`); sem o secret, o job pula gracefully.
+
 Complemento técnico (T070): o bundle por deployment foi reduzido excluindo do
 traçado serverless a stack OTel + bullmq (peso morto sem
 `OTEL_EXPORTER_OTLP_ENDPOINT`) — ver `next.config.ts`

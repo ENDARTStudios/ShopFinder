@@ -1,0 +1,61 @@
+name: Cleanup Vercel Deployments
+
+# T099 — limpeza semanal de deployments Vercel (DESTRUTIVA, gateada).
+# RATIFICO-T099 (Operador, 14/set/2026) — DECISOES.md / MANUAL_DO_OPERADOR §8.1.
+#
+# Segurança:
+#  - fail-closed no script (produção não resolvida → zero deletes);
+#  - nasce DESARMADO: sem vars.CLEANUP_ENABLED == "true" força DRY_RUN;
+#  - skip gracioso sem secrets.VERCEL_TOKEN;
+#  - nunca roda em pull_request_target; só no repo principal;
+#  - permissões mínimas (contents: read).
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # segundas 12:00 UTC (09:00 BRT)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "dry-run (lista sem deletar)"
+        required: false
+        default: "true"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    if: github.repository == 'ENDARTStudios/ShopFinder' && secrets.VERCEL_TOKEN != ''
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Resolve modo (gate CLEANUP_ENABLED + input dry_run)
+        id: mode
+        env:
+          CLEANUP_ENABLED: ${{ vars.CLEANUP_ENABLED }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          if [ "$CLEANUP_ENABLED" != "true" ]; then
+            echo "Gate CLEANUP_ENABLED ausente/desarmado — forçando DRY_RUN=true."
+            echo "dry_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Gate armado (CLEANUP_ENABLED=true) — dry_run=$INPUT_DRY_RUN."
+            echo "dry_run=$INPUT_DRY_RUN" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rodar cleanup
+        env:
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
+        run: |
+          set -o pipefail
+          bun scripts/cleanup-vercel-deployments.ts | tee cleanup-summary.txt
+
+      - name: Resumo no Actions summary
+        if: always()
+        run: cat cleanup-summary.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
