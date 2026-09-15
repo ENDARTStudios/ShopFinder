@@ -160,8 +160,9 @@ export interface SessionUser extends NextAuthUser {
 }
 
 declare module "next-auth" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface User extends NextAuthUser {}
+  // Omit "email": TS7 (TS2320) exige propriedades idênticas em extends múltiplos
+  // — DefaultUser (next-auth) tem email?: string | null; NextAuthUser, string.
+  interface User extends Omit<NextAuthUser, "email"> {}
   interface Session {
     user: SessionUser;
   }
