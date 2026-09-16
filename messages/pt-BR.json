@@ -1273,7 +1273,10 @@
     "reviewSubmitted": "Avaliação publicada. Obrigado!",
     "reviewFlagged": "Recebemos sua avaliação, mas ela passará por revisão antes de aparecer publicamente.",
     "reviewDuplicate": "Você já avaliou este produto.",
-    "reviewError": "Não foi possível publicar sua avaliação. Tente novamente."
+    "reviewError": "Não foi possível publicar sua avaliação. Tente novamente.",
+    "beFirst": "Ainda não há avaliações — seja o primeiro a avaliar.",
+    "basedOn": "com base em {count} avaliações",
+    "seeAll": "Ver todas"
   },
   "adminReviews": {
     "title": "Moderação de avaliações",
@@ -1329,5 +1332,29 @@
     "minutes": "{count} min de leitura",
     "ctaCatalog": "Compare preços das fontes no catálogo:",
     "ctaCatalogLink": "ver fontes agora"
+  },
+  "pricebox": {
+    "best": "Melhor preço",
+    "others": "Outras ofertas",
+    "viewOffer": "Ver oferta",
+    "inStock": "Em estoque",
+    "outOfStock": "Esgotado",
+    "shipsFrom": "Enviado de",
+    "shippingCost": "Frete",
+    "freeShipping": "Frete grátis",
+    "days": "Entrega em {min}–{max} dias",
+    "supplierNote": "Confirme valor final e frete no fornecedor antes de fechar."
+  },
+  "history": {
+    "title": "Histórico de preço ({days} dias)",
+    "below": "Abaixo da mediana — bom momento",
+    "fair": "Na mediana dos últimos dias",
+    "above": "Acima da mediana",
+    "trackingSince": "Acompanhando este preço desde {date}.",
+    "verdictNeedsDays": "Indicador de veredito disponível com {days} dias de acompanhamento.",
+    "sparklineAlt": "Gráfico de preço ao longo dos dias",
+    "current": "Preço atual",
+    "median90": "Mediana do período",
+    "period": "Período"
   }
 }

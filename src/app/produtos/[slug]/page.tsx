@@ -46,6 +46,10 @@ import { ReviewsSection } from "@/components/reviews/reviews-section";
 import { PriceAlertForm } from "@/components/alerts/price-alert-form";
 import { ProductViewRecorder, WishlistButton } from "@/components/site/product-extras";
 import { Breadcrumbs } from "@/components/layout/header";
+import { PriceBox, type PriceBoxOffer } from "@/components/product/price-box";
+import { PriceHistoryCard } from "@/components/product/price-history";
+import { SpecsTable } from "@/components/product/specs-table";
+import { ReviewsSummary } from "@/components/product/reviews-summary";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
@@ -190,6 +194,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const session = await getServerSession(authOptions);
   const locale = await getLocale();
   const tDetail = await getTranslations("detail");
+  const tBox = await getTranslations("pricebox");
+  const tRev = await getTranslations("reviews");
 
   const product = await prisma.product.findFirst({
     where: { slug, deletedAt: null, status: "published" },
@@ -234,6 +240,47 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   // server-side do FxNote/OG; cache de 1h).
   const rate = await getUsdBrlRate().catch(() => 5.5);
   const currentPriceBrl = minPrice * rate;
+
+  // T103 — ofertas serializadas para o box de decisão (preço BRL server-side;
+  // frete exibido somente se existir no offer; CTA externo só com URL real).
+  const offerBoxOffers: PriceBoxOffer[] = product.offers.map((offer) => {
+    const priceBrl = (Number(offer.priceMinorUnits) * rate) / 100;
+    const compareAtBrl = offer.compareAtPriceMinorUnits
+      ? (Number(offer.compareAtPriceMinorUnits) * rate) / 100
+      : null;
+    const shippingBrl =
+      offer.shippingCostMinorUnits === null
+        ? null
+        : (offer.shippingCostCurrencyCode ?? "USD") === "BRL"
+          ? Number(offer.shippingCostMinorUnits) / 100
+          : (Number(offer.shippingCostMinorUnits) * rate) / 100;
+    return {
+      id: offer.id,
+      supplierName: supplierDisplayName(offer.supplier.name),
+      priceBrl,
+      compareAtBrl,
+      inventory: offer.inventory,
+      shipsFromCountry: offer.shipsFromCountry || null,
+      fulfillmentDays: [offer.fulfillmentDaysMin, offer.fulfillmentDaysMax] as [number, number],
+      shippingCostBrl: shippingBrl,
+      url:
+        (offer.externalProvider ?? "") === "amazon"
+          ? buildAmazonOfferUrl(offer.externalId ?? "")
+          : null
+    };
+  });
+  const priceBoxLabels = {
+    best: tDetail("bestPrice"),
+    others: tBox("others"),
+    viewOffer: tBox("viewOffer"),
+    inStock: tBox("inStock"),
+    outOfStock: tBox("outOfStock"),
+    shipsFrom: tBox("shipsFrom"),
+    shippingCost: tBox("shippingCost"),
+    freeShipping: tBox("freeShipping"),
+    days: tBox("days"),
+    supplierNote: tBox("supplierNote")
+  };
   // T069 — ofertas de marketplace (eBay) não expõem quantidade: sem dado de
   // estoque, não assertamos "Esgotado".
   const knownStock = product.offers.some((o) => (o.externalProvider ?? "") !== "ebay");
@@ -381,8 +428,70 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </FadeIn>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Right column: Offers */}
+          <div className="space-y-6 lg:order-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Store className="h-4 w-4" />
+                  {tDetail("supplierOffers")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {product.offers.length > 0 ? (
+                  <PriceBox offers={offerBoxOffers} labels={priceBoxLabels} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">{tDetail("noOffers")}</p>
+                )}
+
+                {/* T071 — disclosure de afiliado (CDC art. 36): publicidade
+                    identificável quando a oferta é Amazon/Associado. */}
+                {product.offers.some((o) => (o.externalProvider ?? "") === "amazon") && (
+                  <p className="mt-4 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+                    {tDetail("affiliateDisclosure")}
+                  </p>
+                )}
+
+                {/* T063 — transparência da oferta: fonte por oferta (nome do
+                    fornecedor em cada card), momento do câmbio usado na conversão
+                    para BRL e timestamp da última atualização dos dados. */}
+                {product.offers.length > 0 && (
+                  <div className="mt-4 space-y-1 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+                    <FxNote />
+                    <p>{tDetail("shippingNote")}</p>
+                    <p>{tDetail("updatedAt", { when: updatedAtFmt })}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* T103 — histórico de preço + indicador (veredito só com ≥7 dias) */}
+            <PriceHistoryCard productId={product.id} />
+
+            {/* Trust indicator */}
+            {enrichedAttrs.length > 0 && (
+              <Card className="bg-emerald-500/5 border-emerald-500/20">
+                <CardContent className="pt-4">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        {tDetail("enrichedBadge")}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {tDetail("enrichedDescription", {
+                          count: enrichedAttrs.length,
+                          manufacturer: manufacturerName ?? tDetail("noManufacturer")
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
           {/* Left column: Specs + Evidence */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 lg:order-1">
             {/* Enriched Specifications */}
             <Card>
               <CardHeader>
@@ -500,149 +609,18 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <CardHeader>
                   <CardTitle className="text-sm">{tDetail("additionalSpecs")}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-2">
-                    {plainAttrs.map((attr) => (
-                      <div
-                        key={attr.id}
-                        className="flex justify-between rounded-md bg-muted/20 px-3 py-1.5 text-xs"
-                      >
-                        <span className="text-muted-foreground">
-                          {humanizeSpecName(attr.name, locale)}
-                        </span>
-                        <span className="font-medium">{attr.value}</span>
-                      </div>
-                    ))}
-                  </div>
+                <CardContent className="px-0 pb-0">
+                  <SpecsTable
+                    attrs={plainAttrs.map((a) => ({
+                      name: humanizeSpecName(a.name, locale),
+                      value: a.value
+                    }))}
+                  />
                 </CardContent>
               </Card>
             )}
           </div>
 
-          {/* Right column: Offers */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Store className="h-4 w-4" />
-                  {tDetail("supplierOffers")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {product.offers.length > 0 ? (
-                  <div className="space-y-3">
-                    {product.offers.map((offer) => {
-                      const price = minorUnitsToNumber(offer.priceMinorUnits);
-                      const supplierName = supplierDisplayName(offer.supplier.name);
-                      const isLowest = price === minPrice;
-                      return (
-                        <div
-                          key={offer.id}
-                          className={`rounded-lg border p-3 ${isLowest ? "border-emerald-500/40 bg-emerald-500/5" : "border-border/40"}`}
-                        >
-                          <div className="mb-1 flex items-center justify-between">
-                            <span className="font-medium text-sm">{supplierName}</span>
-                            {isLowest && (
-                              <Badge className="bg-emerald-500/90 text-white text-[10px]">
-                                {tDetail("bestPrice")}
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-end justify-between">
-                            <div>
-                              <Price amount={price} currency="USD" />
-                              <div className="text-xs text-muted-foreground">
-                                {offer.inventory > 0
-                                  ? tDetail("inStockCount", {
-                                      count: formatInventoryCount(offer.inventory, locale)
-                                    })
-                                  : (offer.externalProvider ?? "") === "ebay"
-                                    ? tDetail("stockAtSupplier")
-                                    : tDetail("outOfStockCount")}
-                              </div>
-                            </div>
-                            <div className="text-right text-[10px] text-muted-foreground">
-                              <div>
-                                {tDetail("shipsFrom")} {offer.shipsFromCountry}
-                              </div>
-                              <div>
-                                {tDetail("fulfillmentDays", {
-                                  min: offer.fulfillmentDaysMin,
-                                  max: offer.fulfillmentDaysMax
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                          {/* T071 — link de saída com tag de Associado (somente
-                              Amazon; URL montada idempotentemente server-side). */}
-                          {(() => {
-                            const offerUrl =
-                              (offer.externalProvider ?? "") === "amazon"
-                                ? buildAmazonOfferUrl(offer.externalId ?? "")
-                                : null;
-                            return offerUrl ? (
-                              <a
-                                href={offerUrl}
-                                target="_blank"
-                                rel="sponsored noopener noreferrer"
-                                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-500 hover:underline"
-                              >
-                                {tDetail("viewOnAmazon")}
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            ) : null;
-                          })()}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">{tDetail("noOffers")}</p>
-                )}
-
-                {/* T071 — disclosure de afiliado (CDC art. 36): publicidade
-                    identificável quando a oferta é Amazon/Associado. */}
-                {product.offers.some((o) => (o.externalProvider ?? "") === "amazon") && (
-                  <p className="mt-4 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                    {tDetail("affiliateDisclosure")}
-                  </p>
-                )}
-
-                {/* T063 — transparência da oferta: fonte por oferta (nome do
-                    fornecedor em cada card), momento do câmbio usado na conversão
-                    para BRL e timestamp da última atualização dos dados. */}
-                {product.offers.length > 0 && (
-                  <div className="mt-4 space-y-1 border-t border-border/40 pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                    <FxNote />
-                    <p>{tDetail("shippingNote")}</p>
-                    <p>{tDetail("updatedAt", { when: updatedAtFmt })}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Trust indicator */}
-            {enrichedAttrs.length > 0 && (
-              <Card className="bg-emerald-500/5 border-emerald-500/20">
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                        {tDetail("enrichedBadge")}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {tDetail("enrichedDescription", {
-                          count: enrichedAttrs.length,
-                          manufacturer: manufacturerName ?? tDetail("noManufacturer")
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
         </div>
 
         <Separator className="my-8" />
@@ -652,7 +630,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {/* T081 — reviews com moderação básica (1 review/user/produto) */}
         <Separator className="my-8" />
-        <ReviewsSection productId={product.id} isAuthenticated={Boolean(session)} />
+        {/* T103 — resumo de reviews (média + distribuição) */}
+        <ReviewsSummary productId={product.id} reviewsHref="#reviews" />
+        <div id="reviews" className="mt-6">
+          <ReviewsSection productId={product.id} isAuthenticated={Boolean(session)} />
+        </div>
 
         <Separator className="my-8" />
 

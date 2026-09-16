@@ -1273,7 +1273,10 @@
     "reviewSubmitted": "Review posted. Thank you!",
     "reviewFlagged": "We received your review, but it will be moderated before appearing publicly.",
     "reviewDuplicate": "You already reviewed this product.",
-    "reviewError": "Could not post your review. Please try again."
+    "reviewError": "Could not post your review. Please try again.",
+    "beFirst": "No reviews yet — be the first to review.",
+    "basedOn": "based on {count} reviews",
+    "seeAll": "See all"
   },
   "adminReviews": {
     "title": "Review moderation",
@@ -1329,5 +1332,29 @@
     "minutes": "{count} min read",
     "ctaCatalog": "Compare PSU prices in the catalog:",
     "ctaCatalogLink": "browse PSUs now"
+  },
+  "pricebox": {
+    "best": "Best price",
+    "others": "Other offers",
+    "viewOffer": "View offer",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "shipsFrom": "Ships from",
+    "shippingCost": "Shipping",
+    "freeShipping": "Free shipping",
+    "days": "Delivery in {min}–{max} days",
+    "supplierNote": "Confirm final price and shipping with the supplier before checkout."
+  },
+  "history": {
+    "title": "Price history ({days} days)",
+    "below": "Below median — good time",
+    "fair": "Around the recent median",
+    "above": "Above median",
+    "trackingSince": "Tracking this price since {date}.",
+    "verdictNeedsDays": "Verdict available after {days} days of tracking.",
+    "sparklineAlt": "Price chart over the last days",
+    "current": "Current price",
+    "median90": "Period median",
+    "period": "Period"
   }
 }
