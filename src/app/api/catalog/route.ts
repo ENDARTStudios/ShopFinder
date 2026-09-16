@@ -17,6 +17,7 @@
  * All endpoints return JSON. Prices are in USD (converted from minor units).
  */
 import { NextRequest, NextResponse } from "next/server";
+import { extractBrand } from "@/lib/brand";
 import { prisma } from "@workspace/database/client";
 
 // ── Helpers ────────────────────────────────────────────────
@@ -183,26 +184,7 @@ function serializeProduct(p: any): SerializedProduct {
   };
 }
 
-function extractBrand(title: string): string {
-  const knownBrands = [
-    "Intel",
-    "AMD",
-    "NVIDIA",
-    "Samsung",
-    "Kingston",
-    "Corsair",
-    "ASUS",
-    "STMicroelectronics",
-    "Espressif",
-    "Texas Instruments",
-    "Bosch",
-    "Apple"
-  ];
-  for (const brand of knownBrands) {
-    if (title.toLowerCase().includes(brand.toLowerCase())) return brand;
-  }
-  return title.split(" ")[0] ?? "Unknown";
-}
+
 
 // ── Route handler ──────────────────────────────────────────
 
