@@ -439,7 +439,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </CardHeader>
               <CardContent>
                 {product.offers.length > 0 ? (
-                  <PriceBox offers={offerBoxOffers} labels={priceBoxLabels} />
+                  <PriceBox offers={offerBoxOffers} labels={priceBoxLabels} slug={product.slug} />
                 ) : (
                   <p className="text-sm text-muted-foreground">{tDetail("noOffers")}</p>
                 )}

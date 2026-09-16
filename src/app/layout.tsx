@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/site/theme-provider";
 import { SiteFooter } from "@/components/site/site-footer";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { ServiceWorkerRegister } from "@/components/site/sw-register";
+import { CompareBar } from "@/components/compare/compare-bar";
 import { CompareProvider } from "@/contexts/compare-context";
 import { CartProvider } from "@/context/cart-context";
 import { CartDrawer } from "@/components/site/cart-drawer";
@@ -124,6 +125,8 @@ export default async function RootLayout({
                 </div>
                 <CartDrawer />
                 <Toaster />
+                {/* T104 — barra sticky de comparação (fluxo, não destino) */}
+                <CompareBar />
                 {/* T077 — pageview first-party cookieless (DECISAO-ANALYTICS-001) */}
                 <PageViewTracker />
                 {/* T085 — PWA: registro do service worker (só produção) */}

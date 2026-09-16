@@ -71,7 +71,9 @@
     "from": "from",
     "addToCart": "Add to cart",
     "buy": "Buy",
-    "stockAtSupplier": "Availability confirmed with the supplier"
+    "stockAtSupplier": "Availability confirmed with the supplier",
+    "backToCatalog": "Back to catalog",
+    "resultsCrumb": "Results"
   },
   "filter": {
     "title": "Filters",
@@ -1356,5 +1358,11 @@
     "current": "Current price",
     "median90": "Period median",
     "period": "Period"
+  },
+  "compareBar": {
+    "label": "Product comparison",
+    "compare": "Compare ({count})",
+    "liveCount": "{count} products in comparison",
+    "plusMore": "+{count}"
   }
 }

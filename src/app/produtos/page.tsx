@@ -217,7 +217,12 @@ export default async function ProductsResultsPage({
     <>
       <UtilityHeader />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[{ label: t("backToCatalog"), href: "/" }, { label: t("titleResults", { query: q || "…" }) }]} />
+        <Breadcrumbs
+          items={[
+            { label: t("backToCatalog"), href: "/" },
+            { label: q ? t("titleResults", { query: q }) : t("resultsCrumb") }
+          ]}
+        />
 
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">

@@ -14,6 +14,7 @@ import { LayoutGrid, List } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Price } from "@/components/site/price";
+import { CompareButton } from "@/components/site/compare-button";
 
 export interface ResultProduct {
   slug: string;
@@ -311,7 +312,7 @@ export function ResultsView({
                       {p.supplierNames.join(" · ")}
                     </p>
                   </div>
-                  <div className={cn("mt-3 shrink-0", view === "list" && "mt-0 self-center")}>
+                  <div className={cn("mt-3 shrink-0", view === "list" && "mt-0 self-center text-right")}>
                     <span
                       className={cn(
                         "mb-1 block text-[11px] font-medium",
@@ -329,6 +330,10 @@ export function ResultsView({
                           : "Disponível no fornecedor"}
                     </span>
                     <Price amount={p.priceMinBrl} currency="BRL" className="price-value text-xl font-bold" />
+                    {/* T104 — adicionar à comparação direto do card */}
+                    <div className="mt-2">
+                      <CompareButton slug={p.slug} variant="outline" />
+                    </div>
                   </div>
                 </Link>
               </article>

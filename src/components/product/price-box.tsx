@@ -4,6 +4,7 @@
  * (nunca estimado). CTA externo apenas quando há URL de saída (afiliado T071).
  */
 import { ExternalLink } from "lucide-react";
+import { CompareButton } from "@/components/site/compare-button";
 import { PriceBlock } from "@/components/ui/price";
 
 export interface PriceBoxOffer {
@@ -58,10 +59,13 @@ function ShipsNote({
 
 export function PriceBox({
   offers,
-  labels
+  labels,
+  slug
 }: {
   offers: PriceBoxOffer[];
   labels: Labels;
+  /** Slug do produto — necessário para o botão de comparação (T104). */
+  slug: string;
 }) {
   const sorted = [...offers].sort((a, b) => a.priceBrl - b.priceBrl);
   const best = sorted[0];
@@ -89,17 +93,21 @@ export function PriceBox({
         />
         <p className="mt-1 text-[11px] text-muted-foreground">{stock(best.inventory)}</p>
         <ShipsNote offer={best} labels={labels} />
-        {best.url && (
-          <a
-            href={best.url}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="mt-3 inline-flex h-11 items-center gap-1.5 rounded-md bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
-            {labels.viewOffer}
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-          </a>
-        )}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {best.url && (
+            <a
+              href={best.url}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="inline-flex h-11 items-center gap-1.5 rounded-md bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700"
+            >
+              {labels.viewOffer}
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            </a>
+          )}
+          {/* T104 — comparação como fluxo: add direto do box */}
+          <CompareButton slug={slug} variant="outline" />
+        </div>
       </div>
 
       {/* Alternativas */}
