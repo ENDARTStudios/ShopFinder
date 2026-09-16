@@ -80,6 +80,25 @@ function useManufacturerOptions(products: ApiProduct[]): ManufacturerOption[] {
   }, [products]);
 }
 
+function useSupplierOptions(
+  products: ApiProduct[]
+): Array<{ code: string; name: string; count: number }> {
+  return React.useMemo(() => {
+    const counts = new Map<string, number>();
+    const names = new Map<string, string>();
+    for (const p of products) {
+      for (const o of p.offers) {
+        const code = o.supplier.code;
+        counts.set(code, (counts.get(code) ?? 0) + 1);
+        if (!names.has(code)) names.set(code, o.supplier.name);
+      }
+    }
+    return Array.from(counts.entries())
+      .map(([code, count]) => ({ code, count, name: names.get(code) ?? code }))
+      .sort((a, b) => b.count - a.count);
+  }, [products]);
+}
+
 function useAttributeOptions(products: ApiProduct[]): AttributeOption[] {
   return React.useMemo(() => {
     const counts = new Map<string, number>();
@@ -108,6 +127,8 @@ interface FilterBarBodyProps {
     title: string;
     active: string;
     manufacturer: string;
+    supplier: string;
+    inStockOnly: string;
     price: string;
     min: string;
     max: string;
@@ -127,6 +148,8 @@ const DEFAULT_LABELS = {
   title: "Filtros",
   active: "ativo(s)",
   manufacturer: "Marca",
+  supplier: "Fornecedor",
+  inStockOnly: "Somente em estoque",
   price: "Preço",
   min: "Min",
   max: "Max",
@@ -149,6 +172,7 @@ function FilterBarBody({
 }: FilterBarBodyProps) {
   const t = { ...DEFAULT_LABELS, ...labels };
   const allManufacturers = useManufacturerOptions(products);
+  const allSuppliers = useSupplierOptions(products);
   const allAttributes = useAttributeOptions(products);
 
   // T063 — o filtro é primário em BRL (moeda prometida ao consumidor). O
@@ -230,8 +254,17 @@ function FilterBarBody({
 
   const activeCount =
     filters.manufacturers.length +
+    filters.suppliers.length +
+    (filters.inStockOnly ? 1 : 0) +
     (filters.priceMin !== undefined || filters.priceMax !== undefined ? 1 : 0) +
     Object.values(filters.attributes).filter((v) => v && v.trim() !== "").length;
+
+  const toggleSupplier = (code: string) => {
+    const next = filters.suppliers.includes(code)
+      ? filters.suppliers.filter((s) => s !== code)
+      : [...filters.suppliers, code];
+    onChange({ ...filters, suppliers: next });
+  };
 
   return (
     <div className="flex h-full flex-col gap-5" role="region" aria-label={t.title}>
@@ -251,6 +284,46 @@ function FilterBarBody({
           </Badge>
         )}
       </div>
+
+      {/* Suppliers (T102) */}
+      {allSuppliers.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t.supplier}
+          </Label>
+          <div className="space-y-1.5">
+            {allSuppliers.map((s) => {
+              const checked = filters.suppliers.includes(s.code);
+              return (
+                <label
+                  key={s.code}
+                  htmlFor={`sup-${s.code}`}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 text-sm hover:bg-muted/60"
+                >
+                  <Checkbox
+                    id={`sup-${s.code}`}
+                    checked={checked}
+                    onCheckedChange={() => toggleSupplier(s.code)}
+                  />
+                  <span className="flex-1 truncate">{s.name}</span>
+                  <span className="text-[10px] text-muted-foreground">{s.count}</span>
+                </label>
+              );
+            })}
+          </div>
+          <label
+            htmlFor="flt-instock"
+            className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 text-sm hover:bg-muted/60"
+          >
+            <Checkbox
+              id="flt-instock"
+              checked={filters.inStockOnly}
+              onCheckedChange={(v) => onChange({ ...filters, inStockOnly: v === true })}
+            />
+            <span className="flex-1">{t.inStockOnly}</span>
+          </label>
+        </div>
+      )}
 
       {/* Manufacturers */}
       <div className="space-y-2">

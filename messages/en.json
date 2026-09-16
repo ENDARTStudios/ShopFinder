@@ -88,7 +88,16 @@
     "clear": "Clear filters",
     "showAll": "Show all",
     "showLess": "Show less",
-    "apply": "Apply filters"
+    "apply": "Apply filters",
+    "supplier": "Supplier",
+    "inStockOnly": "In stock only",
+    "sort": "Sort by",
+    "sortRelevance": "Relevance",
+    "sortPriceAsc": "Lowest price",
+    "sortPriceDesc": "Highest price",
+    "density": "Display density",
+    "gridView": "Grid view",
+    "listView": "List view"
   },
   "trust": {
     "badge": "Powered by Catalog Intelligence",

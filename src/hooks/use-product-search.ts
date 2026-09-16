@@ -36,16 +36,26 @@ export interface ProductFilter {
   priceMin?: number;
   priceMax?: number;
   attributes: Record<string, string>;
+  /** NOVA_DIRECAO T102 — códigos de fornecedor (offer.supplier.code). */
+  suppliers: string[];
+  /** NOVA_DIRECAO T102 — somente produtos com estoque. */
+  inStockOnly: boolean;
 }
+
+export type SortMode = "relevance" | "price-asc" | "price-desc";
 
 export const EMPTY_FILTER: ProductFilter = {
   manufacturers: [],
-  attributes: {}
+  attributes: {},
+  suppliers: [],
+  inStockOnly: false
 };
 
 export function isFilterEmpty(f: ProductFilter): boolean {
   return (
     f.manufacturers.length === 0 &&
+    f.suppliers.length === 0 &&
+    !f.inStockOnly &&
     f.priceMin === undefined &&
     f.priceMax === undefined &&
     Object.values(f.attributes).every((v) => !v || v.trim() === "")
@@ -143,6 +153,15 @@ function passesParametricFilter(p: ApiProduct, filter: ProductFilter): boolean {
     if (filter.priceMax !== undefined && effectiveMin > filter.priceMax) return false;
   }
 
+  // Supplier filter (T102) — produto atende se QUALQUER oferta for do
+  // fornecedor selecionado.
+  if (filter.suppliers.length > 0) {
+    if (!p.offers.some((o) => filter.suppliers.includes(o.supplier.code))) return false;
+  }
+
+  // Stock filter (T102)
+  if (filter.inStockOnly && !p.inStock) return false;
+
   // Attribute filters — match by canonical attribute name OR display label
   // substring; value matched by substring (case-insensitive).
   const attrEntries = Object.entries(filter.attributes).filter(([, v]) => v && v.trim() !== "");
@@ -169,7 +188,8 @@ export function useProductSearch(
   allProducts: ApiProduct[],
   query: string,
   nicheFilter: string | null,
-  productFilter: ProductFilter = EMPTY_FILTER
+  productFilter: ProductFilter = EMPTY_FILTER,
+  sortMode: SortMode = "relevance"
 ) {
   const [searchIndex, setSearchIndex] = React.useState<MiniSearch<SearchableProduct> | null>(null);
   const [indexed, setIndexed] = React.useState(false);
@@ -296,12 +316,24 @@ export function useProductSearch(
       textMatches = filtered.filter((p) => resultSlugs.has(p.slug));
     }
 
-    // Parametric filter phase (Sprint 11)
-    if (isFilterEmpty(productFilter)) {
-      return textMatches;
+    // Parametric filter phase (Sprint 11 + T102)
+    const passFilter = isFilterEmpty(productFilter)
+      ? textMatches
+      : textMatches.filter((p) => passesParametricFilter(p, productFilter));
+
+    // Sort phase (T102) — relevância = ordem do MiniSearch (score)
+    if (sortMode === "price-asc") {
+      return [...passFilter].sort(
+        (a, b) => (a.priceRange.min || a.price) - (b.priceRange.min || b.price)
+      );
     }
-    return textMatches.filter((p) => passesParametricFilter(p, productFilter));
-  }, [query, nicheFilter, productFilter, indexed, searchIndex, allProducts]);
+    if (sortMode === "price-desc") {
+      return [...passFilter].sort(
+        (a, b) => (b.priceRange.min || b.price) - (a.priceRange.min || a.price)
+      );
+    }
+    return passFilter;
+  }, [query, nicheFilter, productFilter, sortMode, indexed, searchIndex, allProducts]);
 
   return { results, indexed };
 }

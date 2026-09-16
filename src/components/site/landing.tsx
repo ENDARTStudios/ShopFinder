@@ -13,6 +13,8 @@ import {
   TrendingUp,
   ShieldCheck,
   Sparkles,
+  LayoutGrid,
+  List,
   ArrowRight,
   CircuitBoard,
   Smartphone,
@@ -41,7 +43,12 @@ import { UserMenu } from "@/components/site/user-menu";
 import { supplierDisplayName } from "@/lib/spec-labels";
 import { useCart } from "@/context/cart-context";
 import { PROJECT_META } from "@/components/site/data";
-import { useProductSearch, EMPTY_FILTER, type ProductFilter } from "@/hooks/use-product-search";
+import {
+  useProductSearch,
+  EMPTY_FILTER,
+  type ProductFilter,
+  type SortMode
+} from "@/hooks/use-product-search";
 import { FilterBar } from "@/components/site/filter-bar";
 import { ScoresDisclosure } from "@/components/site/scores-disclosure";
 import { FadeIn, FadeInStagger, FadeInItem } from "@/components/motion/fade-in";
@@ -699,11 +706,15 @@ function ProductsSection({
   const allProducts = data?.products ?? [];
 
   // Use MiniSearch with ontology-aware term resolution + parametric filters
+  const [sortMode, setSortMode] = React.useState<SortMode>("relevance");
+  const [view, setView] = React.useState<"grid" | "list">("grid");
+
   const { results: searchResults, indexed } = useProductSearch(
     allProducts,
     searchQuery ?? "",
     nicheFilter,
-    filters
+    filters,
+    sortMode
   );
 
   const products = searchResults;
@@ -719,6 +730,8 @@ function ProductsSection({
     title: tFilter("title"),
     active: tFilter("active"),
     manufacturer: tFilter("manufacturer"),
+    supplier: tFilter("supplier"),
+    inStockOnly: tFilter("inStockOnly"),
     price: tFilter("price"),
     min: tFilter("min"),
     max: tFilter("max"),
@@ -778,6 +791,68 @@ function ProductsSection({
           />
 
           <div className="flex-1 min-w-0">
+            {/* T102 — ordenação + densidade */}
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div
+                className="flex items-center gap-1 rounded-md border border-border p-0.5"
+                role="group"
+                aria-label={tFilter("sort")}
+              >
+                {(
+                  [
+                    ["relevance", tFilter("sortRelevance")],
+                    ["price-asc", tFilter("sortPriceAsc")],
+                    ["price-desc", tFilter("sortPriceDesc")]
+                  ] as Array<[SortMode, string]>
+                ).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setSortMode(mode)}
+                    aria-pressed={sortMode === mode}
+                    className={`h-8 rounded px-2.5 text-xs font-medium transition-colors ${
+                      sortMode === mode
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div
+                className="flex items-center gap-1 rounded-md border border-border p-0.5"
+                role="group"
+                aria-label={tFilter("density")}
+              >
+                <button
+                  type="button"
+                  onClick={() => setView("grid")}
+                  aria-pressed={view === "grid"}
+                  aria-label={tFilter("gridView")}
+                  className={`flex h-8 w-8 items-center justify-center rounded transition-colors ${
+                    view === "grid"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <LayoutGrid className="h-4 w-4" aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView("list")}
+                  aria-pressed={view === "list"}
+                  aria-label={tFilter("listView")}
+                  className={`flex h-8 w-8 items-center justify-center rounded transition-colors ${
+                    view === "list"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <List className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+            </div>
             {loading ? (
               <LandingProductGridSkeleton count={6} />
             ) : products.length === 0 ? (
@@ -789,11 +864,33 @@ function ProductsSection({
               /* Entrada em bloco: grid pode ter dezenas de itens e o
                  stagger completo violaria o total < 400ms (regra 1/3). */
               <FadeIn>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div
+                  className={
+                    view === "grid"
+                      ? "grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3"
+                      : "flex flex-col gap-3"
+                  }
+                >
                   {products.map((product) => (
-                    <a key={product.id} href={`/produtos/${product.slug}`} className="block">
-                      <Card className="group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40">
-                        <div className="relative flex h-40 items-center justify-center">
+                    <a
+                      key={product.id}
+                      href={`/produtos/${product.slug}`}
+                      className={view === "list" ? "flex" : "block"}
+                    >
+                      <Card
+                        className={
+                          view === "list"
+                            ? "group flex w-full overflow-hidden transition-all hover:border-emerald-500/40"
+                            : "group overflow-hidden transition-all hover:shadow-xl hover:border-emerald-500/40"
+                        }
+                      >
+                        <div
+                          className={
+                            view === "list"
+                              ? "relative h-auto w-32 shrink-0 sm:w-40"
+                              : "relative flex h-40 items-center justify-center"
+                          }
+                        >
                           <ProductImage
                             query={
                               product.title.toLowerCase().startsWith(product.brand.toLowerCase())
@@ -837,7 +934,9 @@ function ProductsSection({
                           />
                         </div>
 
-                        <CardContent className="p-4">
+                        <CardContent
+                          className={view === "list" ? "flex min-w-0 flex-1 flex-col p-3" : "p-4"}
+                        >
                           <div className="mb-1 flex items-center justify-between">
                             <span className="text-xs font-medium text-muted-foreground">
                               {product.brand}
