@@ -143,6 +143,7 @@ model Product {
   offers     ProductOffer[]
   reviews    Review[]
   priceAlerts PriceAlert[]
+  priceSnapshots PriceSnapshot[]
 
   @@unique([storeId, slug])
   @@index([storeId])
@@ -972,4 +973,23 @@ model Notification {
 
   @@index([customerId, createdAt])
   @@index([customerId, readAt])
+}
+
+// T101 Commerce Utility — histórico de preço (append-only). Fonte: cron diário
+// que captura o preço corrente de cada ProductOffer. Idempotente por
+// (offerId, capturedDay) — índice único; capturedDay = data UTC escrita pela app.
+model PriceSnapshot {
+  id          String   @id @default(cuid())
+  productId   String
+  offerId     String
+  supplier    String
+  priceMinor  BigInt
+  currency    String
+  capturedAt  DateTime @default(now())
+  capturedDay DateTime @db.Date
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId, capturedAt])
+  @@index([offerId, capturedDay])
 }

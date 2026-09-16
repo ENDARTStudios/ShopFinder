@@ -45,6 +45,7 @@ import { CompatibleProducts } from "./compatible-products";
 import { ReviewsSection } from "@/components/reviews/reviews-section";
 import { PriceAlertForm } from "@/components/alerts/price-alert-form";
 import { ProductViewRecorder, WishlistButton } from "@/components/site/product-extras";
+import { Breadcrumbs } from "@/components/layout/header";
 import { CompareButton } from "@/components/site/compare-button";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
 import { Price, PriceRange } from "@/components/site/price";
@@ -281,7 +282,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         }}
       />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Back link */}
+        {/* Breadcrumb (T101 Commerce Utility) + back link */}
+        <Breadcrumbs
+          items={[
+            { label: tDetail("backToCatalog"), href: "/" },
+            ...(product.category ? [{ label: product.category.name, href: "/" }] : []),
+            { label: product.title }
+          ]}
+        />
         <Link
           href="/"
           className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"

@@ -7,6 +7,7 @@ interface PriceProps {
   amount: number;
   currency: string;
   variant?: "default" | "large" | "small";
+  className?: string;
 }
 
 function formatCurrency(amount: number, currency: string): string {
@@ -17,7 +18,7 @@ function formatCurrency(amount: number, currency: string): string {
   }
 }
 
-export function Price({ amount, currency, variant = "default" }: PriceProps) {
+export function Price({ amount, currency, variant = "default", className }: PriceProps) {
   const upper = currency.toUpperCase();
   const { rate, ready } = useFxRate();
 
@@ -30,14 +31,16 @@ export function Price({ amount, currency, variant = "default" }: PriceProps) {
         ? "text-sm font-semibold"
         : "text-xl font-bold";
 
+  const cls = [mainClass, "tabular-nums", className].filter(Boolean).join(" ");
+
   if (upper === "BRL") {
-    return <span className={`${mainClass} tabular-nums`}>{formatCurrency(amount, "BRL")}</span>;
+    return <span className={cls}>{formatCurrency(amount, "BRL")}</span>;
   }
 
   // USD ou outra moeda: mostra R$ convertido em destaque + USD pequeno
   return (
     <span className="inline-flex flex-col items-start">
-      <span className={`${mainClass} tabular-nums`}>
+      <span className={cls}>
         {ready ? formatCurrency(brlAmount, "BRL") : formatCurrency(amount, "USD")}
       </span>
       {ready && (

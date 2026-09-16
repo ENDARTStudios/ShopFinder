@@ -12,7 +12,6 @@ import {
   ShoppingCart,
   TrendingUp,
   ShieldCheck,
-  Scale,
   Sparkles,
   ArrowRight,
   CircuitBoard,
@@ -52,7 +51,6 @@ import {
   TierGridSkeleton,
   LandingProductGridSkeleton
 } from "@/components/site/landing-skeletons";
-import { Hero3DMount } from "@/components/site/hero-3d-mount";
 import { useTranslations } from "next-intl";
 
 // ── Types matching the API response ────────────────────────
@@ -278,98 +276,54 @@ function Hero({ onSearch }: { onSearch: (q: string) => void }) {
     e.preventDefault();
     recordSearch(query);
     onSearch(query);
-    // Scroll to products section
     document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-border/60">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
-        style={{
-          backgroundImage:
-            "radial-gradient(60rem 30rem at 80% -10%, rgba(16,185,129,0.15), transparent 60%), radial-gradient(40rem 20rem at 0% 100%, rgba(16,185,129,0.08), transparent 60%)"
-        }}
-      />
-      {/* Hero 3D (R3F) — lazy, gated por visibilidade + reduced-motion (#32).
-          O gradiente acima permanece como fallback/base estática. */}
-      <Hero3DMount />
-      <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-        <FadeInStagger className="flex flex-col items-center text-center gap-8" itemCount={4}>
-          <FadeInItem className="flex flex-col items-center gap-3">
-            <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
-              {PROJECT_META.name}
-            </h1>
-            <p className="text-lg font-medium text-emerald-500 tracking-wide">{t("tagline")}</p>
-          </FadeInItem>
+    <section className="border-b border-border bg-muted/30">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{t("heading")}</h1>
+        <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t("subtitle")}</p>
 
-          <FadeInItem>
-            <p className="max-w-2xl text-xl text-muted-foreground sm:text-2xl">{t("subtitle")}</p>
-          </FadeInItem>
+        {/* Busca proeminente — utilidade antes de marketing */}
+        <form onSubmit={handleSearch} role="search" className="mt-4 flex max-w-2xl gap-2">
+          <div className="relative flex-1">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              type="text"
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-11 pl-9 text-sm"
+            />
+          </div>
+          <Button type="submit" className="h-11" aria-label={t("searchButton")}>
+            <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
+            {t("searchButton")}
+          </Button>
+        </form>
 
-          {/* Search bar — queries the real API */}
-          <FadeInItem className="w-full max-w-2xl">
-            <form onSubmit={handleSearch} className="w-full" role="search">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                <Input
-                  type="text"
-                  placeholder={t("searchPlaceholder")}
-                  aria-label={t("searchPlaceholder")}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="h-14 rounded-2xl border-2 pl-12 pr-32 text-base shadow-lg focus-visible:ring-emerald-500"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-500 hover:bg-emerald-600"
-                  aria-label={t("searchButton")}
-                >
-                  <Search className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                  {t("searchButton")}
-                </Button>
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-                <span className="text-xs text-muted-foreground">{t("popular")}</span>
-                {SEARCH_SUGGESTIONS.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => {
-                      setQuery(s);
-                      onSearch(s);
-                      document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:bg-emerald-500/20"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </form>
-          </FadeInItem>
-
-          <FadeInItem className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-              {t("statProducts")}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-              {t("statNiches")}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Scale className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-              {t("statRanking")}
-            </span>
-          </FadeInItem>
-        </FadeInStagger>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <span className="text-xs">{t("popular")}</span>
+          {SEARCH_SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                setQuery(s);
+                onSearch(s);
+                document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:border-ring hover:bg-muted"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -916,10 +870,14 @@ function ProductsSection({
 
                           <div className="flex items-end justify-between">
                             <div>
-                              <span className="block text-[10px] text-muted-foreground">
+                              <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
                                 {t("from")}
                               </span>
-                              <Price amount={product.priceRange.min} currency={product.currency} />
+                              <Price
+                                amount={product.priceRange.min}
+                                currency={product.currency}
+                                className="price-value text-xl font-bold"
+                              />
                             </div>
                             <CompareButton
                               slug={product.slug}
