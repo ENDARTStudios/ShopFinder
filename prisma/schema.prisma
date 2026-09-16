@@ -986,7 +986,7 @@ model PriceSnapshot {
   priceMinor  BigInt
   currency    String
   capturedAt  DateTime @default(now())
-  capturedDay DateTime @db.Date
+  capturedDay DateTime
 
   product Product @relation(fields: [productId], references: [id])
 
