@@ -24,7 +24,7 @@ const MAX_Q = 80;
 const MAX_ITEMS = 8;
 const MAX_ITEM_LEN = 40;
 const MAX_PRICE_DIGITS = 9;
-const CANDIDATE_LIMIT = 300;
+const CANDIDATE_LIMIT = 2000;
 const RESULT_LIMIT = 60;
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -132,21 +132,7 @@ export default async function ProductsResultsPage({
     where: {
       status: "published",
       deletedAt: null,
-      ...(q
-        ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { sku: { contains: q, mode: "insensitive" } }
-            ]
-          }
-        : {}),
-      ...(brandNames.length
-        ? {
-            AND: brandNames.map((b) => ({
-              title: { contains: b, mode: "insensitive" as const }
-            }))
-          }
-        : {}),
+
       ...(supplierCodes.length
         ? {
             offers: {
@@ -174,8 +160,25 @@ export default async function ProductsResultsPage({
     take: CANDIDATE_LIMIT
   });
 
+  // ── Filtros textuais em memória (case-insensitive; compatível sqlite/pg) ──
+  const ql = q.toLowerCase();
+
   // ── Preço mínimo em BRL por produto (fonte única da ordenação) ─────────
-  let rows: ResultProduct[] = products.map((p) => {
+  let rows: ResultProduct[] = products
+    .filter((p) => {
+      if (!ql) return true;
+      return (
+        p.title.toLowerCase().includes(ql) ||
+        p.sku.toLowerCase().includes(ql) ||
+        extractBrand(p.title).toLowerCase().includes(ql)
+      );
+    })
+    .filter((p) => {
+      if (brandNames.length === 0) return true;
+      const b = extractBrand(p.title);
+      return brandNames.some((n) => n.toLowerCase() === b.toLowerCase());
+    })
+    .map((p) => {
     const minOffer =
       p.offers.length > 0
         ? p.offers.reduce(
