@@ -39,10 +39,13 @@ export default function ProPage() {
       </div>
 
       <p className="mb-8 text-muted-foreground">
-        O plano pago está sendo desenhado. Deixe seu interesse — avisados em primeira mão quando
-        abrir, com desconto de fundador para os primeiros assinantes.
+        Plano pago <strong>em desenvolvimento</strong> — sem preço ou data definidos. Registre
+        interesse abaixo e avisaremos quando houver novidades.
       </p>
 
+      <p className="mb-4 text-xs uppercase tracking-wide text-muted-foreground">
+        Recursos previstos (proposta — sujeitos a mudança):
+      </p>
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         {PERKS.map((perk) => (
           <Card key={perk.title}>
