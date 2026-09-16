@@ -15,21 +15,11 @@ export async function GET(request: NextRequest) {
   const limitRaw = Number(request.nextUrl.searchParams.get("limit") ?? "20");
   const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(Math.trunc(limitRaw), 1), 50) : 20;
 
+  // q filtrado em memória (case-insensitive; compatível com client sqlite)
   const products = await prisma.product.findMany({
-    where: {
-      status: "published",
-      deletedAt: null,
-      ...(q
-        ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { sku: { contains: q, mode: "insensitive" } }
-            ]
-          }
-        : {})
-    },
+    where: { status: "published", deletedAt: null },
     orderBy: { updatedAt: "desc" },
-    take: limit,
+    take: 400,
     select: {
       id: true,
       sku: true,
@@ -50,9 +40,17 @@ export async function GET(request: NextRequest) {
     }
   });
 
+  const ql = q.toLowerCase();
+  const filtered = ql
+    ? products.filter(
+        (p) => p.title.toLowerCase().includes(ql) || p.sku.toLowerCase().includes(ql)
+      )
+    : products;
+  const page = filtered.slice(0, limit);
+
   return NextResponse.json({
-    count: products.length,
-    products: products.map((p) => ({
+    count: page.length,
+    products: page.map((p) => ({
       id: p.id,
       sku: p.sku,
       slug: p.slug,

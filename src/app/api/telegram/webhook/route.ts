@@ -31,16 +31,14 @@ async function reply(chatId: number, text: string): Promise<void> {
 }
 
 async function searchProducts(query: string): Promise<string> {
-  const products = await prisma.product.findMany({
-    where: {
-      status: "published",
-      deletedAt: null,
-      title: { contains: query, mode: "insensitive" }
-    },
+  const candidates = await prisma.product.findMany({
+    where: { status: "published", deletedAt: null },
     orderBy: { updatedAt: "desc" },
-    take: 3,
+    take: 200,
     select: { title: true, slug: true }
   });
+  const ql = query.toLowerCase();
+  const products = candidates.filter((p) => p.title.toLowerCase().includes(ql)).slice(0, 3);
   if (products.length === 0) return "Nenhum produto encontrado. Tente outro termo.";
   return (
     "Top resultados:\n" +
