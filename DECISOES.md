@@ -181,3 +181,7 @@ A direção **NOVA_DIRECAO** (Operador) listou 17 iniciativas (A1-A5, B1-B3, C1-
 ### DECISAO-NOVA-DIRECAO-002 (15/set/2026) — NOVA_DIRECAO ratificada pelo Operador; correção de processo
 
 A mensagem do Operador **autorizou a NOVA_DIRECAO completa (A1-F2)**, **ratificando retroativamente** o lote de 9 itens já implementados em main (wishlist, histórico, recomendações, /guias, /pro, API pública, Telegram scaffold, bell-admin, backup/DR) — **não haverá revert**. **Correção de processo registrada**: daqui em diante, item de menu não ratificado vira `PROPOSTA_DOER`/`TAREFA`, **nunca implementação espontânea**. Pendências derivadas especificadas em `PENDENCIAS_OPERADOR.md` (P0-1 migration PriceSnapshot no PROD; P1-1 Sentry; P1-2 Telegram; P1-3 credenciais B1; P2-1..P2-5 decisões de negócio; P3 playbooks). Guarda de copy do `/pro` implementada no T105: "em desenvolvimento — registre interesse", sem preço e sem promessa de data. Origin: Operador (autorização) / Thinker (especificação das pendências) / Doer (persistência e guarda).
+
+### DECISAO-NEGOCIO-D2-001 (16/set/2026) — Beta fechado (D2) adiado
+
+O Operador **adiou o programa de beta fechado com convites da waitlist** (D2). A waitlist permanece como lista de captação; os convites nomeados acontecerão **após T102-T104 (redesign da UI de compra) + maturação do produto**. A decisão remove a dependência de gate por convite do escopo atual — o anúncio público seguirá o timing de P2-5. Reabertura: decisão do Operador quando as condições acima forem atendidas. Origin: Operador (decisão) / Thinker (registro).

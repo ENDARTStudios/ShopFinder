@@ -1,71 +1,71 @@
 # Pendências do Operador
 
 Fonte da especificação: Thinker (15/set/2026), DECISAO-NOVA-DIRECAO-002.
-Ratificação do Doer não substitui ação do Operador — cada item tem dono único.
+**Sincronizado em 16/set/2026** com o estado confirmado pelo Operador
+(adendo do T105: screenshot Neon + decisões registradas).
 
-## 🔴 P0 — bloqueia função em produção (fazer hoje)
+## ✅ Fechadas / decididas
 
-### P0-1 · Migration `PriceSnapshot` no Neon PROD
-- **Por quê:** o cron diário de snapshot (06:00 UTC) **falha em produção** sem a
-  tabela; o histórico de preço (base do gráfico "preço justo agora?") não acumula.
-- **Como:** Neon console → SQL Editor → branch **production** → colar o SQL de
-  `prisma/migrations/20260915170000_price_snapshot/migration.sql` → Run.
-- **Verificar:** `SELECT column_name FROM information_schema.columns WHERE
-  table_name='PriceSnapshot';` → deve retornar `id, productId, offerId, supplier,
-  priceMinor, currency, capturedAt, capturedDay`.
+### P0-1 · Migration `PriceSnapshot` no Neon PROD — ✅ FECHADO (15/set)
+- Aplicada no branch **production** via SQL Editor; guards idempotentes
+  (`IF NOT EXISTS` / `EXCEPTION WHEN duplicate_object`) confirmados por
+  screenshot; colunas `…capturedAt, capturedDay` presentes.
+- Cron diário de snapshot (06:00 UTC) **operacional** — histórico de preço
+  acumulando desde 15/set (alimenta o indicador "preço justo agora?" do T103).
 
-## 🟠 P1 — secrets/contas que só você cria (esta semana)
+### P1-1 · Sentry (`F1`) — ✅ FECHADO
+- `SENTRY_DSN` setado em Vercel (Production) + redeploy feito.
 
-### P1-1 · Sentry (`F1`)
-- sentry.io → novo projeto (Next.js) → copiar **DSN**.
-- Vercel → Environment Variables → `SENTRY_DSN` (Production) → Save → **Redeploy**.
-- **Verificar:** erro de teste aparece no Sentry; sem PII nos payloads.
+### P2-2 · Copy do `/pro` (`C1`) — ✅ FECHADO
+- Copy honesta aprovada: "em desenvolvimento — registre interesse", sem preço e
+  sem promessa de data; guarda verificável por grep (T105).
 
-### P1-2 · Telegram (`E3`)
-- @BotFather → `/newbot` → copiar token.
-- Gerar `TELEGRAM_WEBHOOK_SECRET` (`openssl rand -hex 32`).
-- Vercel (Production): `TELEGRAM_BOT_TOKEN` + `TELEGRAM_WEBHOOK_SECRET` → Save → Redeploy.
-- **Depois:** Doer registra o webhook (`setWebhook` → `/api/telegram/webhook`) via tarefa.
+### P2-4 · Beta fechado (`D2`) — ✅ ADIADA (decisão)
+- Beta fechado com convites da waitlist **adiado**: retomar pós T102–T104 +
+  maturação do produto. Registrado em `DECISAO-NEGOCIO-D2-001` (DECISOES.md).
 
-### P1-3 · Credenciais de fornecedores (`B1`) — forneça via Vercel env, **nunca no chat**
-- **AliExpress:** Open Platform/Affiliates → App Key/Secret.
-- **Mercado Livre:** developers.mercadolibre → criar app → client_id/secret.
-- **Magalu:** API de parceiro (se houver programa); senão pular.
-- **Amazon:** concluir **informações fiscais** do Associates + atingir vendas
-  qualificadas → então chaves PA-API (a tag de afiliado já funciona enquanto isso).
-- **Newegg:** tracking ID via CJ Affiliate (se quiser).
+## 🟠 Em processo
 
-## 🟡 P2 — decisões de negócio (definem escopo futuro)
+### P1-2 · Telegram (`E3`) — 🟡 PARCIAL
+- ✅ `TELEGRAM_WEBHOOK_SECRET` setado.
+- ⏳ Pendente: **`TELEGRAM_BOT_TOKEN`** (BotFather) → depois o Doer registra o
+  webhook (`setWebhook` → `/api/telegram/webhook`) via tarefa.
 
-### P2-1 · API pública (`E2`)
-Manter **pública read-only rate-limited (30/min)** no beta (recomendado) ou tornar
-opt-in por token para parceiros? *Recomendação do Thinker: pública agora, token depois.*
+### P1-3 · Credenciais de fornecedores (`B1`) — 🟡 EM_PROCESSO
+- Forneça via Vercel env, **nunca no chat**:
+  - **AliExpress:** Open Platform/Affiliates → App Key/Secret.
+  - **Mercado Livre:** developers.mercadolibre → criar app → client_id/secret.
+  - **Magalu:** API de parceiro (se houver programa); senão pular.
+  - **Amazon:** informações fiscais do Associates + vendas qualificadas → chaves
+    PA-API (a tag de afiliado já funciona enquanto isso).
+  - **Newegg:** tracking ID via CJ Affiliate (se quiser).
 
-### P2-2 · `/pro` (`C1`)
-O copy atual diz **"em desenvolvimento — registre interesse"**, **sem preço e sem
-promessa de data** (garantido pelo Doer no T105). Decisão de **preço/billing**
-(Stripe subscriptions) vem depois, quando houver tração.
+## 🟡 Aguardando decisão do Operador
 
-### P2-3 · Nichos novos (`B2`)
-Escolher quais (ex.: áudio/vídeo, periféricos, armazenamento, redes) — a lista
-vai para o Doer importar catálogo.
+### P2-1 · API pública (`E2`) — AGUARDANDO_DECISAO
+- **Onde está:** docs para parceiros em `/api-docs`; endpoint
+  `GET /api/public/v1/products?q=&limit=` (read-only, campos públicos);
+  rate limit **30/min/IP**; teste: `curl
+  "https://shop-finder-end-art-studios.vercel.app/api/public/v1/products?limit=2"`.
+- **Decisão:** manter **pública read-only rate-limited (30/min)** no beta
+  (recomendação do Thinker: `MANTER-PUBLICA`) ou tornar opt-in por token
+  (`GATEAR-TOKEN`) para parceiros.
 
-### P2-4 · Beta fechado (`D2`)
-Rodar programa de testers com convites da waitlist **antes** do anúncio público?
-Se sim, o Thinker emite tarefa de gate por convite.
+### P2-3 · Nichos novos (`B2`) — ABERTA
+- Escolher quais (ex.: áudio/vídeo, periféricos, armazenamento, redes) — a lista
+  vai para o Doer importar catálogo.
 
-### P2-5 · Timing do anúncio
-Após T102–T104 (UI) + (opcional) D2.
+### P2-5 · Timing do anúncio — ABERTA
+- Após T102–T104 (UI redesign completo) + (opcional) D2.
 
 ## ⏸ P3 — playbooks liderados por você (sem ação técnica agora)
 
-`C2` parcerias diretas · `C3` white-label · `D3` certificações · `E1` extensão de
-browser · `A5` app nativo. Roadmaps registrados em
+`C2` parcerias diretas · `C3` white-label · `D3` certificações · `E1` extensão
+de browser · `A5` app nativo. Roadmaps registrados em
 `docs/eng/ROADMAP-NOVA-DIRECAO.md`; retomam quando houver tração.
 
-## Itens Concluídos (histórico)
+## Histórico (fechados em ciclos anteriores)
 - [x] [1]-[7] Fases 0-5 completas
 - [x] [8] Upstash Redis provisionado (T040)
-- [x] Migration PriceSnapshot no Neon DEV (T101); PROD pendência P0-1 acima
-- [x] Cadastrar APIs de fornecedores (AliExpress/CJdropshipping/DSers) → movido p/ P1-3
 - [x] Validar preços de referência do catálogo (T068 import real)
+- [x] Migration PriceSnapshot no Neon DEV (T101)
