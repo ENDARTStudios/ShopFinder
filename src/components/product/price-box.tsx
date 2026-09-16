@@ -31,6 +31,31 @@ interface Labels {
   supplierNote: string;
 }
 
+function ShipsNote({
+  offer,
+  labels
+}: {
+  offer: PriceBoxOffer;
+  labels: Pick<Labels, "shipsFrom" | "shippingCost" | "freeShipping" | "days" | "supplierNote">;
+}) {
+  return (
+    <p className="text-[11px] leading-relaxed text-muted-foreground">
+      {offer.shipsFromCountry ? `${labels.shipsFrom}: ${offer.shipsFromCountry}. ` : ""}
+      {offer.shippingCostBrl !== null
+        ? offer.shippingCostBrl === 0
+          ? `${labels.freeShipping}. `
+          : `${labels.shippingCost}: R$ ${offer.shippingCostBrl.toFixed(2)}. `
+        : ""}
+      {offer.fulfillmentDays
+        ? `${labels.days
+            .replace("{min}", String(offer.fulfillmentDays[0]))
+            .replace("{max}", String(offer.fulfillmentDays[1]))}. `
+        : ""}
+      {labels.supplierNote}
+    </p>
+  );
+}
+
 export function PriceBox({
   offers,
   labels
@@ -44,25 +69,6 @@ export function PriceBox({
   if (!best) return null;
 
   const stock = (inv: number) => (inv > 0 ? labels.inStock : labels.outOfStock);
-
-  function ShipsNote({ offer }: { offer: PriceBoxOffer }) {
-    return (
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
-        {offer.shipsFromCountry ? `${labels.shipsFrom}: ${offer.shipsFromCountry}. ` : ""}
-        {offer.shippingCostBrl !== null
-          ? offer.shippingCostBrl === 0
-            ? `${labels.freeShipping}. `
-            : `${labels.shippingCost}: R$ ${offer.shippingCostBrl.toFixed(2)}. `
-          : ""}
-        {offer.fulfillmentDays
-          ? `${labels.days
-              .replace("{min}", String(offer.fulfillmentDays[0]))
-              .replace("{max}", String(offer.fulfillmentDays[1]))}. `
-          : ""}
-        {labels.supplierNote}
-      </p>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -82,7 +88,7 @@ export function PriceBox({
           size="lg"
         />
         <p className="mt-1 text-[11px] text-muted-foreground">{stock(best.inventory)}</p>
-        <ShipsNote offer={best} />
+        <ShipsNote offer={best} labels={labels} />
         {best.url && (
           <a
             href={best.url}
@@ -115,7 +121,7 @@ export function PriceBox({
                     : null
                 }
               />
-              <ShipsNote offer={o} />
+              <ShipsNote offer={o} labels={labels} />
               {o.url && (
                 <a
                   href={o.url}
