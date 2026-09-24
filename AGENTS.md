@@ -12,20 +12,20 @@ Este arquivo define o processo obrigatório para todo agente (Claude, GPT, GLM, 
 
 ## 2. Documentação de engenharia (leia o que for relevante)
 
-| Documento | Conteúdo |
-|---|---|
-| `docs/eng/PRD.md` | Requisitos do produto |
-| `docs/eng/UML.md` | Diagramas de classe e sequência |
-| `docs/eng/RBAC.md` | Matriz de acesso |
-| `docs/eng/RLS.md` | Row Level Security (Postgres) |
-| `docs/eng/ARCHITECTURE.md` | Catálogo de apps/packages + feature flags + regra de dependências |
-| `docs/eng/SECRETS.md` + `.env.example` | Variáveis de ambiente — nunca commitar `.env` |
-| `docs/eng/OBSERVABILITY.md` | Error reporting, logs, tracing, SLOs |
-| `docs/eng/TESTING.md` | Testes unit/integração/E2E, cobertura, ferramentas de qualidade |
-| `docs/eng/SECURITY.md` | Gate de deploy, WAF, rate limiting, TLS/HSTS Full (Strict), Zero Trust |
-| `docs/eng/SEO-AEO-AIO-GEO.md` | Estratégia de busca e engines de IA |
-| `docs/eng/MOTION-SYSTEM.md` | Padrões obrigatórios de skeleton/lazy loading/animação |
-| `docs/eng/FRONTEND-DESIGN.md` | Direção visual e stack de UI/UX |
+| Documento                              | Conteúdo                                                               |
+| -------------------------------------- | ---------------------------------------------------------------------- |
+| `docs/eng/PRD.md`                      | Requisitos do produto                                                  |
+| `docs/eng/UML.md`                      | Diagramas de classe e sequência                                        |
+| `docs/eng/RBAC.md`                     | Matriz de acesso                                                       |
+| `docs/eng/RLS.md`                      | Row Level Security (Postgres)                                          |
+| `docs/eng/ARCHITECTURE.md`             | Catálogo de apps/packages + feature flags + regra de dependências      |
+| `docs/eng/SECRETS.md` + `.env.example` | Variáveis de ambiente — nunca commitar `.env`                          |
+| `docs/eng/OBSERVABILITY.md`            | Error reporting, logs, tracing, SLOs                                   |
+| `docs/eng/TESTING.md`                  | Testes unit/integração/E2E, cobertura, ferramentas de qualidade        |
+| `docs/eng/SECURITY.md`                 | Gate de deploy, WAF, rate limiting, TLS/HSTS Full (Strict), Zero Trust |
+| `docs/eng/SEO-AEO-AIO-GEO.md`          | Estratégia de busca e engines de IA                                    |
+| `docs/eng/MOTION-SYSTEM.md`            | Padrões obrigatórios de skeleton/lazy loading/animação                 |
+| `docs/eng/FRONTEND-DESIGN.md`          | Direção visual e stack de UI/UX                                        |
 
 Histórico de decisões: `docs/adr/` (30 ADRs). Não contradiga um ADR sem abrir um novo.
 
@@ -53,7 +53,32 @@ Histórico de decisões: `docs/adr/` (30 ADRs). Não contradiga um ADR sem abrir
 - `tests/integration` — testes de integração (bun:test contra `TEST_BASE_URL`)
 - Skills do repo: `.agents/skills/` (motion-design, ui-ux-pro-max)
 
+## 6. Project Automation Guidelines
+
+### Strict Rule: Terminal & CLI First Policy
+
+You (the AI Agent) have complete command-line and terminal access to this environment. You must maximize your autonomy using CLIs and never delegate web-based infrastructure tasks to the human operator.
+
+### 1. Prohibited Requests
+
+- **NEVER** ask the operator to manually open a browser or log into dashboards (such as Vercel, Railway, Supabase, Netlify, AWS, or GitHub web).
+- **NEVER** ask the operator to manually create projects, trigger deployments, set environment variables, or check build logs inside a web user interface.
+
+### 2. Autonomous Execution Flow
+
+- **CLI Over Web UI:** If an infrastructure action is needed, immediately use the respective terminal tool (e.g., vercel, railway, gh).
+- **Session Verification:** Before asking for credentials, autonomously check if a session exists using commands like vercel whoami, railway whoami, or gh auth status.
+- **Deployments & Variables:** Always use execution commands (e.g., vercel deploy, railway up) and pipe/inject environment variables directly via the CLI tool tools instead of requesting manual copy-pasting.
+
+### 3. Allowed Exceptions
+
+You may only prompt the human operator regarding external platforms if:
+
+- The CLI tool explicitly requires a browser-based OAuth validation link that your environment cannot automatically bypass.
+- There is a terminal-blocking account restriction (e.g., payment failure or missing team permissions) that cannot be handled programmatically.
+
 <!-- graft:start -->
+
 ## Graft — repo context graph
 
 This repo is indexed in `graft/`: small linked markdown nodes that explain each
@@ -94,4 +119,5 @@ re-read whole files.
 After big code changes, refresh the graph with `graft build` (deterministic,
 no API key, $0).
 <!-- graft:end -->
+
 - Toolbelt de agentes (browser-use, Agent-Reach, skill diagram-design, Strix, matrix de adoção): `docs/eng/AGENT-TOOLBELT.md`
