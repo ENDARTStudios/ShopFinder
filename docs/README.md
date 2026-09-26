@@ -10,7 +10,7 @@
 | `docs/eng/*.md`                           | **Engenharia canônica** — specs completas (PRD, arquitetura, segurança, testes…) | ✅ Fonte da verdade                        |
 | `docs/adr/*.md` (31 ADRs) + `docs/legal/` | Decisões imutáveis + documentos legais v2 (LGPD)                                 | ✅ Fonte da verdade                        |
 
-Na raiz do repo: `AGENTS.md` (processo obrigatório), `DECISOES.md` (decisões operacionais), `PENDENCIAS_OPERADOR.md`, `MANUAL_DO_OPERADOR.md`, `SECURITY.md`, `CHANGELOG.md`, `worklog.md`.
+Na raiz do repo: `AGENTS.md` (processo obrigatório), `AUTONOMO.md` (prompt de execução autônoma — Thinker+Doer combinados), `DECISOES.md` (decisões operacionais), `PENDENCIAS_OPERADOR.md`, `MANUAL_DO_OPERADOR.md`, `SECURITY.md`, `CHANGELOG.md`, `worklog.md`.
 
 ## Índice da camada de entrada
 
