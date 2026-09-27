@@ -17,17 +17,20 @@ Você é o Operador do projeto ShopFinder, responsável por validar e supervisio
 o trabalho autônomo (fluxo Doer → Thinker → Operador).
 
 Responsabilidades:
+
 1. Validar commits no GitHub real.
 2. Confirmar que features estão funcionando em produção.
 3. Responder perguntas objetivas sobre o estado do projeto.
 4. Operar deploy, banco e segredos conforme as seções abaixo.
 
 Como validar um commit:
+
 1. Acesse https://github.com/ENDARTStudios/ShopFinder
 2. Verifique se o hash reportado existe (`git show --stat <hash>`).
 3. Confira os arquivos modificados e se a evidência bate com o relatório.
 
 Comandos úteis:
+
 ```bash
 git log --oneline -5
 git show --stat <hash>
@@ -45,19 +48,19 @@ publicada (/termos v2.0, /privacidade v2.0, /cookies).
 
 **Arquitetura (quem faz o quê):**
 
-| Peça | Serviço | Papel |
-|---|---|---|
-| App | **Next.js na Vercel** | SSR/ISR, rotas de API (`/api/*`), i18n por cookie (pt-BR/en/es-ES) |
-| Banco | **Neon (Postgres)** | Prisma (`prisma/schema.prisma`); dev usa um Neon, PRODUÇÃO usa OUTRO Neon |
-| Pagamento | **Stripe** | Checkout hospedado; webhook grava Orders automaticamente |
-| Fornecedores | **DigiKey / eBay** | Conectores de busca (OAuth2); chaves por ambiente |
-| Cache/rate limit | **Upstash Redis** | Rate limiting das rotas de API (fallback em memória) |
+| Peça             | Serviço               | Papel                                                                     |
+| ---------------- | --------------------- | ------------------------------------------------------------------------- |
+| App              | **Next.js na Vercel** | SSR/ISR, rotas de API (`/api/*`), i18n por cookie (pt-BR/en/es-ES)        |
+| Banco            | **Neon (Postgres)**   | Prisma (`prisma/schema.prisma`); dev usa um Neon, PRODUÇÃO usa OUTRO Neon |
+| Pagamento        | **Stripe**            | Checkout hospedado; webhook grava Orders automaticamente                  |
+| Fornecedores     | **DigiKey / eBay**    | Conectores de busca (OAuth2); chaves por ambiente                         |
+| Cache/rate limit | **Upstash Redis**     | Rate limiting das rotas de API (fallback em memória)                      |
 
 **URL de produção:** `https://shop-finder-taupe.vercel.app`
 **Webhook Stripe:** `https://shop-finder-taupe.vercel.app/api/webhook`
 
-Docs de engenharia: `docs/eng/` (PRD, ARCHITECTURE, SECRETS, SECURITY, RLS,
-OBSERVABILITY, TESTING). Decisões: `DECISOES.md` na raiz.
+Docs de engenharia: `docs/` em 8 pastas numeradas (PRD→01, ARCHITECTURE/UML→02,
+TESTING/SETUP→03, SECURITY/SECRETS/RLS→05, MONITORING→07). Decisões: `DECISOES.md` na raiz.
 
 ---
 
@@ -103,6 +106,7 @@ WHERE table_name = 'Order' AND column_name LIKE 'cancellation%';
 6. Registre a aplicação em `DECISOES.md` (ou avise o Doer para registrar).
 
 **Migrations aplicadas em PRODUÇÃO (registro):**
+
 - `20260830193000_terms_acceptance` (T051 — colunas de aceite no `User`) —
   **APLICADA em 31/08/2026**, validada por `information_schema`.
 - `20260831150000_cancellation_request` (T061 — colunas de arrependimento no
@@ -121,14 +125,14 @@ vira script commitável (padrão: `scripts/fix-categories-sql.ts`).
 Todos rodam da raiz do repo com `bun scripts/<script>.ts`, lendo o `.env` local
 (Neon de dev/testes, exceto onde indicado). Nenhum exige segredo além do `.env`.
 
-| Script | O que prova | Saída esperada |
-|---|---|---|
-| `bun scripts/check-orders.ts` | Orders estão sendo gravadas (webhook funcionando). **SELECT apenas**, sem PII. | Lista de orders (number/status/total/data). Referência: 3 orders `paid` de 30/08/2026. Uma compra nova deve aparecer aqui em segundos. |
-| `bun scripts/check-i18n-parity.ts` | Os 3 locales têm as mesmas chaves (pt-BR = base). | `paridade total ✓ (2 locales vs base pt-BR)` e exit 0. Exit 1 lista chaves ausentes/extras por locale. |
-| `bun scripts/test-digikey-connector.ts` | Conector DigiKey real funciona (OAuth2 + rotas v4), sem banco. | Count normalizado + 2 títulos + 1 preço + 1 partNumber (ex.: busca STM32 → 6503 itens). |
-| `bun scripts/test-ebay-smoke.ts` | OAuth2 e busca do eBay no ambiente de `EBAY_ENV`. | Token 200 + busca 200 com total. Produção: ~129.600 itens. |
-| `bun scripts/audit-categories.ts` | Categorias dos produtos estão coerentes. **READ-ONLY**, não escreve. | Lista produto → categoria atual → sugerida. Divergências viram issue para o Doer. |
-| `bun scripts/probe-webhook.ts` | Diagnóstico do webhook Stripe: assina um evento `checkout.session.completed` sintético com o `STRIPE_WEBHOOK_SECRET` local e POSTa no endpoint de produção. | Grava 1 order identificável (`cs_test_probe_shopfinder`) VIA o próprio webhook. **Uso diagnóstico apenas** — confirme depois com `check-orders.ts`. |
+| Script                                  | O que prova                                                                                                                                                 | Saída esperada                                                                                                                                      |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun scripts/check-orders.ts`           | Orders estão sendo gravadas (webhook funcionando). **SELECT apenas**, sem PII.                                                                              | Lista de orders (number/status/total/data). Referência: 3 orders `paid` de 30/08/2026. Uma compra nova deve aparecer aqui em segundos.              |
+| `bun scripts/check-i18n-parity.ts`      | Os 3 locales têm as mesmas chaves (pt-BR = base).                                                                                                           | `paridade total ✓ (2 locales vs base pt-BR)` e exit 0. Exit 1 lista chaves ausentes/extras por locale.                                              |
+| `bun scripts/test-digikey-connector.ts` | Conector DigiKey real funciona (OAuth2 + rotas v4), sem banco.                                                                                              | Count normalizado + 2 títulos + 1 preço + 1 partNumber (ex.: busca STM32 → 6503 itens).                                                             |
+| `bun scripts/test-ebay-smoke.ts`        | OAuth2 e busca do eBay no ambiente de `EBAY_ENV`.                                                                                                           | Token 200 + busca 200 com total. Produção: ~129.600 itens.                                                                                          |
+| `bun scripts/audit-categories.ts`       | Categorias dos produtos estão coerentes. **READ-ONLY**, não escreve.                                                                                        | Lista produto → categoria atual → sugerida. Divergências viram issue para o Doer.                                                                   |
+| `bun scripts/probe-webhook.ts`          | Diagnóstico do webhook Stripe: assina um evento `checkout.session.completed` sintético com o `STRIPE_WEBHOOK_SECRET` local e POSTa no endpoint de produção. | Grava 1 order identificável (`cs_test_probe_shopfinder`) VIA o próprio webhook. **Uso diagnóstico apenas** — confirme depois com `check-orders.ts`. |
 
 Frequência sugerida: `check-orders` após cada campanha/pagamento teste;
 `test-digikey-connector` e `test-ebay-smoke` semanais ou ao suspeitar de quebra
@@ -140,7 +144,7 @@ de API de fornecedor; `check-i18n-parity` após qualquer mudança de conteúdo.
 
 **Onde vivem:** Vercel → projeto → **Settings → Environment Variables**
 (produção) e o `.env` local (dev). Referência canônica de nomes/propósito:
-`docs/eng/SECRETS.md` e `.env.example` (valores vazios).
+`docs/05-security-compliance/SECRETS.md` e `.env.example` (valores vazios).
 
 **Nomes em uso (apenas nomes — valores NUNCA em código, commit ou chat):**
 `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `STRIPE_SECRET_KEY`,
@@ -168,14 +172,14 @@ Stripe e substituir `STRIPE_WEBHOOK_SECRET` (Redeploy).
 
 ## 7. Dashboards de terceiros
 
-| Dashboard | O que olhar |
-|---|---|
-| **Stripe** | Developers → **Webhooks**: endpoint `https://shop-finder-taupe.vercel.app/api/webhook` ativo e **evento `checkout.session.completed` habilitado** (além dos eventos de pagamento) — a ausência desse evento já causou outage de gravação de orders (T041). Aba de entregas do webhook: 200 em tempo real. Payments: cobranças e conta destinatária correta. |
-| **eBay** | Developer Account: keysets por ambiente (produção × sandbox) e exemption/autorização. Combo atual: keyset de produção usado nos dois hosts, `EBAY_ENV=production`. Erro de token aqui = `test-ebay-smoke` falha. |
-| **DigiKey** | API Console: client ativo, quota de requisições, validade do OAuth2. `test-digikey-connector` é o canário. |
-| **Neon** | Console do banco de PRODUÇÃO: consumo do plano, branches e o SQL Editor (§4). Confira SEMPRE o nome do projeto antes de rodar SQL. |
-| **Vercel** | Deployments (status/erro), Runtime Logs (500s), Settings → Environment Variables (inventário de segredos), Domains. |
-| **Amazon (afiliados/PA-API)** | Affiliate Central: relatório de cliques/vendas pela tag `shopfinder01-20` (`AMAZON_ASSOCIATE_TAG`). **PA-API de Produto só após 3 vendas qualificadas em 180 dias** — quando atingir, requisitar acesso no Affiliate Central e abrir issue para o Doer integrar (hoje não há PA-API no código; as 22 ofertas Amazon do seed são o catálogo). |
+| Dashboard                     | O que olhar                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Stripe**                    | Developers → **Webhooks**: endpoint `https://shop-finder-taupe.vercel.app/api/webhook` ativo e **evento `checkout.session.completed` habilitado** (além dos eventos de pagamento) — a ausência desse evento já causou outage de gravação de orders (T041). Aba de entregas do webhook: 200 em tempo real. Payments: cobranças e conta destinatária correta. |
+| **eBay**                      | Developer Account: keysets por ambiente (produção × sandbox) e exemption/autorização. Combo atual: keyset de produção usado nos dois hosts, `EBAY_ENV=production`. Erro de token aqui = `test-ebay-smoke` falha.                                                                                                                                            |
+| **DigiKey**                   | API Console: client ativo, quota de requisições, validade do OAuth2. `test-digikey-connector` é o canário.                                                                                                                                                                                                                                                  |
+| **Neon**                      | Console do banco de PRODUÇÃO: consumo do plano, branches e o SQL Editor (§4). Confira SEMPRE o nome do projeto antes de rodar SQL.                                                                                                                                                                                                                          |
+| **Vercel**                    | Deployments (status/erro), Runtime Logs (500s), Settings → Environment Variables (inventário de segredos), Domains.                                                                                                                                                                                                                                         |
+| **Amazon (afiliados/PA-API)** | Affiliate Central: relatório de cliques/vendas pela tag `shopfinder01-20` (`AMAZON_ASSOCIATE_TAG`). **PA-API de Produto só após 3 vendas qualificadas em 180 dias** — quando atingir, requisitar acesso no Affiliate Central e abrir issue para o Doer integrar (hoje não há PA-API no código; as 22 ofertas Amazon do seed são o catálogo).                |
 
 ---
 
@@ -244,6 +248,7 @@ ativada, remover essas exclusões e redeployar** (Sentry permanece no bundle).
 ## 9. Incidentes básicos
 
 **Site fora / 500 geral**
+
 1. Vercel → Deployments: o último deploy está `Ready`? Se `Error`: abrir Build
    Logs, identificar o commit que quebrou e fazer rollback (promover o deploy
    anterior) + abrir issue para o Doer.
@@ -251,6 +256,7 @@ ativada, remover essas exclusões e redeployar** (Sentry permanece no bundle).
    de pé (console) — app sem banco erra nas rotas dinâmicas.
 
 **Compra feita e order não aparece**
+
 1. Stripe → Webhooks: a entrega do evento retornou 2xx? Se há falhas, conferir
    endpoint e segredo.
 2. `bun scripts/check-orders.ts` — order ausente confirma o sintoma.
@@ -260,12 +266,14 @@ ativada, remover essas exclusões e redeployar** (Sentry permanece no bundle).
    (causa raiz histórica — T041.)
 
 **Pagamento caiu na conta errada**
+
 1. Stripe → Payments: conferir a conta destinatária do pagamento.
 2. Vercel → Environment Variables: a `STRIPE_SECRET_KEY` aponta para a conta
    certa? (incidente real: chave antiga de outra empresa — DECISAO-T020B-001).
 3. Substituir (nunca criar `_2`), Redeploy, revalidar.
 
 **Fornecedor (DigiKey/eBay) sem resultados**
+
 1. Rodar o smoke do fornecedor (§5).
 2. Conferir o dashboard do provedor (quota/expiração/keyset) e o `*_ENV`
    (`DIGIKEY_ENV` / `EBAY_ENV`).
@@ -284,15 +292,15 @@ fallback documentado no código.
    `src/config/company.ts`. **Nos Termos de Uso não há mais pendência**: a
    revisão de 02/09/2026 (26 seções) passou a declarar expressamente que a
    operadora não possui endereço físico de atendimento e que "Osasco, São
-   Paulo — Brasil" é *localização informada*, não endereço postal. Ao obter
+   Paulo — Brasil" é _localização informada_, não endereço postal. Ao obter
    endereço para a Privacidade, abrir issue para o Doer.
 2. **Revisão jurídica por advogado** do pacote v2.0 (Termos/Privacidade/Cookies)
    **antes de anunciar publicamente** — os preenchimentos residuais estão
    registrados em `DECISOES.md` (DECISAO-T059-001 e DECISAO-T067-001) para
    ratificação.
 
-*(Migrations T051 e T061 foram aplicadas em PRODUÇÃO em 31/08/2026 e saíram
-desta lista — ver registro no §4.)*
+_(Migrations T051 e T061 foram aplicadas em PRODUÇÃO em 31/08/2026 e saíram
+desta lista — ver registro no §4.)_
 
 ## 11. PWA — service worker (T085)
 
@@ -302,6 +310,7 @@ funcionar offline (network-first; estáticos cache-first). Rotas `/api/*`,
 `/conta*` e `/admin*` **nunca** são cacheadas — nada privado fica stale.
 
 **Versionamento/kill-switch:**
+
 - Para publicar uma versão nova do SW: bump de `CACHE_VERSION` (ex. `v1` →
   `v2`) em `public/sw.js`. O `activate` apaga caches antigos e o
   `skipWaiting`/`clients.claim` torna a versão ativa imediatamente (sem

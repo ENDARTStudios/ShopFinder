@@ -17,17 +17,17 @@ Executar o projeto ShopFinder até o estado "pronto" (beta público) sem depende
 
 ## 0. FONTES DE VERDADE (leia antes de qualquer ação)
 
-| Arquivo                            | Papel                                                                              |
-| ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `AGENTS.md`                        | Processo obrigatório (issue → branch → PR) + política CLI-first (§6)               |
-| `PENDENCIAS_OPERADOR.md`           | O que está bloqueado/aguardando o Operador                                         |
-| `docs/eng/ROADMAP-NOVA-DIRECAO.md` | Roadmap de iniciativas (fila real de features)                                     |
-| `DECISOES.md`                      | Histórico de decisões técnicas e de negócio                                        |
-| `PLANO_MESTRE.md`                  | Checklist de fases 0–9 do protocolo (**parcialmente legado** — não é a fila ativa) |
-| `MANUAL_DO_OPERADOR.md`            | Operações manuais do Operador                                                      |
-| `docs/eng/SECURITY.md`             | Gate de deploy                                                                     |
-| `docs/MEMORY.md` + `docs/SETUP.md` | Quirks de ambiente e armadilhas conhecidas                                         |
-| `worklog.md`                       | Diário de execução                                                                 |
+| Arquivo                                                                           | Papel                                                                              |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `AGENTS.md`                                                                       | Processo obrigatório (issue → branch → PR) + política CLI-first (§6)               |
+| `PENDENCIAS_OPERADOR.md`                                                          | O que está bloqueado/aguardando o Operador                                         |
+| `docs/01-product-discovery/ROADMAP.md`                                            | Roadmap de iniciativas (fila real de features)                                     |
+| `DECISOES.md`                                                                     | Histórico de decisões técnicas e de negócio                                        |
+| `PLANO_MESTRE.md`                                                                 | Checklist de fases 0–9 do protocolo (**parcialmente legado** — não é a fila ativa) |
+| `MANUAL_DO_OPERADOR.md`                                                           | Operações manuais do Operador                                                      |
+| `docs/05-security-compliance/SECURITY.md`                                         | Gate de deploy                                                                     |
+| `docs/08-knowledge-management/MEMORY.md` + `docs/03-development-process/SETUP.md` | Quirks de ambiente e armadilhas conhecidas                                         |
+| `worklog.md`                                                                      | Diário de execução                                                                 |
 
 **Antes de qualquer tarefa:**
 
@@ -51,7 +51,7 @@ grep -A 8 "## 🟡 Aguardando decisão do Operador" PENDENCIAS_OPERADOR.md
 Você decide:
 
 - Arquitetura de código (dentro do escopo da issue)
-- Escolha de bibliotecas (se não houver decisão em `DECISOES.md`; seguindo `docs/CHOOSE_TECH_STACK.md`)
+- Escolha de bibliotecas (se não houver decisão em `DECISOES.md`; seguindo `docs/02-architecture-design/CHOOSE_TECH_STACK.md`)
 - Estratégia de testes (unit/integração/E2E)
 - Refatoração local (sem mudar contrato)
 - Correção de bugs evidentes
@@ -71,7 +71,7 @@ Você **NÃO** decide sozinho:
 **FASE /spec (você como Thinker):**
 
 1. Leia o estado (seção 2 abaixo)
-2. Identifique a próxima tarefa: `PENDENCIAS_OPERADOR.md` (o que não depende de credencial/decisão) → `docs/eng/ROADMAP-NOVA-DIRECAO.md` (iniciativas abertas sem bloqueio) → bugs/dívida conhecida em `docs/ITERATION.md` e `docs/MEMORY.md`
+2. Identifique a próxima tarefa: `PENDENCIAS_OPERADOR.md` (o que não depende de credencial/decisão) → `docs/01-product-discovery/ROADMAP.md` (iniciativas abertas sem bloqueio) → bugs/dívida conhecida em `docs/08-knowledge-management/ITERATION.md` e `docs/08-knowledge-management/MEMORY.md`
 3. Especifique: Objetivo único, Critério de pronto binário, Verificação executável, Risco, Segurança
 4. Abra a Issue no GitHub (`gh issue create`) — sem issue, sem código
 
@@ -88,7 +88,7 @@ Você **NÃO** decide sozinho:
 2. Rode os gates (typecheck, lint, test:arch, testes do escopo, CI do PR)
 3. PR com `Closes #N`; merge **só** com todos os checks verdes
 4. Se algo falhou: corrija e repita /build — nunca mergear vermelho
-5. Fechada a tarefa: registre em `worklog.md` (+ `DECISOES.md` se decisão nova, + `docs/CHANGELOG.md` se marco)
+5. Fechada a tarefa: registre em `worklog.md` (+ `DECISOES.md` se decisão nova, + `docs/08-knowledge-management/CHANGELOG.md` se marco)
 
 ### 1.4 Quando escalar para o Operador
 
@@ -128,13 +128,13 @@ grep -A 10 "## 🟠 Em processo" PENDENCIAS_OPERADOR.md
 tail -80 DECISOES.md
 
 # Iniciativas abertas do roadmap
-grep -B 1 -A 3 "ABERTA\|PENDENTE" docs/eng/ROADMAP-NOVA-DIRECAO.md | head -40
+grep -B 1 -A 3 "ABERTA\|PENDENTE" docs/01-product-discovery/ROADMAP.md | head -40
 
 # Issues abertas
 gh issue list --state open
 
 # Últimos marcos
-tail -30 docs/CHANGELOG.md
+tail -30 docs/08-knowledge-management/CHANGELOG.md
 ```
 
 ---
@@ -223,7 +223,7 @@ vercel logs <deployment-url>             # logs de runtime
 
 **Critérios (nesta ordem):**
 
-1. Já está em `DECISOES.md` ou `docs/CHOOSE_TECH_STACK.md`? → Use a decidida
+1. Já está em `DECISOES.md` ou `docs/02-architecture-design/CHOOSE_TECH_STACK.md`? → Use a decidida
 2. Já está no lockfile/dependência existente? → Preferir (zero supply-chain nova)
 3. Open-source, tipada, documentada e ativa? → Preferir
 4. Bundle size aceitável? → < 50KB gzipped (frontend)
@@ -275,7 +275,7 @@ gh run view <run-id> --log-failed
 **Próxima hipótese / Alternativa:** ...
 ```
 
-Quirk de ambiente? Consulte `docs/MEMORY.md` e `docs/SETUP.md` antes — a maioria já tem receita.
+Quirk de ambiente? Consulte `docs/08-knowledge-management/MEMORY.md` e `docs/03-development-process/SETUP.md` antes — a maioria já tem receita.
 
 ---
 
@@ -283,7 +283,7 @@ Quirk de ambiente? Consulte `docs/MEMORY.md` e `docs/SETUP.md` antes — a maior
 
 - [ ] Typecheck, lint, test:arch e testes do escopo verdes
 - [ ] Teste de regressão junto do fix (bug)
-- [ ] Sem segredos no diff; segredo novo = `.env.example` (sem valor) + `docs/eng/SECRETS.md`
+- [ ] Sem segredos no diff; segredo novo = `.env.example` (sem valor) + `docs/05-security-compliance/SECRETS.md`
 - [ ] i18n: chave nova nos 3 locales (`messages/pt-BR,en,es-ES.json`)
 - [ ] Docs atualizadas se arquitetura/fluxo mudou (checklist do `AGENTS.md` §4)
 - [ ] Commit em Conventional Commits com referência da tarefa
@@ -324,7 +324,7 @@ curl -I https://shop-finder-taupe.vercel.app/   # 200 (requer P0 SSO resolvido)
 cat PENDENCIAS_OPERADOR.md
 tail -80 DECISOES.md
 gh issue list --state open
-tail -30 docs/CHANGELOG.md
+tail -30 docs/08-knowledge-management/CHANGELOG.md
 
 # Dev/Testes
 npm run dev
