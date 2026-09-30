@@ -17,8 +17,9 @@ export async function GET(req: Request) {
       status: s.status,
       payment_status: s.payment_status,
       amount_total: s.amount_total,
-      currency: s.currency,
-      customer_email: s.customer_details?.email ?? s.customer_email ?? null
+      currency: s.currency
+      // J-003 (auditoria 30/09): endpoint público acessível só com session_id
+      // (que circula na URL) — sem dado pessoal na resposta.
     });
   } catch {
     return NextResponse.json({ error: "Sessão não encontrada" }, { status: 404 });

@@ -108,7 +108,7 @@ export interface CartDTO {
 
 export interface CartItemDTO {
   id: string;
-  productId: string;
+  productId: string | null;
   variantId?: string;
   sku: string;
   title: string;
@@ -143,7 +143,7 @@ export interface OrderDetailDTO extends OrderListItemDTO {
 
 export interface OrderItemDTO {
   id: string;
-  productId: string;
+  productId: string | null;
   variantId?: string;
   sku: string;
   title: string;

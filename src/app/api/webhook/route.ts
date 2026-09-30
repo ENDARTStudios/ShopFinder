@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@workspace/database/client";
+import { buildOrderItemsFromSession } from "@/lib/stripe-order";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,8 @@ export async function POST(req: Request) {
 
   if (event.type === "checkout.session.completed") {
     const s = event.data.object as Stripe.Checkout.Session;
+    // J-004 (auditoria 30/09): a sessão Stripe é a fonte da verdade do que foi
+    // cobrado — os valores do catálogo podem ter mudado entre checkout e webhook.
     try {
       // 1) Idempotência
       const existing = await prisma.order.findUnique({ where: { number: s.id } });
@@ -55,72 +58,33 @@ export async function POST(req: Request) {
       // Sem PII em logs (LGPD, achado SEC-01): o e-mail fica só no upsert acima
       console.info("[webhook] customer", { novo: !existingCustomer });
 
-      // 4) Parse metadata.items
+      // 4) Parse metadata.items (sku × qty, mesma ordem dos line_items)
       const itemsMeta: Array<{ sku: string; qty: number }> = s.metadata?.items
         ? JSON.parse(s.metadata.items)
         : [];
 
-      // 5) Resolve products e monta OrderItem[]
-      const orderItems: Array<{
-        productId: string;
-        sku: string;
-        title: string;
-        quantity: number;
-        unitPriceMinorUnits: bigint;
-        unitPriceCurrencyCode: string;
-        lineTotalMinorUnits: bigint;
-      }> = [];
-
-      for (const it of itemsMeta) {
-        const product = await prisma.product.findFirst({
-          where: { sku: it.sku, deletedAt: null },
-          include: {
-            offers: {
-              where: { deletedAt: null },
-              orderBy: { priceMinorUnits: "asc" }
-            }
-          }
-        });
-        if (!product) {
-          console.warn("[webhook] Produto não encontrado, pulando", { sku: it.sku });
-          continue;
-        }
-        const cheapest = product.offers[0];
-        const unit = cheapest
-          ? Number(cheapest.priceMinorUnits)
-          : Number(product.basePriceMinorUnits);
-        const currency = (
-          cheapest?.priceCurrencyCode ??
-          product.basePriceCurrencyCode ??
-          "USD"
-        ).toUpperCase();
-        const safeUnit = Math.trunc(unit);
-        const safeQty = Math.trunc(it.qty);
-
-        orderItems.push({
-          productId: product.id,
-          sku: it.sku,
-          title: product.title,
-          quantity: safeQty,
-          unitPriceMinorUnits: BigInt(safeUnit),
-          unitPriceCurrencyCode: currency,
-          lineTotalMinorUnits: BigInt(safeUnit * safeQty)
-        });
+      // 5) Reconstrói os itens do que o Stripe efetivamente cobrou
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      const full = await stripe.checkout.sessions.retrieve(s.id, {
+        expand: ["line_items"]
+      });
+      const skuToProductId = new Map<string, string>();
+      for (const meta of itemsMeta) {
+        // inclui soft-deleted: maximiza o link; sem match ⇒ productId null
+        const product = await prisma.product.findFirst({ where: { sku: meta.sku } });
+        if (product) skuToProductId.set(meta.sku, product.id);
       }
+      const orderItems = buildOrderItemsFromSession(full.line_items, itemsMeta, skuToProductId);
 
-      console.info("[webhook] orderItems montados", {
-        count: orderItems.length,
-        totalMeta: itemsMeta.length
+      console.info("[webhook] orderItems montados da sessão", {
+        count: orderItems.length
       });
 
-      if (orderItems.length === 0) {
-        console.warn("[webhook] Nenhum item válido no metadata", { number: s.id });
-        return NextResponse.json({ received: true });
-      }
-
-      // 6) Subtotal, address, transação
-      const subtotal = orderItems.reduce((acc, i) => acc + Number(i.lineTotalMinorUnits), 0);
-      const safeSubtotal = Math.trunc(subtotal);
+      // 6) Subtotal da própria sessão; endereço; transação
+      const subtotal = Math.trunc(
+        full.amount_subtotal ??
+          orderItems.reduce((acc, i) => acc + Number(i.lineTotalMinorUnits), 0)
+      );
       const currency = (s.currency ?? "usd").toUpperCase();
       const emptyAddr: Stripe.Address = {
         city: "",
@@ -147,10 +111,10 @@ export async function POST(req: Request) {
             number: s.id,
             customerId: customer!.id,
             currency,
-            subtotalMinorUnits: BigInt(safeSubtotal),
+            subtotalMinorUnits: BigInt(subtotal),
             shippingTotalMinorUnits: BigInt(s.total_details?.amount_shipping ?? 0),
             taxTotalMinorUnits: BigInt(s.total_details?.amount_tax ?? 0),
-            grandTotalMinorUnits: BigInt(s.amount_total ?? safeSubtotal),
+            grandTotalMinorUnits: BigInt(s.amount_total ?? subtotal),
             shippingAddress: addr,
             billingAddress: addr,
             status: "paid",
@@ -172,6 +136,9 @@ export async function POST(req: Request) {
         code: err.code,
         meta: (err as any).meta
       });
+      // J-005 (auditoria 30/09): falha real NÃO pode virar sucesso — 500 faz o
+      // Stripe retentar; a checagem de idempotência acima torna o retry seguro.
+      return NextResponse.json({ error: "webhook processing failed" }, { status: 500 });
     }
   }
 
