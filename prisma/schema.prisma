@@ -480,7 +480,9 @@ model Order {
 model OrderItem {
   id                      String   @id @default(cuid())
   orderId                 String
-  productId               String
+  // Nullable (J-004, auditoria 30/09): o item registra o efetivamente pago
+  // mesmo quando o produto deixou de existir no catálogo.
+  productId               String?
   variantId               String?
   sku                     String // snapshot
   title                   String // snapshot

@@ -68,11 +68,7 @@ export default function SuccessPage() {
         <h1 className="mt-6 text-3xl font-black tracking-tight">Pagamento confirmado!</h1>
         <p className="mt-2 text-muted-foreground">Seu pedido foi processado com sucesso.</p>
         <div className="mt-6 rounded-lg border border-border/60 bg-muted/30 p-4 text-left text-sm">
-          {data?.customer_email && (
-            <p className="text-muted-foreground">
-              Email: <span className="font-medium text-foreground">{data.customer_email}</span>
-            </p>
-          )}
+          {/* J-003: sem e-mail aqui — /api/checkout-status não expõe dado pessoal */}
           {data?.amount_total != null && (
             <p className="mt-1 text-muted-foreground">
               Total:{" "}
