@@ -52,7 +52,8 @@ export async function POST(req: Request) {
           }
         });
       }
-      console.info("[webhook] customer", { email, criado: !existingCustomer });
+      // Sem PII em logs (LGPD, achado SEC-01): o e-mail fica só no upsert acima
+      console.info("[webhook] customer", { novo: !existingCustomer });
 
       // 4) Parse metadata.items
       const itemsMeta: Array<{ sku: string; qty: number }> = s.metadata?.items
