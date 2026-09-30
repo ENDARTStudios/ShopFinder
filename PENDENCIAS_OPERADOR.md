@@ -67,6 +67,18 @@ Fonte da especificação: Thinker (15/set/2026), DECISAO-NOVA-DIRECAO-002.
 
 - Após T102–T104 (UI redesign completo) + (opcional) D2.
 
+### P1-4 · Subprocessadores: especificação contratual — ABERTA (auditoria 29/09, achados PRIV-01/TRANS-01)
+
+- Política cita Sentry/Stripe/Vercel/Neon genericamente; faltam entidade contratada, país, mecanismo de transferência e DPA de cada um. Ação do Operador/jurídico: reunir DPAs vigentes e devolver à Política (docs v2).
+
+### P2-6 · Encarregado (DPO): designação ou dispensa — ABERTA (achado DPO-01)
+
+- Canal de privacidade existe (`endart.studios@gmail.com`); falta designação formal OU decisão documentada de dispensa por porte (Res. CD/ANPD nº 2/2022, pequeno porte).
+
+### P2-7 · Modelo comercial: alinhar Termos ao fluxo real — ABERTA (achados CDC-01/CDC-02)
+
+- Termos dizem "fornecedor vende/entrega/garante"; código cria Checkout Session própria na Stripe e registra Order no banco (participação direta). Decisão jurídica necessária: comparador × intermediário × vendedor de registro. Derivado técnico (força BRL no checkout): issue de tracking da auditoria.
+
 ## ⏸ P3 — playbooks liderados por você (sem ação técnica agora)
 
 `C2` parcerias diretas · `C3` white-label · `D3` certificações · `E1` extensão

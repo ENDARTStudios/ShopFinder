@@ -7,13 +7,13 @@ Esta Política explica como a ShopFinder, operada pela END ART Studios, utiliza 
 
 A END ART Studios é identificada pelos seguintes dados:
 
-| Informação | Dados |
-|---|---|
-| Nome fantasia | END ART Studios |
-| CNPJ | 45.370.930/0001-75 |
-| Localização informada | Osasco, São Paulo — Brasil |
-| Contato | endart.studios@gmail.com |
-| Site | https://shop-finder-taupe.vercel.app/ |
+| Informação            | Dados                                 |
+| --------------------- | ------------------------------------- |
+| Nome fantasia         | END ART Studios                       |
+| CNPJ                  | 45.370.930/0001-75                    |
+| Localização informada | Osasco, São Paulo — Brasil            |
+| Contato               | endart.studios@gmail.com              |
+| Site                  | https://shop-finder-taupe.vercel.app/ |
 
 ## 1. O que são cookies e armazenamento local
 
@@ -37,22 +37,29 @@ O fato de uma tecnologia não ser enviada automaticamente ao servidor não signi
 
 A lista abaixo deve refletir o inventário técnico atualmente utilizado. Caso a implementação real utilize nome, fornecedor, duração ou finalidade diferente, a equipe responsável deverá atualizar esta Política antes da publicação.
 
-| Nome/chave | Tecnologia | Fornecedor | Duração | Categoria | Finalidade |
-|---|---|---|---|---|---|
-| sf:cart | localStorage | ShopFinder | Até limpeza dos dados do site ou remoção pelo usuário | Essencial, quando o carrinho for solicitado | Manter itens do carrinho |
-| shopfinder:compare | localStorage | ShopFinder | Até limpeza ou remoção pelo usuário | Preferência/funcionalidade | Manter produtos selecionados para comparação |
-| sf:locale | localStorage | ShopFinder | Até limpeza dos dados do site | Preferência | Lembrar idioma da interface |
-| locale | Cookie, se efetivamente utilizado | ShopFinder | Até 1 ano ou prazo técnico menor | Preferência | Lembrar idioma da interface |
-| sf:currency | localStorage | ShopFinder | Até limpeza dos dados do site | Preferência | Lembrar moeda de exibição |
-| sf:notifications | localStorage | ShopFinder | Até limpeza dos dados do site | Preferência | Lembrar preferências de notificação |
-| shopfinder:read-notifications | localStorage | ShopFinder | Até limpeza dos dados do site | Preferência | Estado de leitura do sino de notificações |
-| sf:fx | sessionStorage | ShopFinder | Durante a sessão | Essencial/funcionalidade solicitada | Manter taxa cambial temporária para conversão de exibição |
-| sf:img:* | sessionStorage | ShopFinder | Durante a sessão | Funcionalidade | Manter referências temporárias de imagens exibidas no catálogo |
-| nextauth.message | localStorage ou outro armazenamento, se efetivamente utilizado | NextAuth/ShopFinder | Conforme a sessão e a configuração técnica | Essencial | Comunicar estado técnico de autenticação |
-| next-auth.session-token | Cookie, se efetivamente utilizado | ShopFinder/NextAuth | Conforme a sessão ou até 30 dias, segundo configuração | Essencial | Manter autenticação segura |
-| next-auth.csrf-token | Cookie, se efetivamente utilizado | ShopFinder/NextAuth | Sessão ou conforme configuração | Essencial | Proteção contra ataques CSRF |
+| Nome/chave                    | Tecnologia                                                     | Fornecedor          | Duração                                                | Categoria                                   | Finalidade                                                               |
+| ----------------------------- | -------------------------------------------------------------- | ------------------- | ------------------------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------ |
+| sf:cart                       | localStorage                                                   | ShopFinder          | Até limpeza dos dados do site ou remoção pelo usuário  | Essencial, quando o carrinho for solicitado | Manter itens do carrinho                                                 |
+| shopfinder:compare            | localStorage                                                   | ShopFinder          | Até limpeza ou remoção pelo usuário                    | Preferência/funcionalidade                  | Manter produtos selecionados para comparação                             |
+| sf:locale                     | localStorage                                                   | ShopFinder          | Até limpeza dos dados do site                          | Preferência                                 | Lembrar idioma da interface                                              |
+| locale                        | Cookie, se efetivamente utilizado                              | ShopFinder          | Até 1 ano ou prazo técnico menor                       | Preferência                                 | Lembrar idioma da interface                                              |
+| sf:currency                   | localStorage                                                   | ShopFinder          | Até limpeza dos dados do site                          | Preferência                                 | Lembrar moeda de exibição                                                |
+| sf:notifications              | localStorage                                                   | ShopFinder          | Até limpeza dos dados do site                          | Preferência                                 | Lembrar preferências de notificação                                      |
+| shopfinder:read-notifications | localStorage                                                   | ShopFinder          | Até limpeza dos dados do site                          | Preferência                                 | Estado de leitura do sino de notificações                                |
+| sf:fx                         | sessionStorage                                                 | ShopFinder          | Durante a sessão                                       | Essencial/funcionalidade solicitada         | Manter taxa cambial temporária para conversão de exibição                |
+| sf:img:*                      | sessionStorage                                                 | ShopFinder          | Durante a sessão                                       | Funcionalidade                              | Manter referências temporárias de imagens exibidas no catálogo           |
+| shopfinder:history:views      | localStorage                                                   | ShopFinder          | Até limpeza ou remoção pelo usuário                    | Preferência/funcionalidade                  | Histórico local de produtos vistos (permanece no dispositivo do titular) |
+| shopfinder:history:searches   | localStorage                                                   | ShopFinder          | Até limpeza ou remoção pelo usuário                    | Preferência/funcionalidade                  | Histórico local de buscas (permanece no dispositivo do titular)          |
+| shopfinder:results-view       | localStorage                                                   | ShopFinder          | Até limpeza ou remoção pelo usuário                    | Preferência                                 | Lembrar o modo de visualização (grade/lista) da página de resultados     |
+| sidebar_state                 | Cookie                                                         | ShopFinder          | Persistente (até 1 ano)                                | Funcionalidade                              | Lembrar estado aberto/fechado do painel lateral (área administrativa)    |
+| sf:cookie-consent             | localStorage                                                   | ShopFinder          | Até limpeza ou remoção pelo usuário                    | Essencial                                   | Registrar as preferências de consentimento do banner de cookies          |
+| nextauth.message              | localStorage ou outro armazenamento, se efetivamente utilizado | NextAuth/ShopFinder | Conforme a sessão e a configuração técnica             | Essencial                                   | Comunicar estado técnico de autenticação                                 |
+| next-auth.session-token       | Cookie, se efetivamente utilizado                              | ShopFinder/NextAuth | Conforme a sessão ou até 30 dias, segundo configuração | Essencial                                   | Manter autenticação segura                                               |
+| next-auth.csrf-token          | Cookie, se efetivamente utilizado                              | ShopFinder/NextAuth | Sessão ou conforme configuração                        | Essencial                                   | Proteção contra ataques CSRF                                             |
 
 Os itens sf:img:* podem conter referências a imagens hospedadas por terceiros. A referência não autoriza automaticamente o uso da imagem fora da licença aplicável nem significa que a END ART Studios controle o servidor de origem.
+
+_Atualização de 30/09/2026 (auditoria jurídica externa, achado COOKIE-01): inventário sincronizado com a implementação real — adicionadas as chaves de histórico local, visualização de resultados, estado da barra lateral e consentimento, que já estavam em uso no código._
 
 ## 4. Cookies de terceiros
 

@@ -6,7 +6,8 @@
 
 - **Base legal:** consentimento (cookie banner v2) + execução de contrato (conta/pedidos).
 - **Minimização:** analytics sem identificadores ([ANALYTICS.md](../07-operations-marketing/ANALYTICS.md)); personalização cookieless (histórico em localStorage, sem PII).
-- **Direitos do titular:** contato e exportação/remoção via fluxo de conta; DPO/encarregado definido no documento de privacidade.
+- **Direitos do titular (art. 18):** atendimento via canal de privacidade (e-mail na Política). ⚠️ **Portal automatizado de exportação/exclusão AINDA NÃO implementado** — achado LGPD-01 (P0) da auditoria jurídica externa de 29/09/2026 ([docs/legal/auditoria-juridica-externa-20260929.md](../legal/auditoria-juridica-externa-20260929.md)); issue de tracking com o plano. Até lá, solicitações são atendidas manualmente pelo canal e registradas.
+- **Encarregado (DPO):** canal de privacidade designado; **designação formal nominal pendente** (achado DPO-01 — avaliar dispensa por porte de pequeno porte, Res. CD/ANPD nº 2/2022).
 - **Cookies:** banner com consentimento granular, versão e registro; política dedicada publicada.
 - **Vazamento:** plano de resposta incidente no `docs/05-security-compliance/SECURITY.md` + comunicação à ANPD quando aplicável.
 
