@@ -46,7 +46,7 @@
     "@opentelemetry/auto-instrumentations-node": "^0.79.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.221.0",
     "@opentelemetry/resources": "^2.10.0",
-    "@opentelemetry/sdk-node": "^0.221.0",
+    "@opentelemetry/sdk-node": "^0.222.0",
     "@opentelemetry/semantic-conventions": "^1.43.0",
     "@prisma/client": "^6.19.3",
     "@radix-ui/react-accordion": "^1.2.16",
