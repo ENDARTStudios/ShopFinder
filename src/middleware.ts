@@ -72,9 +72,7 @@ export async function middleware(req: NextRequest, event: unknown) {
       const token = await getToken({
         req,
         secret: process.env.NEXTAUTH_SECRET,
-        salt: process.env.NEXTAUTH_URL?.startsWith("https://")
-          ? "__Secure-next-auth.session-token"
-          : "next-auth.session-token"
+        secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://") ?? false
       });
       if (token?.sub) identifier = `u:${token.sub}`;
     }
