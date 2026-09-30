@@ -10,6 +10,7 @@
  * Outros headers de segurança (HSTS etc.) ficam em next.config.ts (headers).
  */
 import { withAuth } from "next-auth/middleware";
+import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { buildCsp } from "@/lib/csp";
@@ -52,17 +53,33 @@ export async function middleware(req: NextRequest, event: unknown) {
     return response;
   };
 
-  // Rate limit de credenciais: POSTs de login/registro (5/min). Os demais
-  // endpoints de auth (csrf/session) usam o default (120/min).
+  // Rate limiting de TODAS as rotas /api/* (T049-hardening):
+  // - identificador = userId da sessão quando autenticado, senão IP —
+  //   requisições autenticadas não são penalizadas por outros usuários
+  //   do mesmo IP (NAT/corporativo);
+  // - limites por rota em RATE_LIMIT_RULES (credenciais: 5/min; catálogo:
+  //   60/min; webhook: 300/min; demais: default);
+  // - janela deslizante com Retry-After calculado.
   // Desativado fora de produção: a lógica é coberta por tests/unit e o
-  // limiter em memória tornaria as suítes de integração/E2E flaky
-  // (buckets acumulam por IP entre execuções no mesmo dev server).
-  if (
-    process.env.NODE_ENV === "production" &&
-    (pathname === "/api/auth/callback/credentials" || pathname === "/api/auth/register") &&
-    (req.method === "POST" || req.method === "PUT")
-  ) {
-    const result = await checkRateLimit(pathname, getClientIp(req.headers));
+  // limiter em memória tornaria as suítes de integração/E2E flaky.
+  if (process.env.NODE_ENV === "production" && pathname.startsWith("/api/")) {
+    // Session cookie presente → resolve o userId (getToken é edge-safe);
+    // sem cookie de sessão, pula o custo do JWT e usa IP como identificador.
+    const hasSessionCookie = /next-auth\.session-token/.test(req.headers.get("cookie") ?? "");
+
+    let identifier = getClientIp(req.headers);
+    if (hasSessionCookie) {
+      const token = await getToken({
+        req,
+        secret: process.env.NEXTAUTH_SECRET,
+        salt: process.env.NEXTAUTH_URL?.startsWith("https://")
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token"
+      });
+      if (token?.sub) identifier = `u:${token.sub}`;
+    }
+
+    const result = await checkRateLimit(pathname, identifier);
     if (!result.allowed) {
       return finalize(
         NextResponse.json(

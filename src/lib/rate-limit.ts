@@ -1,11 +1,20 @@
 /**
  * ShopFinder — Rate limiting (edge-safe)
  *
- * Sliding window no Upstash Redis REST quando configurado; fallback em memória
- * (por instância) para dev. Ver docs/eng/SECURITY.md para os limites por rota.
+ * Sliding window REAL (log de timestamps por chave) em vez de janela fixa:
+ * rajadas legítimas não são penalizadas duas vezes em janelas adjacentes e o
+ * Retry-After é calculado a partir do pedido mais antigo ainda na janela.
+ *
+ * Backends:
+ * - Upstash Redis REST (ZSET: ZADD + ZREMRANGEBYSCORE + ZCARD + PEXPIRE em
+ *   pipeline) quando UPSTASH_REDIS_REST_URL/TOKEN estão configurados.
+ * - Fallback em memória (por instância) para dev.
+ *
+ * Identificador: decidido pelo chamador (middleware) — userId da sessão
+ * (getToken) quando presente, senão IP. Ver docs/eng/SECURITY.md.
  */
 
-const WINDOW_SECONDS = 60;
+const WINDOW_MS_DEFAULT = 60_000;
 
 export interface RateLimitRule {
   limit: number;
@@ -33,69 +42,110 @@ export interface RateLimitResult {
   retryAfterSeconds: number;
 }
 
-/** Fallback em memória — só protege a instância atual (dev). */
-const memoryBuckets = new Map<string, { count: number; resetAt: number }>();
+// ── Sliding window em memória (fallback dev/por instância) ──
 
-function rateLimitMemory(key: string, limit: number, windowSeconds: number): RateLimitResult {
-  const now = Date.now();
-  const bucket = memoryBuckets.get(key);
-  if (!bucket || bucket.resetAt <= now) {
-    memoryBuckets.set(key, { count: 1, resetAt: now + windowSeconds * 1000 });
-    return { allowed: true, remaining: limit - 1, retryAfterSeconds: windowSeconds };
-  }
-  bucket.count += 1;
-  const remaining = Math.max(0, limit - bucket.count);
-  return {
-    allowed: bucket.count <= limit,
-    remaining,
-    retryAfterSeconds: Math.max(1, Math.ceil((bucket.resetAt - now) / 1000))
-  };
+const memoryWindows = new Map<string, number[]>();
+
+function prune(stamps: number[], now: number, windowMs: number): number[] {
+  const floor = now - windowMs;
+  let i = 0;
+  while (i < stamps.length && stamps[i] <= floor) i++;
+  return i > 0 ? stamps.slice(i) : stamps;
 }
 
-async function rateLimitUpstash(
-  key: string,
-  limit: number,
-  windowSeconds: number
-): Promise<RateLimitResult | null> {
+function memorySlidingWindow(key: string, limit: number, windowMs: number): RateLimitResult {
+  const now = Date.now();
+  const kept = prune(memoryWindows.get(key) ?? [], now, windowMs);
+  const count = kept.length;
+
+  if (count >= limit) {
+    const oldest = kept[0] ?? now;
+    memoryWindows.set(key, kept);
+    return {
+      allowed: false,
+      remaining: 0,
+      retryAfterSeconds: Math.max(1, Math.ceil((oldest + windowMs - now) / 1000))
+    };
+  }
+
+  kept.push(now);
+  memoryWindows.set(key, kept);
+
+  // higiene: evita crescimento sem limite com chaves de IP descartáveis
+  if (memoryWindows.size > 5000) {
+    for (const [k, stamps] of memoryWindows) {
+      if (prune(stamps, now, windowMs).length === 0) memoryWindows.delete(k);
+    }
+  }
+  return { allowed: true, remaining: Math.max(0, limit - count - 1), retryAfterSeconds: 1 };
+}
+
+// ── Sliding window no Upstash Redis REST (ZSET) ─────────────
+
+async function upstashPipeline(
+  commands: Array<Array<string | number>>
+): Promise<Array<{ result: number | string | null }> | null> {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return null;
-
   try {
-    const redisKey = `ratelimit:${key}:${Math.floor(Date.now() / 1000 / windowSeconds)}`;
     const res = await fetch(`${url}/pipeline`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify([
-        ["INCR", redisKey],
-        ["EXPIRE", redisKey, String(windowSeconds)]
-      ]),
+      body: JSON.stringify(commands),
       signal: AbortSignal.timeout(3000)
     });
     if (!res.ok) return null;
-    const data = (await res.json()) as Array<{ result: number }>;
-    const count = data[0]?.result ?? 0;
-    return {
-      allowed: count <= limit,
-      remaining: Math.max(0, limit - count),
-      retryAfterSeconds: windowSeconds
-    };
+    return (await res.json()) as Array<{ result: number | string | null }>;
   } catch {
     return null; // degrada para memória — nunca bloquear por falha do limiter
   }
 }
+
+async function upstashSlidingWindow(
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<RateLimitResult | null> {
+  const now = Date.now();
+  const member = `${now}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const pipeline = await upstashPipeline([
+    ["ZADD", key, String(now), member],
+    ["ZREMRANGEBYSCORE", key, "-inf", String(now - windowMs)],
+    ["ZCARD", key],
+    ["PEXPIRE", key, String(windowMs)]
+  ]);
+  if (!pipeline) return null;
+
+  const count = Number(pipeline[2]?.result ?? 0);
+  if (count <= limit) {
+    return { allowed: true, remaining: Math.max(0, limit - count), retryAfterSeconds: 1 };
+  }
+
+  // Bloqueado: Retry-After preciso a partir do pedido mais antigo da janela
+  const zr = await upstashPipeline([["ZRANGE", key, "0", "0", "WITHSCORES"]]);
+  const oldest = Number(zr?.[0]?.result ?? now - windowMs);
+  return {
+    allowed: false,
+    remaining: 0,
+    retryAfterSeconds: Math.max(1, Math.ceil((oldest + windowMs - now) / 1000))
+  };
+}
+
+// ── API pública ─────────────────────────────────────────────
 
 export async function checkRateLimit(
   routeKey: string,
   identifier: string
 ): Promise<RateLimitResult> {
   const rule = RATE_LIMIT_RULES[routeKey] ?? RATE_LIMIT_RULES.default;
-  const windowSeconds = rule.windowSeconds ?? WINDOW_SECONDS;
+  const windowMs = (rule.windowSeconds ?? 60) * 1000;
   const key = `${routeKey}:${identifier}`;
 
-  const upstash = await rateLimitUpstash(key, rule.limit, windowSeconds);
+  const upstash = await upstashSlidingWindow(key, rule.limit, windowMs);
   if (upstash) return upstash;
-  return rateLimitMemory(key, rule.limit, windowSeconds);
+  return memorySlidingWindow(key, rule.limit, windowMs);
 }
 
 export function getClientIp(headers: Headers): string {
