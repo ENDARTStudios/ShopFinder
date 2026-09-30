@@ -79,6 +79,12 @@ Fonte da especificação: Thinker (15/set/2026), DECISAO-NOVA-DIRECAO-002.
 
 - Termos dizem "fornecedor vende/entrega/garante"; código cria Checkout Session própria na Stripe e registra Order no banco (participação direta). Decisão jurídica necessária: comparador × intermediário × vendedor de registro. Derivado técnico (força BRL no checkout): issue de tracking da auditoria.
 
+### 🚫 GATE DE DEPLOY · Migration `20260930110000_orderitem_product_nullable` no Neon de PRODUÇÃO — BLOQUEIA novo deploy (auditoria 30/09, J-004)
+
+- O webhook novo grava `OrderItem.productId = null` quando o produto saiu do catálogo. **Sem a migration em produção, a criação de Order falha** (com retry do Stripe).
+- Checklist de liberação: (1) `ALTER TABLE "OrderItem" ALTER COLUMN "productId" DROP NOT NULL;` no Neon de PRODUÇÃO; (2) confirmar `is_nullable = YES` em `information_schema`; (3) aí sim liberar o deploy (Vercel também está rate-limited ~24h); (4) smoke pós-deploy de webhook/checkout (prova de ouro já validada em staging — ver issue #81).
+- Aplicada e confirmada no Neon de trabalho (.env) em 30/09; prova completa no #81.
+
 ## ⏸ P3 — playbooks liderados por você (sem ação técnica agora)
 
 `C2` parcerias diretas · `C3` white-label · `D3` certificações · `E1` extensão
