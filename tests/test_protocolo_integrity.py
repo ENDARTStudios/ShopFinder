@@ -1,8 +1,8 @@
 import unittest, json, os
 
 REQUIRED_FILES = [
-    'PROTOCOLO_MESTRE.md', 'PROMPT_MESTRE_AUTONOMO.md', 'PLANO_MESTRE.md',
-    'DECISOES.md', 'PENDENCIAS_OPERADOR.md', 'MANUAL_DO_OPERADOR.md',
+    'docs/governance/PROTOCOLO_MESTRE.md', 'docs/governance/PROMPT_MESTRE_AUTONOMO.md', 'docs/governance/PLANO_MESTRE.md',
+    'docs/DECISOES.md', 'docs/PENDENCIAS_OPERADOR.md', 'docs/governance/MANUAL_DO_OPERADOR.md',
     '.gitignore', '.env.example', '.claude/schemas/tarefa.schema.json',
     '.claude/schemas/status.schema.json', '.claude/schemas/review.schema.json',
     '.claude/schemas/erro_taxonomy.json', '.claude/hooks/danger-guard.py',
@@ -54,7 +54,7 @@ class TestProtocolIntegrity(unittest.TestCase):
         self.assertIn('hooks', data)
     
     def test_prompt_contract(self):
-        self.assertTrue(os.path.isfile('PROMPT_MESTRE_AUTONOMO.md'))
+        self.assertTrue(os.path.isfile('docs/governance/PROMPT_MESTRE_AUTONOMO.md'))
     
     def test_protocol_error_codes(self):
         codes = ['DEP_MISSING', 'API_UNAVAILABLE', 'SCHEMA_MISMATCH', 'UNKNOWN']

@@ -1,8 +1,8 @@
 import os, json
 
 files = [
-    'PROTOCOLO_MESTRE.md', 'PROMPT_MESTRE_AUTONOMO.md', 'PLANO_MESTRE.md',
-    'DECISOES.md', 'PENDENCIAS_OPERADOR.md', 'MANUAL_DO_OPERADOR.md',
+    'docs/governance/PROTOCOLO_MESTRE.md', 'docs/governance/PROMPT_MESTRE_AUTONOMO.md', 'docs/governance/PLANO_MESTRE.md',
+    'docs/DECISOES.md', 'docs/PENDENCIAS_OPERADOR.md', 'docs/governance/MANUAL_DO_OPERADOR.md',
     '.gitignore', '.env.example',
     '.claude/schemas/tarefa.schema.json', '.claude/schemas/status.schema.json',
     '.claude/schemas/review.schema.json', '.claude/schemas/erro_taxonomy.json',

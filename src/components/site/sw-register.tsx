@@ -6,7 +6,7 @@
  * Montado no root layout; só registra em produção (NODE_ENV=production —
  * `next dev` nunca registra) e se o browser suporta. Kill-switch: remover
  * este componente do layout + bump de CACHE_VERSION no public/sw.js
- * (MANUAL_DO_OPERADOR.md §PWA).
+ * (docs/governance/MANUAL_DO_OPERADOR.md §PWA).
  */
 import * as React from "react";
 

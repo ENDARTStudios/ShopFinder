@@ -1,7 +1,7 @@
 name: Cleanup Vercel Deployments
 
 # T099 — limpeza semanal de deployments Vercel (DESTRUTIVA, gateada).
-# RATIFICO-T099 (Operador, 14/set/2026) — DECISOES.md / MANUAL_DO_OPERADOR §8.2.
+# RATIFICO-T099 (Operador, 14/set/2026) — docs/DECISOES.md / docs/governance/MANUAL_DO_OPERADOR §8.2.
 #
 # Segurança:
 #  - fail-closed no script (produção não resolvida → zero deletes);

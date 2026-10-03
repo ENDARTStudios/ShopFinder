@@ -55,3 +55,10 @@ server.log
 GEMINI.md
 opencode.json
 .mcp.json
+
+# Worktrees de sessões de agente (nunca commitar)
+.kilo/
+
+# Ambientes virtuais Python (futuro apps/api)
+.venv/
+venv/
