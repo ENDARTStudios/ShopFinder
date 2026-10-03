@@ -62,3 +62,10 @@ opencode.json
 # Ambientes virtuais Python (futuro apps/api)
 .venv/
 venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Worktrees de agentes (.kilo)
+.kilo/
